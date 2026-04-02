@@ -89,3 +89,5 @@ export * from './components/toolbar/MRT_ToolbarAlertBanner';
 export * from './components/toolbar/MRT_ToolbarDropZone';
 export * from './components/toolbar/MRT_ToolbarInternalButtons';
 export * from './components/toolbar/MRT_TopToolbar';
+//adapters
+export * from './adapters/defaultAdapter/defaultAdapter';

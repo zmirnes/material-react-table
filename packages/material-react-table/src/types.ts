@@ -1339,3 +1339,10 @@ export type UseServerTableStateReturn = {
     grouping: MRT_GroupingState;
   };
 };
+
+export type ColumnDefinition<TData extends MRT_RowData, TValue = unknown> = MRT_ColumnDef<
+  TData,
+  TValue
+> & {
+  type: string;
+};
