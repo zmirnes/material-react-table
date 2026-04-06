@@ -46,7 +46,7 @@ const preview: Preview = {
       }, [theme]);
 
       useEffect(() => {
-        if (process.env.NODE_ENV === 'development') return;
+        if (import.meta.env.DEV) return;
         const script = document.createElement('script');
         script.src = 'https://plausible.io/js/script.js';
         script.setAttribute('data-domain', 'material-react-table.dev');

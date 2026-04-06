@@ -1306,7 +1306,7 @@ export type UseServerTableStateOptions<TData extends MRT_RowData> = {
 };
 
 export type UseServerTableStateReturn = {
-  // trenutni state — prosljeđuješ u table
+  // Current state — pass into the table's `state` prop
   tableState: {
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
@@ -1319,7 +1319,7 @@ export type UseServerTableStateReturn = {
     expanded: MRT_ExpandedState;
     rowSelection: MRT_RowSelectionState;
   };
-  // handleri — prosljeđuješ u onXChange
+  // Handlers — pass into the table's `on*Change` props
   handlers: {
     onPaginationChange: OnChangeFn<MRT_PaginationState>;
     onSortingChange: OnChangeFn<MRT_SortingState>;
@@ -1332,7 +1332,7 @@ export type UseServerTableStateReturn = {
     onExpandedChange: OnChangeFn<MRT_ExpandedState>;
     onRowSelectionChange: OnChangeFn<MRT_RowSelectionState>;
   };
-  // koji state triggeruje fetch (za useEffect deps)
+  // Only these go into useEffect deps for the data fetch
   fetchTrigger: {
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
