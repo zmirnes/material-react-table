@@ -111,7 +111,10 @@ describe('transformColumnDefinition', () => {
   it('should transform backend column definition to tanstack column definition', () => {
     const backendColumnDefinition: GridColDef = initialStateMock.gridColDef[0];
     const result = backendColumnToTableColumn(backendColumnDefinition);
-    expect(result).toEqual({
+
+    const { accessorFn, Cell, ...rest } = result;
+
+    expect(rest).toEqual({
       id: backendColumnDefinition.field,
       enableColumnFilter: backendColumnDefinition.filterable,
       enableGrouping: backendColumnDefinition.groupable,
@@ -125,9 +128,13 @@ describe('transformColumnDefinition', () => {
       type: backendColumnDefinition.type,
       header:
         backendColumnDefinition.headerName || backendColumnDefinition.field,
-      accessorFn: expect.any(Function),
-      Cell: expect.any(Function),
     });
+
+    const mockRow = { [backendColumnDefinition.field]: 'test-value' };
+    expect(accessorFn!(mockRow)).toBe('test-value');
+
+    const mockCell = { cell: { getValue: () => 'hello' } };
+    expect(Cell!(mockCell as any)).toBe('hello');
   });
 });
 
@@ -136,24 +143,32 @@ describe('backendColumnsToTableColumns', () => {
   it('should transform backend columns to tanstack columns', () => {
     const backendColumns: GridColDef[] = initialStateMock.gridColDef;
     const result = backendColumnsToTableColumns(backendColumns);
-    expect(result).toEqual(
-      backendColumns.map((col) => ({
-        id: col.field,
-        enableColumnFilter: col.filterable,
-        enableGrouping: col.groupable,
-        enableHiding: col.hideable,
-        enableResizing: col.resizable,
-        enableSorting: col.sortable,
-        enablePinning: col.pinnable,
-        maxSize: col.maxWidth,
-        minSize: col.minWidth,
-        size: col.width,
-        type: col.type,
-        header: col.headerName || col.field,
-        accessorFn: expect.any(Function),
-        Cell: expect.any(Function),
-      })),
-    );
+
+    result.forEach((col, index) => {
+      const backendCol = backendColumns[index];
+      const { accessorFn, Cell, ...rest } = col;
+
+      expect(rest).toEqual({
+        id: backendCol.field,
+        enableColumnFilter: backendCol.filterable,
+        enableGrouping: backendCol.groupable,
+        enableHiding: backendCol.hideable,
+        enableResizing: backendCol.resizable,
+        enableSorting: backendCol.sortable,
+        enablePinning: backendCol.pinnable,
+        maxSize: backendCol.maxWidth,
+        minSize: backendCol.minWidth,
+        size: backendCol.width,
+        type: backendCol.type,
+        header: backendCol.headerName || backendCol.field,
+      });
+
+      const mockRow = { [backendCol.field]: 'test-value' };
+      expect(accessorFn!(mockRow)).toBe('test-value');
+
+      const mockCell = { cell: { getValue: () => 'hello' } };
+      expect(Cell!(mockCell as any)).toBe('hello');
+    });
   });
 });
 
