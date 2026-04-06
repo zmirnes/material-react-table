@@ -10,12 +10,13 @@ import type {
 } from '@tanstack/react-table';
 import type {
   GridColumnDimensions,
+  GridColumnVisibilityModel,
   GridPaginationModel,
   GridRowId,
   GridSortModel,
   GridValidRowModel,
 } from '@mui/x-data-grid-premium';
-import { ColumnDefinition } from '../../types';
+import { ColumnDefinition, MRT_RowData } from '../../types';
 import { GridColDef, InitialStateResponse } from './types';
 
 // Get sort model
@@ -141,24 +142,16 @@ export const tableStateToSortModel = (sorting: SortingState): GridSortModel => {
 const getPageSizeOptions = () => [10, 25, 50, 100];
 // Transform selected rows ids array to tanstack table row selection state
 export const selectedRowsToRowSelection = (selectedRows: GridRowId[]) => {
-  const rowSelection: Record<string, boolean> = {};
+  const rowSelection: MRT_RowData = {};
   selectedRows.forEach((rowId) => {
     rowSelection[rowId] = true;
   });
   return rowSelection;
 };
 
-type MuiColumnDimension = {
-  width: number;
-  minWidth: number;
-  maxWidth: number;
-  flex: number;
-};
-export const mapMrtSizingToMuiDimensions = <
-  TData extends Record<string, unknown>,
->(
+export const mapMrtSizingToMuiDimensions = <TData extends MRT_RowData>(
   columns: ColumnDefinition<TData>[],
-): Record<string, MuiColumnDimension> => {
+): Record<string, Partial<GridColDef>> => {
   return Object.fromEntries(
     columns.map((col) => {
       const key = col.id as string;
@@ -175,14 +168,14 @@ export const mapMrtSizingToMuiDimensions = <
   );
 };
 // Transform tanstack table state to backend state
-export const tableStateToBackendState = <TData extends Record<string, unknown>>(
+export const tableStateToBackendState = <TData extends MRT_RowData>(
   state: Partial<TableState> & {
     columnOrder?: string[];
   },
   columns: ColumnDefinition<TData>[],
   additionalOptions: {
     density: string;
-    columnVisibility: Record<string, boolean>;
+    columnVisibility: GridColumnVisibilityModel;
   },
 ) => {
   return {
