@@ -157,7 +157,6 @@ type MuiColumnDimension = {
 export const mapMrtSizingToMuiDimensions = <
   TData extends Record<string, unknown>,
 >(
-  columnSizing: Record<string, number>,
   columns: ColumnDefinition<TData>[],
 ): Record<string, MuiColumnDimension> => {
   return Object.fromEntries(
@@ -166,7 +165,7 @@ export const mapMrtSizingToMuiDimensions = <
       return [
         key,
         {
-          width: columnSizing[key] ?? col.size ?? 150,
+          width: col.size ?? 150,
           minWidth: col.minSize ?? 50,
           maxWidth: col.maxSize ?? -1,
           flex: 0,
@@ -178,7 +177,6 @@ export const mapMrtSizingToMuiDimensions = <
 // Transform tanstack table state to backend state
 export const tableStateToBackendState = <TData extends Record<string, unknown>>(
   state: Partial<TableState> & {
-    columnSizing?: Record<string, number>;
     columnOrder?: string[];
   },
   columns: ColumnDefinition<TData>[],
@@ -192,10 +190,7 @@ export const tableStateToBackendState = <TData extends Record<string, unknown>>(
       columns: {
         columnVisibilityModel: additionalOptions.columnVisibility,
         orderedFields: state.columnOrder ?? [],
-        dimensions: mapMrtSizingToMuiDimensions(
-          state.columnSizing ?? {},
-          columns,
-        ),
+        dimensions: mapMrtSizingToMuiDimensions(columns),
       },
       density: additionalOptions.density,
       gridColDef: columns.map((col: ColumnDefinition<TData>) =>
