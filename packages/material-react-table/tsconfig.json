@@ -2,7 +2,8 @@
   "include": [
     "src",
     "@types/node",
-    "stories"
+    "stories",
+    ".storybook"
   ],
   "compilerOptions": {
     "declaration": true,
@@ -18,7 +19,7 @@
       "ESNext"
     ],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
