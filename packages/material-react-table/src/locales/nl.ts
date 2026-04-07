@@ -63,6 +63,7 @@ export const MRT_Localization_NL: MRT_Localization = {
   move: 'Verplaatsen',
   noRecordsToDisplay: 'Geen rijen om te tonen',
   noResultsFound: 'Geen resultaten gevonden',
+  moreThan: 'meer dan',
   of: 'van',
   or: 'of',
   pin: 'Vastzetten',

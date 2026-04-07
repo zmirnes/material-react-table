@@ -213,6 +213,7 @@ export interface MRT_Localization {
   move: string;
   noRecordsToDisplay: string;
   noResultsFound: string;
+  moreThan: string;
   of: string;
   or: string;
   pin: string;
@@ -1313,6 +1314,7 @@ export interface MRT_TableConfig<TData extends MRT_RowData> {
 export interface MRT_TableData<TData extends MRT_RowData> {
   data: TData[];
   rowCount: number;
+  hasNextPage?: boolean;
 }
 
 export type UseServerTableStateOptions<TData extends MRT_RowData> = {

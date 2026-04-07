@@ -63,6 +63,7 @@ export const MRT_Localization_EN: MRT_Localization = {
   move: 'Move',
   noRecordsToDisplay: 'No records to display',
   noResultsFound: 'No results found',
+  moreThan: 'more than',
   of: 'of',
   or: 'or',
   pin: 'Pin',

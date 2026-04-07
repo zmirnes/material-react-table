@@ -68,10 +68,16 @@ export const MRT_TablePagination = <TData extends MRT_RowData>({
   };
 
   const totalRowCount = table.getRowCount();
-  const numberOfPages = table.getPageCount();
+  const isUnknownCount = table.getPageCount() === -1;
+
+  const numberOfPages = isUnknownCount ? 0 : table.getPageCount();
   const showFirstLastPageButtons = numberOfPages > 2;
   const firstRowIndex = pageIndex * pageSize;
-  const lastRowIndex = Math.min(pageIndex * pageSize + pageSize, totalRowCount);
+  const lastRowIndex = pageIndex * pageSize + pageSize;
+
+  const displayCount = isUnknownCount
+    ? `${localization.moreThan} ${lastRowIndex.toLocaleString(localization.language)}`
+    : totalRowCount.toLocaleString(localization.language);
 
   const {
     SelectProps = {},
@@ -84,7 +90,9 @@ export const MRT_TablePagination = <TData extends MRT_RowData>({
   } = paginationProps ?? {};
 
   const disableBack = pageIndex <= 0 || disabled;
-  const disableNext = lastRowIndex >= totalRowCount || disabled;
+  const disableNext = isUnknownCount
+    ? false
+    : lastRowIndex >= totalRowCount || disabled;
 
   if (isMobile && SelectProps?.native !== false) {
     SelectProps.native = true;
@@ -129,7 +137,7 @@ export const MRT_TablePagination = <TData extends MRT_RowData>({
             onChange={(event) =>
               table.setPageSize(+(event.target.value as any))
             }
-            sx={{ mb: 0 }}
+            sx={{ mb: 0, minWidth: 48 }}
             value={pageSize}
             variant="standard"
             {...SelectProps}
@@ -198,7 +206,7 @@ export const MRT_TablePagination = <TData extends MRT_RowData>({
               : (firstRowIndex + 1).toLocaleString(localization.language)
           }-${lastRowIndex.toLocaleString(localization.language)} ${
             localization.of
-          } ${totalRowCount.toLocaleString(localization.language)}`}</Typography>
+          } ${displayCount}`}</Typography>
           <Box gap="xs">
             {showFirstButton && (
               <Tooltip {...tooltipProps} title={localization.goToFirstPage}>

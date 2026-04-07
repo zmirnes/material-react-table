@@ -63,6 +63,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   move: 'Premjesti',
   noRecordsToDisplay: 'Nema zapisa za prikaz',
   noResultsFound: 'Nema pronađenih rezultata',
+  moreThan: 'više od',
   of: 'od',
   or: 'ili',
   pin: 'Prikači',

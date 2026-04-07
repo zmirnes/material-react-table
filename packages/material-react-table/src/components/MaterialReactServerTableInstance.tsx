@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
+import { MRT_Localization_HR } from '../locales/hr';
 import {
   MRT_RowData,
   MRT_TableConfig,
@@ -30,6 +31,7 @@ export const MaterialReactServerTableInstance = <
   getAllSelectableRowIds,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
+  const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +45,9 @@ export const MaterialReactServerTableInstance = <
   const table = useMaterialReactTable<TData>({
     columns,
     data,
+    localization: MRT_Localization_HR,
     rowCount,
+    pageCount,
     manualPagination: true,
     manualSorting: true,
     manualGrouping: true,
@@ -60,9 +64,20 @@ export const MaterialReactServerTableInstance = <
     async (state: MRT_TableState<TData>) => {
       setIsLoading(true);
       try {
-        const { data: newData, rowCount: newRowCount } = await loadData(state);
+        const {
+          data: newData,
+          rowCount: newRowCount,
+          hasNextPage,
+        } = await loadData(state);
         setData(newData);
-        setRowCount(newRowCount);
+
+        if (hasNextPage) {
+          setPageCount(-1);
+          setRowCount(0);
+        } else {
+          setPageCount(undefined);
+          setRowCount(newRowCount);
+        }
       } finally {
         setIsLoading(false);
       }
