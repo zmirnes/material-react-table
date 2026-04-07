@@ -889,6 +889,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableRowVirtualization?: boolean;
   /**
    * Async function that returns all selectable row IDs across all pages.
+   * This is necessary for server-side pagination when using the "Select all rows on all pages" feature, as the table needs to * know which rows are selectable in order to manage selection state correctly.
    * Required for "Select all rows on all pages" server-side feature.
    * Only called when the user triggers a cross-page select-all action.
    */
