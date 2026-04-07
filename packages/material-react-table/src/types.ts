@@ -65,7 +65,6 @@ import {
 } from '@tanstack/react-virtual';
 import {
   type Dispatch,
-  type MutableRefObject,
   type ReactNode,
   type RefObject,
   type SetStateAction,
@@ -320,7 +319,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
     bottomToolbarRef: RefObject<HTMLDivElement | null>;
     editInputRefs: RefObject<Record<string, HTMLInputElement> | null>;
     filterInputRefs: RefObject<Record<string, HTMLInputElement> | null>;
-    allPagesSelectedActiveRef: MutableRefObject<boolean>;
+    allSelectableRowIdsRef: RefObject<string[]>;
     lastSelectedRowId: RefObject<null | string>;
     searchInputRef: RefObject<HTMLInputElement | null>;
     tableContainerRef: RefObject<HTMLDivElement | null>;

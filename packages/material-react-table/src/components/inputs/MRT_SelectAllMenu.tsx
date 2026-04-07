@@ -3,56 +3,37 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import { type MouseEvent, useRef, useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { getIsAllPagesSelectionActive } from '../../utils/row.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 
 export interface MRT_SelectAllMenuProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
 }
 
-/**
- * Header cell menu for the row-selection column.
- *
- * `isAllPagesActive` is derived reactively by comparing the last fetched set
- * of selectable IDs against the current `rowSelection` state — without a
- * mutable flag ref — so the UI stays in sync with any external selection change.
- */
 export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
   table,
 }: MRT_SelectAllMenuProps<TData>) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [isSelectingAllPages, setIsSelectingAllPages] = useState(false);
 
-  /**
-   * Stores the last fetched set of all selectable row IDs (server-side only).
-   * Used to derive `isAllPagesActive` reactively by comparing against
-   * `rowSelection`. Cleared when the user deselects all pages.
-   */
-  const allSelectableRowIdsRef = useRef<string[]>([]);
-
   const {
     getState,
-    options: { getAllSelectableRowIds, localization },
-    refs: { allPagesSelectedActiveRef },
+    options: {
+      enableRowPinning,
+      getAllSelectableRowIds,
+      localization,
+      rowPinningDisplayMode,
+    },
+    refs: { allSelectableRowIdsRef },
   } = table;
 
-  // rowSelection is read here so that any selection change triggers a re-render
-  // and isAllPagesActive stays in sync without relying on a mutable ref flag.
+  // rowSelection is read here so that any change to selection will trigger a re-render and update the menu options accordingly
   const { isLoading, rowSelection } = getState();
 
   const isAllCurrentPageSelected = table.getIsAllPageRowsSelected();
-
-  /**
-   * Reactive derivation of "are all pages selected?":
-   * - Server-side: every ID returned by getAllSelectableRowIds must be present
-   *   as `true` in rowSelection, and at least one ID must exist.
-   * - Client-side: delegates to TanStack Table's built-in getIsAllRowsSelected.
-   */
-  const isAllPagesActive = getAllSelectableRowIds
-    ? allSelectableRowIdsRef.current.length > 0 &&
-      allSelectableRowIdsRef.current.every((id) => rowSelection[id] === true)
-    : table.getIsAllRowsSelected();
+  const isAllPagesActive = getIsAllPagesSelectionActive(table, rowSelection);
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,23 +43,34 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
     setAnchorEl(null);
   };
 
+  // Clears row pinning on every bulk selection/deselection
+  const clearPinning = () => {
+    if (enableRowPinning && rowPinningDisplayMode?.includes('select')) {
+      table.setRowPinning({ bottom: [], top: [] });
+    }
+  };
+
   // ── Current-page actions ────────────────────────────────────────────────────
 
   const handleSelectCurrentPage = () => {
     table.toggleAllPageRowsSelected(true);
+    clearPinning();
     handleClose();
   };
 
   const handleDeselectCurrentPage = () => {
-    table.toggleAllPageRowsSelected(false);
-    allSelectableRowIdsRef.current = [];
-    allPagesSelectedActiveRef.current = false;
+    if (allSelectableRowIdsRef.current.length > 0) {
+      // When all pages are selected, deselecting the current page must clear the entire selection — otherwise rows on other pages remain "ghost-selected" but the user can't see them.
+      table.setRowSelection({});
+      allSelectableRowIdsRef.current = [];
+    } else {
+      table.toggleAllPageRowsSelected(false);
+    }
+    clearPinning();
     handleClose();
   };
 
   // ── All-pages actions ───────────────────────────────────────────────────────
-  // Client-side: uses table.toggleAllRowsSelected() — no network request needed.
-  // Server-side: uses the getAllSelectableRowIds async prop to fetch IDs from the API.
 
   const handleSelectAllPages = async () => {
     handleClose();
@@ -90,21 +82,21 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
       try {
         const ids = await getAllSelectableRowIds({ table });
         allSelectableRowIdsRef.current = ids;
-        allPagesSelectedActiveRef.current = true;
 
         const newSelection: Record<string, boolean> = {};
         ids.forEach((id) => {
           newSelection[id] = true;
         });
         table.setRowSelection(newSelection);
+        clearPinning();
       } finally {
         setIsSelectingAllPages(false);
         table.setShowProgressBars(false);
       }
     } else {
-      // Client-side: all row data is already loaded locally
+      // Client-side: all data is available locally
       table.toggleAllRowsSelected(true);
-      allPagesSelectedActiveRef.current = true;
+      clearPinning();
     }
   };
 
@@ -115,7 +107,7 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
       table.toggleAllRowsSelected(false);
     }
     allSelectableRowIdsRef.current = [];
-    allPagesSelectedActiveRef.current = false;
+    clearPinning();
     handleClose();
   };
 
@@ -154,8 +146,7 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
           </MenuItem>
         )}
 
-        {/* All-pages toggle: client uses toggleAllRowsSelected,
-            server uses the getAllSelectableRowIds async prop */}
+        {/* All-pages toggle */}
         {isAllPagesActive ? (
           <MenuItem onClick={handleDeselectAllPages}>
             {localization.deselectAllOnAllPages}

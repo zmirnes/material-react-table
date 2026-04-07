@@ -21,7 +21,9 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   }) => Promise<string[]>;
 };
 
-export const MaterialReactServerTableInstance = <TData extends MRT_RowData>({
+export const MaterialReactServerTableInstance = <
+  TData extends MRT_RowData & { id: string },
+>({
   config,
   loadData,
   saveState,

@@ -54,7 +54,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   definedTableOptions: MRT_DefinedTableOptions<TData>,
 ): MRT_TableInstance<TData> => {
   const lastSelectedRowId = useRef<null | string>(null);
-  const allPagesSelectedActiveRef = useRef(false);
+  const allSelectableRowIdsRef = useRef<string[]>([]);
   const actionCellRef = useRef<HTMLTableCellElement>(null);
   const bottomToolbarRef = useRef<HTMLDivElement>(null);
   const editInputRefs = useRef<Record<string, HTMLInputElement>>({});
@@ -264,7 +264,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   table.refs = {
     actionCellRef,
-    allPagesSelectedActiveRef,
+    allSelectableRowIdsRef,
     bottomToolbarRef,
     editInputRefs,
     filterInputRefs,
