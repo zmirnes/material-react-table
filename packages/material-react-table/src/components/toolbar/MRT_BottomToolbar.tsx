@@ -1,13 +1,14 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import { alpha } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
-import { MRT_TablePagination } from './MRT_TablePagination';
-import { MRT_ToolbarAlertBanner } from './MRT_ToolbarAlertBanner';
-import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { getCommonToolbarStyles } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
+import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
+import { MRT_SelectionCountBadge } from './MRT_SelectionCountBadge';
+import { MRT_TablePagination } from './MRT_TablePagination';
+import { MRT_ToolbarAlertBanner } from './MRT_ToolbarAlertBanner';
+import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 
 export interface MRT_BottomToolbarProps<TData extends MRT_RowData>
   extends BoxProps {
@@ -22,6 +23,7 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
     getState,
     options: {
       enablePagination,
+      enableRowSelection,
       muiBottomToolbarProps,
       positionPagination,
       positionToolbarAlertBanner,
@@ -81,16 +83,18 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
           alignItems: 'center',
           boxSizing: 'border-box',
           display: 'flex',
+          flexDirection: 'row',
           justifyContent: 'space-between',
           p: '0.5rem',
           width: '100%',
+          height: '100%',
         }}
       >
-        {renderBottomToolbarCustomActions ? (
-          renderBottomToolbarCustomActions({ table })
-        ) : (
-          <span />
-        )}
+        {/* Left side: selection count badge + optional custom actions */}
+        <Box sx={{ alignItems: 'center', display: 'flex', gap: '0.5rem' }}>
+          {enableRowSelection && <MRT_SelectionCountBadge table={table} />}
+          {renderBottomToolbarCustomActions?.({ table })}
+        </Box>
         <Box
           sx={{
             display: 'flex',

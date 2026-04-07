@@ -321,6 +321,10 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
                   className="Mui-TableHeadCell-Content-Actions"
                   sx={{
                     whiteSpace: 'nowrap',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: '0.25rem',
                   }}
                 >
                   {showDragHandle && (

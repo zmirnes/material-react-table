@@ -57,6 +57,10 @@ export const Basic = () => (
     saveState={async () => {
       await simulateDelay(200);
     }}
+    getAllSelectableRowIds={async () => {
+      await simulateDelay(1500);
+      return fakeDatabase.map((row) => row.id);
+    }}
   />
 );
 

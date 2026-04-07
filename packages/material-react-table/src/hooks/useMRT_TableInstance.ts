@@ -54,6 +54,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   definedTableOptions: MRT_DefinedTableOptions<TData>,
 ): MRT_TableInstance<TData> => {
   const lastSelectedRowId = useRef<null | string>(null);
+  const allSelectableRowIdsRef = useRef<string[]>([]);
   const actionCellRef = useRef<HTMLTableCellElement>(null);
   const bottomToolbarRef = useRef<HTMLDivElement>(null);
   const editInputRefs = useRef<Record<string, HTMLInputElement>>({});
@@ -157,6 +158,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [showToolbarDropZone, setShowToolbarDropZone] = useState<boolean>(
     initialState?.showToolbarDropZone ?? false,
   );
+  const [showProgressBars, setShowProgressBars] = useState<boolean>(
+    initialState?.showProgressBars ?? false,
+  );
 
   definedTableOptions.state = {
     actionCell,
@@ -178,6 +182,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     showAlertBanner,
     showColumnFilters,
     showGlobalFilter,
+    showProgressBars,
     showToolbarDropZone,
     ...definedTableOptions.state,
   };
@@ -259,6 +264,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   table.refs = {
     actionCellRef,
+    allSelectableRowIdsRef,
     bottomToolbarRef,
     editInputRefs,
     filterInputRefs,
@@ -308,6 +314,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     statefulTableOptions.onShowColumnFiltersChange ?? setShowColumnFilters;
   table.setShowGlobalFilter =
     statefulTableOptions.onShowGlobalFilterChange ?? setShowGlobalFilter;
+  table.setShowProgressBars = setShowProgressBars;
   table.setShowToolbarDropZone =
     statefulTableOptions.onShowToolbarDropZoneChange ?? setShowToolbarDropZone;
 

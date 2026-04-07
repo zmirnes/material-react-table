@@ -165,7 +165,7 @@ export const getMRT_RowSelectionHandler =
         manualPagination,
         rowPinningDisplayMode,
       },
-      refs: { lastSelectedRowId: lastSelectedRowId },
+      refs: { allSelectableRowIdsRef, lastSelectedRowId },
     } = table;
     const {
       pagination: { pageIndex, pageSize },
@@ -175,7 +175,24 @@ export const getMRT_RowSelectionHandler =
 
     const wasCurrentRowChecked = getIsRowSelected({ row, table });
 
-    // toggle selection of this row
+    // ── Special case: deselecting a row while "select all pages" is active ────
+    // Per spec: deselecting any single row while in global-select-all mode must
+    // reset the selection to only the current page rows, minus the clicked row.
+    if (allSelectableRowIdsRef.current.length > 0 && wasCurrentRowChecked) {
+      allSelectableRowIdsRef.current = [];
+
+      const newSelection: Record<string, boolean> = {};
+      table.getPaginationRowModel().rows.forEach((pageRow) => {
+        if (pageRow.id !== row.id && pageRow.getCanSelect()) {
+          newSelection[pageRow.id] = true;
+        }
+      });
+      table.setRowSelection(newSelection);
+      lastSelectedRowId.current = row.id;
+      return;
+    }
+
+    // toggle selection of this row (normal path)
     row.toggleSelected(value ?? !wasCurrentRowChecked);
 
     const changedRowIds = new Set<string>([row.id]);
@@ -247,8 +264,15 @@ export const getMRT_SelectAllHandler =
   ) => {
     const {
       options: { enableRowPinning, rowPinningDisplayMode, selectAllMode },
-      refs: { lastSelectedRowId },
+      refs: { allSelectableRowIdsRef, lastSelectedRowId },
     } = table;
+
+    // Reset global-select-all flag whenever the user deselects via the
+    // standard select-all toggle (e.g. the "Clear selection" button).
+    const checked = value ?? (event as any).target.checked;
+    if (!checked) {
+      allSelectableRowIdsRef.current = [];
+    }
 
     selectAllMode === 'all' || forceAll
       ? table.toggleAllRowsSelected(value ?? (event as any).target.checked)
@@ -258,3 +282,23 @@ export const getMRT_SelectAllHandler =
     }
     lastSelectedRowId.current = null;
   };
+
+export const getIsAllPagesSelectionActive = <TData extends MRT_RowData>(
+  table: MRT_TableInstance<TData>,
+  rowSelection: Record<string, boolean>,
+): boolean => {
+  const {
+    options: { getAllSelectableRowIds },
+    refs: { allSelectableRowIdsRef },
+  } = table;
+
+  if (getAllSelectableRowIds) {
+    console.log(allSelectableRowIdsRef.current);
+    console.log(rowSelection);
+    return (
+      allSelectableRowIdsRef.current.length > 0 &&
+      allSelectableRowIdsRef.current.every((id) => rowSelection[id] === true)
+    );
+  }
+  return table.getIsAllRowsSelected();
+};

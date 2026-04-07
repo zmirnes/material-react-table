@@ -5,6 +5,7 @@ import {
   MRT_RowData,
   MRT_TableConfig,
   MRT_TableData,
+  MRT_TableInstance,
   MRT_TableState,
 } from '../types';
 import { MaterialReactTable } from './MaterialReactTable';
@@ -15,12 +16,18 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
     currentState: MRT_TableState<TData>,
   ) => Promise<MRT_TableData<TData>>;
   saveState: (state: MRT_TableState<TData>) => void;
+  getAllSelectableRowIds?: (props: {
+    table: MRT_TableInstance<TData>;
+  }) => Promise<string[]>;
 };
 
-export const MaterialReactServerTableInstance = <TData extends MRT_RowData>({
+export const MaterialReactServerTableInstance = <
+  TData extends MRT_RowData & { id: string },
+>({
   config,
   loadData,
   saveState,
+  getAllSelectableRowIds,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [rowCount, setRowCount] = useState(0);
@@ -40,10 +47,12 @@ export const MaterialReactServerTableInstance = <TData extends MRT_RowData>({
     manualPagination: true,
     manualSorting: true,
     manualGrouping: true,
+    getRowId: (originalRow) => originalRow.id,
     state: {
       showSkeletons: isLoading,
       ...tableState,
     },
+    getAllSelectableRowIds,
     ...handlers,
   });
 
