@@ -1,8 +1,8 @@
-import { type MouseEvent } from 'react';
 import Checkbox, { type CheckboxProps } from '@mui/material/Checkbox';
 import Radio, { type RadioProps } from '@mui/material/Radio';
 import Tooltip from '@mui/material/Tooltip';
 import { type Theme } from '@mui/material/styles';
+import { type MouseEvent } from 'react';
 import {
   type MRT_Row,
   type MRT_RowData,
@@ -120,6 +120,7 @@ export const MRT_SelectCheckbox = <TData extends MRT_RowData>({
         <Radio {...(commonProps as any)} />
       ) : (
         <Checkbox
+          disableRipple
           indeterminate={
             !isChecked && selectAll
               ? table.getIsSomeRowsSelected()

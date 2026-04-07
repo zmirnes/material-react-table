@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  MRT_TableInstance,
   type MRT_RowData,
   type MRT_TableConfig,
   type MRT_TableData,
@@ -13,12 +14,16 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
     currentState: MRT_TableState<TData>,
   ) => Promise<MRT_TableData<TData>>;
   saveState: (state: MRT_TableState<TData>) => Promise<void>;
+  getAllSelectableRowIds?: (props: {
+    table: MRT_TableInstance<TData>;
+  }) => Promise<string[]>;
 }
 
 export const MaterialReactServerTable = <TData extends MRT_RowData>({
   loadConfig,
   loadData,
   saveState,
+  getAllSelectableRowIds,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -60,6 +65,7 @@ export const MaterialReactServerTable = <TData extends MRT_RowData>({
       config={config}
       loadData={loadData}
       saveState={saveState}
+      getAllSelectableRowIds={getAllSelectableRowIds}
     />
   );
 };

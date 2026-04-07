@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box';
+import { MRT_SelectAllMenu } from '../../components/inputs/MRT_SelectAllMenu';
 import { MRT_SelectCheckbox } from '../../components/inputs/MRT_SelectCheckbox';
 import {
   type MRT_ColumnDef,
@@ -21,13 +23,20 @@ export const getMRT_RowSelectColumnDef = <TData extends MRT_RowData>(
     ),
     Header:
       enableSelectAll && enableMultiRowSelection
-        ? ({ table }) => <MRT_SelectCheckbox table={table} />
+        ? ({ table }) => (
+            <Box sx={{ alignItems: 'center', display: 'flex' }}>
+              {/* Checkbox: selects/deselects all rows on current page */}
+              <MRT_SelectCheckbox table={table} />
+              {/* Three-dots menu: current page or all pages */}
+              <MRT_SelectAllMenu table={table} />
+            </Box>
+          )
         : undefined,
     grow: false,
     ...defaultDisplayColumnProps({
       header: 'select',
       id: 'mrt-row-select',
-      size: enableSelectAll ? 60 : 70,
+      size: enableSelectAll ? 90 : 70, // ← povećano sa 60 na 90
       tableOptions,
     }),
   };

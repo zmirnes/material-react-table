@@ -65,6 +65,7 @@ import {
 } from '@tanstack/react-virtual';
 import {
   type Dispatch,
+  type MutableRefObject,
   type ReactNode,
   type RefObject,
   type SetStateAction,
@@ -161,6 +162,8 @@ export interface MRT_Localization {
   clearSearch: string;
   clearSelection: string;
   clearSort: string;
+  deselectAllOnAllPages: string;
+  deselectAllOnCurrentPage: string;
   clickToCopy: string;
   collapse: string;
   collapseAll: string;
@@ -222,9 +225,12 @@ export interface MRT_Localization {
   rowNumber: string;
   rowNumbers: string;
   rowsPerPage: string;
+  rowsSelected: string;
   save: string;
   search: string;
   select: string;
+  selectAllOnAllPages: string;
+  selectAllOnCurrentPage: string;
   selectedCountOfRowCountRowsSelected: string;
   showAll: string;
   showAllColumns: string;
@@ -314,6 +320,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
     bottomToolbarRef: RefObject<HTMLDivElement | null>;
     editInputRefs: RefObject<Record<string, HTMLInputElement> | null>;
     filterInputRefs: RefObject<Record<string, HTMLInputElement> | null>;
+    allPagesSelectedActiveRef: MutableRefObject<boolean>;
     lastSelectedRowId: RefObject<null | string>;
     searchInputRef: RefObject<HTMLInputElement | null>;
     tableContainerRef: RefObject<HTMLDivElement | null>;
@@ -338,6 +345,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowAlertBanner: Dispatch<SetStateAction<boolean>>;
   setShowColumnFilters: Dispatch<SetStateAction<boolean>>;
   setShowGlobalFilter: Dispatch<SetStateAction<boolean>>;
+  setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -880,6 +888,14 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableRowOrdering?: boolean;
   enableRowSelection?: ((row: MRT_Row<TData>) => boolean) | boolean;
   enableRowVirtualization?: boolean;
+  /**
+   * Async function that returns all selectable row IDs across all pages.
+   * Required for "Select all rows on all pages" server-side feature.
+   * Only called when the user triggers a cross-page select-all action.
+   */
+  getAllSelectableRowIds?: (props: {
+    table: MRT_TableInstance<TData>;
+  }) => Promise<string[]>;
   enableSelectAll?: boolean;
   enableStickyFooter?: boolean;
   enableStickyHeader?: boolean;

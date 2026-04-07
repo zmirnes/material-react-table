@@ -165,7 +165,7 @@ export const getMRT_RowSelectionHandler =
         manualPagination,
         rowPinningDisplayMode,
       },
-      refs: { lastSelectedRowId: lastSelectedRowId },
+      refs: { allPagesSelectedActiveRef, lastSelectedRowId },
     } = table;
     const {
       pagination: { pageIndex, pageSize },
@@ -175,7 +175,24 @@ export const getMRT_RowSelectionHandler =
 
     const wasCurrentRowChecked = getIsRowSelected({ row, table });
 
-    // toggle selection of this row
+    // ── Special case: deselecting a row while "select all pages" is active ────
+    // Per spec: deselecting any single row while in global-select-all mode must
+    // reset the selection to only the current page rows, minus the clicked row.
+    if (allPagesSelectedActiveRef.current && wasCurrentRowChecked) {
+      allPagesSelectedActiveRef.current = false;
+
+      const newSelection: Record<string, boolean> = {};
+      table.getPaginationRowModel().rows.forEach((pageRow) => {
+        if (pageRow.id !== row.id && pageRow.getCanSelect()) {
+          newSelection[pageRow.id] = true;
+        }
+      });
+      table.setRowSelection(newSelection);
+      lastSelectedRowId.current = row.id;
+      return;
+    }
+
+    // toggle selection of this row (normal path)
     row.toggleSelected(value ?? !wasCurrentRowChecked);
 
     const changedRowIds = new Set<string>([row.id]);
@@ -247,8 +264,15 @@ export const getMRT_SelectAllHandler =
   ) => {
     const {
       options: { enableRowPinning, rowPinningDisplayMode, selectAllMode },
-      refs: { lastSelectedRowId },
+      refs: { allPagesSelectedActiveRef, lastSelectedRowId },
     } = table;
+
+    // Reset global-select-all flag whenever the user deselects via the
+    // standard select-all toggle (e.g. the "Clear selection" button).
+    const checked = value ?? (event as any).target.checked;
+    if (!checked) {
+      allPagesSelectedActiveRef.current = false;
+    }
 
     selectAllMode === 'all' || forceAll
       ? table.toggleAllRowsSelected(value ?? (event as any).target.checked)

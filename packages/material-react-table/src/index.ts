@@ -1,11 +1,11 @@
 export * from './types';
 
 //helpers
-export * from './utils/tanstack.helpers';
 export * from './utils/cell.utils';
 export * from './utils/column.utils';
 export * from './utils/displayColumn.utils';
 export * from './utils/row.utils';
+export * from './utils/tanstack.helpers';
 
 //fns
 export * from './fns/aggregationFns';
@@ -16,8 +16,8 @@ export * from './fns/sortingFns';
 export * from './hooks/useMaterialReactTable';
 export * from './hooks/useMRT_ColumnVirtualizer';
 export * from './hooks/useMRT_Effects';
-export * from './hooks/useMRT_RowVirtualizer';
 export * from './hooks/useMRT_Rows';
+export * from './hooks/useMRT_RowVirtualizer';
 export * from './hooks/useMRT_TableInstance';
 export * from './hooks/useMRT_TableOptions';
 
@@ -66,6 +66,7 @@ export * from './components/inputs/MRT_FilterRangeFields';
 export * from './components/inputs/MRT_FilterRangeSlider';
 export * from './components/inputs/MRT_FilterTextField';
 export * from './components/inputs/MRT_GlobalFilterTextField';
+export * from './components/inputs/MRT_SelectAllMenu';
 export * from './components/inputs/MRT_SelectCheckbox';
 //menu components
 export * from './components/menus/MRT_ActionMenuItem';
@@ -84,6 +85,7 @@ export * from './components/table/MRT_TablePaper';
 //toolbar components
 export * from './components/toolbar/MRT_BottomToolbar';
 export * from './components/toolbar/MRT_LinearProgressBar';
+export * from './components/toolbar/MRT_SelectionCountBadge';
 export * from './components/toolbar/MRT_TablePagination';
 export * from './components/toolbar/MRT_ToolbarAlertBanner';
 export * from './components/toolbar/MRT_ToolbarDropZone';

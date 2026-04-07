@@ -69,17 +69,17 @@ export const MRT_TableHeadCellColumnActionsButton = <
             '&:hover': {
               opacity: 1,
             },
-            height: '2rem',
             m: '-8px -4px',
             opacity: 0.3,
             transition: 'all 150ms',
-            width: '2rem',
+            width: '1.5rem',
+            height: '1.5rem',
             ...(parseFromValuesOrFunc(iconButtonProps?.sx, theme) as any),
           })}
           title={undefined}
         >
           {iconButtonProps?.children ?? (
-            <MoreVertIcon style={{ transform: 'scale(0.9)' }} />
+            <MoreVertIcon style={{ transform: 'scale(0.85)' }} />
           )}
         </IconButton>
       </Tooltip>
