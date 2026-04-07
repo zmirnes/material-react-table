@@ -74,7 +74,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   rowNumber: '#',
   rowNumbers: 'Brojevi redaka',
   rowsPerPage: 'Redaka po stranici',
-  rowsSelected: '{count} row(s) selected',
+  rowsSelected: '{count} odabranih redova',
   save: 'Spremi',
   search: 'Pretraži',
   selectedCountOfRowCountRowsSelected:
