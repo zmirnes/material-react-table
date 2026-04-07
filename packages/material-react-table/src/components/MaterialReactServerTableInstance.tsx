@@ -20,6 +20,9 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   getAllSelectableRowIds?: (props: {
     table: MRT_TableInstance<TData>;
   }) => Promise<string[]>;
+  getTotalRows?: (props: {
+    table: MRT_TableInstance<TData>;
+  }) => Promise<number>;
 };
 
 export const MaterialReactServerTableInstance = <
@@ -29,6 +32,7 @@ export const MaterialReactServerTableInstance = <
   loadData,
   saveState,
   getAllSelectableRowIds,
+  getTotalRows,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -41,6 +45,19 @@ export const MaterialReactServerTableInstance = <
   });
 
   const columns = useMemo(() => config.columns, [config.columns]);
+
+  const wrappedGetTotalRows = useMemo(
+    () =>
+      getTotalRows
+        ? async (props: { table: MRT_TableInstance<TData> }) => {
+            const count = await getTotalRows(props);
+            setRowCount(count);
+            setPageCount(undefined);
+            return count;
+          }
+        : undefined,
+    [getTotalRows],
+  );
 
   const table = useMaterialReactTable<TData>({
     columns,
@@ -57,6 +74,7 @@ export const MaterialReactServerTableInstance = <
       ...tableState,
     },
     getAllSelectableRowIds,
+    getTotalRows: wrappedGetTotalRows,
     ...handlers,
   });
 

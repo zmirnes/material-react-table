@@ -105,6 +105,35 @@ export const WithConfigError = () => (
   />
 );
 
+export const WithGetTotalRows = () => (
+  <MaterialReactServerTable<Person>
+    loadConfig={async () => {
+      await simulateDelay(800);
+      return { columns };
+    }}
+    loadData={async (state) => {
+      await simulateDelay(600);
+      const { pageIndex, pageSize } = state.pagination;
+      const start = pageIndex * pageSize;
+      const slice = fakeDatabase.slice(start, start + pageSize + 1);
+      const hasNextPage = slice.length > pageSize;
+
+      return {
+        data: slice.slice(0, pageSize),
+        rowCount: fakeDatabase.length,
+        hasNextPage,
+      };
+    }}
+    saveState={async () => {
+      await simulateDelay(200);
+    }}
+    getTotalRows={async () => {
+      await simulateDelay(1000);
+      return fakeDatabase.length;
+    }}
+  />
+);
+
 export const WithHasNextPage = () => (
   <MaterialReactServerTable<Person>
     loadConfig={async () => {
