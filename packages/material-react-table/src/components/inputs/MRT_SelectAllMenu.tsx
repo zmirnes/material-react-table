@@ -14,10 +14,9 @@ export interface MRT_SelectAllMenuProps<TData extends MRT_RowData> {
 /**
  * Header cell menu for the row-selection column.
  *
- * `isAllPagesActive` je reaktivno deriviran usporedbom posljednjeg skupa
- * fetchovanih selectable ID-eva sa trenutnim `rowSelection` state-om —
- * bez mutable flag refa — tako da UI ostaje sinhronizovan sa svakom
- * vanjskom promjenom selekcije.
+ * `isAllPagesActive` is derived reactively by comparing the last fetched set
+ * of selectable IDs against the current `rowSelection` state — without a
+ * mutable flag ref — so the UI stays in sync with any external selection change.
  */
 export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
   table,
@@ -26,9 +25,9 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
   const [isSelectingAllPages, setIsSelectingAllPages] = useState(false);
 
   /**
-   * Čuva posljednji fetchovani skup svih selectable row ID-eva (server-side).
-   * Koristi se za reaktivnu derivaciju `isAllPagesActive` usporedbom sa
-   * `rowSelection`. Briše se kad korisnik deselektuje sve stranice.
+   * Stores the last fetched set of all selectable row IDs (server-side only).
+   * Used to derive `isAllPagesActive` reactively by comparing against
+   * `rowSelection`. Cleared when the user deselects all pages.
    */
   const allSelectableRowIdsRef = useRef<string[]>([]);
 
@@ -38,17 +37,17 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
     refs: { allPagesSelectedActiveRef },
   } = table;
 
-  // rowSelection se čita ovdje da bi svaka promjena selekcije triggerovala
-  // re-render i isAllPagesActive ostao sinhronizovan bez oslanjanja na ref flag.
+  // rowSelection is read here so that any selection change triggers a re-render
+  // and isAllPagesActive stays in sync without relying on a mutable ref flag.
   const { isLoading, rowSelection } = getState();
 
   const isAllCurrentPageSelected = table.getIsAllPageRowsSelected();
 
   /**
-   * Reaktivna derivacija "jesu li sve stranice selektovane?":
-   * - Server-side: svi ID-evi vraćeni od getAllSelectableRowIds moraju biti
-   *   prisutni kao `true` u rowSelection, i mora postojati barem jedan ID.
-   * - Client-side: koristi TanStack Table-ov ugrađeni getIsAllRowsSelected.
+   * Reactive derivation of "are all pages selected?":
+   * - Server-side: every ID returned by getAllSelectableRowIds must be present
+   *   as `true` in rowSelection, and at least one ID must exist.
+   * - Client-side: delegates to TanStack Table's built-in getIsAllRowsSelected.
    */
   const isAllPagesActive = getAllSelectableRowIds
     ? allSelectableRowIdsRef.current.length > 0 &&
@@ -78,14 +77,14 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
   };
 
   // ── All-pages actions ───────────────────────────────────────────────────────
-  // Client-side: koristi table.toggleAllRowsSelected() — bez requesta.
-  // Server-side: koristi getAllSelectableRowIds async prop za fetch ID-eva.
+  // Client-side: uses table.toggleAllRowsSelected() — no network request needed.
+  // Server-side: uses the getAllSelectableRowIds async prop to fetch IDs from the API.
 
   const handleSelectAllPages = async () => {
     handleClose();
 
     if (getAllSelectableRowIds) {
-      // Server-side: ID-evi nisu dostupni lokalno, fetchujemo ih
+      // Server-side: IDs are not available locally, fetch them from the API
       setIsSelectingAllPages(true);
       table.setShowProgressBars(true);
       try {
@@ -103,7 +102,7 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
         table.setShowProgressBars(false);
       }
     } else {
-      // Client-side: svi podaci su već učitani
+      // Client-side: all row data is already loaded locally
       table.toggleAllRowsSelected(true);
       allPagesSelectedActiveRef.current = true;
     }
@@ -155,8 +154,8 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
           </MenuItem>
         )}
 
-        {/* All-pages toggle: client koristi toggleAllRowsSelected,
-            server koristi getAllSelectableRowIds async prop */}
+        {/* All-pages toggle: client uses toggleAllRowsSelected,
+            server uses the getAllSelectableRowIds async prop */}
         {isAllPagesActive ? (
           <MenuItem onClick={handleDeselectAllPages}>
             {localization.deselectAllOnAllPages}

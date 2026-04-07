@@ -36,7 +36,7 @@ export const getMRT_RowSelectColumnDef = <TData extends MRT_RowData>(
     ...defaultDisplayColumnProps({
       header: 'select',
       id: 'mrt-row-select',
-      size: enableSelectAll ? 90 : 70, // ← povećano sa 60 na 90
+      size: enableSelectAll ? 90 : 70, // widened from 60 to accommodate both the checkbox and the menu button
       tableOptions,
     }),
   };
