@@ -293,8 +293,6 @@ export const getIsAllPagesSelectionActive = <TData extends MRT_RowData>(
   } = table;
 
   if (getAllSelectableRowIds) {
-    console.log(allSelectableRowIdsRef.current);
-    console.log(rowSelection);
     return (
       allSelectableRowIdsRef.current.length > 0 &&
       allSelectableRowIdsRef.current.every((id) => rowSelection[id] === true)
