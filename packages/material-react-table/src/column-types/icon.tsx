@@ -36,27 +36,19 @@ export const IconColumnResolver: ColumnTypeResolver = {
               backgroundColor: icon.defaultColor,
               borderRadius: 16,
               p: 0.5,
+              cursor: 'pointer',
             }}
             onClick={handleClick}
           >
             <Tooltip title={value.description} disableInteractive>
-              <IconButton size="small" disableRipple sx={{ p: 0 }}>
-                <Iconify
-                  icon={icon.icon}
-                  color="white"
-                  width={20}
-                  height={20}
-                />
-              </IconButton>
+              <Iconify icon={icon.icon} color="white" width={20} height={20} />
             </Tooltip>
             {Object.values(additional).map((add, index) => {
               const additionalIcon = iconsList[add.iconCode];
               if (!additionalIcon) return null;
               return (
                 <Tooltip key={index} title={add.description} disableInteractive>
-                  <IconButton size="small" disableRipple sx={{ p: 0 }}>
-                    <Iconify icon={additionalIcon.icon} color="white" />
-                  </IconButton>
+                  <Iconify icon={additionalIcon.icon} color="white" />
                 </Tooltip>
               );
             })}
