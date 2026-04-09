@@ -213,6 +213,7 @@ export interface MRT_Localization {
   move: string;
   noRecordsToDisplay: string;
   noResultsFound: string;
+  moreThan: string;
   of: string;
   or: string;
   pin: string;
@@ -226,6 +227,9 @@ export interface MRT_Localization {
   rowsPerPage: string;
   rowsSelected: string;
   save: string;
+  countRows: string;
+  countRowsTooltip: string;
+  rowCount: string;
   search: string;
   select: string;
   selectAllOnAllPages: string;
@@ -896,6 +900,14 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   getAllSelectableRowIds?: (props: {
     table: MRT_TableInstance<TData>;
   }) => Promise<string[]>;
+  /**
+   * Async function that returns the exact total row count for the current
+   * filter/grouping state. When provided, a "Count Rows" button is rendered
+   * in the bottom toolbar next to pagination.
+   */
+  getTotalRows?: (props: {
+    table: MRT_TableInstance<TData>;
+  }) => Promise<number>;
   enableSelectAll?: boolean;
   enableStickyFooter?: boolean;
   enableStickyHeader?: boolean;
@@ -1313,6 +1325,7 @@ export interface MRT_TableConfig<TData extends MRT_RowData> {
 export interface MRT_TableData<TData extends MRT_RowData> {
   data: TData[];
   rowCount: number;
+  hasNextPage?: boolean;
 }
 
 export type UseServerTableStateOptions<TData extends MRT_RowData> = {

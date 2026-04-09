@@ -9,6 +9,7 @@ import { MRT_SelectionCountBadge } from './MRT_SelectionCountBadge';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarAlertBanner } from './MRT_ToolbarAlertBanner';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
+import { MRT_TotalRowsCounter } from './MRT_TotalRowsCounter';
 
 export interface MRT_BottomToolbarProps<TData extends MRT_RowData>
   extends BoxProps {
@@ -99,11 +100,14 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
           sx={{
             display: 'flex',
             justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: '0.5rem',
             position: stackAlertBanner ? 'relative' : 'absolute',
             right: 0,
             top: 0,
           }}
         >
+          <MRT_TotalRowsCounter table={table} />
           {enablePagination &&
             ['both', 'bottom'].includes(positionPagination ?? '') && (
               <MRT_TablePagination position="bottom" table={table} />

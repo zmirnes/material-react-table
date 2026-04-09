@@ -17,6 +17,9 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   getAllSelectableRowIds?: (props: {
     table: MRT_TableInstance<TData>;
   }) => Promise<string[]>;
+  getTotalRows?: (props: {
+    table: MRT_TableInstance<TData>;
+  }) => Promise<number>;
 }
 
 export const MaterialReactServerTable = <
@@ -26,6 +29,7 @@ export const MaterialReactServerTable = <
   loadData,
   saveState,
   getAllSelectableRowIds,
+  getTotalRows,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -68,6 +72,7 @@ export const MaterialReactServerTable = <
       loadData={loadData}
       saveState={saveState}
       getAllSelectableRowIds={getAllSelectableRowIds}
+      getTotalRows={getTotalRows}
     />
   );
 };
