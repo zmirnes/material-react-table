@@ -9,6 +9,7 @@ import {
   MRT_TableInstance,
   MRT_TableState,
 } from '../types';
+import { createColumnDefs } from '../utils/columns/createColumnDef';
 import { MaterialReactTable } from './MaterialReactTable';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
@@ -44,7 +45,10 @@ export const MaterialReactServerTableInstance = <
     saveState,
   });
 
-  const columns = useMemo(() => config.columns, [config.columns]);
+  const columns = useMemo(
+    () => createColumnDefs(config.columns),
+    [config.columns],
+  );
 
   const wrappedGetTotalRows = useMemo(
     () =>
@@ -104,6 +108,7 @@ export const MaterialReactServerTableInstance = <
   );
 
   useEffect(() => {
+    console.log(table.getAllColumns().map((col) => col.columnDef));
     void fetchData(table.getState());
   }, [fetchTrigger.pagination, fetchTrigger.sorting, fetchTrigger.grouping]);
 
