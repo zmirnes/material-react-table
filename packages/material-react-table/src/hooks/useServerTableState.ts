@@ -7,6 +7,7 @@ import {
   MRT_ColumnSizingState,
   MRT_DensityState,
   MRT_ExpandedState,
+  MRT_FiltersState,
   MRT_GroupingState,
   MRT_PaginationState,
   MRT_RowData,
@@ -32,6 +33,9 @@ export const useServerTableState = <TData extends MRT_RowData>({
   );
   const [grouping, setGrouping] = useState<MRT_GroupingState>(
     initialState?.grouping ?? [],
+  );
+  const [filters, setFilters] = useState<MRT_FiltersState>(
+    initialState?.filters ?? { logicOperator: 'and', rules: [] },
   );
 
   // --- State that is only persisted (does not trigger a fetch) ---
@@ -65,6 +69,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
       // Use functional update pattern to always work with the latest values
       saveState({
+        filters,
         pagination,
         sorting,
         grouping,
@@ -97,6 +102,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
   return {
     tableState: {
+      filters,
       pagination,
       sorting,
       grouping,
@@ -111,6 +117,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
     handlers: {
       // Fetch triggers — only update state, do not persist
+      onFiltersChange: setFilters,
       onPaginationChange: setPagination,
       onSortingChange: setSorting,
       onGroupingChange: setGrouping,
@@ -151,6 +158,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
     // Only these go into useEffect deps for the data fetch
     fetchTrigger: {
+      filters,
       pagination,
       sorting,
       grouping,

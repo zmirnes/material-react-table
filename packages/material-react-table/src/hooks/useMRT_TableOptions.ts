@@ -71,7 +71,8 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
   enableFacetedValues = false,
   enableFilterMatchHighlighting = true,
   enableFilters = false,
-  enableFullScreenToggle = true,
+  enableAdvancedFilters = true,
+  enableFullScreenToggle = false,
   enableGlobalFilter = false,
   enableGlobalFilterRankedResults = true,
   enableGrouping = true,
@@ -265,6 +266,7 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     rowPinningDisplayMode,
     selectAllMode,
     sortingFns,
+    enableAdvancedFilters: true,
     ...rest,
   } as MRT_DefinedTableOptions<TData>;
 };

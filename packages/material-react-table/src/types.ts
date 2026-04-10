@@ -99,6 +99,7 @@ export type DropdownOption =
 export type MRT_DensityState = 'comfortable' | 'compact' | 'spacious';
 
 export type MRT_ColumnFilterFnsState = Record<string, MRT_FilterOption>;
+export type MRT_FiltersLogicOperator = 'and' | 'or';
 
 export type MRT_RowData = Record<string, any>;
 
@@ -201,8 +202,12 @@ export interface MRT_Localization {
   filterMode: string;
   filterNotEmpty: string;
   filterNotEquals: string;
+  filterOperator: string;
+  filterLogic: string;
   filterStartsWith: string;
   filterWeakEquals: string;
+  booleanTrue: string;
+  booleanFalse: string;
   goToFirstPage: string;
   goToLastPage: string;
   goToNextPage: string;
@@ -244,6 +249,11 @@ export interface MRT_Localization {
   showHideColumns: string;
   showHideFilters: string;
   showHideSearch: string;
+  showAdvancedFilters: string;
+  advancedFilters: string;
+  add: string;
+  clear: string;
+  apply: string;
   sortByColumnAsc: string;
   sortByColumnDesc: string;
   sortedByColumnAsc: string;
@@ -345,6 +355,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setDraggingRow: Dispatch<SetStateAction<MRT_Row<TData> | null>>;
   setEditingCell: Dispatch<SetStateAction<MRT_Cell<TData> | null>>;
   setEditingRow: Dispatch<SetStateAction<MRT_Row<TData> | null>>;
+  setFilters: Dispatch<SetStateAction<MRT_FiltersState>>;
   setGlobalFilterFn: Dispatch<SetStateAction<MRT_FilterOption>>;
   setHoveredColumn: Dispatch<SetStateAction<Partial<MRT_Column<TData>> | null>>;
   setHoveredRow: Dispatch<SetStateAction<Partial<MRT_Row<TData>> | null>>;
@@ -354,6 +365,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowGlobalFilter: Dispatch<SetStateAction<boolean>>;
   setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
+  setShowAdvancedFilters: Dispatch<SetStateAction<boolean>>;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -378,6 +390,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'draggingRow'
       | 'editingCell'
       | 'editingRow'
+      | 'filters'
       | 'globalFilterFn'
       | 'grouping'
       | 'hoveredColumn'
@@ -385,6 +398,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'isFullScreen'
       | 'pagination'
       | 'showAlertBanner'
+      | 'showAdvancedFilters'
       | 'showColumnFilters'
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
@@ -400,6 +414,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   draggingRow: MRT_Row<TData> | null;
   editingCell: MRT_Cell<TData> | null;
   editingRow: MRT_Row<TData> | null;
+  filters: MRT_FiltersState;
   globalFilterFn: MRT_FilterOption;
   hoveredColumn: Partial<MRT_Column<TData>> | null;
   hoveredRow: Partial<MRT_Row<TData>> | null;
@@ -409,6 +424,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showAlertBanner: boolean;
   showColumnFilters: boolean;
   showGlobalFilter: boolean;
+  showAdvancedFilters: boolean;
   showLoadingOverlay: boolean;
   showProgressBars: boolean;
   showSkeletons: boolean;
@@ -925,6 +941,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableEditing?: ((row: MRT_Row<TData>) => boolean) | boolean;
   enableExpandAll?: boolean;
   enableFacetedValues?: boolean;
+  enableAdvancedFilters?: boolean;
   enableFilterMatchHighlighting?: boolean;
   enableFullScreenToggle?: boolean;
   enableGlobalFilterModes?: boolean;
@@ -1246,11 +1263,13 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     table: MRT_TableInstance<TData>;
     values: Record<LiteralUnion<string & DeepKeys<TData>>, any>;
   }) => Promise<void> | void;
+  onFiltersChange?: OnChangeFn<MRT_FiltersState>;
   onGlobalFilterFnChange?: OnChangeFn<MRT_FilterOption>;
   onHoveredColumnChange?: OnChangeFn<Partial<MRT_Column<TData>> | null>;
   onHoveredRowChange?: OnChangeFn<Partial<MRT_Row<TData>> | null>;
   onIsFullScreenChange?: OnChangeFn<boolean>;
   onShowAlertBannerChange?: OnChangeFn<boolean>;
+  onShowAdvancedFiltersChange?: OnChangeFn<boolean>;
   onShowColumnFiltersChange?: OnChangeFn<boolean>;
   onShowGlobalFilterChange?: OnChangeFn<boolean>;
   onShowToolbarDropZoneChange?: OnChangeFn<boolean>;
@@ -1383,6 +1402,7 @@ export type UseServerTableStateOptions<TData extends MRT_RowData> = {
 export type UseServerTableStateReturn = {
   // Current state — pass into the table's `state` prop
   tableState: {
+    filters: MRT_FiltersState;
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
     grouping: MRT_GroupingState;
@@ -1396,6 +1416,7 @@ export type UseServerTableStateReturn = {
   };
   // Handlers — pass into the table's `on*Change` props
   handlers: {
+    onFiltersChange: OnChangeFn<MRT_FiltersState>;
     onPaginationChange: OnChangeFn<MRT_PaginationState>;
     onSortingChange: OnChangeFn<MRT_SortingState>;
     onGroupingChange: OnChangeFn<MRT_GroupingState>;
@@ -1409,6 +1430,7 @@ export type UseServerTableStateReturn = {
   };
   // Only these go into useEffect deps for the data fetch
   fetchTrigger: {
+    filters: MRT_FiltersState;
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
     grouping: MRT_GroupingState;
@@ -1427,7 +1449,7 @@ export type ColumnType =
   | 'actions'
   | 'object';
 
-type TOperator =
+export type MRT_FilterOperator =
   | 'between'
   | 'between-inclusive'
   | 'contains'
@@ -1452,18 +1474,40 @@ type TOperator =
   | 'time-lessThan'
   | 'time-lessThanOrEqualTo';
 
-interface FilterOperatorDefinition<
+export interface MRT_FilterRule {
+  columnId: string;
+  id: string;
+  operator: MRT_FilterOperator;
+  pinned?: boolean;
+  value: unknown;
+}
+
+export interface MRT_FiltersState {
+  logicOperator: MRT_FiltersLogicOperator;
+  rules: MRT_FilterRule[];
+}
+
+export interface MRT_FilterOperatorEditComponentProps<
   TData extends MRT_RowData,
   TValue = unknown,
 > {
-  id: TOperator;
+  column: MRT_Column<TData, TValue>;
+  onChange: (value: TValue) => void;
+  rule: MRT_FilterRule;
+  table: MRT_TableInstance<TData>;
+}
+
+export interface MRT_FilterOperatorDefinition<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> {
+  id: MRT_FilterOperator;
   label: string;
   getInitialValue: () => TValue;
   isValueEmpty: (value: TValue) => boolean;
-  editComponent: (props: {
-    column: MRT_Column<TData, TValue>;
-    table: MRT_TableInstance<TData>;
-  }) => ReactNode;
+  editComponent: (
+    props: MRT_FilterOperatorEditComponentProps<TData, TValue>,
+  ) => ReactNode;
 }
 
 export interface ColumnTypeResolver {
@@ -1472,5 +1516,5 @@ export interface ColumnTypeResolver {
   ) => MRT_ColumnDef<TData, TValue>;
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
-  ) => FilterOperatorDefinition<TData, TValue>[];
+  ) => MRT_FilterOperatorDefinition<TData, TValue>[];
 }

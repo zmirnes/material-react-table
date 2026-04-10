@@ -10,6 +10,7 @@ import {
   type MRT_DefinedTableOptions,
   type MRT_DensityState,
   type MRT_FilterOption,
+  type MRT_FiltersState,
   type MRT_GroupingState,
   type MRT_PaginationState,
   type MRT_Row,
@@ -80,6 +81,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
         },
       } as MRT_StatefulTableOptions<TData>);
     initState.globalFilterFn = definedTableOptions.globalFilterFn ?? 'fuzzy';
+    initState.showAdvancedFilters = initState.showAdvancedFilters ?? false;
     return initState;
   }, []);
 
@@ -128,6 +130,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [editingRow, setEditingRow] = useState<MRT_Row<TData> | null>(
     initialState.editingRow ?? null,
   );
+  const [filters, setFilters] = useState<MRT_FiltersState>(
+    initialState.filters ?? { logicOperator: 'and', rules: [] },
+  );
   const [globalFilterFn, setGlobalFilterFn] = useState<MRT_FilterOption>(
     initialState.globalFilterFn ?? 'fuzzy',
   );
@@ -155,6 +160,13 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [showGlobalFilter, setShowGlobalFilter] = useState<boolean>(
     initialState?.showGlobalFilter ?? false,
   );
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(
+    initialState?.showAdvancedFilters ??
+      Boolean(
+        definedTableOptions.enableAdvancedFilters &&
+          definedTableOptions.manualFiltering,
+      ),
+  );
   const [showToolbarDropZone, setShowToolbarDropZone] = useState<boolean>(
     initialState?.showToolbarDropZone ?? false,
   );
@@ -173,6 +185,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     draggingRow,
     editingCell,
     editingRow,
+    filters,
     globalFilterFn,
     grouping,
     hoveredColumn,
@@ -182,6 +195,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     showAlertBanner,
     showColumnFilters,
     showGlobalFilter,
+    showAdvancedFilters,
     showProgressBars,
     showToolbarDropZone,
     ...definedTableOptions.state,
@@ -300,6 +314,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     statefulTableOptions.onEditingCellChange ?? setEditingCell;
   table.setEditingRow =
     statefulTableOptions.onEditingRowChange ?? setEditingRow;
+  table.setFilters = statefulTableOptions.onFiltersChange ?? setFilters;
   table.setGlobalFilterFn =
     statefulTableOptions.onGlobalFilterFnChange ?? setGlobalFilterFn;
   table.setHoveredColumn =
@@ -310,6 +325,8 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     statefulTableOptions.onIsFullScreenChange ?? setIsFullScreen;
   table.setShowAlertBanner =
     statefulTableOptions.onShowAlertBannerChange ?? setShowAlertBanner;
+  table.setShowAdvancedFilters =
+    statefulTableOptions.onShowAdvancedFiltersChange ?? setShowAdvancedFilters;
   table.setShowColumnFilters =
     statefulTableOptions.onShowColumnFiltersChange ?? setShowColumnFilters;
   table.setShowGlobalFilter =
@@ -317,7 +334,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setShowProgressBars = setShowProgressBars;
   table.setShowToolbarDropZone =
     statefulTableOptions.onShowToolbarDropZoneChange ?? setShowToolbarDropZone;
-
   useMRT_Effects(table);
 
   return table;

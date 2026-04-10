@@ -69,6 +69,7 @@ export const MaterialReactServerTableInstance = <
     localization: MRT_Localization_HR,
     rowCount,
     pageCount,
+    manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
     manualGrouping: true,
@@ -109,7 +110,12 @@ export const MaterialReactServerTableInstance = <
 
   useEffect(() => {
     void fetchData(table.getState());
-  }, [fetchTrigger.pagination, fetchTrigger.sorting, fetchTrigger.grouping]);
+  }, [
+    fetchTrigger.filters,
+    fetchTrigger.pagination,
+    fetchTrigger.sorting,
+    fetchTrigger.grouping,
+  ]);
 
   return <MaterialReactTable table={table} />;
 };
