@@ -108,7 +108,6 @@ export const MaterialReactServerTableInstance = <
   );
 
   useEffect(() => {
-    console.log(table.getAllColumns().map((col) => col.columnDef));
     void fetchData(table.getState());
   }, [fetchTrigger.pagination, fetchTrigger.sorting, fetchTrigger.grouping]);
 
