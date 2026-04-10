@@ -1,0 +1,24 @@
+import { ColumnType, ColumnTypeResolver } from '../types';
+import { BooleanColumnResolver } from './boolean';
+import { DateColumnResolver } from './date';
+import { DateTimeColumnResolver } from './dateTime';
+import { DimensionColumnResolver } from './dimension';
+import { EnumColumnResolver } from './enum';
+import { IconColumnResolver } from './icon';
+import { NumberColumnResolver } from './number';
+import { StringColumnResolver } from './string';
+
+export const columnTypeResolvers: Record<
+  Exclude<ColumnType, 'object'>,
+  ColumnTypeResolver
+> = {
+  string: StringColumnResolver,
+  actions: NumberColumnResolver,
+  boolean: BooleanColumnResolver,
+  date: DateColumnResolver,
+  dateTime: DateTimeColumnResolver,
+  dimension: DimensionColumnResolver,
+  enum: EnumColumnResolver,
+  icon: IconColumnResolver,
+  number: NumberColumnResolver,
+};

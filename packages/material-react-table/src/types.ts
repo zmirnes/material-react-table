@@ -81,6 +81,10 @@ export type LiteralUnion<T extends U, U = string> =
 
 export type Prettify<T> = { [K in keyof T]: T[K] } & unknown;
 
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
 export type Xor<A, B> =
   | Prettify<A & { [k in keyof B]?: never }>
   | Prettify<B & { [k in keyof A]?: never }>;
@@ -411,7 +415,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showToolbarDropZone: boolean;
 }
 
-export interface MRT_ColumnDef<TData extends MRT_RowData, TValue = unknown>
+interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
   extends Omit<
     ColumnDef<TData, TValue>,
     | 'accessorKey'
@@ -690,10 +694,49 @@ export interface MRT_ColumnDef<TData extends MRT_RowData, TValue = unknown>
   visibleInShowHideMenu?: boolean;
 }
 
+type MRT_IconTypeColumnClickArgs<TData extends MRT_RowData> = {
+  table: MRT_TableInstance<TData>;
+  row: MRT_Row<TData>;
+  value: unknown;
+  anchorEl: HTMLElement | null;
+  columnId?: string;
+};
+
+export type MRT_IconColumnDef<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> = MRT_ColumnDefBase<TData, TValue> & {
+  onClickIconTypeColumn?: (args: MRT_IconTypeColumnClickArgs<TData>) => void;
+  iconsList?: Record<
+    string,
+    {
+      icon: string;
+      defaultColor: string;
+    }
+  >;
+  type: 'icon';
+};
+
+export type MRT_NonIconColumnDef<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> = MRT_ColumnDefBase<TData, TValue> & {
+  onClickIconTypeColumn?: never;
+  iconsList?: never;
+  type: Exclude<ColumnType, 'icon'>;
+};
+
+export type MRT_ColumnDef<TData extends MRT_RowData, TValue = unknown> =
+  | MRT_IconColumnDef<TData, TValue>
+  | MRT_NonIconColumnDef<TData, TValue>;
+
 export type MRT_DisplayColumnDef<
   TData extends MRT_RowData,
   TValue = unknown,
-> = Omit<MRT_ColumnDef<TData, TValue>, 'accessorFn' | 'accessorKey'>;
+> = DistributiveOmit<
+  MRT_ColumnDef<TData, TValue>,
+  'accessorFn' | 'accessorKey'
+>;
 
 export type MRT_GroupColumnDef<TData extends MRT_RowData> =
   MRT_DisplayColumnDef<TData, any> & {
@@ -703,7 +746,10 @@ export type MRT_GroupColumnDef<TData extends MRT_RowData> =
 export type MRT_DefinedColumnDef<
   TData extends MRT_RowData,
   TValue = unknown,
-> = Omit<MRT_ColumnDef<TData, TValue>, 'defaultDisplayColumn' | 'id'> & {
+> = DistributiveOmit<
+  MRT_ColumnDef<TData, TValue>,
+  'defaultDisplayColumn' | 'id'
+> & {
   _filterFn: MRT_FilterOption;
   defaultDisplayColumn: Partial<MRT_ColumnDef<TData, TValue>>;
   id: string;
@@ -1368,3 +1414,63 @@ export type UseServerTableStateReturn = {
     grouping: MRT_GroupingState;
   };
 };
+
+export type ColumnType =
+  | 'string'
+  | 'number'
+  | 'date'
+  | 'dateTime'
+  | 'enum'
+  | 'icon'
+  | 'dimension'
+  | 'boolean'
+  | 'actions'
+  | 'object';
+
+type TOperator =
+  | 'between'
+  | 'between-inclusive'
+  | 'contains'
+  | 'endsWith'
+  | 'equals'
+  | 'fuzzy'
+  | 'greaterThan'
+  | 'greaterThanOrEqualTo'
+  | 'inArray'
+  | 'isEmpty'
+  | 'isNotEmpty'
+  | 'lessThan'
+  | 'lessThanOrEqualTo'
+  | 'notContains'
+  | 'notEquals'
+  | 'startsWith'
+  | 'time-between'
+  | 'time-between-inclusive'
+  | 'time-equals'
+  | 'time-greaterThan'
+  | 'time-greaterThanOrEqualTo'
+  | 'time-lessThan'
+  | 'time-lessThanOrEqualTo';
+
+interface FilterOperatorDefinition<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> {
+  id: TOperator;
+  label: string;
+  getInitialValue: () => TValue;
+  isValueEmpty: (value: TValue) => boolean;
+  editComponent: (props: {
+    column: MRT_Column<TData, TValue>;
+    table: MRT_TableInstance<TData>;
+  }) => ReactNode;
+}
+
+export interface ColumnTypeResolver {
+  createColumnDef: <TData extends MRT_RowData, TValue = unknown>(
+    column: MRT_ColumnDef<TData, TValue>,
+  ) => MRT_ColumnDef<TData, TValue>;
+  getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
+    column: MRT_ColumnDef<TData, TValue>,
+  ) => FilterOperatorDefinition<TData, TValue>[];
+}
