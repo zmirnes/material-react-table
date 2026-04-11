@@ -6,6 +6,7 @@ import {
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../types';
+import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
 import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 
 // Shape of an enum cell value — resolved label is shown in the cell
@@ -15,7 +16,7 @@ export type EnumValue = {
 };
 
 // Resolver for enum column type.
-// Renders only the human-readable label and provides a select-based filter.
+// Renders only the human-readable label and provides select/multi-select filters.
 export const EnumColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => ({
     ...column,
@@ -30,32 +31,58 @@ export const EnumColumnResolver: ColumnTypeResolver = {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => {
-    // Prefer filterSelectOptions; fall back to editSelectOptions if not defined
-    const selectOptions = Array.isArray(column.filterSelectOptions)
-      ? column.filterSelectOptions
-      : Array.isArray(column.editSelectOptions)
-        ? column.editSelectOptions
-        : [];
+    // Resolve enum options from column meta — defined by the consuming application
+    const enumOptions = column.meta?.enumValues ?? [];
 
-    // If no options are available, the column cannot be filtered
-    if (!selectOptions.length) {
+    // Without options no meaningful filter can be built
+    if (!enumOptions.length) {
       return [];
     }
 
+    // Shared single-select editor factory — used by 'equals' and 'notEquals'
+    const createSingleSelectEditor = (
+      props: MRT_FilterOperatorEditComponentProps<TData>,
+    ) =>
+      MRT_SingleValueEditor({
+        ...(props as MRT_FilterOperatorEditComponentProps<TData>),
+        options: enumOptions,
+      });
+
+    // Multi-select editor factory — used by 'inArray'
+    const createMultiSelectEditor = (
+      props: MRT_FilterOperatorEditComponentProps<TData>,
+    ) =>
+      MRT_MultiValueEditor({
+        ...(props as MRT_FilterOperatorEditComponentProps<TData>),
+        options: enumOptions,
+      });
+
     return [
       {
-        // MRT_SingleValueEditor is TValue-agnostic for select rendering;
-        // widening TValue → unknown is safe here.
-        editComponent: (props) =>
-          MRT_SingleValueEditor({
-            ...(props as MRT_FilterOperatorEditComponentProps<TData>),
-            options: selectOptions,
-          }),
+        // 'Je' — single value must match exactly
+        editComponent: createSingleSelectEditor,
         getInitialValue: () => '' as TValue,
         id: 'equals',
-        // Empty string and null both mean the user hasn't selected anything
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
+      },
+      {
+        // 'Nije' — single value must not match
+        editComponent: createSingleSelectEditor,
+        getInitialValue: () => '' as TValue,
+        id: 'notEquals',
+        isValueEmpty: (value: unknown) => value === '' || value === null,
+        label: 'Not Equals',
+      },
+      {
+        // 'Je bilo koje od' — value must be one of the selected options
+        editComponent: createMultiSelectEditor,
+        getInitialValue: () => [] as unknown as TValue,
+        id: 'inArray',
+        // Empty when no options are selected
+        isValueEmpty: (value: unknown) =>
+          !Array.isArray(value) || value.length === 0,
+        label: 'Is any of',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },

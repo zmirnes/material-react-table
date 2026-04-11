@@ -28,15 +28,12 @@ export const getColumnFilterOperators = <TData extends MRT_RowData>(
   const { type } = column.columnDef;
 
   // Non-filterable column types return an empty operator list
-  if (!type || type === 'actions' || type === 'icon' || type === 'object') {
+  if (!type || type === 'actions' || type === 'object') {
     return [];
   }
 
   // Delegate to the resolver for the column type; fall back to [] if unregistered
-  return (
-    columnTypeResolvers[type]?.getFilterOperators(column.columnDef as never) ??
-    []
-  );
+  return columnTypeResolvers[type]?.getFilterOperators(column.columnDef) ?? [];
 };
 
 // Lookup map: operator id → localization key.
@@ -51,10 +48,12 @@ const OPERATOR_LOCALIZATION_KEYS: Partial<
   equals: 'filterEquals',
   greaterThan: 'filterGreaterThan',
   greaterThanOrEqualTo: 'filterGreaterThanOrEqualTo',
+  inArray: 'filterInArray',
   isEmpty: 'filterEmpty',
   isNotEmpty: 'filterNotEmpty',
   lessThan: 'filterLessThan',
   lessThanOrEqualTo: 'filterLessThanOrEqualTo',
+  notEquals: 'filterNotEquals',
   startsWith: 'filterStartsWith',
 };
 

@@ -187,7 +187,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         {/* Value editor — rendered by the operator's own editComponent */}
         <Box sx={{ minWidth: 0, width: '100%' }}>
           {/* Render an empty spacer when the operator needs no value (e.g. isEmpty) */}
-          {valueEditor ?? <Box sx={{ minHeight: 56 }} />}
+          {valueEditor ?? null}
         </Box>
 
         {/* Remove rule button */}

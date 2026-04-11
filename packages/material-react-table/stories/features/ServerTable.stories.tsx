@@ -126,7 +126,18 @@ const columns: MRT_ColumnDef<Person>[] = [
   { accessorKey: 'age', header: 'Age', type: 'number' },
   { accessorKey: 'date', header: 'Date', type: 'date' },
   { accessorKey: 'dateTime', header: 'Date Time', type: 'dateTime' },
-  { accessorKey: 'enum', header: 'Enum', type: 'enum' },
+  {
+    accessorKey: 'enum',
+    header: 'Enum',
+    type: 'enum',
+    meta: {
+      enumValues: [
+        { value: 'option1', label: 'Option 1' },
+        { value: 'option2', label: 'Option 2' },
+        { value: 'option3', label: 'Option 3' },
+      ],
+    },
+  },
   {
     accessorKey: 'icon',
     header: 'Icon',

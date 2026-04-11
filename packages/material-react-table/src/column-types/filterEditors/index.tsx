@@ -8,6 +8,7 @@ import {
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../../types';
+import { MRT_MultiValueEditor } from './MRT_MultiValueEditor';
 import { MRT_RangeDateValueEditor } from './MRT_RangeDateValueEditor';
 import { MRT_SingleDateValueEditor } from './MRT_SingleDateValueEditor';
 import { MRT_SingleValueEditor } from './MRT_SingleValueEditor';
@@ -78,3 +79,10 @@ export const MRT_FilterRuleSelectEditor = <TData extends MRT_RowData>(
     options: DropdownOption[];
   },
 ) => <MRT_SingleValueEditor {...props} options={props.options} />;
+
+// Multi-select editor — stores value as string[], used for the 'inArray' operator
+export const MRT_FilterRuleSelectMultiEditor = <TData extends MRT_RowData>(
+  props: MRT_FilterOperatorEditComponentProps<TData> & {
+    options: DropdownOption[];
+  },
+) => <MRT_MultiValueEditor {...props} options={props.options} />;

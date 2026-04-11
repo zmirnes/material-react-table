@@ -87,10 +87,10 @@ export const formatRangeDisplayValue = (
   const formatSingle = (item: unknown): string => {
     const parsed = getPickerValue(item);
     if (!parsed) return '';
-    // Use the browser's locale-aware formatter for human-readable output
+    // Use the browser's locale-aware formatter for human-readable output without any spaces
     return pickerType === 'date'
-      ? parsed.toDate().toLocaleDateString(language)
-      : parsed.toDate().toLocaleString(language);
+      ? parsed.toDate().toLocaleDateString(language).replace(/\s/g, '')
+      : parsed.toDate().toLocaleString(language).replace(/\s/g, '');
   };
 
   const start = formatSingle(currentValue[0]);

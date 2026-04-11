@@ -44,7 +44,7 @@ export const MRT_SingleValueEditor = <TData extends MRT_RowData>({
   // Convert stored value to a string suitable for controlled input
   const displayValue = valueFormatter
     ? valueFormatter(rule.value)
-    : ((rule.value as string | number | undefined) ?? '');
+    : (rule.value ?? '');
 
   return (
     <TextField

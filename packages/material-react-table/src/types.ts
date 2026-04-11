@@ -195,6 +195,7 @@ export interface MRT_Localization {
   filterFuzzy: string;
   filterGreaterThan: string;
   filterGreaterThanOrEqualTo: string;
+  filterInArray: string;
   filterIncludesString: string;
   filterIncludesStringSensitive: string;
   filteringByColumn: string;

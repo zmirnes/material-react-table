@@ -42,6 +42,7 @@ export const MRT_Localization_FR: MRT_Localization = {
   filterFuzzy: 'Flou',
   filterGreaterThan: 'Plus grand que',
   filterGreaterThanOrEqualTo: 'Plus grand que ou égale à',
+  filterInArray: 'Est l\'un de',
   filterInNumberRange: 'Entre',
   filterIncludesString: 'Contient',
   filterIncludesStringSensitive: 'Contient',

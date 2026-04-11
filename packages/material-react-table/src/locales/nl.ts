@@ -42,6 +42,7 @@ export const MRT_Localization_NL: MRT_Localization = {
   filterFuzzy: 'Wazig',
   filterGreaterThan: 'Groter dan',
   filterGreaterThanOrEqualTo: 'Groter dan of gelijk aan',
+  filterInArray: 'Is een van',
   filterInNumberRange: 'Tussen',
   filterIncludesString: 'Omvat',
   filterIncludesStringSensitive: 'Omvat',

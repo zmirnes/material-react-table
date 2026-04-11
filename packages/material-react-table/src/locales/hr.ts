@@ -42,6 +42,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   filterFuzzy: 'Maglovito',
   filterGreaterThan: 'Veće od',
   filterGreaterThanOrEqualTo: 'Veće od ili jednako',
+  filterInArray: 'Je jedno od',
   filterInNumberRange: 'Između',
   filterIncludesString: 'Sadrži',
   filterIncludesStringSensitive: 'Sadrži',
