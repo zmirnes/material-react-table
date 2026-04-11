@@ -1,14 +1,16 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { MultiSectionDigitalClock } from '@mui/x-date-pickers/MultiSectionDigitalClock';
 import { type Dayjs } from 'dayjs';
 import { useMemo, useState } from 'react';
 import {
@@ -18,10 +20,7 @@ import {
 import {
   formatPickerValue,
   formatRangeDisplayValue,
-  getDatePickerProps,
-  getDateTimePickerProps,
   getPickerLocale,
-  getPickerTextFieldProps,
   getPickerValue,
   getSharedTextFieldProps,
 } from './pickerHelpers';
@@ -31,14 +30,8 @@ export type MRT_RangeDateValueEditorProps<TData extends MRT_RowData> =
     pickerType: 'date' | 'datetime';
   };
 
-// Indices for the two range pickers: 0 = start, 1 = end
+// Indices for the two range pickers: 0 = start (From), 1 = end (To)
 const RANGE_INDICES = [0, 1] as const;
-
-// Popover width differs slightly to accommodate the time input
-const POPOVER_WIDTH: Record<'date' | 'datetime', number> = {
-  date: 380,
-  datetime: 460,
-};
 
 export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
   pickerType,
@@ -54,29 +47,52 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  // Resolve picker props once — reused for both range pickers
-  const datePickerProps = getDatePickerProps(props);
-  const dateTimePickerProps = getDateTimePickerProps(props);
-  const pickerTextFieldProps = getPickerTextFieldProps(props);
+  // Merge table-level and column-level TextField overrides for the trigger field
   const textFieldProps = getSharedTextFieldProps(props);
   const pickerLocale = getPickerLocale(localization.language);
 
-  // Normalise value to a two-element array
+  // Normalise stored value to a two-element array
   const currentValue = Array.isArray(rule.value) ? rule.value : ['', ''];
 
-  // Human-readable summary shown in the trigger text field
+  // Human-readable "start – end" summary shown in the read-only trigger field
   const displayValue = useMemo(
     () =>
       formatRangeDisplayValue(rule.value, localization.language, pickerType),
     [localization.language, pickerType, rule.value],
   );
 
-  // --- Event handlers ---
-
+  // Updates one range endpoint and keeps the other unchanged
   const handleRangeChange = (index: 0 | 1, value: Dayjs | null) => {
     const nextValue = [...currentValue];
     nextValue[index] = formatPickerValue(value, pickerType);
     onChange(nextValue);
+  };
+
+  // Calendar date click — in datetime mode preserves the previously stored time
+  const handleDateChange = (index: 0 | 1, newDate: Dayjs | null) => {
+    if (!newDate) {
+      handleRangeChange(index, null);
+      return;
+    }
+    if (pickerType === 'datetime') {
+      // Merge newly selected date with the existing time (default to 00:00)
+      const existingValue = getPickerValue(currentValue[index]);
+      const merged = newDate
+        .hour(existingValue?.hour() ?? 0)
+        .minute(existingValue?.minute() ?? 0);
+      handleRangeChange(index, merged);
+    } else {
+      handleRangeChange(index, newDate);
+    }
+  };
+
+  // Clock time change — preserves the existing date, applies the new hour/minute
+  const handleTimeChange = (index: 0 | 1, newTime: Dayjs | null) => {
+    if (!newTime) return;
+    // Fall back to newTime's date when no date has been picked yet
+    const existingDate = getPickerValue(currentValue[index]) ?? newTime;
+    const merged = existingDate.hour(newTime.hour()).minute(newTime.minute());
+    handleRangeChange(index, merged);
   };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -91,16 +107,6 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
     event?.stopPropagation();
     onChange(['', '']);
   };
-
-  // --- Shared slot props builders ---
-
-  // textField config is identical for both DatePicker and DateTimePicker
-  const buildTextFieldSlotProps = (label: string) => ({
-    ...pickerTextFieldProps,
-    label,
-    size: 'small' as const,
-    variant: 'outlined' as const,
-  });
 
   return (
     <LocalizationProvider
@@ -138,57 +144,53 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
           sx={{ cursor: 'pointer', ...textFieldProps.sx }}
         />
 
-        {/* Popover containing the two pickers side-by-side */}
+        {/* Popover with inline calendars — immediately visible, no extra click needed */}
         <Popover
           anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
           onClose={handleClose}
           open={!!anchorEl}
-          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         >
-          <Box sx={{ p: 1.25, width: POPOVER_WIDTH[pickerType] }}>
-            <Stack direction={{ md: 'row', xs: 'column' }} spacing={1}>
+          <Box sx={{ p: 1.5 }}>
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              // Vertical divider between the From and To sections
+              divider={<Divider flexItem orientation="vertical" />}
+              spacing={1}
+            >
               {RANGE_INDICES.map((index) => {
-                const label =
+                const sectionLabel =
                   index === 0 ? localization.filterFrom : localization.filterTo;
                 const pickerValue = getPickerValue(currentValue[index]);
 
-                return pickerType === 'date' ? (
-                  <DatePicker<Dayjs>
-                    {...datePickerProps}
-                    key={index}
-                    onChange={(value) => handleRangeChange(index, value)}
-                    slotProps={{
-                      ...datePickerProps.slotProps,
-                      field: {
-                        clearable: true,
-                        ...datePickerProps.slotProps?.field,
-                      },
-                      textField: {
-                        ...buildTextFieldSlotProps(label),
-                        ...datePickerProps.slotProps?.textField,
-                      },
-                    }}
-                    value={pickerValue}
-                  />
-                ) : (
-                  <DateTimePicker<Dayjs>
-                    {...dateTimePickerProps}
-                    key={index}
-                    onChange={(value) => handleRangeChange(index, value)}
-                    slotProps={{
-                      ...dateTimePickerProps.slotProps,
-                      field: {
-                        clearable: true,
-                        ...dateTimePickerProps.slotProps?.field,
-                      },
-                      textField: {
-                        ...buildTextFieldSlotProps(label),
-                        ...dateTimePickerProps.slotProps?.textField,
-                      },
-                    }}
-                    value={pickerValue}
-                  />
+                return (
+                  <Box key={index} sx={{ minWidth: 0 }}>
+                    {/* From / To label above the calendar */}
+                    <Typography
+                      color="text.secondary"
+                      sx={{ mb: 0.5, px: 1 }}
+                      variant="caption"
+                    >
+                      {sectionLabel}
+                    </Typography>
+
+                    {/* Inline calendar — permanently open, no extra click */}
+                    <DateCalendar<Dayjs>
+                      onChange={(value) => handleDateChange(index, value)}
+                      value={pickerValue}
+                    />
+
+                    {/* Digital clock for the time part — only in datetime mode */}
+                    {pickerType === 'datetime' && (
+                      <MultiSectionDigitalClock<Dayjs>
+                        onChange={(value) => handleTimeChange(index, value)}
+                        sx={{ mt: 1 }}
+                        value={pickerValue}
+                        views={['hours', 'minutes']}
+                      />
+                    )}
+                  </Box>
                 );
               })}
             </Stack>
