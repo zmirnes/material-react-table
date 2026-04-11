@@ -20,9 +20,7 @@ export const MRT_FilterRuleNumberEditor = <TData extends MRT_RowData>(
     inputType="number"
     transformValue={(value) => (value === '' ? '' : Number(value))}
     valueFormatter={(value) =>
-      value === undefined || value === null || value === ''
-        ? ''
-        : String(value)
+      value === undefined || value === null || value === '' ? '' : String(value)
     }
   />
 );
@@ -65,9 +63,7 @@ export const MRT_FilterRuleRangeNumberEditor = <TData extends MRT_RowData>(
     inputType="number"
     transformValue={(value) => (value === '' ? '' : Number(value))}
     valueFormatter={(value) =>
-      value === undefined || value === null || value === ''
-        ? ''
-        : String(value)
+      value === undefined || value === null || value === '' ? '' : String(value)
     }
   />
 );

@@ -3,7 +3,10 @@ import 'dayjs/locale/de';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/hr';
 import 'dayjs/locale/nl';
-import { type MRT_FilterOperatorEditComponentProps, type MRT_RowData } from '../../types';
+import {
+  type MRT_FilterOperatorEditComponentProps,
+  type MRT_RowData,
+} from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
 const SUPPORTED_LOCALES: Record<string, string> = {
@@ -117,13 +120,10 @@ export const getDatePickerProps = <TData extends MRT_RowData>(
 export const getDateTimePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ) => ({
-  ...parseFromValuesOrFunc(
-    props.table.options.muiFilterDateTimePickerProps,
-    {
-      column: props.column,
-      table: props.table,
-    },
-  ),
+  ...parseFromValuesOrFunc(props.table.options.muiFilterDateTimePickerProps, {
+    column: props.column,
+    table: props.table,
+  }),
   ...parseFromValuesOrFunc(
     props.column.columnDef.muiFilterDateTimePickerProps,
     {

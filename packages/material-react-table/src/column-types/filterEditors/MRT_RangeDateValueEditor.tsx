@@ -68,9 +68,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
   const handleRangeChange = (index: 0 | 1, value: Dayjs | null) => {
     const nextValue = [...currentValue] as [unknown, unknown];
     nextValue[index] = formatPickerValue(value, pickerType);
-    props.onChange(
-      nextValue as Parameters<typeof props.onChange>[0],
-    );
+    props.onChange(nextValue as Parameters<typeof props.onChange>[0]);
   };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -83,9 +81,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
 
   const handleClear = (event?: React.MouseEvent<HTMLElement>) => {
     event?.stopPropagation();
-    props.onChange(
-      ['', ''] as Parameters<typeof props.onChange>[0],
-    );
+    props.onChange(['', ''] as Parameters<typeof props.onChange>[0]);
   };
 
   const PickerComponent = pickerType === 'date' ? DatePicker : DateTimePicker;
@@ -150,8 +146,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
                     textField: {
                       ...pickerTextFieldProps,
                       ...pickerProps?.slotProps?.textField,
-                      label:
-                        index === 0 ? localization.min : localization.max,
+                      label: index === 0 ? localization.min : localization.max,
                       size: 'small',
                       variant: 'outlined',
                     },

@@ -43,7 +43,9 @@ export const MRT_SingleValueEditor = <TData extends MRT_RowData>({
       margin="none"
       onChange={(event) => {
         const rawValue = event.target.value;
-        const transformed = transformValue ? transformValue(rawValue) : rawValue;
+        const transformed = transformValue
+          ? transformValue(rawValue)
+          : rawValue;
         onChange(transformed as Parameters<typeof onChange>[0]);
       }}
       select={!!options?.length}
