@@ -85,7 +85,6 @@ export const IconColumnResolver: ColumnTypeResolver = {
 
     // Without available options no meaningful filter can be built
     if (!availableIcons.length) {
-      console.log('No available icons for filter operators:', column);
       return [];
     }
 
