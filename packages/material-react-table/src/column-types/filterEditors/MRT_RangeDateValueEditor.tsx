@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MultiSectionDigitalClock } from '@mui/x-date-pickers/MultiSectionDigitalClock';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { type Dayjs } from 'dayjs';
 import { useMemo, useState } from 'react';
 import {
@@ -62,6 +63,12 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
     'from' in (rule.value as object)
       ? (rule.value as DateRangeFilterValue)
       : { from: null, to: null };
+
+  // Format placeholder shown when no date is selected — mirrors MUI DatePicker appearance
+  const formatPlaceholder =
+    pickerType === 'date'
+      ? 'DD.MM.YYYY – DD.MM.YYYY'
+      : 'DD.MM.YYYY HH:mm – DD.MM.YYYY HH:mm';
 
   // Human-readable "start – end" summary shown in the read-only trigger field
   const displayValue = useMemo(
@@ -137,7 +144,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
           margin="none"
           // Disabled editors are used for relative date operators — clicking is intentionally blocked
           onClick={disabled ? undefined : handleOpen}
-          placeholder={localization.filterBetween}
+          placeholder={formatPlaceholder}
           size="small"
           value={displayValue}
           variant="outlined"
@@ -150,19 +157,29 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
             },
             input: {
               ...textFieldProps.slotProps?.input,
-              // Hide the clear button when the field is disabled (relative date operators)
               endAdornment:
                 displayValue && !disabled ? (
+                  // Show clear icon when a value is selected and the field is interactive
                   <InputAdornment position="end">
                     <IconButton onClick={handleClear} size="small">
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </InputAdornment>
-                ) : undefined,
+                ) : (
+                  // Show calendar icon at all other times (empty field or disabled relative operator)
+                  <InputAdornment position="end">
+                    <CalendarTodayIcon
+                      fontSize="small"
+                      sx={{ color: 'action.active', pointerEvents: 'none' }}
+                    />
+                  </InputAdornment>
+                ),
             },
           }}
           sx={{
+            // Apply pointer cursor to both the root and the inner input element
             cursor: disabled ? 'default' : 'pointer',
+            '& input': { cursor: disabled ? 'default' : 'pointer' },
             ...textFieldProps.sx,
           }}
         />

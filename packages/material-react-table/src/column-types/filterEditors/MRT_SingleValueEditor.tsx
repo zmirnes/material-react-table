@@ -46,10 +46,14 @@ export const MRT_SingleValueEditor = <TData extends MRT_RowData>({
     ? valueFormatter(rule.value)
     : (rule.value ?? '');
 
+  // Use the column header as a placeholder hint so the user knows which field they're editing
+  const columnLabel = column.columnDef.header;
+
   return (
     <TextField
       fullWidth
       margin="none"
+      placeholder={columnLabel}
       onChange={(event) => {
         const rawValue = event.target.value;
         // Apply optional domain transformation (e.g. cast to number)
