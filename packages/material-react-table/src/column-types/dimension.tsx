@@ -6,6 +6,8 @@ import {
 } from '../types';
 import { MRT_FilterRuleTextEditor } from './filterEditors';
 
+// Resolver for dimension column type (e.g. "100 m²").
+// Renders the raw string value and supports text-based filtering.
 export const DimensionColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => ({
     ...column,
@@ -21,6 +23,7 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
         editComponent: MRT_FilterRuleTextEditor,
         getInitialValue: () => '',
         id: 'contains',
+        // Treat blank or whitespace-only input as empty
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Contains',
       },

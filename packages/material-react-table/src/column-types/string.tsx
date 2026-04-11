@@ -5,6 +5,8 @@ import {
 } from '../types';
 import { MRT_FilterRuleTextEditor } from './filterEditors';
 
+// Resolver for plain string column type.
+// Supports text-based operators plus empty/not-empty checks.
 export const StringColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => column,
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>() =>
@@ -13,6 +15,7 @@ export const StringColumnResolver: ColumnTypeResolver = {
         editComponent: MRT_FilterRuleTextEditor,
         getInitialValue: () => '',
         id: 'contains',
+        // Treat blank or whitespace-only input as empty
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Contains',
       },
@@ -38,6 +41,7 @@ export const StringColumnResolver: ColumnTypeResolver = {
         label: 'Ends With',
       },
       {
+        // No input needed — the operator itself carries the full meaning
         editComponent: () => null,
         getInitialValue: () => null,
         id: 'isEmpty',

@@ -5,6 +5,9 @@ import {
 } from '../types';
 import { MRT_FilterRuleNumberEditor } from './filterEditors';
 
+// Resolver for numeric column type.
+// Supports comparison operators plus empty/not-empty checks.
+// Range operators (between) are intentionally omitted — only date columns support ranges.
 export const NumberColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => column,
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>() =>
@@ -13,6 +16,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
         id: 'equals',
+        // Treat empty string and null as no value entered
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
       },
@@ -45,6 +49,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         label: 'Less Than Or Equal To',
       },
       {
+        // No input needed — the operator itself carries the full meaning
         editComponent: () => null,
         getInitialValue: () => null,
         id: 'isEmpty',

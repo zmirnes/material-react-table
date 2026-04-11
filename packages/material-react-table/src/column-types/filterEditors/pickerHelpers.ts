@@ -2,6 +2,7 @@ import { type TextFieldProps } from '@mui/material/TextField';
 import { type DatePickerProps } from '@mui/x-date-pickers/DatePicker';
 import { type DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
+// Locale bundles — loaded once so dayjs can apply them via adapterLocale
 import 'dayjs/locale/de';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/hr';
@@ -12,6 +13,8 @@ import {
 } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
+// Maps a BCP-47 language prefix (e.g. "de" from "de-AT") to its dayjs locale.
+// Any unsupported language falls back to English.
 const SUPPORTED_LOCALES: Record<string, string> = {
   de: 'de',
   fr: 'fr',
@@ -19,25 +22,32 @@ const SUPPORTED_LOCALES: Record<string, string> = {
   nl: 'nl',
 };
 
+// Extracts the two-letter language prefix and resolves the matching dayjs locale
 export const getPickerLocale = (language: string): string => {
+  // Take only the first two characters of the BCP-47 tag (e.g. "de" from "de-AT")
   const prefix = language.toLowerCase().slice(0, 2);
   return SUPPORTED_LOCALES[prefix] ?? 'en';
 };
 
+// Converts any supported value representation to a Dayjs instance.
+// Handles: Dayjs, native Date, API object ({ date: string }), ISO string, timestamp.
 export const getPickerValue = (value: unknown): Dayjs | null => {
   if (!value) {
     return null;
   }
 
+  // Already a Dayjs instance — nothing to convert
   if (dayjs.isDayjs(value)) {
     return value;
   }
 
+  // Native JS Date — wrap it with dayjs
   if (value instanceof Date) {
     const parsed = dayjs(value);
     return parsed.isValid() ? parsed : null;
   }
 
+  // API date object shape: { date: '2024-01-01', timezone: '...', timezone_type: 3 }
   if (
     typeof value === 'object' &&
     'date' in value &&
@@ -47,10 +57,13 @@ export const getPickerValue = (value: unknown): Dayjs | null => {
     return parsed.isValid() ? parsed : null;
   }
 
+  // Fallback: try to parse as ISO string or Unix timestamp
   const parsed = dayjs(value as string | number);
   return parsed.isValid() ? parsed : null;
 };
 
+// Serialises a Dayjs value to the string format the filter rule expects.
+// Date-only → YYYY-MM-DD; datetime → YYYY-MM-DDTHH:mm
 export const formatPickerValue = (
   value: Dayjs | null,
   pickerType: 'date' | 'datetime',
@@ -61,16 +74,20 @@ export const formatPickerValue = (
   );
 };
 
+// Builds a human-readable "start – end" summary for the range trigger field.
+// Used by MRT_RangeDateValueEditor to populate the read-only display TextField.
 export const formatRangeDisplayValue = (
   value: unknown,
   language: string,
   pickerType: 'date' | 'datetime',
 ): string => {
+  // Normalise: if the value isn't a two-element array yet, treat both sides as empty
   const currentValue = Array.isArray(value) ? value : ['', ''];
 
   const formatSingle = (item: unknown): string => {
     const parsed = getPickerValue(item);
     if (!parsed) return '';
+    // Use the browser's locale-aware formatter for human-readable output
     return pickerType === 'date'
       ? parsed.toDate().toLocaleDateString(language)
       : parsed.toDate().toLocaleString(language);
@@ -83,6 +100,8 @@ export const formatRangeDisplayValue = (
   return `${start} - ${end}`.trim();
 };
 
+// Merges table-level and column-level muiFilterTextFieldProps.
+// Column overrides take precedence over table-wide defaults.
 export const getSharedTextFieldProps = <TData extends MRT_RowData>({
   column,
   table,
@@ -97,6 +116,8 @@ export const getSharedTextFieldProps = <TData extends MRT_RowData>({
   }),
 });
 
+// Same as getSharedTextFieldProps but pre-fills the size/variant defaults
+// required by the date picker textField slot.
 export const getPickerTextFieldProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ): TextFieldProps => ({
@@ -107,6 +128,9 @@ export const getPickerTextFieldProps = <TData extends MRT_RowData>(
   variant: 'outlined' as const,
 });
 
+// Merges table-level and column-level DatePicker props.
+// Cast to DatePickerProps<Dayjs> because types.ts defines muiFilterDatePickerProps
+// with `never` as TDate — safe because we always work with Dayjs values.
 export const getDatePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ): DatePickerProps<Dayjs> => ({
@@ -120,6 +144,7 @@ export const getDatePickerProps = <TData extends MRT_RowData>(
   }) as DatePickerProps<Dayjs>),
 });
 
+// Same as getDatePickerProps but for DateTimePicker.
 export const getDateTimePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ): DateTimePickerProps<Dayjs> => ({

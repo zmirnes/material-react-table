@@ -18,19 +18,25 @@ import {
 
 export type MRT_SingleDateValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
+    // 'date' renders a DatePicker; 'datetime' renders a DateTimePicker
     pickerType: 'date' | 'datetime';
   };
 
+// Single-value date/datetime filter editor.
+// Renders either a DatePicker or DateTimePicker based on pickerType.
 export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   pickerType,
   ...props
 }: MRT_SingleDateValueEditorProps<TData>) => {
+  // Resolve dayjs locale from the table's active language setting
   const pickerLocale = getPickerLocale(
     props.table.options.localization.language,
   );
+  // TextField slot props shared between DatePicker and DateTimePicker
   const pickerTextFieldProps = getPickerTextFieldProps(props);
 
-  const onChange = (value: Dayjs | null) => {
+  // Serialise the Dayjs value back to the string format expected by the filter rule
+  const handleChange = (value: Dayjs | null) => {
     props.onChange(
       formatPickerValue(value, pickerType) as Parameters<
         typeof props.onChange
@@ -38,6 +44,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
     );
   };
 
+  // Convert the stored string/API value to a Dayjs instance for the picker
   const pickerValue = getPickerValue(props.rule.value);
 
   return (
@@ -48,11 +55,12 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
       {pickerType === 'date' ? (
         <DatePicker<Dayjs>
           {...getDatePickerProps(props)}
-          onChange={onChange}
+          onChange={handleChange}
           value={pickerValue}
           slotProps={{
             ...getDatePickerProps(props)?.slotProps,
             field: {
+              // Allow the user to clear the selected date via the built-in X button
               clearable: true,
               ...getDatePickerProps(props)?.slotProps?.field,
             },
@@ -67,7 +75,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
       ) : (
         <DateTimePicker<Dayjs>
           {...getDateTimePickerProps(props)}
-          onChange={onChange}
+          onChange={handleChange}
           value={pickerValue}
           slotProps={{
             ...getDateTimePickerProps(props)?.slotProps,

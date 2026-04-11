@@ -17,6 +17,7 @@ import {
 
 export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   filterableColumns: MRT_Column<TData>[];
+  // When true this is the first rule — show the logic operator as active
   isFirst: boolean;
   logicOperator: 'and' | 'or';
   onRemove: (ruleId: string) => void;
@@ -26,6 +27,8 @@ export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
 }
 
+// Renders a single row in the advanced filter builder.
+// Each row contains: logic operator | column selector | operator selector | value editor | remove button
 export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
   filterableColumns,
   isFirst,
@@ -43,6 +46,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
     },
   } = table;
 
+  // Resolve the selected column; fall back to the first filterable column
   const selectedColumn =
     getFilterColumn(table, rule.columnId) ?? filterableColumns[0];
 
@@ -50,7 +54,9 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
     return null;
   }
 
+  // Retrieve the operators available for the selected column type
   const availableOperators = getColumnFilterOperators(selectedColumn);
+  // Resolve the active operator; fall back to the first in the list
   const selectedOperator =
     availableOperators.find((operator) => operator.id === rule.operator) ??
     availableOperators[0];
@@ -59,6 +65,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
     return null;
   }
 
+  // When the column changes, rebuild the rule from scratch using the new column's default operator
   const handleColumnChange = (columnId: string) => {
     const nextColumn = filterableColumns.find(
       (column) => column.id === columnId,
@@ -68,15 +75,18 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
       return;
     }
 
+    // Create a fresh rule for the new column
     const nextRule = createFilterRule(nextColumn);
 
     if (!nextRule) {
       return;
     }
 
+    // Preserve the rule's id so React's key prop in the parent list stays stable
     onUpdate({ ...nextRule, id: rule.id });
   };
 
+  // When the operator changes, reset the value to the new operator's initial value
   const handleOperatorChange = (operatorId: string) => {
     const nextOperator = availableOperators.find(({ id }) => id === operatorId);
 
@@ -87,10 +97,12 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
     onUpdate({
       ...rule,
       operator: nextOperator.id,
+      // Each operator defines its own empty starting value (e.g. '' or [null, null])
       value: nextOperator.getInitialValue(),
     });
   };
 
+  // Render the appropriate input component for the selected operator
   const valueEditor = selectedOperator.editComponent({
     column: selectedColumn as never,
     onChange: (value) => onUpdate({ ...rule, value }),
@@ -106,6 +118,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         py: 0.75,
       }}
     >
+      {/* 5-column grid: logic-op | column | operator | value | remove */}
       <Box
         sx={{
           alignItems: 'center',
@@ -117,6 +130,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
           width: '100%',
         }}
       >
+        {/* Logic operator (AND/OR) — disabled for all rows except the first */}
         <TextField
           disabled={!isFirst}
           fullWidth
@@ -131,6 +145,8 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
           <MenuItem value="and">{localization.and}</MenuItem>
           <MenuItem value="or">{localization.or}</MenuItem>
         </TextField>
+
+        {/* Column selector */}
         <TextField
           fullWidth
           label={localization.columns}
@@ -146,6 +162,8 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
             </MenuItem>
           ))}
         </TextField>
+
+        {/* Operator selector — options depend on the selected column type */}
         <TextField
           fullWidth
           label={localization.filterOperator}
@@ -165,9 +183,14 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
             </MenuItem>
           ))}
         </TextField>
+
+        {/* Value editor — rendered by the operator's own editComponent */}
         <Box sx={{ minWidth: 0, width: '100%' }}>
+          {/* Render an empty spacer when the operator needs no value (e.g. isEmpty) */}
           {valueEditor ?? <Box sx={{ minHeight: 56 }} />}
         </Box>
+
+        {/* Remove rule button */}
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <IconButton
             aria-label={localization.clearFilter}

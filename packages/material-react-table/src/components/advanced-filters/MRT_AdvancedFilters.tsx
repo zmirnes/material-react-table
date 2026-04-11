@@ -30,6 +30,8 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     setShowAdvancedFilters,
   } = table;
   const { showAdvancedFilters } = getState();
+
+  // All draft editing logic lives in this hook
   const {
     addRule,
     clearRules,
@@ -42,16 +44,20 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     updateRule,
   } = useMRT_AdvancedFiltersDraft(table);
 
+  // Close the drawer without applying changes
   const handleClose = () => {
     setShowAdvancedFilters(false);
   };
 
+  // Reset both the draft and the applied state, then close the drawer
   const handleClearFilters = () => {
     clearRules();
     setFilters(getDefaultFiltersState());
     handleClose();
   };
 
+  // Commit the draft to the table and close the drawer
+  // Guard prevents applying when any rule is still incomplete
   const handleApplyFilters = () => {
     if (hasInvalidRules) {
       return;
@@ -80,6 +86,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
         flexDirection="column"
         sx={{ height: '100%', p: 1.25, width: '100%' }}
       >
+        {/* Drawer header: title + close button */}
         <Box
           alignItems="center"
           display="flex"
@@ -89,6 +96,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           <Typography variant="subtitle1">
             {localization.advancedFilters}
           </Typography>
+          {/* Close button turns warning colour when there are unapplied changes */}
           <IconButton
             aria-label={localization.advancedFilters}
             color={hasUnappliedChanges ? 'warning' : 'default'}
@@ -97,6 +105,8 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
             <CloseIcon />
           </IconButton>
         </Box>
+
+        {/* Scrollable list of filter rule rows */}
         <Stack
           spacing={1}
           sx={{
@@ -118,6 +128,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
               table={table}
             />
           ))}
+          {/* Empty-state placeholder when no rules have been created yet */}
           {draftFilters.rules.length === 0 && (
             <Box
               alignItems="center"
@@ -137,6 +148,8 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
             </Box>
           )}
         </Stack>
+
+        {/* Footer actions: Clear (left) | Add rule | Apply (right) */}
         <Box display="flex" flexDirection="row" gap={1} marginTop="1rem">
           <Button
             color="warning"
@@ -147,6 +160,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           >
             {localization.clear}
           </Button>
+          {/* Disabled when no filterable columns exist in the table */}
           <Button
             disabled={filterableColumns.length === 0 || hasInvalidRules}
             onClick={addRule}
@@ -155,6 +169,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           >
             {localization.add}
           </Button>
+          {/* Disabled until all existing rules are fully filled out */}
           <Button
             color="primary"
             disabled={hasInvalidRules}
@@ -170,6 +185,8 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
   );
 };
 
+// Outer guard component — renders nothing when manualFiltering is disabled.
+// Prevents the entire filter drawer (and its hooks) from mounting unnecessarily.
 export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
   table,
 }: MRT_AdvancedFiltersProps<TData>) => {

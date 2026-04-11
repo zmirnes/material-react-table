@@ -9,12 +9,15 @@ import {
   MRT_FilterRuleRangeDateEditor,
 } from './filterEditors';
 
+// Shape returned by the API for date fields
 export interface Date {
   date: string;
   timezone: string;
   timezone_type: number;
 }
 
+// Resolver for date-only column type.
+// Supports point-in-time operators and date range operators.
 export const DateColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => {
     return {
@@ -34,6 +37,7 @@ export const DateColumnResolver: ColumnTypeResolver = {
         editComponent: MRT_FilterRuleDateEditor,
         getInitialValue: () => '',
         id: 'equals',
+        // Any falsy value (empty string, null, undefined) means no date selected
         isValueEmpty: (value: unknown) => !value,
         label: 'Equals',
       },
@@ -66,6 +70,7 @@ export const DateColumnResolver: ColumnTypeResolver = {
         label: 'On Or Before',
       },
       {
+        // Range value is stored as [startDate, endDate] — both must be filled
         editComponent: MRT_FilterRuleRangeDateEditor,
         getInitialValue: () => ['', ''],
         id: 'between',
@@ -82,6 +87,7 @@ export const DateColumnResolver: ColumnTypeResolver = {
         label: 'Between Inclusive',
       },
       {
+        // No input needed — the operator itself carries the full meaning
         editComponent: () => null,
         getInitialValue: () => null,
         id: 'isEmpty',

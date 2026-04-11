@@ -10,6 +10,8 @@ import {
   MRT_FilterRuleRangeDateTimeEditor,
 } from './filterEditors';
 
+// Resolver for date-time column type.
+// Mirrors DateColumnResolver but uses datetime pickers and formatting.
 export const DateTimeColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => {
     return {
@@ -18,6 +20,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         const value = cell.getValue<Date | null>();
         if (!value) return null;
 
+        // Format to localised date+time string (e.g. 'DD.MM.YYYY HH:mm')
         return formatApiDateTime(value);
       },
     };
@@ -28,6 +31,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         editComponent: MRT_FilterRuleDateTimeEditor,
         getInitialValue: () => '',
         id: 'equals',
+        // Any falsy value (empty string, null, undefined) means no datetime selected
         isValueEmpty: (value: unknown) => !value,
         label: 'Equals',
       },
@@ -60,6 +64,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         label: 'On Or Before',
       },
       {
+        // Range value is stored as [startDatetime, endDatetime] — both must be filled
         editComponent: MRT_FilterRuleRangeDateTimeEditor,
         getInitialValue: () => ['', ''],
         id: 'between',
@@ -76,6 +81,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         label: 'Between Inclusive',
       },
       {
+        // No input needed — the operator itself carries the full meaning
         editComponent: () => null,
         getInitialValue: () => null,
         id: 'isEmpty',
