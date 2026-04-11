@@ -31,40 +31,52 @@ export type MRT_RangeDateValueEditorProps<TData extends MRT_RowData> =
     pickerType: 'date' | 'datetime';
   };
 
+// Indices for the two range pickers: 0 = start, 1 = end
+const RANGE_INDICES = [0, 1] as const;
+
+// Popover width differs slightly to accommodate the time input
+const POPOVER_WIDTH: Record<'date' | 'datetime', number> = {
+  date: 340,
+  datetime: 420,
+};
+
 export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
   pickerType,
   ...props
 }: MRT_RangeDateValueEditorProps<TData>) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const pickerLocale = getPickerLocale(
-    props.table.options.localization.language,
-  );
+  const { onChange, rule, table } = props;
   const {
     options: {
       icons: { CloseIcon },
       localization,
     },
-  } = props.table;
+  } = table;
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  // Resolve picker props once — reused for both range pickers
+  const datePickerProps = getDatePickerProps(props);
+  const dateTimePickerProps = getDateTimePickerProps(props);
   const pickerTextFieldProps = getPickerTextFieldProps(props);
   const textFieldProps = getSharedTextFieldProps(props);
-  const currentValue = Array.isArray(props.rule.value)
-    ? props.rule.value
-    : ['', ''];
+  const pickerLocale = getPickerLocale(localization.language);
 
+  // Normalise value to a two-element array
+  const currentValue = Array.isArray(rule.value) ? rule.value : ['', ''];
+
+  // Human-readable summary shown in the trigger text field
   const displayValue = useMemo(
     () =>
-      formatRangeDisplayValue(
-        props.rule.value,
-        localization.language,
-        pickerType,
-      ),
-    [localization.language, pickerType, props.rule.value],
+      formatRangeDisplayValue(rule.value, localization.language, pickerType),
+    [localization.language, pickerType, rule.value],
   );
+
+  // --- Event handlers ---
 
   const handleRangeChange = (index: 0 | 1, value: Dayjs | null) => {
     const nextValue = [...currentValue] as [unknown, unknown];
     nextValue[index] = formatPickerValue(value, pickerType);
-    props.onChange(nextValue as Parameters<typeof props.onChange>[0]);
+    onChange(nextValue as Parameters<typeof onChange>[0]);
   };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -77,8 +89,18 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
 
   const handleClear = (event?: React.MouseEvent<HTMLElement>) => {
     event?.stopPropagation();
-    props.onChange(['', ''] as Parameters<typeof props.onChange>[0]);
+    onChange(['', ''] as Parameters<typeof onChange>[0]);
   };
+
+  // --- Shared slot props builders ---
+
+  // textField config is identical for both DatePicker and DateTimePicker
+  const buildTextFieldSlotProps = (label: string) => ({
+    ...pickerTextFieldProps,
+    label,
+    size: 'small' as const,
+    variant: 'outlined' as const,
+  });
 
   return (
     <LocalizationProvider
@@ -86,6 +108,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
       dateAdapter={AdapterDayjs}
     >
       <>
+        {/* Read-only trigger field that opens the popover */}
         <TextField
           fullWidth
           margin="none"
@@ -112,11 +135,10 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
               ) : undefined,
             },
           }}
-          sx={{
-            cursor: 'pointer',
-            ...textFieldProps.sx,
-          }}
+          sx={{ cursor: 'pointer', ...textFieldProps.sx }}
         />
+
+        {/* Popover containing the two pickers side-by-side */}
         <Popover
           anchorEl={anchorEl}
           anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -124,62 +146,55 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
           open={!!anchorEl}
           transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         >
-          <Box sx={{ p: 1.25, width: pickerType === 'date' ? 340 : 420 }}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={1}>
-              {([0, 1] as const).map((index) =>
-                pickerType === 'date' ? (
+          <Box sx={{ p: 1.25, width: POPOVER_WIDTH[pickerType] }}>
+            <Stack direction={{ md: 'row', xs: 'column' }} spacing={1}>
+              {RANGE_INDICES.map((index) => {
+                const label = index === 0 ? localization.min : localization.max;
+                const pickerValue = getPickerValue(currentValue[index]);
+
+                return pickerType === 'date' ? (
                   <DatePicker<Dayjs>
-                    {...getDatePickerProps(props)}
+                    {...datePickerProps}
                     key={index}
                     onChange={(value) => handleRangeChange(index, value)}
                     slotProps={{
-                      ...getDatePickerProps(props)?.slotProps,
+                      ...datePickerProps.slotProps,
                       field: {
                         clearable: true,
-                        ...getDatePickerProps(props)?.slotProps?.field,
+                        ...datePickerProps.slotProps?.field,
                       },
                       textField: {
-                        ...pickerTextFieldProps,
-                        ...getDatePickerProps(props)?.slotProps?.textField,
-                        label:
-                          index === 0 ? localization.min : localization.max,
-                        size: 'small',
-                        variant: 'outlined',
+                        ...buildTextFieldSlotProps(label),
+                        ...datePickerProps.slotProps?.textField,
                       },
                     }}
-                    value={getPickerValue(currentValue[index])}
+                    value={pickerValue}
                   />
                 ) : (
                   <DateTimePicker<Dayjs>
-                    {...getDateTimePickerProps(props)}
+                    {...dateTimePickerProps}
                     key={index}
                     onChange={(value) => handleRangeChange(index, value)}
                     slotProps={{
-                      ...getDateTimePickerProps(props)?.slotProps,
+                      ...dateTimePickerProps.slotProps,
                       field: {
                         clearable: true,
-                        ...getDateTimePickerProps(props)?.slotProps?.field,
+                        ...dateTimePickerProps.slotProps?.field,
                       },
                       textField: {
-                        ...pickerTextFieldProps,
-                        ...getDateTimePickerProps(props)?.slotProps?.textField,
-                        label:
-                          index === 0 ? localization.min : localization.max,
-                        size: 'small',
-                        variant: 'outlined',
+                        ...buildTextFieldSlotProps(label),
+                        ...dateTimePickerProps.slotProps?.textField,
                       },
                     }}
-                    value={getPickerValue(currentValue[index])}
+                    value={pickerValue}
                   />
-                ),
-              )}
+                );
+              })}
             </Stack>
+
+            {/* Footer actions */}
             <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                mt: 1,
-              }}
+              sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}
             >
               <Button onClick={handleClear} size="small">
                 {localization.clear}

@@ -3,10 +3,7 @@ import {
   type ColumnTypeResolver,
   type MRT_RowData,
 } from '../types';
-import {
-  MRT_FilterRuleNumberEditor,
-  MRT_FilterRuleRangeNumberEditor,
-} from './filterEditors';
+import { MRT_FilterRuleNumberEditor } from './filterEditors';
 
 export const NumberColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => column,
@@ -48,24 +45,6 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         label: 'Less Than Or Equal To',
       },
       {
-        editComponent: MRT_FilterRuleRangeNumberEditor,
-        getInitialValue: () => ['', ''],
-        id: 'between',
-        isValueEmpty: (value: unknown) =>
-          !Array.isArray(value) ||
-          value.some((item) => item === '' || item === null),
-        label: 'Between',
-      },
-      {
-        editComponent: MRT_FilterRuleRangeNumberEditor,
-        getInitialValue: () => ['', ''],
-        id: 'between-inclusive',
-        isValueEmpty: (value: unknown) =>
-          !Array.isArray(value) ||
-          value.some((item) => item === '' || item === null),
-        label: 'Between Inclusive',
-      },
-      {
         editComponent: () => null,
         getInitialValue: () => null,
         id: 'isEmpty',
@@ -79,5 +58,5 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         isValueEmpty: () => false,
         label: 'Is Not Empty',
       },
-    ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+    ] as unknown as MRT_FilterOperatorDefinition<TData, TValue>[],
 };

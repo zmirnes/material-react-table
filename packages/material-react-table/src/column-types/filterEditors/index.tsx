@@ -4,7 +4,6 @@ import {
   type MRT_RowData,
 } from '../../types';
 import { MRT_RangeDateValueEditor } from './MRT_RangeDateValueEditor';
-import { MRT_RangeValueEditor } from './MRT_RangeValueEditor';
 import { MRT_SingleDateValueEditor } from './MRT_SingleDateValueEditor';
 import { MRT_SingleValueEditor } from './MRT_SingleValueEditor';
 
@@ -50,23 +49,6 @@ export const MRT_FilterRuleDateEditor = <TData extends MRT_RowData>(
 export const MRT_FilterRuleDateTimeEditor = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ) => <MRT_SingleDateValueEditor {...props} pickerType="datetime" />;
-
-export const MRT_FilterRuleRangeTextEditor = <TData extends MRT_RowData>(
-  props: MRT_FilterOperatorEditComponentProps<TData>,
-) => <MRT_RangeValueEditor {...props} inputType="text" />;
-
-export const MRT_FilterRuleRangeNumberEditor = <TData extends MRT_RowData>(
-  props: MRT_FilterOperatorEditComponentProps<TData>,
-) => (
-  <MRT_RangeValueEditor
-    {...props}
-    inputType="number"
-    transformValue={(value) => (value === '' ? '' : Number(value))}
-    valueFormatter={(value) =>
-      value === undefined || value === null || value === '' ? '' : String(value)
-    }
-  />
-);
 
 export const MRT_FilterRuleRangeDateEditor = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
