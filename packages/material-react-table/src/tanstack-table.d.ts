@@ -8,14 +8,17 @@ export interface IIconColTypeValue {
   additional?: Record<string, Omit<IIconColTypeValue, 'additional'>>;
 }
 
+// Shape of a single available icon option provided by the backend via column meta
+export type MRT_AvailableIconOption = {
+  iconType: IIconColTypeValue;
+  tooltip: string;
+  value: unknown;
+};
+
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     enumValues?: Array<{ value: string; label: string }>;
-    availableIcons?: Array<{
-      iconType: IIconColTypeValue;
-      tooltip: string;
-      value: unknown;
-    }>;
+    availableIcons?: MRT_AvailableIconOption[];
     extraFieldFilters?: { field: string; type: string }[];
   }
 }

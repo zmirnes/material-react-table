@@ -1,3 +1,4 @@
+import { Tooltip } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -5,31 +6,19 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Iconify from '../../components/iconify';
-import { IIconColTypeValue } from '../../tanstack-table';
+import { type MRT_AvailableIconOption } from '../../tanstack-table';
 import {
   type MRT_FilterOperatorEditComponentProps,
+  type MRT_IconsListEntry,
   type MRT_RowData,
 } from '../../types';
-
-// Shape of a single available icon option provided by the backend
-type AvailableIconOption = {
-  iconType: IIconColTypeValue;
-  tooltip: string;
-  value: unknown;
-};
-
-// Shape of the icon rendering map supplied at column definition level
-type IconsListEntry = {
-  icon: string;
-  defaultColor: string;
-};
 
 export type MRT_IconMultiValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
     // Selectable icon options fetched from backend via column.columnDef.meta.availableIcons
-    availableIcons: AvailableIconOption[];
+    availableIcons: MRT_AvailableIconOption[];
     // Iconify name + colour map supplied via column.iconsList
-    iconsList: Record<string, IconsListEntry>;
+    iconsList: Record<string, MRT_IconsListEntry>;
   };
 
 // Multi-select filter editor for icon column type.
@@ -41,12 +30,13 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
   iconsList,
   onChange,
   rule,
+  table,
 }: MRT_IconMultiValueEditorProps<TData>) => {
-  // Render a fallback when no options are available (guard against misconfigured columns)
+  // Render a localised fallback when no options are available (guard against misconfigured columns)
   if (!availableIcons.length) {
     return (
       <Typography variant="body2" color="text.secondary">
-        No filter options available
+        {table.options.localization.filterNoOptions}
       </Typography>
     );
   }
@@ -75,12 +65,14 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
         if (!iconDef) return null;
 
         return (
-          <Iconify
-            key={iconCode}
-            icon={iconDef.icon}
-            sx={{ color: iconDef.defaultColor }}
-            width={20}
-          />
+          <Tooltip key={iconCode} title={option.tooltip}>
+            <Iconify
+              key={iconCode}
+              icon={iconDef.icon}
+              sx={{ color: iconDef.defaultColor }}
+              width={20}
+            />
+          </Tooltip>
         );
       })}
     </Stack>
@@ -88,7 +80,7 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
 
   const handleChange = (event: { target: { value: string | string[] } }) => {
     const { value } = event.target;
-    // MUI Select with multiple returns string when only one item is toggled via keyboard
+    // MUI Select with multiple returns string when only one item is toggled via keyboard — normalise to array
     const normalizedValues =
       typeof value === 'string' ? value.split(',') : value;
     onChange(normalizedValues as Parameters<typeof onChange>[0]);
@@ -109,7 +101,7 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
         {columnLabel}
       </InputLabel>
       <Select
-        label={columnLabel}
+        label={hasValue ? columnLabel : undefined}
         MenuProps={{ sx: { zIndex: 9999 } }}
         multiple
         onChange={handleChange}

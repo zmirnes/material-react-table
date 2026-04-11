@@ -49,6 +49,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   filterLessThan: 'Manje od',
   filterLessThanOrEqualTo: 'Manje od ili jednako',
   filterMode: 'Način filtriranja: {filterType}',
+  filterNoOptions: 'Nema dostupnih opcija za filtriranje',
   filterNotEmpty: 'Nije prazno',
   filterNotEquals: 'Nije jednako',
   filterLogic: 'Logika',

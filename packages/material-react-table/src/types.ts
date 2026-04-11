@@ -203,6 +203,7 @@ export interface MRT_Localization {
   filterLessThan: string;
   filterLessThanOrEqualTo: string;
   filterMode: string;
+  filterNoOptions: string;
   filterNotEmpty: string;
   filterNotEquals: string;
   filterOperator: string;
@@ -721,18 +722,18 @@ type MRT_IconTypeColumnClickArgs<TData extends MRT_RowData> = {
   columnId?: string;
 };
 
+// Shape of one entry in the iconsList map — Iconify icon name + default colour
+export type MRT_IconsListEntry = {
+  icon: string;
+  defaultColor: string;
+};
+
 export type MRT_IconColumnDef<
   TData extends MRT_RowData,
   TValue = unknown,
 > = MRT_ColumnDefBase<TData, TValue> & {
   onClickIconTypeColumn?: (args: MRT_IconTypeColumnClickArgs<TData>) => void;
-  iconsList?: Record<
-    string,
-    {
-      icon: string;
-      defaultColor: string;
-    }
-  >;
+  iconsList?: Record<string, MRT_IconsListEntry>;
   type: 'icon';
 };
 

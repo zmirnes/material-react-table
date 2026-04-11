@@ -5,31 +5,19 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Iconify from '../../components/iconify';
-import { IIconColTypeValue } from '../../tanstack-table';
+import { type MRT_AvailableIconOption } from '../../tanstack-table';
 import {
   type MRT_FilterOperatorEditComponentProps,
+  type MRT_IconsListEntry,
   type MRT_RowData,
 } from '../../types';
-
-// Shape of a single available icon option provided by the backend
-type AvailableIconOption = {
-  iconType: IIconColTypeValue;
-  tooltip: string;
-  value: unknown;
-};
-
-// Shape of the icon rendering map supplied at column definition level
-type IconsListEntry = {
-  icon: string;
-  defaultColor: string;
-};
 
 export type MRT_IconSingleValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
     // Selectable icon options fetched from backend via column.columnDef.meta.availableIcons
-    availableIcons: AvailableIconOption[];
+    availableIcons: MRT_AvailableIconOption[];
     // Iconify name + colour map supplied via column.iconsList
-    iconsList: Record<string, IconsListEntry>;
+    iconsList: Record<string, MRT_IconsListEntry>;
   };
 
 // Single-select filter editor for icon column type.
@@ -41,12 +29,13 @@ export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
   iconsList,
   onChange,
   rule,
+  table,
 }: MRT_IconSingleValueEditorProps<TData>) => {
-  // Render a fallback when no options are available (guard against misconfigured columns)
+  // Render a localised fallback when no options are available (guard against misconfigured columns)
   if (!availableIcons.length) {
     return (
       <Typography variant="body2" color="text.secondary">
-        No filter options available
+        {table.options.localization.filterNoOptions}
       </Typography>
     );
   }

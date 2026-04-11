@@ -49,6 +49,7 @@ export const MRT_Localization_NL: MRT_Localization = {
   filterLessThan: 'Kleiner dan',
   filterLessThanOrEqualTo: 'Kleiner dan of gelijk aan',
   filterMode: 'Filter modus: {filterType}',
+  filterNoOptions: 'Geen filteropties beschikbaar',
   filterNotEmpty: 'Niet leeg',
   filterNotEquals: 'Niet gelijk aan',
   filterLogic: 'Logica',
