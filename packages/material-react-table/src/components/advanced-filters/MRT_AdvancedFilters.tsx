@@ -71,7 +71,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     <Drawer
       PaperProps={{
         sx: {
-          maxWidth: '100%',
+          maxWidth: '50%',
           minWidth: { xs: '100%', md: '50%' },
           px: 0.5,
         },

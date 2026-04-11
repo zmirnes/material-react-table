@@ -125,7 +125,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
           columnGap: 1,
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'auto minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.5fr) auto',
+            xs: 'auto minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1.5fr) auto',
           },
           width: '100%',
         }}

@@ -15,10 +15,17 @@ export type MRT_AvailableIconOption = {
   value: unknown;
 };
 
+// Shape of dimensions column definition
+export interface MRT_DimensionsDef {
+  fields: string[];
+  tolerance?: { min: number; max: number };
+}
+
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
+    dimensions?: MRT_DimensionsDef;
     extraFieldFilters?: { field: string; type: string }[];
   }
 }

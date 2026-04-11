@@ -125,4 +125,6 @@ export const MRT_Localization_EN: MRT_Localization = {
   ungroupByColumn: 'Ungroup by {column}',
   unpin: 'Unpin',
   unpinAll: 'Unpin all',
+  dimensionRotationEnabled: 'Rotation enabled',
+  dimensionRotationDisabled: 'Rotation disabled',
 };

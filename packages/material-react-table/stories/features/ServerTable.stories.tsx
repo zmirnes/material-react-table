@@ -18,6 +18,7 @@ type Person = {
   date: Date;
   dateTime: Date;
   enum: EnumValue;
+  dimension: string;
   icon: {
     iconCode: string;
     description: string;
@@ -119,6 +120,7 @@ const fakeDatabase: Person[] = [...Array(100)].map(() => ({
       },
     ],
   },
+  dimension: '100.000x200.000x300.000',
 }));
 
 const columns: MRT_ColumnDef<Person>[] = [
@@ -158,6 +160,17 @@ const columns: MRT_ColumnDef<Person>[] = [
           value: iconCode,
         }),
       ),
+    },
+  },
+  {
+    accessorKey: 'dimension',
+    header: 'Dimension',
+    type: 'dimension',
+    meta: {
+      dimensions: {
+        fields: ['length', 'width', 'height', 'tolerance'],
+        tolerance: { min: 0.01, max: 1000 },
+      },
     },
   },
 ];

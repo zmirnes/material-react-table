@@ -279,6 +279,9 @@ export interface MRT_Localization {
   ungroupByColumn: string;
   unpin: string;
   unpinAll: string;
+  // Dimension filter editor — rotation toggle tooltips
+  dimensionRotationEnabled: string;
+  dimensionRotationDisabled: string;
 }
 
 export interface MRT_Theme {

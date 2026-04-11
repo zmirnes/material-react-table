@@ -138,3 +138,7 @@ export const MRT_FilterRuleMultiNumberEditor = <TData extends MRT_RowData>(
     }
   />
 );
+
+// Dimension filter editor — grouped number inputs + optional tolerance + rotation toggle
+export { MRT_DimensionFilterEditor } from './MRT_DimensionFilterEditor';
+export type { DimensionFilterValue } from './MRT_DimensionFilterEditor';

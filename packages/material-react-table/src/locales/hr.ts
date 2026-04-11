@@ -125,4 +125,6 @@ export const MRT_Localization_HR: MRT_Localization = {
   ungroupByColumn: 'Razgrupiraj po {column}',
   unpin: 'Odkači',
   unpinAll: 'Odkači sve',
+  dimensionRotationEnabled: 'Rotacija ukljucena',
+  dimensionRotationDisabled: 'Rotacija iskljucena',
 };
