@@ -28,36 +28,17 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   const pickerLocale = getPickerLocale(
     props.table.options.localization.language,
   );
-  const pickerProps =
-    pickerType === 'date'
-      ? getDatePickerProps(props)
-      : getDateTimePickerProps(props);
   const pickerTextFieldProps = getPickerTextFieldProps(props);
 
-  const sharedPickerProps = {
-    onChange: (value: Dayjs | null) => {
-      props.onChange(
-        formatPickerValue(value, pickerType) as Parameters<
-          typeof props.onChange
-        >[0],
-      );
-    },
-    value: getPickerValue(props.rule.value),
+  const onChange = (value: Dayjs | null) => {
+    props.onChange(
+      formatPickerValue(value, pickerType) as Parameters<
+        typeof props.onChange
+      >[0],
+    );
   };
 
-  const sharedSlotProps = {
-    ...pickerProps?.slotProps,
-    field: {
-      clearable: true,
-      ...pickerProps?.slotProps?.field,
-    },
-    textField: {
-      ...pickerTextFieldProps,
-      ...pickerProps?.slotProps?.textField,
-      size: 'small' as const,
-      variant: 'outlined' as const,
-    },
-  };
+  const pickerValue = getPickerValue(props.rule.value);
 
   return (
     <LocalizationProvider
@@ -65,16 +46,42 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
       dateAdapter={AdapterDayjs}
     >
       {pickerType === 'date' ? (
-        <DatePicker
-          {...sharedPickerProps}
-          {...pickerProps}
-          slotProps={sharedSlotProps}
+        <DatePicker<Dayjs>
+          {...getDatePickerProps(props)}
+          onChange={onChange}
+          value={pickerValue}
+          slotProps={{
+            ...getDatePickerProps(props)?.slotProps,
+            field: {
+              clearable: true,
+              ...getDatePickerProps(props)?.slotProps?.field,
+            },
+            textField: {
+              ...pickerTextFieldProps,
+              ...getDatePickerProps(props)?.slotProps?.textField,
+              size: 'small',
+              variant: 'outlined',
+            },
+          }}
         />
       ) : (
-        <DateTimePicker
-          {...sharedPickerProps}
-          {...pickerProps}
-          slotProps={sharedSlotProps}
+        <DateTimePicker<Dayjs>
+          {...getDateTimePickerProps(props)}
+          onChange={onChange}
+          value={pickerValue}
+          slotProps={{
+            ...getDateTimePickerProps(props)?.slotProps,
+            field: {
+              clearable: true,
+              ...getDateTimePickerProps(props)?.slotProps?.field,
+            },
+            textField: {
+              ...pickerTextFieldProps,
+              ...getDateTimePickerProps(props)?.slotProps?.textField,
+              size: 'small',
+              variant: 'outlined',
+            },
+          }}
         />
       )}
     </LocalizationProvider>

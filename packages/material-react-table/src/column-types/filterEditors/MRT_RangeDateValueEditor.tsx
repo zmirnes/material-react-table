@@ -45,10 +45,6 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
       localization,
     },
   } = props.table;
-  const pickerProps =
-    pickerType === 'date'
-      ? getDatePickerProps(props)
-      : getDateTimePickerProps(props);
   const pickerTextFieldProps = getPickerTextFieldProps(props);
   const textFieldProps = getSharedTextFieldProps(props);
   const currentValue = Array.isArray(props.rule.value)
@@ -83,8 +79,6 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
     event?.stopPropagation();
     props.onChange(['', ''] as Parameters<typeof props.onChange>[0]);
   };
-
-  const PickerComponent = pickerType === 'date' ? DatePicker : DateTimePicker;
 
   return (
     <LocalizationProvider
@@ -132,28 +126,53 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
         >
           <Box sx={{ p: 1.25, width: pickerType === 'date' ? 340 : 420 }}>
             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1}>
-              {([0, 1] as const).map((index) => (
-                <PickerComponent
-                  {...pickerProps}
-                  key={index}
-                  onChange={(value) => handleRangeChange(index, value)}
-                  slotProps={{
-                    ...pickerProps?.slotProps,
-                    field: {
-                      clearable: true,
-                      ...pickerProps?.slotProps?.field,
-                    },
-                    textField: {
-                      ...pickerTextFieldProps,
-                      ...pickerProps?.slotProps?.textField,
-                      label: index === 0 ? localization.min : localization.max,
-                      size: 'small',
-                      variant: 'outlined',
-                    },
-                  }}
-                  value={getPickerValue(currentValue[index])}
-                />
-              ))}
+              {([0, 1] as const).map((index) =>
+                pickerType === 'date' ? (
+                  <DatePicker<Dayjs>
+                    {...getDatePickerProps(props)}
+                    key={index}
+                    onChange={(value) => handleRangeChange(index, value)}
+                    slotProps={{
+                      ...getDatePickerProps(props)?.slotProps,
+                      field: {
+                        clearable: true,
+                        ...getDatePickerProps(props)?.slotProps?.field,
+                      },
+                      textField: {
+                        ...pickerTextFieldProps,
+                        ...getDatePickerProps(props)?.slotProps?.textField,
+                        label:
+                          index === 0 ? localization.min : localization.max,
+                        size: 'small',
+                        variant: 'outlined',
+                      },
+                    }}
+                    value={getPickerValue(currentValue[index])}
+                  />
+                ) : (
+                  <DateTimePicker<Dayjs>
+                    {...getDateTimePickerProps(props)}
+                    key={index}
+                    onChange={(value) => handleRangeChange(index, value)}
+                    slotProps={{
+                      ...getDateTimePickerProps(props)?.slotProps,
+                      field: {
+                        clearable: true,
+                        ...getDateTimePickerProps(props)?.slotProps?.field,
+                      },
+                      textField: {
+                        ...pickerTextFieldProps,
+                        ...getDateTimePickerProps(props)?.slotProps?.textField,
+                        label:
+                          index === 0 ? localization.min : localization.max,
+                        size: 'small',
+                        variant: 'outlined',
+                      },
+                    }}
+                    value={getPickerValue(currentValue[index])}
+                  />
+                ),
+              )}
             </Stack>
             <Box
               sx={{

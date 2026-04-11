@@ -1,3 +1,6 @@
+import { type TextFieldProps } from '@mui/material/TextField';
+import { type DatePickerProps } from '@mui/x-date-pickers/DatePicker';
+import { type DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import 'dayjs/locale/de';
 import 'dayjs/locale/fr';
@@ -83,7 +86,7 @@ export const formatRangeDisplayValue = (
 export const getSharedTextFieldProps = <TData extends MRT_RowData>({
   column,
   table,
-}: MRT_FilterOperatorEditComponentProps<TData>) => ({
+}: MRT_FilterOperatorEditComponentProps<TData>): TextFieldProps => ({
   ...parseFromValuesOrFunc(table.options.muiFilterTextFieldProps, {
     column,
     table,
@@ -96,7 +99,7 @@ export const getSharedTextFieldProps = <TData extends MRT_RowData>({
 
 export const getPickerTextFieldProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
-) => ({
+): TextFieldProps => ({
   ...getSharedTextFieldProps(props),
   fullWidth: true,
   margin: 'none' as const,
@@ -106,29 +109,29 @@ export const getPickerTextFieldProps = <TData extends MRT_RowData>(
 
 export const getDatePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
-) => ({
-  ...parseFromValuesOrFunc(props.table.options.muiFilterDatePickerProps, {
+): DatePickerProps<Dayjs> => ({
+  ...(parseFromValuesOrFunc(props.table.options.muiFilterDatePickerProps, {
     column: props.column,
     table: props.table,
-  }),
-  ...parseFromValuesOrFunc(props.column.columnDef.muiFilterDatePickerProps, {
+  }) as DatePickerProps<Dayjs>),
+  ...(parseFromValuesOrFunc(props.column.columnDef.muiFilterDatePickerProps, {
     column: props.column,
     table: props.table,
-  }),
+  }) as DatePickerProps<Dayjs>),
 });
 
 export const getDateTimePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
-) => ({
-  ...parseFromValuesOrFunc(props.table.options.muiFilterDateTimePickerProps, {
+): DateTimePickerProps<Dayjs> => ({
+  ...(parseFromValuesOrFunc(props.table.options.muiFilterDateTimePickerProps, {
     column: props.column,
     table: props.table,
-  }),
-  ...parseFromValuesOrFunc(
+  }) as DateTimePickerProps<Dayjs>),
+  ...(parseFromValuesOrFunc(
     props.column.columnDef.muiFilterDateTimePickerProps,
     {
       column: props.column,
       table: props.table,
     },
-  ),
+  ) as DateTimePickerProps<Dayjs>),
 });
