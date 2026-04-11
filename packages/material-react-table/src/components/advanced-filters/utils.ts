@@ -1,6 +1,7 @@
 import { columnTypeResolvers } from '../../column-types/registy';
 import {
   type MRT_Column,
+  type MRT_FilterOperator,
   type MRT_FilterOperatorDefinition,
   type MRT_FilterRule,
   type MRT_FiltersState,
@@ -14,8 +15,7 @@ export const getDefaultFiltersState = (): MRT_FiltersState => ({
   rules: [],
 });
 
-export const createFilterRuleId = (): string =>
-  `mrt-filter-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+export const createFilterRuleId = (): string => crypto.randomUUID();
 
 export const getColumnFilterOperators = <TData extends MRT_RowData>(
   column: MRT_Column<TData>,
@@ -32,39 +32,30 @@ export const getColumnFilterOperators = <TData extends MRT_RowData>(
   );
 };
 
+const OPERATOR_LOCALIZATION_KEYS: Partial<
+  Record<MRT_FilterOperator, keyof MRT_Localization>
+> = {
+  between: 'filterBetween',
+  'between-inclusive': 'filterBetweenInclusive',
+  contains: 'filterContains',
+  endsWith: 'filterEndsWith',
+  equals: 'filterEquals',
+  greaterThan: 'filterGreaterThan',
+  greaterThanOrEqualTo: 'filterGreaterThanOrEqualTo',
+  isEmpty: 'filterEmpty',
+  isNotEmpty: 'filterNotEmpty',
+  lessThan: 'filterLessThan',
+  lessThanOrEqualTo: 'filterLessThanOrEqualTo',
+  startsWith: 'filterStartsWith',
+};
+
 export const getLocalizedFilterOperatorLabel = (
   localization: MRT_Localization,
-  operatorId: MRT_FilterOperatorDefinition<any>['id'],
+  operatorId: MRT_FilterOperator,
   fallbackLabel: string,
 ): string => {
-  switch (operatorId) {
-    case 'between':
-      return localization.filterBetween;
-    case 'between-inclusive':
-      return localization.filterBetweenInclusive;
-    case 'contains':
-      return localization.filterContains;
-    case 'endsWith':
-      return localization.filterEndsWith;
-    case 'equals':
-      return localization.filterEquals;
-    case 'greaterThan':
-      return localization.filterGreaterThan;
-    case 'greaterThanOrEqualTo':
-      return localization.filterGreaterThanOrEqualTo;
-    case 'isEmpty':
-      return localization.filterEmpty;
-    case 'isNotEmpty':
-      return localization.filterNotEmpty;
-    case 'lessThan':
-      return localization.filterLessThan;
-    case 'lessThanOrEqualTo':
-      return localization.filterLessThanOrEqualTo;
-    case 'startsWith':
-      return localization.filterStartsWith;
-    default:
-      return fallbackLabel;
-  }
+  const key = OPERATOR_LOCALIZATION_KEYS[operatorId];
+  return key ? (localization[key] as string) : fallbackLabel;
 };
 
 export const getFilterableColumns = <TData extends MRT_RowData>(
@@ -103,7 +94,7 @@ export const createFilterRule = <TData extends MRT_RowData>(
   };
 };
 
-export const isFilterRuleEmpty = <TData extends MRT_RowData>(
+export const isFilterRuleIncomplete = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
   rule: MRT_FilterRule,
 ): boolean => {

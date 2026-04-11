@@ -10,7 +10,7 @@ import {
   createFilterRule,
   getDefaultFiltersState,
   getFilterableColumns,
-  isFilterRuleEmpty,
+  isFilterRuleIncomplete,
 } from './utils';
 
 export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
@@ -84,7 +84,7 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   };
 
   const hasInvalidRules = draftFilters.rules.some((rule) =>
-    isFilterRuleEmpty(table, rule),
+    isFilterRuleIncomplete(table, rule),
   );
 
   return {

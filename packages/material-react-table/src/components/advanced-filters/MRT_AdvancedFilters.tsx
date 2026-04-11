@@ -13,7 +13,11 @@ export interface MRT_AdvancedFiltersProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
 }
 
-export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
+/**
+ * Inner component that owns the draft state hook.
+ * Extracted so that hooks are never called conditionally in the parent guard.
+ */
+const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
   table,
 }: MRT_AdvancedFiltersProps<TData>) => {
   const {
@@ -21,7 +25,6 @@ export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
     options: {
       icons: { CloseIcon },
       localization,
-      manualFiltering,
     },
     setFilters,
     setShowAdvancedFilters,
@@ -38,13 +41,6 @@ export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
     updateLogicOperator,
     updateRule,
   } = useMRT_AdvancedFiltersDraft(table);
-
-  // All draft rules are always shown in the drawer
-  const displayedRules = draftFilters.rules;
-
-  if (!manualFiltering) {
-    return null;
-  }
 
   const handleClose = () => {
     setShowAdvancedFilters(false);
@@ -109,7 +105,7 @@ export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
             py: 1,
           }}
         >
-          {displayedRules.map((rule, index) => (
+          {draftFilters.rules.map((rule, index) => (
             <MRT_AdvancedFiltersRuleRow
               filterableColumns={filterableColumns}
               isFirst={index === 0}
@@ -122,7 +118,7 @@ export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
               table={table}
             />
           ))}
-          {displayedRules.length === 0 && (
+          {draftFilters.rules.length === 0 && (
             <Box
               alignItems="center"
               display="flex"
@@ -172,4 +168,14 @@ export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
       </Box>
     </Drawer>
   );
+};
+
+export const MRT_AdvancedFilters = <TData extends MRT_RowData>({
+  table,
+}: MRT_AdvancedFiltersProps<TData>) => {
+  if (!table.options.manualFiltering) {
+    return null;
+  }
+
+  return <MRT_AdvancedFiltersContent table={table} />;
 };

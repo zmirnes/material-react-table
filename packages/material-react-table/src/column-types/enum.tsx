@@ -6,7 +6,7 @@ import {
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../types';
-import { MRT_FilterRuleSelectEditor } from './filterEditors';
+import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 
 export type EnumValue = {
   value: string;
@@ -38,13 +38,11 @@ export const EnumColumnResolver: ColumnTypeResolver = {
 
     return [
       {
-        editComponent: (
-          props: MRT_FilterOperatorEditComponentProps<TData, TValue>,
-        ) =>
-          MRT_FilterRuleSelectEditor({
-            ...(props as unknown as Parameters<
-              typeof MRT_FilterRuleSelectEditor
-            >[0]),
+        // MRT_SingleValueEditor is TValue-agnostic for select rendering;
+        // widening TValue → unknown is safe here.
+        editComponent: (props) =>
+          MRT_SingleValueEditor({
+            ...(props as MRT_FilterOperatorEditComponentProps<TData>),
             options: selectOptions,
           }),
         getInitialValue: () => '' as TValue,
@@ -52,6 +50,6 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
       },
-    ] as unknown as MRT_FilterOperatorDefinition<TData, TValue>[];
+    ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },
 };
