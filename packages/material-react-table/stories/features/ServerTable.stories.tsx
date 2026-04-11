@@ -146,6 +146,19 @@ const columns: MRT_ColumnDef<Person>[] = [
       alert(`Icon clicked row: ${row.id}`);
     },
     iconsList: ICONS_LIST,
+    meta: {
+      availableIcons: Object.entries(ICONS_LIST).map(
+        ([iconCode, { icon, defaultColor }]) => ({
+          iconType: {
+            iconCode,
+            description: `Icon ${iconCode}`,
+            color: defaultColor,
+          },
+          tooltip: `Icon ${iconCode}`,
+          value: iconCode,
+        }),
+      ),
+    },
   },
 ];
 

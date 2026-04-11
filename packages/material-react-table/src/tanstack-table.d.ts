@@ -3,7 +3,8 @@ import '@tanstack/react-table'; //or vue, svelte, solid, qwik, etc.
 export interface IIconColTypeValue {
   color: string;
   description: string;
-  iconCode: number;
+  // String key — matches iconsList Record<string, ...> and cell value shape
+  iconCode: string;
   additional?: Record<string, Omit<IIconColTypeValue, 'additional'>>;
 }
 
