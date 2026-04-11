@@ -175,21 +175,33 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
                       {sectionLabel}
                     </Typography>
 
-                    {/* Inline calendar — permanently open, no extra click */}
-                    <DateCalendar<Dayjs>
-                      onChange={(value) => handleDateChange(index, value)}
-                      value={pickerValue}
-                    />
-
-                    {/* Digital clock for the time part — only in datetime mode */}
-                    {pickerType === 'datetime' && (
-                      <MultiSectionDigitalClock<Dayjs>
-                        onChange={(value) => handleTimeChange(index, value)}
-                        sx={{ mt: 1 }}
+                    <Box display="flex">
+                      {/* Inline calendar — permanently open, no extra click */}
+                      <DateCalendar<Dayjs>
+                        onChange={(value) => handleDateChange(index, value)}
                         value={pickerValue}
-                        views={['hours', 'minutes']}
+                        sx={{ width: '100%' }}
                       />
-                    )}
+
+                      {/* Digital clock for the time part — only in datetime mode */}
+                      {pickerType === 'datetime' && (
+                        <MultiSectionDigitalClock<Dayjs>
+                          onChange={(value) => handleTimeChange(index, value)}
+                          sx={{
+                            // Hide scrollbars on each clock column while keeping scroll functionality
+                            '& .MuiMultiSectionDigitalClockSection-root': {
+                              scrollbarWidth: 'none',
+                              '&::-webkit-scrollbar': { display: 'none' },
+                            },
+                            mt: 1,
+                            width: '156px',
+                          }}
+                          value={pickerValue}
+                          views={['hours', 'minutes']}
+                          timeSteps={{ hours: 1, minutes: 1 }}
+                        />
+                      )}
+                    </Box>
                   </Box>
                 );
               })}
@@ -199,12 +211,8 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
             <Box
               sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}
             >
-              <Button onClick={handleClear} size="small">
-                {localization.clear}
-              </Button>
-              <Button onClick={handleClose} size="small">
-                {localization.apply}
-              </Button>
+              <Button onClick={handleClear}>{localization.clear}</Button>
+              <Button onClick={handleClose}>{localization.apply}</Button>
             </Box>
           </Box>
         </Popover>

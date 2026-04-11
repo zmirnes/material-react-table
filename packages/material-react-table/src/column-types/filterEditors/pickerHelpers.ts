@@ -90,7 +90,16 @@ export const formatRangeDisplayValue = (
     // Use the browser's locale-aware formatter for human-readable output without any spaces
     return pickerType === 'date'
       ? parsed.toDate().toLocaleDateString(language).replace(/\s/g, '')
-      : parsed.toDate().toLocaleString(language).replace(/\s/g, '');
+      : parsed
+          .toDate()
+          .toLocaleString(language, {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })
+          .replace(/\s/g, '');
   };
 
   const start = formatSingle(currentValue[0]);
