@@ -36,8 +36,8 @@ const RANGE_INDICES = [0, 1] as const;
 
 // Popover width differs slightly to accommodate the time input
 const POPOVER_WIDTH: Record<'date' | 'datetime', number> = {
-  date: 340,
-  datetime: 420,
+  date: 380,
+  datetime: 460,
 };
 
 export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
@@ -74,9 +74,9 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
   // --- Event handlers ---
 
   const handleRangeChange = (index: 0 | 1, value: Dayjs | null) => {
-    const nextValue = [...currentValue] as [unknown, unknown];
+    const nextValue = [...currentValue];
     nextValue[index] = formatPickerValue(value, pickerType);
-    onChange(nextValue as Parameters<typeof onChange>[0]);
+    onChange(nextValue);
   };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -89,7 +89,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
 
   const handleClear = (event?: React.MouseEvent<HTMLElement>) => {
     event?.stopPropagation();
-    onChange(['', ''] as Parameters<typeof onChange>[0]);
+    onChange(['', '']);
   };
 
   // --- Shared slot props builders ---
@@ -141,15 +141,16 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
         {/* Popover containing the two pickers side-by-side */}
         <Popover
           anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           onClose={handleClose}
           open={!!anchorEl}
-          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         >
           <Box sx={{ p: 1.25, width: POPOVER_WIDTH[pickerType] }}>
             <Stack direction={{ md: 'row', xs: 'column' }} spacing={1}>
               {RANGE_INDICES.map((index) => {
-                const label = index === 0 ? localization.min : localization.max;
+                const label =
+                  index === 0 ? localization.filterFrom : localization.filterTo;
                 const pickerValue = getPickerValue(currentValue[index]);
 
                 return pickerType === 'date' ? (

@@ -185,6 +185,8 @@ export interface MRT_Localization {
   filterBetween: string;
   filterBetweenInclusive: string;
   filterByColumn: string;
+  filterFrom: string;
+  filterTo: string;
   filterContains: string;
   filterEmpty: string;
   filterEndsWith: string;

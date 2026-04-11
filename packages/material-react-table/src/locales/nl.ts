@@ -32,6 +32,8 @@ export const MRT_Localization_NL: MRT_Localization = {
   filterBetween: 'Tussen',
   filterBetweenInclusive: 'Tussen inclusief',
   filterByColumn: 'Filteren op {column}',
+  filterFrom: 'Van',
+  filterTo: 'Tot',
   filterContains: 'Omvat',
   filterEmpty: 'leeg',
   filterEndsWith: 'Eindigd met',

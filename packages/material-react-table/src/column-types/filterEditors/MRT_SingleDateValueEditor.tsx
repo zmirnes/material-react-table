@@ -37,11 +37,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
 
   // Serialise the Dayjs value back to the string format expected by the filter rule
   const handleChange = (value: Dayjs | null) => {
-    props.onChange(
-      formatPickerValue(value, pickerType) as Parameters<
-        typeof props.onChange
-      >[0],
-    );
+    props.onChange(formatPickerValue(value, pickerType));
   };
 
   // Convert the stored string/API value to a Dayjs instance for the picker

@@ -32,6 +32,8 @@ export const MRT_Localization_FR: MRT_Localization = {
   filterBetween: 'Entre',
   filterBetweenInclusive: 'Entre inclus',
   filterByColumn: 'Filtrer par {column}',
+  filterFrom: 'De',
+  filterTo: 'À',
   filterContains: 'Contient',
   filterEmpty: 'Vide',
   filterEndsWith: 'Se termine par',

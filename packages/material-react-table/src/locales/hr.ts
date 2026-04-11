@@ -32,6 +32,8 @@ export const MRT_Localization_HR: MRT_Localization = {
   filterBetween: 'Između',
   filterBetweenInclusive: 'Između uključivo',
   filterByColumn: 'Filtriraj po {column}',
+  filterFrom: 'Od',
+  filterTo: 'Do',
   filterContains: 'Sadrži',
   filterEmpty: 'Prazno',
   filterEndsWith: 'Završava s',
