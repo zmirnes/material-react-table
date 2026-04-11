@@ -6,8 +6,14 @@ import {
 import { formatApiDate } from '../utils/date';
 import {
   MRT_FilterRuleDateEditor,
+  MRT_FilterRuleDisabledDateEditor,
+  MRT_FilterRuleDisabledRangeDateEditor,
   MRT_FilterRuleRangeDateEditor,
 } from './filterEditors';
+import {
+  computeRelativeDateRange,
+  computeRelativeDateSingle,
+} from './filterEditors/relativeDateRanges';
 
 // Shape returned by the API for date fields
 export interface Date {
@@ -35,71 +41,83 @@ export const DateColumnResolver: ColumnTypeResolver = {
     [
       {
         editComponent: MRT_FilterRuleDateEditor,
-        getInitialValue: () => '',
-        id: 'equals',
-        // Any falsy value (empty string, null, undefined) means no date selected
-        isValueEmpty: (value: unknown) => !value,
-        label: 'Equals',
-      },
-      {
-        editComponent: MRT_FilterRuleDateEditor,
-        getInitialValue: () => '',
-        id: 'greaterThan',
-        isValueEmpty: (value: unknown) => !value,
-        label: 'After',
-      },
-      {
-        editComponent: MRT_FilterRuleDateEditor,
-        getInitialValue: () => '',
-        id: 'greaterThanOrEqualTo',
-        isValueEmpty: (value: unknown) => !value,
-        label: 'On Or After',
-      },
-      {
-        editComponent: MRT_FilterRuleDateEditor,
-        getInitialValue: () => '',
+        getInitialValue: () => null,
         id: 'lessThan',
+        // null means no date selected
         isValueEmpty: (value: unknown) => !value,
         label: 'Before',
       },
       {
         editComponent: MRT_FilterRuleDateEditor,
-        getInitialValue: () => '',
-        id: 'lessThanOrEqualTo',
+        getInitialValue: () => null,
+        id: 'greaterThan',
         isValueEmpty: (value: unknown) => !value,
-        label: 'On Or Before',
+        label: 'After',
       },
       {
-        // Range value is stored as [startDate, endDate] — both must be filled
+        // Range value is stored as {from, to} Unix ms timestamps
         editComponent: MRT_FilterRuleRangeDateEditor,
-        getInitialValue: () => ['', ''],
+        getInitialValue: () => ({ from: null, to: null }),
         id: 'between',
-        isValueEmpty: (value: unknown) =>
-          !Array.isArray(value) || value.some((item) => !item),
-        label: 'Between',
+        isValueEmpty: (value: unknown) => {
+          const v = value as {
+            from?: number | null;
+            to?: number | null;
+          } | null;
+          return !v || !v.from || !v.to;
+        },
+        label: 'Range',
       },
       {
-        editComponent: MRT_FilterRuleRangeDateEditor,
-        getInitialValue: () => ['', ''],
-        id: 'between-inclusive',
-        isValueEmpty: (value: unknown) =>
-          !Array.isArray(value) || value.some((item) => !item),
-        label: 'Between Inclusive',
-      },
-      {
-        // No input needed — the operator itself carries the full meaning
-        editComponent: () => null,
-        getInitialValue: () => null,
-        id: 'isEmpty',
+        // Relative operators: value is computed at rule-creation time and stored as an ISO string.
+        // The editor is rendered disabled so the user knows the value is implicit.
+        editComponent: MRT_FilterRuleDisabledDateEditor,
+        getInitialValue: () => computeRelativeDateSingle('from-today'),
+        id: 'from-today',
         isValueEmpty: () => false,
-        label: 'Is Empty',
+        label: 'From Today',
       },
       {
-        editComponent: () => null,
-        getInitialValue: () => null,
-        id: 'isNotEmpty',
+        editComponent: MRT_FilterRuleDisabledDateEditor,
+        getInitialValue: () => computeRelativeDateSingle('to-today'),
+        id: 'to-today',
         isValueEmpty: () => false,
-        label: 'Is Not Empty',
+        label: 'To Today',
+      },
+      {
+        editComponent: MRT_FilterRuleDisabledRangeDateEditor,
+        getInitialValue: () => computeRelativeDateRange('current-week'),
+        id: 'current-week',
+        isValueEmpty: () => false,
+        label: 'Current Week',
+      },
+      {
+        editComponent: MRT_FilterRuleDisabledRangeDateEditor,
+        getInitialValue: () => computeRelativeDateRange('current-month'),
+        id: 'current-month',
+        isValueEmpty: () => false,
+        label: 'Current Month',
+      },
+      {
+        editComponent: MRT_FilterRuleDisabledRangeDateEditor,
+        getInitialValue: () => computeRelativeDateRange('last-7-days'),
+        id: 'last-7-days',
+        isValueEmpty: () => false,
+        label: 'Last 7 Days',
+      },
+      {
+        editComponent: MRT_FilterRuleDisabledRangeDateEditor,
+        getInitialValue: () => computeRelativeDateRange('last-week'),
+        id: 'last-week',
+        isValueEmpty: () => false,
+        label: 'Last Week',
+      },
+      {
+        editComponent: MRT_FilterRuleDisabledRangeDateEditor,
+        getInitialValue: () => computeRelativeDateRange('last-month'),
+        id: 'last-month',
+        isValueEmpty: () => false,
+        label: 'Last Month',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };

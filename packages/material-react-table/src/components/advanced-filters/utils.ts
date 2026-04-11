@@ -42,19 +42,26 @@ const OPERATOR_LOCALIZATION_KEYS: Partial<
   Record<MRT_FilterOperator, keyof MRT_Localization>
 > = {
   between: 'filterBetween',
-  'between-inclusive': 'filterBetweenInclusive',
   contains: 'filterContains',
+  'current-month': 'filterCurrentMonth',
+  'current-week': 'filterCurrentWeek',
   endsWith: 'filterEndsWith',
   equals: 'filterEquals',
+  'from-today': 'filterFromToday',
   greaterThan: 'filterGreaterThan',
   greaterThanOrEqualTo: 'filterGreaterThanOrEqualTo',
   inArray: 'filterInArray',
   isEmpty: 'filterEmpty',
   isNotEmpty: 'filterNotEmpty',
+  'last-7-days': 'filterLast7Days',
+  'last-month': 'filterLastMonth',
+  'last-week': 'filterLastWeek',
   lessThan: 'filterLessThan',
   lessThanOrEqualTo: 'filterLessThanOrEqualTo',
+  notContains: 'filterNotContains',
   notEquals: 'filterNotEquals',
   startsWith: 'filterStartsWith',
+  'to-today': 'filterToToday',
 };
 
 // Translates an operator id to its localised label.

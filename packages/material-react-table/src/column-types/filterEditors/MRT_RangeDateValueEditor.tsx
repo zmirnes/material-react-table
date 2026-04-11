@@ -18,15 +18,17 @@ import {
   type MRT_RowData,
 } from '../../types';
 import {
-  formatPickerValue,
   formatRangeDisplayValue,
   getPickerLocale,
   getPickerValue,
   getSharedTextFieldProps,
+  type DateRangeFilterValue,
 } from './pickerHelpers';
 
 export type MRT_RangeDateValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
+    // When true, the trigger field is non-interactive (used for relative date operators)
+    disabled?: boolean;
     pickerType: 'date' | 'datetime';
   };
 
@@ -34,6 +36,7 @@ export type MRT_RangeDateValueEditorProps<TData extends MRT_RowData> =
 const RANGE_INDICES = [0, 1] as const;
 
 export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
+  disabled,
   pickerType,
   ...props
 }: MRT_RangeDateValueEditorProps<TData>) => {
@@ -51,8 +54,14 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
   const textFieldProps = getSharedTextFieldProps(props);
   const pickerLocale = getPickerLocale(localization.language);
 
-  // Normalise stored value to a two-element array
-  const currentValue = Array.isArray(rule.value) ? rule.value : ['', ''];
+  // Normalise stored value to the DateRangeFilterValue {from, to} shape
+  const currentRangeValue: DateRangeFilterValue =
+    rule.value !== null &&
+    typeof rule.value === 'object' &&
+    !Array.isArray(rule.value) &&
+    'from' in (rule.value as object)
+      ? (rule.value as DateRangeFilterValue)
+      : { from: null, to: null };
 
   // Human-readable "start – end" summary shown in the read-only trigger field
   const displayValue = useMemo(
@@ -61,10 +70,13 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
     [localization.language, pickerType, rule.value],
   );
 
-  // Updates one range endpoint and keeps the other unchanged
+  // Updates one range endpoint (from=0, to=1) and emits the full {from, to} object
   const handleRangeChange = (index: 0 | 1, value: Dayjs | null) => {
-    const nextValue = [...currentValue];
-    nextValue[index] = formatPickerValue(value, pickerType);
+    const timestamp = value ? value.valueOf() : null;
+    const nextValue: DateRangeFilterValue = {
+      ...currentRangeValue,
+      ...(index === 0 ? { from: timestamp } : { to: timestamp }),
+    };
     onChange(nextValue);
   };
 
@@ -76,7 +88,9 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
     }
     if (pickerType === 'datetime') {
       // Merge newly selected date with the existing time (default to 00:00)
-      const existingValue = getPickerValue(currentValue[index]);
+      const existingTimestamp =
+        index === 0 ? currentRangeValue.from : currentRangeValue.to;
+      const existingValue = getPickerValue(existingTimestamp);
       const merged = newDate
         .hour(existingValue?.hour() ?? 0)
         .minute(existingValue?.minute() ?? 0);
@@ -90,7 +104,9 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
   const handleTimeChange = (index: 0 | 1, newTime: Dayjs | null) => {
     if (!newTime) return;
     // Fall back to newTime's date when no date has been picked yet
-    const existingDate = getPickerValue(currentValue[index]) ?? newTime;
+    const existingTimestamp =
+      index === 0 ? currentRangeValue.from : currentRangeValue.to;
+    const existingDate = getPickerValue(existingTimestamp) ?? newTime;
     const merged = existingDate.hour(newTime.hour()).minute(newTime.minute());
     handleRangeChange(index, merged);
   };
@@ -105,7 +121,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
 
   const handleClear = (event?: React.MouseEvent<HTMLElement>) => {
     event?.stopPropagation();
-    onChange(['', '']);
+    onChange({ from: null, to: null });
   };
 
   return (
@@ -116,9 +132,11 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
       <>
         {/* Read-only trigger field that opens the popover */}
         <TextField
+          disabled={disabled}
           fullWidth
           margin="none"
-          onClick={handleOpen}
+          // Disabled editors are used for relative date operators — clicking is intentionally blocked
+          onClick={disabled ? undefined : handleOpen}
           placeholder={localization.filterBetween}
           size="small"
           value={displayValue}
@@ -132,16 +150,21 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
             },
             input: {
               ...textFieldProps.slotProps?.input,
-              endAdornment: displayValue ? (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleClear} size="small">
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ) : undefined,
+              // Hide the clear button when the field is disabled (relative date operators)
+              endAdornment:
+                displayValue && !disabled ? (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClear} size="small">
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ) : undefined,
             },
           }}
-          sx={{ cursor: 'pointer', ...textFieldProps.sx }}
+          sx={{
+            cursor: disabled ? 'default' : 'pointer',
+            ...textFieldProps.sx,
+          }}
         />
 
         {/* Popover with inline calendars — immediately visible, no extra click needed */}
@@ -162,7 +185,10 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
               {RANGE_INDICES.map((index) => {
                 const sectionLabel =
                   index === 0 ? localization.filterFrom : localization.filterTo;
-                const pickerValue = getPickerValue(currentValue[index]);
+                // Retrieve the from/to Dayjs value for this range endpoint
+                const endpointTimestamp =
+                  index === 0 ? currentRangeValue.from : currentRangeValue.to;
+                const pickerValue = getPickerValue(endpointTimestamp);
 
                 return (
                   <Box key={index} sx={{ minWidth: 0 }}>

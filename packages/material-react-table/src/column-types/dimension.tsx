@@ -22,14 +22,6 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleTextEditor,
         getInitialValue: () => '',
-        id: 'contains',
-        // Treat blank or whitespace-only input as empty
-        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
-        label: 'Contains',
-      },
-      {
-        editComponent: MRT_FilterRuleTextEditor,
-        getInitialValue: () => '',
         id: 'equals',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Equals',

@@ -2,6 +2,13 @@ import { type TextFieldProps } from '@mui/material/TextField';
 import { type DatePickerProps } from '@mui/x-date-pickers/DatePicker';
 import { type DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
+
+// Filter value shape for date range operators.
+// Both endpoints are stored as Unix millisecond timestamps.
+export type DateRangeFilterValue = {
+  from: number | null;
+  to: number | null;
+};
 // Locale bundles — loaded once so dayjs can apply them via adapterLocale
 import 'dayjs/locale/de';
 import 'dayjs/locale/fr';
@@ -62,16 +69,11 @@ export const getPickerValue = (value: unknown): Dayjs | null => {
   return parsed.isValid() ? parsed : null;
 };
 
-// Serialises a Dayjs value to the string format the filter rule expects.
-// Date-only → YYYY-MM-DD; datetime → YYYY-MM-DDTHH:mm
-export const formatPickerValue = (
-  value: Dayjs | null,
-  pickerType: 'date' | 'datetime',
-): string => {
-  if (!value) return '';
-  return value.format(
-    pickerType === 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DDTHH:mm',
-  );
+// Serialises a Dayjs value to a Unix millisecond timestamp for use in filter rules.
+// Returns null when no value is selected.
+export const formatPickerValue = (value: Dayjs | null): number | null => {
+  if (!value) return null;
+  return value.valueOf();
 };
 
 // Builds a human-readable "start – end" summary for the range trigger field.
@@ -81,11 +83,11 @@ export const formatRangeDisplayValue = (
   language: string,
   pickerType: 'date' | 'datetime',
 ): string => {
-  // Normalise: if the value isn't a two-element array yet, treat both sides as empty
-  const currentValue = Array.isArray(value) ? value : ['', ''];
+  // Extract the from/to timestamps from the DateRangeFilterValue shape
+  const rangeValue = (value as DateRangeFilterValue | null) ?? null;
 
-  const formatSingle = (item: unknown): string => {
-    const parsed = getPickerValue(item);
+  const formatSingle = (timestamp: number | null | undefined): string => {
+    const parsed = getPickerValue(timestamp ?? null);
     if (!parsed) return '';
     // Use the browser's locale-aware formatter for human-readable output without any spaces
     return pickerType === 'date'
@@ -102,8 +104,8 @@ export const formatRangeDisplayValue = (
           .replace(/\s/g, '');
   };
 
-  const start = formatSingle(currentValue[0]);
-  const end = formatSingle(currentValue[1]);
+  const start = formatSingle(rangeValue?.from);
+  const end = formatSingle(rangeValue?.to);
 
   if (!start && !end) return '';
   return `${start} - ${end}`.trim();

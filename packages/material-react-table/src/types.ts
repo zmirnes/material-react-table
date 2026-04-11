@@ -206,10 +206,18 @@ export interface MRT_Localization {
   filterNoOptions: string;
   filterNotEmpty: string;
   filterNotEquals: string;
+  filterNotContains: string;
   filterOperator: string;
   filterLogic: string;
   filterStartsWith: string;
   filterWeakEquals: string;
+  filterCurrentWeek: string;
+  filterCurrentMonth: string;
+  filterLast7Days: string;
+  filterLastWeek: string;
+  filterLastMonth: string;
+  filterFromToday: string;
+  filterToToday: string;
   booleanTrue: string;
   booleanFalse: string;
   goToFirstPage: string;
@@ -1455,28 +1463,27 @@ export type ColumnType =
 
 export type MRT_FilterOperator =
   | 'between'
-  | 'between-inclusive'
   | 'contains'
+  | 'current-month'
+  | 'current-week'
   | 'endsWith'
   | 'equals'
+  | 'from-today'
   | 'fuzzy'
   | 'greaterThan'
   | 'greaterThanOrEqualTo'
   | 'inArray'
   | 'isEmpty'
   | 'isNotEmpty'
+  | 'last-7-days'
+  | 'last-month'
+  | 'last-week'
   | 'lessThan'
   | 'lessThanOrEqualTo'
   | 'notContains'
   | 'notEquals'
   | 'startsWith'
-  | 'time-between'
-  | 'time-between-inclusive'
-  | 'time-equals'
-  | 'time-greaterThan'
-  | 'time-greaterThanOrEqualTo'
-  | 'time-lessThan'
-  | 'time-lessThanOrEqualTo';
+  | 'to-today';
 
 export interface MRT_FilterRule {
   columnId: string;

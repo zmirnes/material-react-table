@@ -8,7 +8,6 @@ import {
   type MRT_RowData,
 } from '../../types';
 import {
-  formatPickerValue,
   getDatePickerProps,
   getDateTimePickerProps,
   getPickerLocale,
@@ -18,6 +17,8 @@ import {
 
 export type MRT_SingleDateValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
+    // When true, the picker is non-interactive (used for relative date operators)
+    disabled?: boolean;
     // 'date' renders a DatePicker; 'datetime' renders a DateTimePicker
     pickerType: 'date' | 'datetime';
   };
@@ -25,6 +26,7 @@ export type MRT_SingleDateValueEditorProps<TData extends MRT_RowData> =
 // Single-value date/datetime filter editor.
 // Renders either a DatePicker or DateTimePicker based on pickerType.
 export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
+  disabled,
   pickerType,
   ...props
 }: MRT_SingleDateValueEditorProps<TData>) => {
@@ -35,9 +37,9 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   // TextField slot props shared between DatePicker and DateTimePicker
   const pickerTextFieldProps = getPickerTextFieldProps(props);
 
-  // Serialise the Dayjs value back to the string format expected by the filter rule
+  // Serialise the selected Dayjs value to a Unix ms timestamp for the filter rule
   const handleChange = (value: Dayjs | null) => {
-    props.onChange(formatPickerValue(value, pickerType));
+    props.onChange(value ? value.valueOf() : null);
   };
 
   // Convert the stored string/API value to a Dayjs instance for the picker
@@ -50,6 +52,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
     >
       {pickerType === 'date' ? (
         <DatePicker<Dayjs>
+          disabled={disabled}
           {...getDatePickerProps(props)}
           onChange={handleChange}
           value={pickerValue}
@@ -70,6 +73,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
         />
       ) : (
         <DateTimePicker<Dayjs>
+          disabled={disabled}
           {...getDateTimePickerProps(props)}
           onChange={handleChange}
           value={pickerValue}

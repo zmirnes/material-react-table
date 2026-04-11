@@ -3,7 +3,10 @@ import {
   type ColumnTypeResolver,
   type MRT_RowData,
 } from '../types';
-import { MRT_FilterRuleTextEditor } from './filterEditors';
+import {
+  MRT_FilterRuleMultiTextEditor,
+  MRT_FilterRuleTextEditor,
+} from './filterEditors';
 
 // Resolver for plain string column type.
 // Supports text-based operators plus empty/not-empty checks.
@@ -27,6 +30,14 @@ export const StringColumnResolver: ColumnTypeResolver = {
         label: 'Equals',
       },
       {
+        // Mirrors MUI doesNotEqual — text must not match the cell value exactly
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'notEquals',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Does Not Equal',
+      },
+      {
         editComponent: MRT_FilterRuleTextEditor,
         getInitialValue: () => '',
         id: 'startsWith',
@@ -39,6 +50,14 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'endsWith',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Ends With',
+      },
+      {
+        // Mirrors MUI doesNotContain — cell value must not include the typed substring
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'notContains',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Does Not Contain',
       },
       {
         // No input needed — the operator itself carries the full meaning
@@ -54,6 +73,15 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'isNotEmpty',
         isValueEmpty: () => false,
         label: 'Is Not Empty',
+      },
+      {
+        // Mirrors MUI isAnyOf — cell value must match one of the user-supplied entries
+        editComponent: MRT_FilterRuleMultiTextEditor,
+        getInitialValue: () => [],
+        id: 'inArray',
+        isValueEmpty: (value: unknown) =>
+          !Array.isArray(value) || value.length === 0,
+        label: 'Is Any Of',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };
