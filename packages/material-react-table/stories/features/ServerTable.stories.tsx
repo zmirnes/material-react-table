@@ -11,6 +11,21 @@ const meta: Meta = {
 
 export default meta;
 
+type TrebovanjeMaterijala = {
+  profil: boolean;
+  ojacanje: boolean;
+  aluclip: boolean;
+  okov: boolean;
+  ispuna: boolean;
+  panel: boolean;
+  inox: boolean;
+  klupica: boolean;
+  staklo: boolean;
+  roletna: boolean;
+  ostalo: boolean;
+  dihtung: boolean;
+};
+
 type Person = {
   id: string;
   firstName: string;
@@ -160,6 +175,12 @@ const columns: MRT_ColumnDef<Person>[] = [
           value: iconCode,
         }),
       ),
+      extraFieldFilters: [
+        {
+          field: 'icon.description',
+          type: 'boolean',
+        },
+      ],
     },
   },
   {
@@ -171,6 +192,77 @@ const columns: MRT_ColumnDef<Person>[] = [
         fields: ['length', 'width', 'height', 'tolerance'],
         tolerance: { min: 0.01, max: 1000 },
       },
+    },
+  },
+  {
+    // Column type is 'object' — not directly filterable.
+    // Filter drawer exposes individual boolean sub-fields via extraFieldFilters.
+    accessorKey: 'trebovanje_materijala',
+    header: 'Trebovanje materijala',
+    type: 'object',
+    meta: {
+      extraFieldFilters: [
+        {
+          accessorKey: 'trebovanje_materijala[profil]',
+          header: 'Profil',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[ojacanje]',
+          header: 'Ojačanje',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[aluclip]',
+          header: 'Aluclip',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[okov]',
+          header: 'Okov',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[ispuna]',
+          header: 'Ispuna',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[panel]',
+          header: 'Panel',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[inox]',
+          header: 'Inox',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[klupica]',
+          header: 'Klupica',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[staklo]',
+          header: 'Staklo',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[roletna]',
+          header: 'Roletna',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[ostalo]',
+          header: 'Ostalo',
+          type: 'boolean',
+        },
+        {
+          accessorKey: 'trebovanje_materijala[dihtung]',
+          header: 'Dihtung',
+          type: 'boolean',
+        },
+      ],
     },
   },
 ];

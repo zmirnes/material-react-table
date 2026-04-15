@@ -1,4 +1,5 @@
 import '@tanstack/react-table'; //or vue, svelte, solid, qwik, etc.
+import { MRT_ColumnDef } from './types';
 
 export interface IIconColTypeValue {
   color: string;
@@ -26,6 +27,6 @@ declare module '@tanstack/react-table' {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;
-    extraFieldFilters?: { field: string; type: string }[];
+    extraFieldFilters?: MRT_ColumnDef[];
   }
 }

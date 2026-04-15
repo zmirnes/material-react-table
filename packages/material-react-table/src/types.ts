@@ -282,6 +282,9 @@ export interface MRT_Localization {
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
+
+  // Allow for any additional keys for custom localization
+  [key: string]: string;
 }
 
 export interface MRT_Theme {

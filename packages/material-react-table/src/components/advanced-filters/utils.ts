@@ -77,26 +77,48 @@ export const getLocalizedFilterOperatorLabel = (
 };
 
 // Returns leaf columns that the user may add as filter rules.
-// A column is filterable when it is a data column, has filtering enabled,
-// and its resolved type provides at least one operator.
+// Columns with extraFieldFilters are excluded and replaced with virtual columns.
+// A virtual column has the same MRT_ColumnDef shape — all resolvers (enum, dimension, etc.) work without changes.
 export const getFilterableColumns = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
-): MRT_Column<TData>[] =>
-  table
-    .getAllLeafColumns()
-    .filter(
-      (column) =>
-        column.columnDef.columnDefType === 'data' &&
-        column.columnDef.enableColumnFilter !== false &&
-        getColumnFilterOperators(column).length > 0,
-    );
+): MRT_Column<TData>[] => {
+  const allLeafColumns = table.getAllLeafColumns();
 
-// Finds a single column by id across all leaf columns
+  // Real filterable columns — exclude those with extraFieldFilters as they are replaced by virtual columns
+  const realFilterableColumns = allLeafColumns.filter(
+    (column) =>
+      column.columnDef.columnDefType === 'data' &&
+      column.columnDef.enableColumnFilter !== false &&
+      !column.columnDef.meta?.extraFieldFilters?.length &&
+      getColumnFilterOperators(column).length > 0,
+  );
+
+  // Virtual filter columns — expanded from meta.extraFieldFilters of each leaf column.
+  // Users define them as regular MRT_ColumnDef (same API), but they are not rendered as a column in the table.
+  const virtualColumns = allLeafColumns.flatMap((column) =>
+    (column.columnDef.meta?.extraFieldFilters ?? []).map(
+      (extraColumnDef): MRT_Column<TData> =>
+        ({
+          // accessorKey is the primary identifier; id as fallback
+          id: String(extraColumnDef.accessorKey ?? extraColumnDef.field),
+          columnDef: {
+            ...extraColumnDef,
+            columnDefType: 'data' as const,
+            enableColumnFilter: true,
+          },
+        }) as unknown as MRT_Column<TData>,
+    ),
+  );
+
+  return [...realFilterableColumns, ...virtualColumns];
+};
+
+// Searches all filterable columns (both real and virtual) by id to find the one referenced by a filter rule.
 export const getFilterColumn = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
   columnId: string,
 ): MRT_Column<TData> | undefined =>
-  table.getAllLeafColumns().find((column) => column.id === columnId);
+  getFilterableColumns(table).find((column) => column.id === columnId);
 
 // Builds a new filter rule pre-populated with the column's first available operator
 // and its default (empty) value. Returns null when the column has no operators.
