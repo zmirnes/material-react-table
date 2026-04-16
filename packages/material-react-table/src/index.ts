@@ -22,6 +22,8 @@ export * from './hooks/useMRT_TableInstance';
 export * from './hooks/useMRT_TableOptions';
 
 //components
+export * from './components/advanced-filters/MRT_AdvancedFilters';
+export * from './components/MaterialReactServerTable';
 export * from './components/MaterialReactTable';
 //body components
 export * from './components/body/MRT_TableBody';

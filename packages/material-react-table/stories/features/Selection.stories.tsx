@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { faker } from '@faker-js/faker';
 import Remove from '@mui/icons-material/Remove';
 import Send from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { type Meta } from '@storybook/react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   type MRT_ColumnDef,
   MRT_SelectCheckbox,
@@ -10,8 +12,6 @@ import {
   getMRT_RowSelectionHandler,
   useMaterialReactTable,
 } from '../../src';
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react';
 
 const meta: Meta = {
   title: 'Features/Selection Examples',
@@ -192,7 +192,7 @@ export const SelectAllDisabledCustomHeader = () => (
     columns={columns}
     data={data}
     displayColumnDefOptions={{
-      'mrt-row-select': { header: 'Your Custom Header' },
+      __check__: { header: 'Your Custom Header' },
     }}
     enableRowSelection
     enableSelectAll={false}

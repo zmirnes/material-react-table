@@ -7,6 +7,7 @@ import {
   MRT_ColumnSizingState,
   MRT_DensityState,
   MRT_ExpandedState,
+  MRT_FiltersState,
   MRT_GroupingState,
   MRT_PaginationState,
   MRT_RowData,
@@ -33,6 +34,9 @@ export const useServerTableState = <TData extends MRT_RowData>({
   const [grouping, setGrouping] = useState<MRT_GroupingState>(
     initialState?.grouping ?? [],
   );
+  const [filters, setFilters] = useState<MRT_FiltersState>(
+    initialState?.filters ?? { logicOperator: 'and', rules: [] },
+  );
 
   // --- State that is only persisted (does not trigger a fetch) ---
   const [columnSizing, setColumnSizing] = useState<MRT_ColumnSizingState>(
@@ -41,6 +45,9 @@ export const useServerTableState = <TData extends MRT_RowData>({
   const [columnVisibility, setColumnVisibility] = useState<MRT_VisibilityState>(
     initialState?.columnVisibility ?? {},
   );
+  // Counter that increments only when a column transitions from hidden to visible (false → true)
+  const [columnVisibilityShowTrigger, setColumnVisibilityShowTrigger] =
+    useState(0);
   const [columnOrder, setColumnOrder] = useState<MRT_ColumnOrderState | null>(
     initialState?.columnOrder ?? null,
   );
@@ -65,6 +72,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
       // Use functional update pattern to always work with the latest values
       saveState({
+        filters,
         pagination,
         sorting,
         grouping,
@@ -97,6 +105,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
   return {
     tableState: {
+      filters,
       pagination,
       sorting,
       grouping,
@@ -111,6 +120,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
     handlers: {
       // Fetch triggers — only update state, do not persist
+      onFiltersChange: setFilters,
       onPaginationChange: setPagination,
       onSortingChange: setSorting,
       onGroupingChange: setGrouping,
@@ -121,11 +131,20 @@ export const useServerTableState = <TData extends MRT_RowData>({
         columnSizing,
         'columnSizing',
       ),
-      onColumnVisibilityChange: makePersistentHandler(
-        setColumnVisibility,
-        columnVisibility,
-        'columnVisibility',
-      ),
+      onColumnVisibilityChange: (updater) => {
+        const newVisibility = functionalUpdate(updater, columnVisibility);
+        setColumnVisibility(newVisibility);
+        debouncedSave({ columnVisibility: newVisibility });
+
+        // Trigger a fetch only when at least one column transitions from hidden (false) to visible (true)
+        const hasNewlyVisibleColumn = Object.entries(newVisibility).some(
+          ([colId, isVisible]) =>
+            isVisible && columnVisibility[colId] === false,
+        );
+        if (hasNewlyVisibleColumn) {
+          setColumnVisibilityShowTrigger((prev) => prev + 1);
+        }
+      },
       onColumnOrderChange: (updater) => {
         const newValue = functionalUpdate(updater, columnOrder ?? []);
         setColumnOrder(newValue);
@@ -151,9 +170,11 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
     // Only these go into useEffect deps for the data fetch
     fetchTrigger: {
+      filters,
       pagination,
       sorting,
       grouping,
+      columnVisibilityShowTrigger,
     },
   };
 };

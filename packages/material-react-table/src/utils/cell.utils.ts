@@ -87,7 +87,7 @@ export const cellKeyboardShortcuts = <TData extends MRT_RowData = MRT_RowData>({
   if (cellValue && isWinCtrlMacMeta(event) && event.key === 'c') {
     navigator.clipboard.writeText(cellValue);
   } else if (['Enter', ' '].includes(event.key)) {
-    if (cell?.column?.id === 'mrt-row-select') {
+    if (cell?.column?.id === '__check__') {
       event.preventDefault();
       getMRT_RowSelectionHandler({
         row: cell.row,
@@ -96,7 +96,7 @@ export const cellKeyboardShortcuts = <TData extends MRT_RowData = MRT_RowData>({
         staticRowIndex: +event.target.getAttribute('data-index'),
       })(event as any);
     } else if (
-      header?.column?.id === 'mrt-row-select' &&
+      header?.column?.id === '__check__' &&
       table.options.enableSelectAll
     ) {
       event.preventDefault();

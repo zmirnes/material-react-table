@@ -1,6 +1,87 @@
-import { ColumnTypeResolver } from '../types';
+import {
+  MRT_FilterOperatorDefinition,
+  type ColumnTypeResolver,
+  type MRT_RowData,
+} from '../types';
+import {
+  MRT_FilterRuleMultiTextEditor,
+  MRT_FilterRuleTextEditor,
+} from './filterEditors';
 
+// Resolver for plain string column type.
+// Supports text-based operators plus empty/not-empty checks.
 export const StringColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => column,
-  getFilterOperators: () => [],
+  getFilterOperators: <TData extends MRT_RowData, TValue = unknown>() =>
+    [
+      {
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'contains',
+        // Treat blank or whitespace-only input as empty
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Contains',
+      },
+      {
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'equals',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Equals',
+      },
+      {
+        // Mirrors MUI doesNotEqual — text must not match the cell value exactly
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'notEquals',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Does Not Equal',
+      },
+      {
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'startsWith',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Starts With',
+      },
+      {
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'endsWith',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Ends With',
+      },
+      {
+        // Mirrors MUI doesNotContain — cell value must not include the typed substring
+        editComponent: MRT_FilterRuleTextEditor,
+        getInitialValue: () => '',
+        id: 'notContains',
+        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
+        label: 'Does Not Contain',
+      },
+      {
+        // No input needed — the operator itself carries the full meaning
+        editComponent: () => null,
+        getInitialValue: () => null,
+        id: 'isEmpty',
+        isValueEmpty: () => false,
+        label: 'Is Empty',
+      },
+      {
+        editComponent: () => null,
+        getInitialValue: () => null,
+        id: 'isNotEmpty',
+        isValueEmpty: () => false,
+        label: 'Is Not Empty',
+      },
+      {
+        // Mirrors MUI isAnyOf — cell value must match one of the user-supplied entries
+        editComponent: MRT_FilterRuleMultiTextEditor,
+        getInitialValue: () => [],
+        id: 'inArray',
+        isValueEmpty: (value: unknown) =>
+          !Array.isArray(value) || value.length === 0,
+        label: 'Is Any Of',
+      },
+    ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };

@@ -2,6 +2,7 @@ import Box, { type BoxProps } from '@mui/material/Box';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_ShowHideColumnsButton } from '../buttons/MRT_ShowHideColumnsButton';
+import { MRT_ToggleAdvancedFiltersButton } from '../buttons/MRT_ToggleAdvancedFiltersButton';
 import { MRT_ToggleDensePaddingButton } from '../buttons/MRT_ToggleDensePaddingButton';
 import { MRT_ToggleFiltersButton } from '../buttons/MRT_ToggleFiltersButton';
 import { MRT_ToggleFullScreenButton } from '../buttons/MRT_ToggleFullScreenButton';
@@ -28,6 +29,7 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
       enableGlobalFilter,
       enableHiding,
       initialState,
+      enableAdvancedFilters,
       renderToolbarInternalActions,
     },
   } = table;
@@ -64,6 +66,9 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
           )}
           {enableFullScreenToggle && (
             <MRT_ToggleFullScreenButton table={table} />
+          )}
+          {enableAdvancedFilters && (
+            <MRT_ToggleAdvancedFiltersButton table={table} />
           )}
         </>
       )}

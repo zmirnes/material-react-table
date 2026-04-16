@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
 import { Box, Button } from '@mui/material';
 import {
   MaterialReactTable,
   useMaterialReactTable,
   type MRT_ColumnDef,
 } from 'material-react-table';
+import { useMemo } from 'react';
 import { data, type Person } from './makeData';
 
 const Example = () => {
@@ -59,7 +59,7 @@ const Example = () => {
           },
         },
       },
-      'mrt-row-select': {
+      __check__: {
         enableColumnActions: true,
         enableHiding: true,
         size: 100,
