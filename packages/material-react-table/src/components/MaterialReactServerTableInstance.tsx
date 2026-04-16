@@ -110,7 +110,6 @@ export const MaterialReactServerTableInstance = <
   );
 
   useEffect(() => {
-    console.log('Pokrenut fetch');
     void fetchData(table.getState());
   }, [
     fetchTrigger.filters,
