@@ -876,7 +876,7 @@ export type MRT_DisplayColumnIds =
   | 'mrt-row-expand'
   | 'mrt-row-numbers'
   | 'mrt-row-pin'
-  | 'mrt-row-select'
+  | '__check__'
   | 'mrt-row-spacer';
 
 /**
@@ -1452,6 +1452,8 @@ export type UseServerTableStateReturn = {
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
     grouping: MRT_GroupingState;
+    // Increments only when a column transitions from hidden to visible (false → true)
+    columnVisibilityShowTrigger: number;
   };
 };
 

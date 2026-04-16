@@ -73,6 +73,7 @@ export const MaterialReactServerTableInstance = <
     manualPagination: true,
     manualSorting: true,
     manualGrouping: true,
+    enableRowPinning: false,
     getRowId: (originalRow) => originalRow.id,
     state: {
       showSkeletons: isLoading,
@@ -109,12 +110,14 @@ export const MaterialReactServerTableInstance = <
   );
 
   useEffect(() => {
+    console.log('Pokrenut fetch');
     void fetchData(table.getState());
   }, [
     fetchTrigger.filters,
     fetchTrigger.pagination,
     fetchTrigger.sorting,
     fetchTrigger.grouping,
+    fetchTrigger.columnVisibilityShowTrigger,
   ]);
 
   return <MaterialReactTable table={table} />;

@@ -1,11 +1,11 @@
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react';
 import { useState } from 'react';
 import {
   type MRT_ColumnDef,
   type MRT_ColumnOrderState,
   MaterialReactTable,
 } from '../../src';
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react';
 
 const meta: Meta = {
   title: 'Features/Column Ordering Examples',
@@ -154,7 +154,7 @@ export const ColumnOrderingStateManaged = () => {
 export const ColumnOrderingStateManagedCustom = () => {
   const [columnOrder, setColumnOrder] = useState<MRT_ColumnOrderState>(() => [
     ...columns.map((c) => c.accessorKey as string),
-    'mrt-row-select',
+    '__check__',
   ]);
   return (
     <MaterialReactTable

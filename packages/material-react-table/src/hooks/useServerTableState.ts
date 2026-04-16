@@ -45,6 +45,9 @@ export const useServerTableState = <TData extends MRT_RowData>({
   const [columnVisibility, setColumnVisibility] = useState<MRT_VisibilityState>(
     initialState?.columnVisibility ?? {},
   );
+  // Counter that increments only when a column transitions from hidden to visible (false → true)
+  const [columnVisibilityShowTrigger, setColumnVisibilityShowTrigger] =
+    useState(0);
   const [columnOrder, setColumnOrder] = useState<MRT_ColumnOrderState | null>(
     initialState?.columnOrder ?? null,
   );
@@ -128,11 +131,20 @@ export const useServerTableState = <TData extends MRT_RowData>({
         columnSizing,
         'columnSizing',
       ),
-      onColumnVisibilityChange: makePersistentHandler(
-        setColumnVisibility,
-        columnVisibility,
-        'columnVisibility',
-      ),
+      onColumnVisibilityChange: (updater) => {
+        const newVisibility = functionalUpdate(updater, columnVisibility);
+        setColumnVisibility(newVisibility);
+        debouncedSave({ columnVisibility: newVisibility });
+
+        // Trigger a fetch only when at least one column transitions from hidden (false) to visible (true)
+        const hasNewlyVisibleColumn = Object.entries(newVisibility).some(
+          ([colId, isVisible]) =>
+            isVisible && columnVisibility[colId] === false,
+        );
+        if (hasNewlyVisibleColumn) {
+          setColumnVisibilityShowTrigger((prev) => prev + 1);
+        }
+      },
       onColumnOrderChange: (updater) => {
         const newValue = functionalUpdate(updater, columnOrder ?? []);
         setColumnOrder(newValue);
@@ -162,6 +174,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
       pagination,
       sorting,
       grouping,
+      columnVisibilityShowTrigger,
     },
   };
 };

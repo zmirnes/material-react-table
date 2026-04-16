@@ -159,13 +159,13 @@ const columns: MRT_ColumnDef<Person>[] = [
     accessorKey: 'icon',
     header: 'Icon',
     type: 'icon',
-    onClickIconTypeColumn: ({ columnId, row }) => {
+    onClickIconTypeColumn: ({ row }) => {
       alert(`Icon clicked row: ${row.id}`);
     },
     iconsList: ICONS_LIST,
     meta: {
       availableIcons: Object.entries(ICONS_LIST).map(
-        ([iconCode, { icon, defaultColor }]) => ({
+        ([iconCode, { defaultColor }]) => ({
           iconType: {
             iconCode,
             description: `Icon ${iconCode}`,
@@ -175,12 +175,6 @@ const columns: MRT_ColumnDef<Person>[] = [
           value: iconCode,
         }),
       ),
-      extraFieldFilters: [
-        {
-          field: 'icon.description',
-          type: 'boolean',
-        },
-      ],
     },
   },
   {

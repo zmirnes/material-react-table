@@ -64,7 +64,7 @@ const table = useMaterialReactTable({
       'phone',
       'city',
       'country',
-      'mrt-row-select', //move the built-in selection column to the end of the table
+      '__check__', //move the built-in selection column to the end of the table
     ],
   },
 });
@@ -87,7 +87,7 @@ const columns = [
 
 //easy shortcut to initialize the columnOrder state as array of column ids
 const [columnOrder, setColumnOrder] = useState(
-  ['mrt-row-select', ...columns.map((c) => c.accessorKey)], //array of column ids (Initializing is optional as of v2.10.0)
+  ['__check__', ...columns.map((c) => c.accessorKey)], //array of column ids (Initializing is optional as of v2.10.0)
 );
 
 const table = useMaterialReactTable({

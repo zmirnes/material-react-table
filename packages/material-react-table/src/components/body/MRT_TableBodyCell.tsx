@@ -1,3 +1,6 @@
+import Skeleton from '@mui/material/Skeleton';
+import TableCell, { type TableCellProps } from '@mui/material/TableCell';
+import { useTheme } from '@mui/material/styles';
 import {
   type DragEvent,
   type MouseEvent,
@@ -7,24 +10,21 @@ import {
   useMemo,
   useState,
 } from 'react';
-import Skeleton from '@mui/material/Skeleton';
-import TableCell, { type TableCellProps } from '@mui/material/TableCell';
-import { useTheme } from '@mui/material/styles';
-import { MRT_TableBodyCellValue } from './MRT_TableBodyCellValue';
 import {
   type MRT_Cell,
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
 import {
-  isCellEditable,
   cellKeyboardShortcuts,
+  isCellEditable,
   openEditingCell,
 } from '../../utils/cell.utils';
 import { getCommonMRTCellStyles } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_CopyButton } from '../buttons/MRT_CopyButton';
 import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
+import { MRT_TableBodyCellValue } from './MRT_TableBodyCellValue';
 
 export interface MRT_TableBodyCellProps<TData extends MRT_RowData>
   extends TableCellProps {
@@ -313,7 +313,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
               {...skeletonProps}
             />
           ) : columnDefType === 'display' &&
-            (['mrt-row-expand', 'mrt-row-numbers', 'mrt-row-select'].includes(
+            (['mrt-row-expand', 'mrt-row-numbers', '__check__'].includes(
               column.id,
             ) ||
               !row.getIsGrouped()) ? (

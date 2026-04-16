@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 //MRT Imports
 import {
+  MRT_GlobalFilterTextField,
+  MRT_ToggleFiltersButton,
   MaterialReactTable,
   useMaterialReactTable,
   type MRT_ColumnDef,
-  MRT_GlobalFilterTextField,
-  MRT_ToggleFiltersButton,
 } from 'material-react-table';
 
 //Material UI Imports
@@ -154,7 +154,7 @@ const Example = () => {
       showColumnFilters: true,
       showGlobalFilter: true,
       columnPinning: {
-        left: ['mrt-row-expand', 'mrt-row-select'],
+        left: ['mrt-row-expand', '__check__'],
         right: ['mrt-row-actions'],
       },
     },
