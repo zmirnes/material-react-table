@@ -3,6 +3,7 @@ import { useTheme } from '@mui/material/styles';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_BottomToolbar } from '../toolbar/MRT_BottomToolbar';
+import { MRT_QuickFiltersBar } from '../toolbar/MRT_QuickFiltersBar';
 import { MRT_TopToolbar } from '../toolbar/MRT_TopToolbar';
 import { MRT_TableContainer } from './MRT_TableContainer';
 
@@ -80,6 +81,7 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
         (parseFromValuesOrFunc(renderTopToolbar, { table }) ?? (
           <MRT_TopToolbar table={table} />
         ))}
+      <MRT_QuickFiltersBar table={table} />
       <MRT_TableContainer table={table} />
       {enableBottomToolbar &&
         (parseFromValuesOrFunc(renderBottomToolbar, { table }) ?? (
