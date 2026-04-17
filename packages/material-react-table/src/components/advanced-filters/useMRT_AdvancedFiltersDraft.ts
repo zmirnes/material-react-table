@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   type MRT_FilterRule,
   type MRT_FiltersLogicOperator,
@@ -38,13 +38,24 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   const hasUnappliedChanges =
     serializedAppliedFilters !== serializedDraftFilters;
 
+  // useRef so the effect reads the latest value without re-running on typing
+  const hasUnappliedChangesRef = useRef(hasUnappliedChanges);
+  hasUnappliedChangesRef.current = hasUnappliedChanges;
+
   // When the applied filters change externally (e.g. cleared from the toolbar)
-  // and there are no local edits pending, sync the draft to match
+  // and there are no local edits pending, sync the draft to match.
+  // pinnedFilters changes (pin/unpin) always sync immediately without resetting draft rules.
   useEffect(() => {
-    if (!hasUnappliedChanges) {
+    if (!hasUnappliedChangesRef.current) {
       setDraftFilters(filters);
+      return;
     }
-  }, [filters, hasUnappliedChanges]);
+    // Sync only pinnedFilters so pin/unpin is reflected in the drawer immediately
+    setDraftFilters((current) => ({
+      ...current,
+      pinnedFilters: filters.pinnedFilters,
+    }));
+  }, [filters]);
 
   // Derive the list of columns that can have filter rules added
   const filterableColumns = getFilterableColumns(table);
@@ -91,13 +102,70 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
     }));
   };
 
-  // Replaces a single rule's data (column, operator, or value) by id
+  // Replaces a single rule's data (column, operator, or value) by id.
+  // When the column or operator changes for a pinned rule, immediately syncs the
+  // slot metadata in the committed state so the strip stays consistent.
   const updateRule = (ruleId: string, nextRule: MRT_FilterRule) => {
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
       rules: currentFilters.rules.map((rule) =>
         rule.id === ruleId ? nextRule : rule,
       ),
+    }));
+
+    // Sync pinned slot definition when column or operator actually changed
+    const currentFilters = table.getState().filters;
+    const pinnedSlot = currentFilters.pinnedFilters.find(
+      (pf) => pf.id === ruleId,
+    );
+    if (!pinnedSlot) return;
+    const slotDefinitionChanged =
+      pinnedSlot.columnId !== nextRule.columnId ||
+      pinnedSlot.operator !== nextRule.operator;
+    if (!slotDefinitionChanged) return;
+
+    table.setFilters((current) => ({
+      ...current,
+      pinnedFilters: current.pinnedFilters.map((pf) =>
+        pf.id === ruleId
+          ? {
+              id: pf.id,
+              columnId: nextRule.columnId,
+              operator: nextRule.operator,
+            }
+          : pf,
+      ),
+    }));
+  };
+
+  // Pins a rule as a quick filter slot — immediately committed to table state.
+  // Uses draft rule data so the slot appears even before Apply is clicked.
+  const pinRule = (ruleId: string) => {
+    const draftRule = draftFilters.rules.find((r) => r.id === ruleId);
+    if (!draftRule) return;
+
+    table.setFilters((current) => {
+      if (current.pinnedFilters.some((pf) => pf.id === ruleId)) return current;
+      return {
+        ...current,
+        pinnedFilters: [
+          ...current.pinnedFilters,
+          {
+            id: draftRule.id,
+            columnId: draftRule.columnId,
+            operator: draftRule.operator,
+          },
+        ],
+      };
+    });
+  };
+
+  // Unpins a quick filter slot — immediately committed to table state.
+  // The underlying rule is preserved in the draft.
+  const unpinRule = (ruleId: string) => {
+    table.setFilters((current) => ({
+      ...current,
+      pinnedFilters: current.pinnedFilters.filter((pf) => pf.id !== ruleId),
     }));
   };
 
@@ -113,7 +181,9 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
     filterableColumns,
     hasInvalidRules,
     hasUnappliedChanges,
+    pinRule,
     removeRule,
+    unpinRule,
     updateLogicOperator,
     updateRule,
   };

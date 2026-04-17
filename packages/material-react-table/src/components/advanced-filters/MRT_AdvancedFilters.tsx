@@ -39,7 +39,9 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     filterableColumns,
     hasInvalidRules,
     hasUnappliedChanges,
+    pinRule,
     removeRule,
+    unpinRule,
     updateLogicOperator,
     updateRule,
   } = useMRT_AdvancedFiltersDraft(table);
@@ -116,12 +118,17 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           }}
         >
           {draftFilters.rules.map((rule, index) => (
-            <MRT_AdvancedFiltersRuleRow
+            <MRT_AdvancedFiltersRuleRow<TData>
               filterableColumns={filterableColumns}
               isFirst={index === 0}
+              isPinned={draftFilters.pinnedFilters.some(
+                (pf) => pf.id === rule.id,
+              )}
               key={rule.id}
               logicOperator={draftFilters.logicOperator}
+              onPin={pinRule}
               onRemove={removeRule}
+              onUnpin={unpinRule}
               onUpdate={(nextRule) => updateRule(rule.id, nextRule)}
               onUpdateLogicOperator={updateLogicOperator}
               rule={rule}

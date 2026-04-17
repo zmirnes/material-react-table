@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 import {
   type MRT_Column,
   type MRT_FilterRule,
@@ -17,10 +18,14 @@ import {
 
 export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   filterableColumns: MRT_Column<TData>[];
-  // When true this is the first rule — show the logic operator as active
+  // When true this is the first rule — the AND/OR selector is disabled
   isFirst: boolean;
+  // Whether this rule is currently pinned as a quick filter above the table
+  isPinned: boolean;
   logicOperator: 'and' | 'or';
+  onPin: (ruleId: string) => void;
   onRemove: (ruleId: string) => void;
+  onUnpin: (ruleId: string) => void;
   onUpdate: (nextRule: MRT_FilterRule) => void;
   onUpdateLogicOperator: (op: 'and' | 'or') => void;
   rule: MRT_FilterRule;
@@ -32,8 +37,11 @@ export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
 export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
   filterableColumns,
   isFirst,
+  isPinned,
   logicOperator,
+  onPin,
   onRemove,
+  onUnpin,
   onUpdate,
   onUpdateLogicOperator,
   rule,
@@ -41,7 +49,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
 }: MRT_AdvancedFiltersRuleRowProps<TData>) => {
   const {
     options: {
-      icons: { CloseIcon },
+      icons: { CloseIcon, PushPinIcon },
       localization,
     },
   } = table;
@@ -118,14 +126,14 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         py: 0.75,
       }}
     >
-      {/* 5-column grid: logic-op | column | operator | value | remove */}
+      {/* 6-column grid: logic-op | column | operator | value | pin | remove */}
       <Box
         sx={{
           alignItems: 'center',
           columnGap: 1,
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'auto minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1.5fr) auto',
+            xs: 'auto minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1.5fr) auto auto',
           },
           width: '100%',
         }}
@@ -190,6 +198,20 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         <Box sx={{ minWidth: 0, width: '100%' }}>
           {/* Render an empty spacer when the operator needs no value (e.g. isEmpty) */}
           {valueEditor ?? null}
+        </Box>
+
+        {/* Pin / unpin quick filter button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Tooltip title={isPinned ? localization.unpin : localization.pin}>
+            <IconButton
+              aria-label={isPinned ? localization.unpin : localization.pin}
+              color={isPinned ? 'primary' : 'default'}
+              onClick={() => (isPinned ? onUnpin(rule.id) : onPin(rule.id))}
+              size="small"
+            >
+              <PushPinIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
 
         {/* Remove rule button */}
