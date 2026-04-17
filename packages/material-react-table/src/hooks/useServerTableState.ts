@@ -1,5 +1,5 @@
 import { functionalUpdate } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   MRT_ColumnOrderState,
@@ -35,7 +35,11 @@ export const useServerTableState = <TData extends MRT_RowData>({
     initialState?.grouping ?? [],
   );
   const [filters, setFilters] = useState<MRT_FiltersState>(
-    initialState?.filters ?? { logicOperator: 'and', rules: [] },
+    initialState?.filters ?? {
+      logicOperator: 'and',
+      rules: [],
+      pinnedFilters: [],
+    },
   );
 
   // --- State that is only persisted (does not trigger a fetch) ---
@@ -102,6 +106,11 @@ export const useServerTableState = <TData extends MRT_RowData>({
       } as Partial<MRT_TableState<TData>>);
     };
   };
+
+  const filterRules = useMemo(
+    () => ({ rules: filters.rules, logicOperator: filters.logicOperator }),
+    [filters.rules, filters.logicOperator],
+  );
 
   return {
     tableState: {
@@ -170,7 +179,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
     // Only these go into useEffect deps for the data fetch
     fetchTrigger: {
-      filters,
+      filterRules,
       pagination,
       sorting,
       grouping,

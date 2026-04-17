@@ -1448,7 +1448,10 @@ export type UseServerTableStateReturn = {
   };
   // Only these go into useEffect deps for the data fetch
   fetchTrigger: {
-    filters: MRT_FiltersState;
+    filterRules: {
+      rules: MRT_FilterRule[];
+      logicOperator: MRT_FiltersLogicOperator;
+    };
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
     grouping: MRT_GroupingState;
@@ -1497,13 +1500,13 @@ export interface MRT_FilterRule {
   columnId: string;
   id: string;
   operator: MRT_FilterOperator;
-  pinned?: boolean;
   value: unknown;
 }
 
 export interface MRT_FiltersState {
   logicOperator: MRT_FiltersLogicOperator;
   rules: MRT_FilterRule[];
+  pinnedFilters: Omit<MRT_FilterRule, 'value'>[];
 }
 
 export interface MRT_FilterOperatorEditComponentProps<
