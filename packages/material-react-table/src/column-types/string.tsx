@@ -21,6 +21,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         // Treat blank or whitespace-only input as empty
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Contains',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleTextEditor,
@@ -28,6 +30,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'equals',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Equals',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         // Mirrors MUI doesNotEqual — text must not match the cell value exactly
@@ -36,6 +40,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'notEquals',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Does Not Equal',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleTextEditor,
@@ -43,6 +49,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'startsWith',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Starts With',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleTextEditor,
@@ -50,6 +58,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'endsWith',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Ends With',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         // Mirrors MUI doesNotContain — cell value must not include the typed substring
@@ -58,6 +68,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'notContains',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Does Not Contain',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         // No input needed — the operator itself carries the full meaning
@@ -66,6 +78,7 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'isEmpty',
         isValueEmpty: () => false,
         label: 'Is Empty',
+        valueShape: 'none',
       },
       {
         editComponent: () => null,
@@ -73,6 +86,7 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'isNotEmpty',
         isValueEmpty: () => false,
         label: 'Is Not Empty',
+        valueShape: 'none',
       },
       {
         // Mirrors MUI isAnyOf — cell value must match one of the user-supplied entries
@@ -82,6 +96,8 @@ export const StringColumnResolver: ColumnTypeResolver = {
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
         label: 'Is Any Of',
+        triggerMode: 'commit',
+        valueShape: 'multi',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };

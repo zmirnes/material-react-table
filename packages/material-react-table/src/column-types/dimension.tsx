@@ -41,6 +41,7 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
           return fieldKeys.every((key) => dimensionValue[key] == null);
         },
         label: 'Equals',
+        valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };

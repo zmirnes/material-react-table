@@ -112,7 +112,7 @@ export const MaterialReactServerTableInstance = <
   useEffect(() => {
     void fetchData(table.getState());
   }, [
-    fetchTrigger.filters,
+    fetchTrigger.filterRules,
     fetchTrigger.pagination,
     fetchTrigger.sorting,
     fetchTrigger.grouping,

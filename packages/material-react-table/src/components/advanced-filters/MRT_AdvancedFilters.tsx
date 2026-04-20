@@ -35,11 +35,14 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
   const {
     addRule,
     clearRules,
+    discardChanges,
     draftFilters,
     filterableColumns,
     hasInvalidRules,
     hasUnappliedChanges,
+    pinRule,
     removeRule,
+    unpinRule,
     updateLogicOperator,
     updateRule,
   } = useMRT_AdvancedFiltersDraft(table);
@@ -56,14 +59,25 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     handleClose();
   };
 
-  // Commit the draft to the table and close the drawer
-  // Guard prevents applying when any rule is still incomplete
+  // Commit the draft to the table and close the drawer.
+  // pinnedFilters slot metadata is reconstructed from draft rules so that any
+  // column/operator changes made in the drawer are reflected in the quick filter bar.
   const handleApplyFilters = () => {
     if (hasInvalidRules) {
       return;
     }
 
-    setFilters(draftFilters);
+    const updatedPinnedFilters = draftFilters.pinnedFilters.map((pf) => {
+      const draftRule = draftFilters.rules.find((r) => r.id === pf.id);
+      if (!draftRule) return pf;
+      return {
+        id: pf.id,
+        columnId: draftRule.columnId,
+        operator: draftRule.operator,
+      };
+    });
+
+    setFilters({ ...draftFilters, pinnedFilters: updatedPinnedFilters });
     handleClose();
   };
 
@@ -116,12 +130,19 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           }}
         >
           {draftFilters.rules.map((rule, index) => (
-            <MRT_AdvancedFiltersRuleRow
+            <MRT_AdvancedFiltersRuleRow<TData>
               filterableColumns={filterableColumns}
               isFirst={index === 0}
+              isPinned={draftFilters.pinnedFilters.some(
+                (pf) => pf.id === rule.id,
+              )}
               key={rule.id}
               logicOperator={draftFilters.logicOperator}
+              // Pass apply handler only when it can actually execute (apply button not disabled)
+              onApply={hasInvalidRules ? undefined : handleApplyFilters}
+              onPin={pinRule}
               onRemove={removeRule}
+              onUnpin={unpinRule}
               onUpdate={(nextRule) => updateRule(rule.id, nextRule)}
               onUpdateLogicOperator={updateLogicOperator}
               rule={rule}
@@ -149,16 +170,27 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           )}
         </Stack>
 
-        {/* Footer actions: Clear (left) | Add rule | Apply (right) */}
+        {/* Footer actions: Clear (left) | Add rule | Discard | Apply (right) */}
         <Box display="flex" flexDirection="row" gap={1} marginTop="1rem">
           <Button
             color="warning"
             onClick={handleClearFilters}
             size="medium"
-            sx={{ mr: 'auto' }}
             variant="contained"
           >
             {localization.clear}
+          </Button>
+          {/* Only shown when the draft differs from the last applied state */}
+
+          <Button
+            disabled={!hasUnappliedChanges}
+            color="inherit"
+            onClick={discardChanges}
+            size="medium"
+            variant="outlined"
+            sx={{ mr: 'auto' }}
+          >
+            {localization.discardChanges}
           </Button>
           {/* Disabled when no filterable columns exist in the table */}
           <Button
@@ -169,6 +201,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           >
             {localization.add}
           </Button>
+
           {/* Disabled until all existing rules are fully filled out */}
           <Button
             color="primary"

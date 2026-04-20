@@ -131,7 +131,11 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     initialState.editingRow ?? null,
   );
   const [filters, setFilters] = useState<MRT_FiltersState>(
-    initialState.filters ?? { logicOperator: 'and', rules: [] },
+    initialState.filters ?? {
+      logicOperator: 'and',
+      rules: [],
+      pinnedFilters: [],
+    },
   );
   const [globalFilterFn, setGlobalFilterFn] = useState<MRT_FilterOption>(
     initialState.globalFilterFn ?? 'fuzzy',

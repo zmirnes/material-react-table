@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   type MRT_FilterRule,
   type MRT_FiltersLogicOperator,
@@ -38,13 +38,41 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   const hasUnappliedChanges =
     serializedAppliedFilters !== serializedDraftFilters;
 
+  // useRef so the effect reads the latest value without re-running on typing
+  const hasUnappliedChangesRef = useRef(hasUnappliedChanges);
+  hasUnappliedChangesRef.current = hasUnappliedChanges;
+
   // When the applied filters change externally (e.g. cleared from the toolbar)
-  // and there are no local edits pending, sync the draft to match
+  // and there are no local edits pending, sync the draft to match.
+  // pinnedFilters changes (pin/unpin) always sync immediately without resetting draft rules.
+  // Rule values that belong to a pinned filter are also always synced — their value
+  // is owned by the quick filter strip, not the drawer.
   useEffect(() => {
-    if (!hasUnappliedChanges) {
+    if (!hasUnappliedChangesRef.current) {
       setDraftFilters(filters);
+      return;
     }
-  }, [filters, hasUnappliedChanges]);
+    // Sync pinnedFilters slot metadata and the committed values of pinned rules.
+    // Other draft rules (non-pinned) are left untouched so the user's in-progress
+    // drawer edits are preserved.
+    setDraftFilters((current) => {
+      const updatedRules = current.rules.map((draftRule) => {
+        const isPinnedRule = filters.pinnedFilters.some(
+          (pf) => pf.id === draftRule.id,
+        );
+        if (!isPinnedRule) return draftRule;
+        // Use the committed rule value so the drawer reflects what the quick filter set
+        const committedRule = filters.rules.find((r) => r.id === draftRule.id);
+        return committedRule ?? draftRule;
+      });
+
+      return {
+        ...current,
+        pinnedFilters: filters.pinnedFilters,
+        rules: updatedRules,
+      };
+    });
+  }, [filters]);
 
   // Derive the list of columns that can have filter rules added
   const filterableColumns = getFilterableColumns(table);
@@ -75,6 +103,12 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
     setDraftFilters(getDefaultFiltersState());
   };
 
+  // Resets the draft back to the currently applied filter state, discarding any
+  // in-progress drawer edits without touching the table's applied filters.
+  const discardChanges = () => {
+    setDraftFilters(filters);
+  };
+
   // Removes a single rule from the draft by its id
   const removeRule = (ruleId: string) => {
     setDraftFilters((currentFilters) => ({
@@ -91,13 +125,46 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
     }));
   };
 
-  // Replaces a single rule's data (column, operator, or value) by id
+  // Replaces a single rule's data (column, operator, or value) by id.
+  // Pinned slot metadata (columnId, operator) is intentionally NOT synced here —
+  // the quick filter bar reflects the last applied state until Apply is clicked.
   const updateRule = (ruleId: string, nextRule: MRT_FilterRule) => {
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
       rules: currentFilters.rules.map((rule) =>
         rule.id === ruleId ? nextRule : rule,
       ),
+    }));
+  };
+
+  // Pins a rule as a quick filter slot — immediately committed to table state.
+  // Uses draft rule data so the slot appears even before Apply is clicked.
+  const pinRule = (ruleId: string) => {
+    const draftRule = draftFilters.rules.find((r) => r.id === ruleId);
+    if (!draftRule) return;
+
+    table.setFilters((current) => {
+      if (current.pinnedFilters.some((pf) => pf.id === ruleId)) return current;
+      return {
+        ...current,
+        pinnedFilters: [
+          ...current.pinnedFilters,
+          {
+            id: draftRule.id,
+            columnId: draftRule.columnId,
+            operator: draftRule.operator,
+          },
+        ],
+      };
+    });
+  };
+
+  // Unpins a quick filter slot — immediately committed to table state.
+  // The underlying rule is preserved in the draft.
+  const unpinRule = (ruleId: string) => {
+    table.setFilters((current) => ({
+      ...current,
+      pinnedFilters: current.pinnedFilters.filter((pf) => pf.id !== ruleId),
     }));
   };
 
@@ -109,11 +176,14 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   return {
     addRule,
     clearRules,
+    discardChanges,
     draftFilters,
     filterableColumns,
     hasInvalidRules,
     hasUnappliedChanges,
+    pinRule,
     removeRule,
+    unpinRule,
     updateLogicOperator,
     updateRule,
   };

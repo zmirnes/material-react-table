@@ -2,6 +2,8 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import type React from 'react';
 import {
   type MRT_Column,
   type MRT_FilterRule,
@@ -17,10 +19,16 @@ import {
 
 export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   filterableColumns: MRT_Column<TData>[];
-  // When true this is the first rule — show the logic operator as active
+  // When true this is the first rule — the AND/OR selector is disabled
   isFirst: boolean;
+  // Whether this rule is currently pinned as a quick filter above the table
+  isPinned: boolean;
   logicOperator: 'and' | 'or';
+  // Called when the user presses Enter inside a value input; undefined when apply is disabled
+  onApply: (() => void) | undefined;
+  onPin: (ruleId: string) => void;
   onRemove: (ruleId: string) => void;
+  onUnpin: (ruleId: string) => void;
   onUpdate: (nextRule: MRT_FilterRule) => void;
   onUpdateLogicOperator: (op: 'and' | 'or') => void;
   rule: MRT_FilterRule;
@@ -32,8 +40,12 @@ export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
 export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
   filterableColumns,
   isFirst,
+  isPinned,
   logicOperator,
+  onApply,
+  onPin,
   onRemove,
+  onUnpin,
   onUpdate,
   onUpdateLogicOperator,
   rule,
@@ -41,7 +53,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
 }: MRT_AdvancedFiltersRuleRowProps<TData>) => {
   const {
     options: {
-      icons: { CloseIcon },
+      icons: { CloseIcon, PushPinIcon },
       localization,
     },
   } = table;
@@ -86,7 +98,10 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
     onUpdate({ ...nextRule, id: rule.id });
   };
 
-  // When the operator changes, reset the value to the new operator's initial value
+  // When the operator changes, preserve the existing value when the new operator
+  // expects the same value shape (e.g. 'contains' → 'equals', both 'single').
+  // 'computed' operators always recalculate their value via getInitialValue().
+  // 'none' operators (isEmpty / isNotEmpty) never carry a user value.
   const handleOperatorChange = (operatorId: string) => {
     const nextOperator = availableOperators.find(({ id }) => id === operatorId);
 
@@ -94,11 +109,15 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
       return;
     }
 
+    const canPreserveValue =
+      nextOperator.valueShape !== 'computed' &&
+      nextOperator.valueShape !== 'none' &&
+      nextOperator.valueShape === selectedOperator.valueShape;
+
     onUpdate({
       ...rule,
       operator: nextOperator.id,
-      // Each operator defines its own empty starting value (e.g. '' or [null, null])
-      value: nextOperator.getInitialValue(),
+      value: canPreserveValue ? rule.value : nextOperator.getInitialValue(),
     });
   };
 
@@ -118,14 +137,14 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         py: 0.75,
       }}
     >
-      {/* 5-column grid: logic-op | column | operator | value | remove */}
+      {/* 6-column grid: logic-op | column | operator | value | pin | remove */}
       <Box
         sx={{
           alignItems: 'center',
           columnGap: 1,
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'auto minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1.5fr) auto',
+            xs: 'auto minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1.5fr) auto auto',
           },
           width: '100%',
         }}
@@ -187,9 +206,35 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         </TextField>
 
         {/* Value editor — rendered by the operator's own editComponent */}
-        <Box sx={{ minWidth: 0, width: '100%' }}>
+        {/* onKeyDown bubbles from any text input inside the editor: Enter triggers apply */}
+        <Box
+          onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+            if (event.key === 'Enter' && onApply) {
+              // Prevent the Enter from bubbling to MUI Drawer/Modal infrastructure
+              // which could trigger a "click" on the last focused button
+              event.preventDefault();
+              event.stopPropagation();
+              onApply();
+            }
+          }}
+          sx={{ minWidth: 0, width: '100%' }}
+        >
           {/* Render an empty spacer when the operator needs no value (e.g. isEmpty) */}
           {valueEditor ?? null}
+        </Box>
+
+        {/* Pin / unpin quick filter button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Tooltip title={isPinned ? localization.unpin : localization.pin}>
+            <IconButton
+              aria-label={isPinned ? localization.unpin : localization.pin}
+              color={isPinned ? 'primary' : 'default'}
+              onClick={() => (isPinned ? onUnpin(rule.id) : onPin(rule.id))}
+              size="small"
+            >
+              <PushPinIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
 
         {/* Remove rule button */}

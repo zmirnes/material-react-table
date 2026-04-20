@@ -14,6 +14,7 @@ import {
 export const getDefaultFiltersState = (): MRT_FiltersState => ({
   logicOperator: 'and',
   rules: [],
+  pinnedFilters: [],
 });
 
 // Generates a cryptographically unique ID for each filter rule

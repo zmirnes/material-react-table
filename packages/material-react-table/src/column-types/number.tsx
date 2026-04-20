@@ -19,9 +19,10 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
         id: 'equals',
-        // Treat empty string and null as no value entered
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         // Mirrors MUI != operator — cell value must not equal the entered number
@@ -30,6 +31,8 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'notEquals',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Not Equals',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleNumberEditor,
@@ -37,6 +40,8 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'greaterThan',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Greater Than',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleNumberEditor,
@@ -44,6 +49,8 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'greaterThanOrEqualTo',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Greater Than Or Equal To',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleNumberEditor,
@@ -51,6 +58,8 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'lessThan',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Less Than',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleNumberEditor,
@@ -58,6 +67,8 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'lessThanOrEqualTo',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Less Than Or Equal To',
+        triggerMode: 'commit',
+        valueShape: 'single',
       },
       {
         // No input needed — the operator itself carries the full meaning
@@ -66,6 +77,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'isEmpty',
         isValueEmpty: () => false,
         label: 'Is Empty',
+        valueShape: 'none',
       },
       {
         editComponent: () => null,
@@ -73,6 +85,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         id: 'isNotEmpty',
         isValueEmpty: () => false,
         label: 'Is Not Empty',
+        valueShape: 'none',
       },
       {
         // Mirrors MUI isAnyOf — cell value must match one of the user-supplied numbers
@@ -82,6 +95,8 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
         label: 'Is Any Of',
+        triggerMode: 'commit',
+        valueShape: 'multi',
       },
     ] as unknown as MRT_FilterOperatorDefinition<TData, TValue>[],
 };

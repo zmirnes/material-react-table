@@ -40,6 +40,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         // null means no datetime selected
         isValueEmpty: (value: unknown) => !value,
         label: 'Before',
+        valueShape: 'single',
       },
       {
         editComponent: MRT_FilterRuleDateTimeEditor,
@@ -47,6 +48,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'greaterThan',
         isValueEmpty: (value: unknown) => !value,
         label: 'After',
+        valueShape: 'single',
       },
       {
         // Range value is stored as {from, to} Unix ms timestamps
@@ -61,6 +63,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
           return !v || !v.from || !v.to;
         },
         label: 'Range',
+        valueShape: 'range',
       },
       {
         // Relative operators: value is computed at rule-creation time and stored as a datetime string.
@@ -70,6 +73,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'from-today',
         isValueEmpty: () => false,
         label: 'From Today',
+        valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledDateTimeEditor,
@@ -77,6 +81,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'to-today',
         isValueEmpty: () => false,
         label: 'To Today',
+        valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateTimeEditor,
@@ -84,6 +89,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'current-week',
         isValueEmpty: () => false,
         label: 'Current Week',
+        valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateTimeEditor,
@@ -91,6 +97,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'current-month',
         isValueEmpty: () => false,
         label: 'Current Month',
+        valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateTimeEditor,
@@ -98,6 +105,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'last-7-days',
         isValueEmpty: () => false,
         label: 'Last 7 Days',
+        valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateTimeEditor,
@@ -105,6 +113,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'last-week',
         isValueEmpty: () => false,
         label: 'Last Week',
+        valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateTimeEditor,
@@ -112,6 +121,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         id: 'last-month',
         isValueEmpty: () => false,
         label: 'Last Month',
+        valueShape: 'computed',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };
