@@ -51,7 +51,6 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   // Rule values that belong to a pinned filter are also always synced — their value
   // is owned by the quick filter strip, not the drawer.
   useEffect(() => {
-    console.log('Filteri promijenjeni');
     if (!isDraftDirty.current) {
       setDraftFilters(filters);
       return;
