@@ -65,6 +65,7 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         id: 'equals',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
+        valueShape: 'single',
       },
       {
         // 'Nije' — single value must not match
@@ -73,6 +74,7 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         id: 'notEquals',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Not Equals',
+        valueShape: 'single',
       },
       {
         // 'Je bilo koje od' — value must be one of the selected options
@@ -83,6 +85,7 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
         label: 'Is any of',
+        valueShape: 'multi',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },

@@ -266,6 +266,7 @@ export interface MRT_Localization {
   filters: string;
   add: string;
   clear: string;
+  discardChanges: string;
   apply: string;
   sortByColumnAsc: string;
   sortByColumnDesc: string;
@@ -1520,12 +1521,29 @@ export interface MRT_FilterOperatorEditComponentProps<
   table: MRT_TableInstance<TData>;
 }
 
+// Describes the structural shape of a filter operator's value.
+// Used to decide whether the existing value can be preserved when switching operators.
+// 'single'   — scalar: string, number, boolean, or a single-select option
+// 'multi'    — array of scalars (inArray operators)
+// 'range'    — object with {from, to} fields (date/dateTime 'between')
+// 'none'     — no user input needed (isEmpty / isNotEmpty)
+// 'computed' — value is always auto-calculated by getInitialValue() (relative date operators)
+export type MRT_FilterOperatorValueShape =
+  | 'single'
+  | 'multi'
+  | 'range'
+  | 'none'
+  | 'computed';
+
 export interface MRT_FilterOperatorDefinition<
   TData extends MRT_RowData,
   TValue = unknown,
 > {
   id: MRT_FilterOperator;
   label: string;
+  // Structural shape of the value — used to preserve value when switching between
+  // operators that expect the same type of input.
+  valueShape: MRT_FilterOperatorValueShape;
   // Controls when the quick filter commits the value to filters.rules.
   // 'commit' — text/number inputs: commits on Enter only (no fetch on every keystroke).
   // 'change' — selects/pickers/booleans: commits immediately on each onChange.

@@ -98,7 +98,10 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
     onUpdate({ ...nextRule, id: rule.id });
   };
 
-  // When the operator changes, reset the value to the new operator's initial value
+  // When the operator changes, preserve the existing value when the new operator
+  // expects the same value shape (e.g. 'contains' → 'equals', both 'single').
+  // 'computed' operators always recalculate their value via getInitialValue().
+  // 'none' operators (isEmpty / isNotEmpty) never carry a user value.
   const handleOperatorChange = (operatorId: string) => {
     const nextOperator = availableOperators.find(({ id }) => id === operatorId);
 
@@ -106,11 +109,15 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
       return;
     }
 
+    const canPreserveValue =
+      nextOperator.valueShape !== 'computed' &&
+      nextOperator.valueShape !== 'none' &&
+      nextOperator.valueShape === selectedOperator.valueShape;
+
     onUpdate({
       ...rule,
       operator: nextOperator.id,
-      // Each operator defines its own empty starting value (e.g. '' or [null, null])
-      value: nextOperator.getInitialValue(),
+      value: canPreserveValue ? rule.value : nextOperator.getInitialValue(),
     });
   };
 

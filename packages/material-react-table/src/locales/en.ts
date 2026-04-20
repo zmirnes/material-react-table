@@ -112,6 +112,7 @@ export const MRT_Localization_EN: MRT_Localization = {
   filters: 'Filters',
   add: 'Add',
   clear: 'Clear',
+  discardChanges: 'Discard changes',
   apply: 'Apply',
   sortByColumnAsc: 'Sort by {column} ascending',
   sortByColumnDesc: 'Sort by {column} descending',

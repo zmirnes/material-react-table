@@ -112,6 +112,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   filters: 'Filteri',
   add: 'Dodaj',
   clear: 'Očisti',
+  discardChanges: 'Odbaci izmjene',
   apply: 'Primijeni',
   sortByColumnAsc: 'Sortiraj po {column} uzlazno',
   sortByColumnDesc: 'Sortiraj po {column} silazno',

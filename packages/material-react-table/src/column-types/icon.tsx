@@ -116,6 +116,7 @@ export const IconColumnResolver: ColumnTypeResolver = {
         id: 'equals',
         isValueEmpty: (value: unknown) => value === '' || value == null,
         label: 'Equals',
+        valueShape: 'single',
       },
       {
         // 'Nije' — selected iconCode must not match the cell value
@@ -124,6 +125,7 @@ export const IconColumnResolver: ColumnTypeResolver = {
         id: 'notEquals',
         isValueEmpty: (value: unknown) => value === '' || value == null,
         label: 'Not Equals',
+        valueShape: 'single',
       },
       {
         // 'Je bilo koje od' — cell value must be one of the selected iconCodes
@@ -134,6 +136,7 @@ export const IconColumnResolver: ColumnTypeResolver = {
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
         label: 'Is any of',
+        valueShape: 'multi',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },

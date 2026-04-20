@@ -22,6 +22,7 @@ export const BooleanColumnResolver: ColumnTypeResolver = {
         // Empty unless the user has explicitly picked true or false
         isValueEmpty: (value: unknown) => value !== true && value !== false,
         label: 'Equals',
+        valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
 };
