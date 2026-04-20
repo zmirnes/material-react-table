@@ -1,13 +1,11 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import { alpha } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { getCommonToolbarStyles } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_SelectionCountBadge } from './MRT_SelectionCountBadge';
 import { MRT_TablePagination } from './MRT_TablePagination';
-import { MRT_ToolbarAlertBanner } from './MRT_ToolbarAlertBanner';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_TotalRowsCounter } from './MRT_TotalRowsCounter';
 
@@ -27,7 +25,6 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
       enableRowSelection,
       muiBottomToolbarProps,
       positionPagination,
-      positionToolbarAlertBanner,
       positionToolbarDropZone,
       renderBottomToolbarCustomActions,
     },
@@ -35,14 +32,10 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
   } = table;
   const { isFullScreen } = getState();
 
-  const isMobile = useMediaQuery('(max-width:720px)');
-
   const toolbarProps = {
     ...parseFromValuesOrFunc(muiBottomToolbarProps, { table }),
     ...rest,
   };
-
-  const stackAlertBanner = isMobile || !!renderBottomToolbarCustomActions;
 
   return (
     <Box
@@ -70,12 +63,6 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
       })}
     >
       <MRT_LinearProgressBar isTopToolbar={false} table={table} />
-      {positionToolbarAlertBanner === 'bottom' && (
-        <MRT_ToolbarAlertBanner
-          stackAlertBanner={stackAlertBanner}
-          table={table}
-        />
-      )}
       {['both', 'bottom'].includes(positionToolbarDropZone ?? '') && (
         <MRT_ToolbarDropZone table={table} />
       )}

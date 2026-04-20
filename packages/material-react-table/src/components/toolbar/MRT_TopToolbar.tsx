@@ -6,7 +6,6 @@ import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_GlobalFilterTextField } from '../inputs/MRT_GlobalFilterTextField';
 import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_TablePagination } from './MRT_TablePagination';
-import { MRT_ToolbarAlertBanner } from './MRT_ToolbarAlertBanner';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_ToolbarInternalButtons } from './MRT_ToolbarInternalButtons';
 
@@ -26,24 +25,17 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       muiTopToolbarProps,
       positionGlobalFilter,
       positionPagination,
-      positionToolbarAlertBanner,
       positionToolbarDropZone,
       renderTopToolbarCustomActions,
     },
     refs: { topToolbarRef },
   } = table;
 
-  const { isFullScreen, showGlobalFilter } = getState();
+  const { isFullScreen } = getState();
 
-  const isMobile = useMediaQuery('(max-width:720px)');
   const isTablet = useMediaQuery('(max-width:1024px)');
 
   const toolbarProps = parseFromValuesOrFunc(muiTopToolbarProps, { table });
-
-  const stackAlertBanner =
-    isMobile ||
-    !!renderTopToolbarCustomActions ||
-    (showGlobalFilter && isTablet);
 
   const globalFilterProps = {
     sx: !isTablet
@@ -99,11 +91,11 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
               width: '100%',
             }}
           >
-            {renderTopToolbarCustomActions?.({ table }) ?? <span />}
             {enableGlobalFilter && positionGlobalFilter === 'right' && (
               <MRT_GlobalFilterTextField {...globalFilterProps} />
             )}
             <MRT_ToolbarInternalButtons table={table} />
+            {renderTopToolbarCustomActions?.({ table }) ?? <span />}
           </Box>
         ) : (
           enableGlobalFilter &&
@@ -114,12 +106,6 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       </Box>
       {['both', 'top'].includes(positionToolbarDropZone ?? '') && (
         <MRT_ToolbarDropZone table={table} />
-      )}
-      {positionToolbarAlertBanner === 'top' && (
-        <MRT_ToolbarAlertBanner
-          stackAlertBanner={stackAlertBanner}
-          table={table}
-        />
       )}
       {enablePagination &&
         ['both', 'top'].includes(positionPagination ?? '') && (

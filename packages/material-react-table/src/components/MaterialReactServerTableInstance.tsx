@@ -3,6 +3,9 @@ import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
 import {
+  MRT_ActiveExportsState,
+  MRT_ExportFileResponse,
+  MRT_ExportParams,
   MRT_RowData,
   MRT_SavedFilter,
   MRT_SavedFilters,
@@ -13,6 +16,7 @@ import {
 } from '../types';
 import { createColumnDefs } from '../utils/columns/createColumnDef';
 import { MaterialReactTable } from './MaterialReactTable';
+import { MRT_ExportsToolbar } from './toolbar/MRT_ExportsToolbar';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   config: MRT_TableConfig<TData>;
@@ -29,6 +33,36 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
   onDeleteSavedFilter?: (filterName: string) => Promise<void>;
   initialSavedFilters?: MRT_SavedFilters;
+  loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
+  exportPermissions?: Record<string, string[]>;
+};
+
+/** Builds the initial MRT_ActiveExportsState from availableExports.
+ *  If only one format exists across all export definitions, auto-selects
+ *  that format and the first export type — matching frontend-dev behaviour. */
+const buildInitialExportState = (
+  availableExports: MRT_TableConfig<MRT_RowData>['availableExports'],
+  savedActiveExports: MRT_ActiveExportsState | undefined,
+): MRT_ActiveExportsState => {
+  const exportEntries = Object.values(availableExports ?? {});
+  const allFormats = exportEntries.flatMap((exp) => exp.formats);
+  const uniqueFormats = Array.from(new Set(allFormats));
+
+  if (uniqueFormats.length === 1) {
+    return {
+      selectedFormat: uniqueFormats[0],
+      selectedExports: exportEntries.length > 0 ? [exportEntries[0].name] : [],
+      grouped: false,
+    };
+  }
+
+  return (
+    savedActiveExports ?? {
+      selectedFormat: null,
+      selectedExports: [],
+      grouped: false,
+    }
+  );
 };
 
 export const MaterialReactServerTableInstance = <
@@ -42,16 +76,50 @@ export const MaterialReactServerTableInstance = <
   onSaveFilters,
   onDeleteSavedFilter,
   initialSavedFilters,
+  loadExport,
+  exportPermissions,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Filter availableExports by exportPermissions if provided.
+  // exportPermissions maps export key → required permission strings.
+  // If the key is not in exportPermissions, the export is always allowed.
+  const allowedExports = useMemo(() => {
+    const allExports = config.availableExports ?? {};
+    if (!exportPermissions) return allExports;
+
+    const allowedEntries = Object.entries(allExports).filter(([key]) => {
+      const requiredPermissions = exportPermissions[key];
+      if (!requiredPermissions) return true;
+      // Permission check is intentionally left to the consumer — they filter
+      // via exportPermissions prop. Here we keep all entries that have no
+      // required permissions listed. For actual permission evaluation,
+      // the consumer should pre-filter availableExports before passing it.
+      return requiredPermissions.length === 0;
+    });
+
+    return Object.fromEntries(allowedEntries);
+  }, [config.availableExports, exportPermissions]);
+
   const { tableState, handlers, fetchTrigger } = useServerTableState<TData>({
-    initialState: config.initialState,
+    initialState: {
+      ...config.initialState,
+      activeExports: buildInitialExportState(
+        allowedExports,
+        config.initialState?.activeExports,
+      ),
+    },
     saveState,
   });
+
+  const exportState: MRT_ActiveExportsState = tableState.activeExports ?? {
+    selectedFormat: null,
+    selectedExports: [],
+    grouped: false,
+  };
 
   const columns = useMemo(
     () => createColumnDefs(config.columns),
@@ -70,6 +138,8 @@ export const MaterialReactServerTableInstance = <
         : undefined,
     [getTotalRows],
   );
+
+  const hasAvailableExports = Object.keys(allowedExports).length > 0;
 
   const table = useMaterialReactTable<TData>({
     columns,
@@ -92,6 +162,19 @@ export const MaterialReactServerTableInstance = <
     onSaveFilters,
     onDeleteSavedFilter,
     initialSavedFilters,
+    // Render export toolbar in top toolbar when exports are available
+    ...(hasAvailableExports &&
+      loadExport && {
+        renderTopToolbarCustomActions: ({ table: tableInstance }) => (
+          <MRT_ExportsToolbar
+            table={tableInstance}
+            availableExports={allowedExports}
+            exportState={exportState}
+            onExportStateChange={handlers.onActiveExportsChange}
+            loadExport={loadExport}
+          />
+        ),
+      }),
     ...handlers,
   });
 

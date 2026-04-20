@@ -133,4 +133,9 @@ export const MRT_Localization_HR: MRT_Localization = {
   unpinAll: 'Odkači sve',
   dimensionRotationEnabled: 'Rotacija ukljucena',
   dimensionRotationDisabled: 'Rotacija iskljucena',
+  exportButton: 'Izvoz',
+  exportSelectRowsTooltip: 'Odaberite redove za izvoz',
+  exportPrintPdf: 'Ispis PDF',
+  exportDownload: 'Preuzmi',
+  exportGrouped: 'Grupirati datoteke',
 };

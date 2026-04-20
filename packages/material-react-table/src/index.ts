@@ -86,6 +86,7 @@ export * from './components/table/MRT_TableLoadingOverlay';
 export * from './components/table/MRT_TablePaper';
 //toolbar components
 export * from './components/toolbar/MRT_BottomToolbar';
+export * from './components/toolbar/MRT_ExportsToolbar';
 export * from './components/toolbar/MRT_LinearProgressBar';
 export * from './components/toolbar/MRT_SelectionCountBadge';
 export * from './components/toolbar/MRT_TablePagination';
