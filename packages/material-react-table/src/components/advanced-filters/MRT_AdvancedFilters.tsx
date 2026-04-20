@@ -126,6 +126,8 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
               )}
               key={rule.id}
               logicOperator={draftFilters.logicOperator}
+              // Pass apply handler only when it can actually execute (apply button not disabled)
+              onApply={hasInvalidRules ? undefined : handleApplyFilters}
               onPin={pinRule}
               onRemove={removeRule}
               onUnpin={unpinRule}

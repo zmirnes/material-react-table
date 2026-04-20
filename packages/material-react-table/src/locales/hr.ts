@@ -109,6 +109,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   showHideSearch: 'Prikaži/sakrij pretragu',
   showAdvancedFilters: 'Prikaži napredne filtere',
   advancedFilters: 'Napredni filteri',
+  filters: 'Filteri',
   add: 'Dodaj',
   clear: 'Očisti',
   apply: 'Primijeni',

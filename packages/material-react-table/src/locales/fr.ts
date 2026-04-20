@@ -109,6 +109,7 @@ export const MRT_Localization_FR: MRT_Localization = {
   showHideSearch: 'Afficher/Masquer la recherche',
   showAdvancedFilters: 'Afficher les filtres avancÃ©s',
   advancedFilters: 'Filtres avancÃ©s',
+  filters: 'Filtres',
   add: 'Ajouter',
   clear: 'Effacer',
   apply: 'Appliquer',
@@ -125,6 +126,6 @@ export const MRT_Localization_FR: MRT_Localization = {
   ungroupByColumn: 'Dissocier par {column}',
   unpin: 'DÃ©tacher',
   unpinAll: 'Tout dÃ©tacher',
-  dimensionRotationEnabled: 'Rotation activée',
-  dimensionRotationDisabled: 'Rotation désactivée',
+  dimensionRotationEnabled: 'Rotation activï¿½e',
+  dimensionRotationDisabled: 'Rotation dï¿½sactivï¿½e',
 };

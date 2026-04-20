@@ -1,10 +1,11 @@
-import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { MRT_AdvancedFilters } from '../advanced-filters/MRT_AdvancedFilters';
 
 export interface MRT_ToggleAdvancedFiltersButtonProps<TData extends MRT_RowData>
-  extends IconButtonProps {
+  extends Omit<ButtonProps, 'children'> {
   table: MRT_TableInstance<TData>;
 }
 
@@ -21,27 +22,42 @@ export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
     },
     setShowAdvancedFilters,
   } = table;
-  const { showAdvancedFilters } = getState();
+  const { filters, showAdvancedFilters } = getState();
 
   if (!manualFiltering) {
     return null;
   }
 
+  // Count applied filter rules to display on the badge
+  const activeFilterCount = filters.rules.length;
+
   const handleToggleShowAdvancedFilters = () => {
     setShowAdvancedFilters((prev) => !prev);
   };
 
+  const FilterIcon = showAdvancedFilters ? FilterListOffIcon : FilterListIcon;
+
   return (
     <>
       <Tooltip title={rest?.title ?? localization.showAdvancedFilters}>
-        <IconButton
-          aria-label={localization.showAdvancedFilters}
-          onClick={handleToggleShowAdvancedFilters}
-          {...rest}
-          title={undefined}
+        {/* Badge wraps the button; invisible when no filters are active */}
+        <Badge
+          badgeContent={activeFilterCount}
+          color="primary"
+          invisible={activeFilterCount === 0}
         >
-          {showAdvancedFilters ? <FilterListOffIcon /> : <FilterListIcon />}
-        </IconButton>
+          <Button
+            aria-label={localization.showAdvancedFilters}
+            onClick={handleToggleShowAdvancedFilters}
+            size="small"
+            startIcon={<FilterIcon />}
+            variant="soft"
+            {...rest}
+            title={undefined}
+          >
+            {localization.filters}
+          </Button>
+        </Badge>
       </Tooltip>
       <MRT_AdvancedFilters table={table} />
     </>

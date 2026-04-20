@@ -109,6 +109,7 @@ export const MRT_Localization_NL: MRT_Localization = {
   showHideSearch: 'Toon/Verberg zoekbalk',
   showAdvancedFilters: 'Toon geavanceerde filters',
   advancedFilters: 'Geavanceerde filters',
+  filters: 'Filters',
   add: 'Toevoegen',
   clear: 'Wissen',
   apply: 'Toepassen',

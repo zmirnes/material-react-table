@@ -109,6 +109,7 @@ export const MRT_Localization_DE: MRT_Localization = {
   showHideSearch: 'Suche ein-/ausblenden',
   showAdvancedFilters: 'Erweiterte Filter anzeigen',
   advancedFilters: 'Erweiterte Filter',
+  filters: 'Filter',
   add: 'Hinzufügen',
   clear: 'Löschen',
   apply: 'Anwenden',

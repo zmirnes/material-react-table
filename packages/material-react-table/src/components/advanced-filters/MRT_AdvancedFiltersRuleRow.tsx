@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import type React from 'react';
 import {
   type MRT_Column,
   type MRT_FilterRule,
@@ -23,6 +24,8 @@ export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   // Whether this rule is currently pinned as a quick filter above the table
   isPinned: boolean;
   logicOperator: 'and' | 'or';
+  // Called when the user presses Enter inside a value input; undefined when apply is disabled
+  onApply: (() => void) | undefined;
   onPin: (ruleId: string) => void;
   onRemove: (ruleId: string) => void;
   onUnpin: (ruleId: string) => void;
@@ -39,6 +42,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
   isFirst,
   isPinned,
   logicOperator,
+  onApply,
   onPin,
   onRemove,
   onUnpin,
@@ -195,7 +199,19 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         </TextField>
 
         {/* Value editor — rendered by the operator's own editComponent */}
-        <Box sx={{ minWidth: 0, width: '100%' }}>
+        {/* onKeyDown bubbles from any text input inside the editor: Enter triggers apply */}
+        <Box
+          onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+            if (event.key === 'Enter' && onApply) {
+              // Prevent the Enter from bubbling to MUI Drawer/Modal infrastructure
+              // which could trigger a "click" on the last focused button
+              event.preventDefault();
+              event.stopPropagation();
+              onApply();
+            }
+          }}
+          sx={{ minWidth: 0, width: '100%' }}
+        >
           {/* Render an empty spacer when the operator needs no value (e.g. isEmpty) */}
           {valueEditor ?? null}
         </Box>

@@ -263,6 +263,7 @@ export interface MRT_Localization {
   showHideSearch: string;
   showAdvancedFilters: string;
   advancedFilters: string;
+  filters: string;
   add: string;
   clear: string;
   apply: string;
@@ -1525,6 +1526,11 @@ export interface MRT_FilterOperatorDefinition<
 > {
   id: MRT_FilterOperator;
   label: string;
+  // Controls when the quick filter commits the value to filters.rules.
+  // 'commit' — text/number inputs: commits on Enter only (no fetch on every keystroke).
+  // 'change' — selects/pickers/booleans: commits immediately on each onChange.
+  // Defaults to 'change' when omitted.
+  triggerMode?: 'commit' | 'change';
   getInitialValue: () => TValue;
   isValueEmpty: (value: TValue) => boolean;
   editComponent: (

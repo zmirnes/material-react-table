@@ -45,16 +45,33 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   // When the applied filters change externally (e.g. cleared from the toolbar)
   // and there are no local edits pending, sync the draft to match.
   // pinnedFilters changes (pin/unpin) always sync immediately without resetting draft rules.
+  // Rule values that belong to a pinned filter are also always synced — their value
+  // is owned by the quick filter strip, not the drawer.
   useEffect(() => {
     if (!hasUnappliedChangesRef.current) {
       setDraftFilters(filters);
       return;
     }
-    // Sync only pinnedFilters so pin/unpin is reflected in the drawer immediately
-    setDraftFilters((current) => ({
-      ...current,
-      pinnedFilters: filters.pinnedFilters,
-    }));
+    // Sync pinnedFilters slot metadata and the committed values of pinned rules.
+    // Other draft rules (non-pinned) are left untouched so the user's in-progress
+    // drawer edits are preserved.
+    setDraftFilters((current) => {
+      const updatedRules = current.rules.map((draftRule) => {
+        const isPinnedRule = filters.pinnedFilters.some(
+          (pf) => pf.id === draftRule.id,
+        );
+        if (!isPinnedRule) return draftRule;
+        // Use the committed rule value so the drawer reflects what the quick filter set
+        const committedRule = filters.rules.find((r) => r.id === draftRule.id);
+        return committedRule ?? draftRule;
+      });
+
+      return {
+        ...current,
+        pinnedFilters: filters.pinnedFilters,
+        rules: updatedRules,
+      };
+    });
   }, [filters]);
 
   // Derive the list of columns that can have filter rules added
