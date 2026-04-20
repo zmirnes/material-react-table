@@ -129,7 +129,14 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
     handlers: {
       // Fetch triggers — only update state, do not persist
-      onFiltersChange: setFilters,
+      // Exception: pinnedFilters changes are UI-only (no fetch) and must be saved
+      onFiltersChange: (updater) => {
+        const newFilters = functionalUpdate(updater, filters);
+        setFilters(newFilters);
+        if (newFilters.pinnedFilters !== filters.pinnedFilters) {
+          debouncedSave({ filters: newFilters });
+        }
+      },
       onPaginationChange: setPagination,
       onSortingChange: setSorting,
       onGroupingChange: setGrouping,
