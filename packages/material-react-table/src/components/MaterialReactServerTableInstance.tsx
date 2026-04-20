@@ -16,7 +16,6 @@ import {
 } from '../types';
 import { createColumnDefs } from '../utils/columns/createColumnDef';
 import { MaterialReactTable } from './MaterialReactTable';
-import { MRT_ExportsToolbar } from './toolbar/MRT_ExportsToolbar';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   config: MRT_TableConfig<TData>;
@@ -115,12 +114,6 @@ export const MaterialReactServerTableInstance = <
     saveState,
   });
 
-  const exportState: MRT_ActiveExportsState = tableState.activeExports ?? {
-    selectedFormat: null,
-    selectedExports: [],
-    grouped: false,
-  };
-
   const columns = useMemo(
     () => createColumnDefs(config.columns),
     [config.columns],
@@ -162,19 +155,8 @@ export const MaterialReactServerTableInstance = <
     onSaveFilters,
     onDeleteSavedFilter,
     initialSavedFilters,
-    // Render export toolbar in top toolbar when exports are available
-    ...(hasAvailableExports &&
-      loadExport && {
-        renderTopToolbarCustomActions: ({ table: tableInstance }) => (
-          <MRT_ExportsToolbar
-            table={tableInstance}
-            availableExports={allowedExports}
-            exportState={exportState}
-            onExportStateChange={handlers.onActiveExportsChange}
-            loadExport={loadExport}
-          />
-        ),
-      }),
+    availableExports: hasAvailableExports ? allowedExports : undefined,
+    loadExport: hasAvailableExports ? loadExport : undefined,
     ...handlers,
   });
 

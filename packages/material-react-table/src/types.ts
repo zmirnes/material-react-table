@@ -1004,6 +1004,23 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   getTotalRows?: (props: {
     table: MRT_TableInstance<TData>;
   }) => Promise<number>;
+  /**
+   * Available export definitions. When provided together with `loadExport`,
+   * an export button is rendered in the toolbar.
+   */
+  availableExports?: Record<string, MRT_ExportDefinition>;
+  /**
+   * Async function called when the user triggers an export action.
+   * The library stays backend-agnostic — implement your HTTP call here.
+   */
+  loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
+  /**
+   * Handler called when the active export state changes (selected exports,
+   * format, grouped flag). Used to persist export state via useServerTableState.
+   */
+  onActiveExportsChange?: Dispatch<
+    SetStateAction<MRT_ActiveExportsState | undefined>
+  >;
   enableSelectAll?: boolean;
   enableStickyFooter?: boolean;
   enableStickyHeader?: boolean;
