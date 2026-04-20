@@ -45,7 +45,7 @@ export const MRT_ToggleDensePaddingButton = <TData extends MRT_RowData>({
         onClick={handleToggleDensePadding}
         size="small"
         startIcon={<DensityIcon fontSize="small" />}
-        variant="soft"
+        variant="text"
         {...rest}
         title={undefined}
       >

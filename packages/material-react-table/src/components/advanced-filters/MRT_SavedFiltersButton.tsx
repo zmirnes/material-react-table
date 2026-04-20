@@ -76,7 +76,7 @@ export const MRT_SavedFiltersButton = <TData extends MRT_RowData>({
         ref={buttonRef}
         size="small"
         startIcon={<BookmarkIcon />}
-        variant="soft"
+        variant="text"
       >
         {localization.savedFilters}
       </Button>

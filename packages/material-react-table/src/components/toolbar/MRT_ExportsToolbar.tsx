@@ -240,7 +240,7 @@ export const MRT_ExportsToolbar = <TData extends MRT_RowData>({
             onClick={handleOpenMenu}
             size="small"
             startIcon={<FileDownloadIcon fontSize="small" />}
-            variant="soft"
+            variant="text"
           >
             {localization.exportButton}
           </Button>
