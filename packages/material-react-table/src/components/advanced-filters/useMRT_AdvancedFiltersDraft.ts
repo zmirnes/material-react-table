@@ -4,6 +4,7 @@ import {
   type MRT_FiltersLogicOperator,
   type MRT_FiltersState,
   type MRT_RowData,
+  type MRT_SavedFilter,
   type MRT_TableInstance,
 } from '../../types';
 import {
@@ -24,6 +25,12 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   // Draft lives in local state — initialised with whatever is currently applied
   const [draftFilters, setDraftFilters] = useState<MRT_FiltersState>(filters);
 
+  // Tracks whether the user has intentionally edited the draft inside the drawer.
+  // Only when true do we preserve the draft when applied filters change externally
+  // (e.g. loading a saved filter from the toolbar). This prevents the toolbar load
+  // from being silently ignored because hasUnappliedChanges is already true.
+  const isDraftDirty = useRef(false);
+
   // Serialise both states to JSON so they can be compared cheaply
   const serializedAppliedFilters = useMemo(
     () => JSON.stringify(filters),
@@ -38,17 +45,14 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   const hasUnappliedChanges =
     serializedAppliedFilters !== serializedDraftFilters;
 
-  // useRef so the effect reads the latest value without re-running on typing
-  const hasUnappliedChangesRef = useRef(hasUnappliedChanges);
-  hasUnappliedChangesRef.current = hasUnappliedChanges;
-
   // When the applied filters change externally (e.g. cleared from the toolbar)
-  // and there are no local edits pending, sync the draft to match.
+  // and the user has not made any manual draft edits, sync the draft to match.
   // pinnedFilters changes (pin/unpin) always sync immediately without resetting draft rules.
   // Rule values that belong to a pinned filter are also always synced — their value
   // is owned by the quick filter strip, not the drawer.
   useEffect(() => {
-    if (!hasUnappliedChangesRef.current) {
+    console.log('Filteri promijenjeni');
+    if (!isDraftDirty.current) {
       setDraftFilters(filters);
       return;
     }
@@ -96,29 +100,59 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
       ...currentFilters,
       rules: [...currentFilters.rules, nextRule],
     }));
+    isDraftDirty.current = true;
   };
 
-  // Resets the draft back to an empty filter state
+  // Resets the draft rules and logicOperator but keeps pinnedFilters intact.
   const clearRules = () => {
-    setDraftFilters(getDefaultFiltersState());
+    isDraftDirty.current = false;
+    setDraftFilters((current) => ({
+      ...getDefaultFiltersState(),
+      pinnedFilters: current.pinnedFilters,
+    }));
   };
 
   // Resets the draft back to the currently applied filter state, discarding any
   // in-progress drawer edits without touching the table's applied filters.
   const discardChanges = () => {
+    isDraftDirty.current = false;
     setDraftFilters(filters);
   };
 
-  // Removes a single rule from the draft by its id
+  // Loads a saved filter preset into the draft, replacing all current rules.
+  // Pinned filters are preserved — the user must click Apply to commit the preset.
+  const loadSavedFilter = (savedFilter: MRT_SavedFilter) => {
+    setDraftFilters((current) => ({
+      ...current,
+      logicOperator: savedFilter.logicOperator,
+      rules: savedFilter.rules,
+    }));
+  };
+
+  // Removes a rule from the draft. If the rule is already applied (exists in the
+  // active filter state), it is also removed from the table immediately.
+  // Draft-only rules (not yet applied) are only removed from the draft.
   const removeRule = (ruleId: string) => {
+    const isActiveRule = filters.rules.some((rule) => rule.id === ruleId);
+
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
       rules: currentFilters.rules.filter((rule) => rule.id !== ruleId),
     }));
+
+    if (isActiveRule) {
+      table.setFilters((current) => ({
+        ...current,
+        rules: current.rules.filter((rule) => rule.id !== ruleId),
+      }));
+    } else {
+      isDraftDirty.current = true;
+    }
   };
 
   // Updates the AND / OR logic operator that joins all rules
   const updateLogicOperator = (logicOperator: MRT_FiltersLogicOperator) => {
+    isDraftDirty.current = true;
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
       logicOperator,
@@ -129,6 +163,7 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
   // Pinned slot metadata (columnId, operator) is intentionally NOT synced here —
   // the quick filter bar reflects the last applied state until Apply is clicked.
   const updateRule = (ruleId: string, nextRule: MRT_FilterRule) => {
+    isDraftDirty.current = true;
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
       rules: currentFilters.rules.map((rule) =>
@@ -168,6 +203,14 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
     }));
   };
 
+  // Resets the dirty flag after the draft has been committed to the table.
+  // Must be called whenever the draft is successfully applied so that subsequent
+  // external filter changes (e.g. deleting a rule from outside the drawer) are
+  // picked up and synced to the draft correctly.
+  const markApplied = () => {
+    isDraftDirty.current = false;
+  };
+
   // True when at least one rule is missing a required value — blocks Apply
   const hasInvalidRules = draftFilters.rules.some((rule) =>
     isFilterRuleIncomplete(table, rule),
@@ -181,6 +224,8 @@ export const useMRT_AdvancedFiltersDraft = <TData extends MRT_RowData>(
     filterableColumns,
     hasInvalidRules,
     hasUnappliedChanges,
+    loadSavedFilter,
+    markApplied,
     pinRule,
     removeRule,
     unpinRule,
