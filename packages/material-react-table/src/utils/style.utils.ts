@@ -186,8 +186,6 @@ export const getCommonToolbarStyles = <TData extends MRT_RowData>({
   backgroundColor: table.options.mrtTheme.baseBackgroundColor,
   display: 'grid',
   flexWrap: 'wrap-reverse',
-  minHeight: '3.5rem',
-  overflow: 'hidden',
   position: 'relative',
   transition: 'all 150ms ease-in-out',
   zIndex: 1,

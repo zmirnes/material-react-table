@@ -102,7 +102,7 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
             justifyContent: 'flex-end',
             alignItems: 'center',
             gap: '0.5rem',
-            position: stackAlertBanner ? 'relative' : 'absolute',
+            position: 'relative',
             right: 0,
             top: 0,
           }}

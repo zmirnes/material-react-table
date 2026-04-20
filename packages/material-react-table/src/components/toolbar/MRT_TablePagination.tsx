@@ -116,7 +116,6 @@ export const MRT_TablePagination = <TData extends MRT_RowData>({
             : undefined,
         position: 'relative',
         px: '8px',
-        py: '12px',
         zIndex: 2,
       }}
     >

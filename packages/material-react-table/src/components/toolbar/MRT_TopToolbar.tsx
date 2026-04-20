@@ -75,15 +75,13 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
     >
       <Box
         sx={{
-          alignItems: 'flex-start',
+          alignItems: 'center',
           boxSizing: 'border-box',
           display: 'flex',
           gap: '0.5rem',
           justifyContent: 'space-between',
-          p: '0.5rem',
-          position: stackAlertBanner ? 'relative' : 'absolute',
-          right: 0,
-          top: 0,
+          py: '1rem',
+          px: '0.5rem',
           width: '100%',
         }}
       >
@@ -97,7 +95,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
               display: 'flex',
               flexWrap: 'wrap-reverse',
               gap: '0.5rem',
-              justifyContent: 'flex-end',
+              justifyContent: 'flex-start',
               width: '100%',
             }}
           >

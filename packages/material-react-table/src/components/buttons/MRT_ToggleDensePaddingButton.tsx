@@ -1,9 +1,9 @@
-import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
+import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_ToggleDensePaddingButtonProps<TData extends MRT_RowData>
-  extends IconButtonProps {
+  extends Omit<ButtonProps, 'children'> {
   table: MRT_TableInstance<TData>;
 }
 
@@ -31,22 +31,26 @@ export const MRT_ToggleDensePaddingButton = <TData extends MRT_RowData>({
     setDensity(nextDensity);
   };
 
+  const DensityIcon =
+    density === 'compact'
+      ? DensitySmallIcon
+      : density === 'comfortable'
+        ? DensityMediumIcon
+        : DensityLargeIcon;
+
   return (
     <Tooltip title={rest?.title ?? localization.toggleDensity}>
-      <IconButton
+      <Button
         aria-label={localization.toggleDensity}
         onClick={handleToggleDensePadding}
+        size="small"
+        startIcon={<DensityIcon fontSize="small" />}
+        variant="soft"
         {...rest}
         title={undefined}
       >
-        {density === 'compact' ? (
-          <DensitySmallIcon fontSize="small" />
-        ) : density === 'comfortable' ? (
-          <DensityMediumIcon fontSize="small" />
-        ) : (
-          <DensityLargeIcon fontSize="small" />
-        )}
-      </IconButton>
+        {localization.toggleDensity}
+      </Button>
     </Tooltip>
   );
 };

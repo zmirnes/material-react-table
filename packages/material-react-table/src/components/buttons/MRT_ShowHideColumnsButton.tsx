@@ -1,11 +1,11 @@
-import { type MouseEvent, useState } from 'react';
-import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
+import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { type MouseEvent, useState } from 'react';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { MRT_ShowHideColumnsMenu } from '../menus/MRT_ShowHideColumnsMenu';
 
 export interface MRT_ShowHideColumnsButtonProps<TData extends MRT_RowData>
-  extends IconButtonProps {
+  extends Omit<ButtonProps, 'children'> {
   table: MRT_TableInstance<TData>;
 }
 
@@ -29,14 +29,17 @@ export const MRT_ShowHideColumnsButton = <TData extends MRT_RowData>({
   return (
     <>
       <Tooltip title={rest?.title ?? localization.showHideColumns}>
-        <IconButton
+        <Button
           aria-label={localization.showHideColumns}
           onClick={handleClick}
+          size="small"
+          startIcon={<ViewColumnIcon fontSize="small" />}
+          variant="soft"
           {...rest}
           title={undefined}
         >
-          <ViewColumnIcon fontSize="small" />
-        </IconButton>
+          {localization.showHideColumns}
+        </Button>
       </Tooltip>
       {anchorEl && (
         <MRT_ShowHideColumnsMenu
