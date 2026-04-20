@@ -4,6 +4,8 @@ import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
 import {
   MRT_RowData,
+  MRT_SavedFilter,
+  MRT_SavedFilters,
   MRT_TableConfig,
   MRT_TableData,
   MRT_TableInstance,
@@ -24,6 +26,9 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   getTotalRows?: (props: {
     table: MRT_TableInstance<TData>;
   }) => Promise<number>;
+  onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
+  onDeleteSavedFilter?: (filterName: string) => Promise<void>;
+  initialSavedFilters?: MRT_SavedFilters;
 };
 
 export const MaterialReactServerTableInstance = <
@@ -34,6 +39,9 @@ export const MaterialReactServerTableInstance = <
   saveState,
   getAllSelectableRowIds,
   getTotalRows,
+  onSaveFilters,
+  onDeleteSavedFilter,
+  initialSavedFilters,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -81,6 +89,9 @@ export const MaterialReactServerTableInstance = <
     },
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
+    onSaveFilters,
+    onDeleteSavedFilter,
+    initialSavedFilters,
     ...handlers,
   });
 

@@ -15,6 +15,7 @@ import {
   type MRT_PaginationState,
   type MRT_Row,
   type MRT_RowData,
+  type MRT_SavedFilters,
   type MRT_StatefulTableOptions,
   type MRT_TableInstance,
   type MRT_TableState,
@@ -177,6 +178,11 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [showProgressBars, setShowProgressBars] = useState<boolean>(
     initialState?.showProgressBars ?? false,
   );
+  // Saved filter presets — initialised from the dedicated option so the consumer
+  // can hydrate them from the server response before rendering.
+  const [savedFilters, setSavedFilters] = useState<MRT_SavedFilters>(
+    definedTableOptions.initialSavedFilters ?? {},
+  );
 
   definedTableOptions.state = {
     actionCell,
@@ -196,6 +202,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     hoveredRow,
     isFullScreen,
     pagination,
+    savedFilters,
     showAlertBanner,
     showColumnFilters,
     showGlobalFilter,
@@ -327,6 +334,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     statefulTableOptions.onHoveredRowChange ?? setHoveredRow;
   table.setIsFullScreen =
     statefulTableOptions.onIsFullScreenChange ?? setIsFullScreen;
+  table.setSavedFilters = setSavedFilters;
   table.setShowAlertBanner =
     statefulTableOptions.onShowAlertBannerChange ?? setShowAlertBanner;
   table.setShowAdvancedFilters =

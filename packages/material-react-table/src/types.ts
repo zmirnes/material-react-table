@@ -267,6 +267,10 @@ export interface MRT_Localization {
   add: string;
   clear: string;
   discardChanges: string;
+  saveFilters: string;
+  savedFilters: string;
+  noSavedFilters: string;
+  filterName: string;
   apply: string;
   sortByColumnAsc: string;
   sortByColumnDesc: string;
@@ -380,6 +384,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setHoveredColumn: Dispatch<SetStateAction<Partial<MRT_Column<TData>> | null>>;
   setHoveredRow: Dispatch<SetStateAction<Partial<MRT_Row<TData>> | null>>;
   setIsFullScreen: Dispatch<SetStateAction<boolean>>;
+  setSavedFilters: Dispatch<SetStateAction<MRT_SavedFilters>>;
   setShowAlertBanner: Dispatch<SetStateAction<boolean>>;
   setShowColumnFilters: Dispatch<SetStateAction<boolean>>;
   setShowGlobalFilter: Dispatch<SetStateAction<boolean>>;
@@ -441,6 +446,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   isFullScreen: boolean;
   isLoading: boolean;
   isSaving: boolean;
+  savedFilters: MRT_SavedFilters;
   showAlertBanner: boolean;
   showColumnFilters: boolean;
   showGlobalFilter: boolean;
@@ -1285,6 +1291,13 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   }) => Promise<void> | void;
   onFiltersChange?: OnChangeFn<MRT_FiltersState>;
   onGlobalFilterFnChange?: OnChangeFn<MRT_FilterOption>;
+  // Called when the user saves a filter preset. Return resolved promise on success,
+  // rejected promise on failure. The drawer input stays open on rejection.
+  onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
+  // Called when the user deletes a saved filter preset.
+  onDeleteSavedFilter?: (filterName: string) => Promise<void>;
+  // Preset saved filters to initialise the table with (e.g. loaded from the server).
+  initialSavedFilters?: MRT_SavedFilters;
   onHoveredColumnChange?: OnChangeFn<Partial<MRT_Column<TData>> | null>;
   onHoveredRowChange?: OnChangeFn<Partial<MRT_Row<TData>> | null>;
   onIsFullScreenChange?: OnChangeFn<boolean>;
@@ -1497,6 +1510,16 @@ export type MRT_FilterOperator =
   | 'notEquals'
   | 'startsWith'
   | 'to-today';
+
+// A single named snapshot of the current filter state, saved by the user.
+export interface MRT_SavedFilter {
+  name: string;
+  logicOperator: MRT_FiltersLogicOperator;
+  rules: MRT_FilterRule[];
+}
+
+// Map of saved filters keyed by their user-defined name.
+export type MRT_SavedFilters = Record<string, MRT_SavedFilter>;
 
 export interface MRT_FilterRule {
   columnId: string;

@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { MRT_AdvancedFiltersRuleRow } from './MRT_AdvancedFiltersRuleRow';
+import { MRT_SaveFiltersInput } from './MRT_SaveFiltersInput';
 import { useMRT_AdvancedFiltersDraft } from './useMRT_AdvancedFiltersDraft';
 import { getDefaultFiltersState } from './utils';
 
@@ -40,6 +41,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     filterableColumns,
     hasInvalidRules,
     hasUnappliedChanges,
+    markApplied,
     pinRule,
     removeRule,
     unpinRule,
@@ -55,7 +57,10 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
   // Reset both the draft and the applied state, then close the drawer
   const handleClearFilters = () => {
     clearRules();
-    setFilters(getDefaultFiltersState());
+    setFilters((current) => ({
+      ...getDefaultFiltersState(),
+      pinnedFilters: current.pinnedFilters,
+    }));
     handleClose();
   };
 
@@ -78,6 +83,7 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
     });
 
     setFilters({ ...draftFilters, pinnedFilters: updatedPinnedFilters });
+    markApplied();
     handleClose();
   };
 
@@ -170,28 +176,25 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
           )}
         </Stack>
 
-        {/* Footer actions: Clear (left) | Add rule | Discard | Apply (right) */}
+        {/* Footer actions: Clear (left) | Save | Saved | Add rule | Discard | Apply (right) */}
         <Box display="flex" flexDirection="row" gap={1} marginTop="1rem">
           <Button
             color="warning"
             onClick={handleClearFilters}
             size="medium"
+            sx={{ mr: 'auto' }}
             variant="contained"
           >
             {localization.clear}
           </Button>
-          {/* Only shown when the draft differs from the last applied state */}
 
-          <Button
-            disabled={!hasUnappliedChanges}
-            color="inherit"
-            onClick={discardChanges}
-            size="medium"
-            variant="outlined"
-            sx={{ mr: 'auto' }}
-          >
-            {localization.discardChanges}
-          </Button>
+          {/* Save current draft as a named preset — only rendered when onSaveFilters is provided */}
+          <MRT_SaveFiltersInput
+            disabled={draftFilters.rules.length === 0}
+            draftFilters={draftFilters}
+            table={table}
+          />
+
           {/* Disabled when no filterable columns exist in the table */}
           <Button
             disabled={filterableColumns.length === 0 || hasInvalidRules}
@@ -200,6 +203,17 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
             variant="contained"
           >
             {localization.add}
+          </Button>
+
+          {/* Only shown when the draft differs from the last applied state */}
+          <Button
+            color="inherit"
+            disabled={!hasUnappliedChanges}
+            onClick={discardChanges}
+            size="medium"
+            variant="outlined"
+          >
+            {localization.discardChanges}
           </Button>
 
           {/* Disabled until all existing rules are fully filled out */}

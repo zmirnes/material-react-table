@@ -287,6 +287,9 @@ export const Basic = () => (
       await simulateDelay(1500);
       return fakeDatabase.map((row) => row.id);
     }}
+    onSaveFilters={async () => {
+      await simulateDelay(1000);
+    }}
   />
 );
 

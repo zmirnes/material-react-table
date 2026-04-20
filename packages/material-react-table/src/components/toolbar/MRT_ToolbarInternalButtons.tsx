@@ -1,6 +1,7 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
+import { MRT_SavedFiltersButton } from '../advanced-filters/MRT_SavedFiltersButton';
 import { MRT_ShowHideColumnsButton } from '../buttons/MRT_ShowHideColumnsButton';
 import { MRT_ToggleAdvancedFiltersButton } from '../buttons/MRT_ToggleAdvancedFiltersButton';
 import { MRT_ToggleDensePaddingButton } from '../buttons/MRT_ToggleDensePaddingButton';
@@ -41,6 +42,7 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
         alignItems: 'center',
         display: 'flex',
         zIndex: 3,
+        gap: 1,
         ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
       })}
     >
@@ -70,6 +72,8 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
           {enableAdvancedFilters && (
             <MRT_ToggleAdvancedFiltersButton table={table} />
           )}
+          {/* Saved filters dropdown — shown directly in toolbar for quick access */}
+          {enableAdvancedFilters && <MRT_SavedFiltersButton table={table} />}
         </>
       )}
     </Box>
