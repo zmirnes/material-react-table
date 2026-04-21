@@ -83,10 +83,8 @@ export const MRT_SavedFiltersButton = <TData extends MRT_RowData>({
 
       <Menu
         anchorEl={buttonRef.current}
-        // anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         onClose={() => setMenuOpen(false)}
         open={menuOpen}
-        // transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {savedFiltersList.length === 0 && (
           <MenuItem disabled>

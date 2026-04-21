@@ -1,5 +1,6 @@
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PrintIcon from '@mui/icons-material/Print';
+import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
@@ -46,6 +47,9 @@ export const MRT_ExportsToolbar = <TData extends MRT_RowData>({
   const { localization } = table.options;
   const { selectedExports, selectedFormat, grouped } = exportState;
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [loadingExportType, setLoadingExportType] = useState<
+    'download' | 'print' | null
+  >(null);
 
   const { rowSelection } = table.getState();
   const selectedRowIds = Object.keys(rowSelection).filter(
@@ -114,20 +118,26 @@ export const MRT_ExportsToolbar = <TData extends MRT_RowData>({
   };
 
   const handleExportAction = async (type: 'download' | 'print') => {
-    handleCloseMenu();
-    const response = await loadExport({
-      format: selectedFormat,
-      exports: selectedExports,
-      separated_files: !grouped,
-      download: false,
-      ids: JSON.stringify(selectedRowIds),
-      type,
-    });
+    setLoadingExportType(type);
+    try {
+      const response = await loadExport({
+        format: selectedFormat,
+        exports: selectedExports,
+        separated_files: !grouped,
+        download: false,
+        ids: JSON.stringify(selectedRowIds),
+        type,
+      });
 
-    if (type === 'download') {
-      downloadExportFiles(response);
-    } else {
-      printExportFiles(response);
+      handleCloseMenu();
+
+      if (type === 'download') {
+        downloadExportFiles(response);
+      } else {
+        printExportFiles(response);
+      }
+    } finally {
+      setLoadingExportType(null);
     }
   };
 
@@ -188,28 +198,44 @@ export const MRT_ExportsToolbar = <TData extends MRT_RowData>({
     );
   };
 
-  const renderActionButtons = () => (
-    <Stack direction="row" gap={0.5} mt={1} mr={2}>
-      {hasPdfFormat && (
+  const renderActionButtons = () => {
+    const isAnyLoading = loadingExportType !== null;
+
+    return (
+      <Stack direction="row" gap={0.5} mt={1} mr={2}>
+        {hasPdfFormat && (
+          <Button
+            sx={{ display: 'flex', gap: 0.5 }}
+            disabled={isPrintDisabled || isAnyLoading}
+            onClick={() => handleExportAction('print')}
+            startIcon={
+              loadingExportType === 'print' ? (
+                <CircularProgress size={16} color="inherit" />
+              ) : (
+                <PrintIcon fontSize="small" />
+              )
+            }
+          >
+            {localization.exportPrintPdf}
+          </Button>
+        )}
         <Button
           sx={{ display: 'flex', gap: 0.5 }}
-          disabled={isPrintDisabled}
-          onClick={() => handleExportAction('print')}
+          disabled={isDownloadDisabled || isAnyLoading}
+          onClick={() => handleExportAction('download')}
+          startIcon={
+            loadingExportType === 'download' ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : (
+              <FileDownloadIcon fontSize="small" />
+            )
+          }
         >
-          <PrintIcon fontSize="small" />
-          {localization.exportPrintPdf}
+          {localization.exportDownload}
         </Button>
-      )}
-      <Button
-        sx={{ display: 'flex', gap: 0.5 }}
-        disabled={isDownloadDisabled}
-        onClick={() => handleExportAction('download')}
-      >
-        <FileDownloadIcon fontSize="small" />
-        {localization.exportDownload}
-      </Button>
-    </Stack>
-  );
+      </Stack>
+    );
+  };
 
   const renderGroupedCheckbox = () => (
     <Stack mt="auto">
