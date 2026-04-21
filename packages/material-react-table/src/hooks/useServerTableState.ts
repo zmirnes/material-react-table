@@ -2,6 +2,7 @@ import { functionalUpdate } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import {
+  MRT_ActiveExportsState,
   MRT_ColumnOrderState,
   MRT_ColumnPinningState,
   MRT_ColumnSizingState,
@@ -67,6 +68,9 @@ export const useServerTableState = <TData extends MRT_RowData>({
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>(
     initialState?.rowSelection ?? {},
   );
+  const [activeExports, setActiveExports] = useState<
+    MRT_ActiveExportsState | undefined
+  >(initialState?.activeExports);
 
   // --- Debounced save ---
   // saveState is optional — if not provided, do nothing
@@ -87,6 +91,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
         density,
         expanded,
         rowSelection,
+        ...(activeExports !== undefined && { activeExports }),
         ...partial, // override with the latest values
       } as MRT_TableState<TData>);
     },
@@ -125,6 +130,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
       density,
       expanded,
       rowSelection,
+      ...(activeExports !== undefined && { activeExports }),
     },
 
     handlers: {
@@ -182,6 +188,13 @@ export const useServerTableState = <TData extends MRT_RowData>({
         rowSelection,
         'rowSelection',
       ),
+      onActiveExportsChange: (
+        updater: React.SetStateAction<MRT_ActiveExportsState | undefined>,
+      ) => {
+        const newValue = functionalUpdate(updater, activeExports);
+        setActiveExports(newValue);
+        debouncedSave({ activeExports: newValue });
+      },
     },
 
     // Only these go into useEffect deps for the data fetch

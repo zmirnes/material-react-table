@@ -133,4 +133,9 @@ export const MRT_Localization_DE: MRT_Localization = {
   unpinAll: 'Alle loslösen',
   dimensionRotationEnabled: 'Drehung aktiviert',
   dimensionRotationDisabled: 'Drehung deaktiviert',
+  exportButton: 'Exportieren',
+  exportSelectRowsTooltip: 'Zeilen zum Exportieren auswählen',
+  exportPrintPdf: 'PDF drucken',
+  exportDownload: 'Herunterladen',
+  exportGrouped: 'Dateien gruppieren',
 };

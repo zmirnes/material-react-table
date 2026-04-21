@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
+  MRT_ExportFileResponse,
+  MRT_ExportParams,
   MRT_SavedFilter,
   MRT_SavedFilters,
   MRT_TableInstance,
@@ -25,6 +27,8 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
   onDeleteSavedFilter?: (filterName: string) => Promise<void>;
   initialSavedFilters?: MRT_SavedFilters;
+  loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
+  exportPermissions?: Record<string, string[]>;
 }
 
 export const MaterialReactServerTable = <
@@ -38,6 +42,8 @@ export const MaterialReactServerTable = <
   onSaveFilters,
   onDeleteSavedFilter,
   initialSavedFilters,
+  loadExport,
+  exportPermissions,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -84,6 +90,8 @@ export const MaterialReactServerTable = <
       onSaveFilters={onSaveFilters}
       onDeleteSavedFilter={onDeleteSavedFilter}
       initialSavedFilters={initialSavedFilters}
+      loadExport={loadExport}
+      exportPermissions={exportPermissions}
     />
   );
 };

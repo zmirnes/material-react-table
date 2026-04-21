@@ -269,7 +269,96 @@ export const Basic = () => (
   <MaterialReactServerTable<Person>
     loadConfig={async () => {
       await simulateDelay(800);
-      return { columns };
+      return {
+        columns,
+        availableExports: {
+          export_pozicija: {
+            name: 'export_pozicija',
+            label: 'Export pozicija',
+            formats: ['xml', 'csv', 'xlsx'],
+          },
+          export_detalji: {
+            name: 'export_detalji',
+            label: 'Export detalji',
+            formats: ['xml', 'csv', 'xlsx'],
+          },
+          export_finansije: {
+            name: 'export_finansije',
+            label: 'Export finansije',
+            formats: ['xlsx', 'pdf'],
+          },
+          export_izvjestaj: {
+            name: 'export_izvjestaj',
+            label: 'Export izvještaj',
+            formats: ['pdf'],
+          },
+          export_summary: {
+            name: 'export_summary',
+            label: 'Export sažetak',
+            formats: ['csv', 'pdf'],
+          },
+          export_raw: {
+            name: 'export_raw',
+            label: 'Export raw data',
+            formats: ['csv'],
+          },
+          export_radnici: {
+            name: 'export_radnici',
+            label: 'Export radnici',
+            formats: ['xml', 'csv', 'xlsx'],
+          },
+          export_ugovori: {
+            name: 'export_ugovori',
+            label: 'Export ugovori',
+            formats: ['xlsx', 'pdf'],
+          },
+          export_placanja: {
+            name: 'export_placanja',
+            label: 'Export plaćanja',
+            formats: ['csv', 'xlsx'],
+          },
+          export_nalozi: {
+            name: 'export_nalozi',
+            label: 'Export nalozi',
+            formats: ['xml', 'pdf'],
+          },
+          export_skladiste: {
+            name: 'export_skladiste',
+            label: 'Export skladište',
+            formats: ['csv', 'xlsx'],
+          },
+          export_artikli: {
+            name: 'export_artikli',
+            label: 'Export artikli',
+            formats: ['xml', 'csv', 'xlsx'],
+          },
+          export_nabava: {
+            name: 'export_nabava',
+            label: 'Export nabava',
+            formats: ['xlsx', 'pdf'],
+          },
+          export_prodaja: {
+            name: 'export_prodaja',
+            label: 'Export prodaja',
+            formats: ['csv', 'xlsx', 'pdf'],
+          },
+          export_knjizenje: {
+            name: 'export_knjizenje',
+            label: 'Export knjiženje',
+            formats: ['xml', 'pdf'],
+          },
+          export_analitika: {
+            name: 'export_analitika',
+            label: 'Export analitika',
+            formats: ['xlsx', 'pdf'],
+          },
+          export_kontrola: {
+            name: 'export_kontrola',
+            label: 'Export kontrola kvaliteta',
+            formats: ['csv', 'xlsx'],
+          },
+        },
+      };
     }}
     loadData={async (state) => {
       await simulateDelay(600);
@@ -282,6 +371,84 @@ export const Basic = () => (
     }}
     saveState={async () => {
       await simulateDelay(200);
+    }}
+    loadExport={async (params) => {
+      await simulateDelay(1000);
+
+      const buildXmlContent = (exportName: string) =>
+        [
+          '<?xml version="1.0" encoding="UTF-8"?>',
+          '<export>',
+          `  <type>${exportName}</type>`,
+          `  <format>${params.format}</format>`,
+          `  <ids>${params.ids}</ids>`,
+          '  <rows>',
+          '    <row><id>1</id><name>John Doe</name><age>30</age></row>',
+          '    <row><id>2</id><name>Jane Smith</name><age>25</age></row>',
+          '  </rows>',
+          '</export>',
+        ].join('\n');
+
+      const buildCsvContent = (exportName: string) =>
+        [
+          'id,name,age,email,city',
+          '1,John Doe,30,john@example.com,Sarajevo',
+          '2,Jane Smith,25,jane@example.com,Mostar',
+          '3,Bob Johnson,35,bob@example.com,Banja Luka',
+          `# Export: ${exportName}`,
+        ].join('\n');
+
+      const buildXlsxContent = (exportName: string) =>
+        `XLSX mock content for ${exportName} - ids: ${params.ids}`;
+
+      const buildPdfContent = (exportName: string) =>
+        `%PDF-1.4 mock for ${exportName}`;
+
+      const getContent = (exportName: string): string => {
+        switch (params.format) {
+          case 'xml':
+            return btoa(buildXmlContent(exportName));
+          case 'csv':
+            return btoa(buildCsvContent(exportName));
+          case 'xlsx':
+            return btoa(buildXlsxContent(exportName));
+          case 'pdf':
+            return btoa(buildPdfContent(exportName));
+          default:
+            return btoa(`Export: ${exportName}`);
+        }
+      };
+
+      if (params.separated_files) {
+        return params.exports.map((exportName) => ({
+          filename: `${exportName}.${params.format ?? 'bin'}`,
+          name: exportName,
+          extension: params.format ?? 'bin',
+          content: getContent(exportName),
+        }));
+      }
+
+      const combinedContent = params.exports
+        .map((exportName) => {
+          switch (params.format) {
+            case 'xml':
+              return buildXmlContent(exportName);
+            case 'csv':
+              return buildCsvContent(exportName);
+            default:
+              return `${exportName}: mock content`;
+          }
+        })
+        .join('\n\n');
+
+      return [
+        {
+          filename: `export_combined.${params.format ?? 'bin'}`,
+          name: 'combined',
+          extension: params.format ?? 'bin',
+          content: btoa(combinedContent),
+        },
+      ];
     }}
     getAllSelectableRowIds={async () => {
       await simulateDelay(1500);

@@ -34,7 +34,7 @@ export const MRT_ShowHideColumnsButton = <TData extends MRT_RowData>({
           onClick={handleClick}
           size="small"
           startIcon={<ViewColumnIcon fontSize="small" />}
-          variant="soft"
+          variant="text"
           {...rest}
           title={undefined}
         >

@@ -5,7 +5,6 @@ import {
   type MRT_TableInstance,
 } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_ToolbarAlertBanner } from '../toolbar/MRT_ToolbarAlertBanner';
 import { MRT_TableHeadRow } from './MRT_TableHeadRow';
 
 export interface MRT_TableHeadProps<TData extends MRT_RowData>
@@ -21,15 +20,10 @@ export const MRT_TableHead = <TData extends MRT_RowData>({
 }: MRT_TableHeadProps<TData>) => {
   const {
     getState,
-    options: {
-      enableStickyHeader,
-      layoutMode,
-      muiTableHeadProps,
-      positionToolbarAlertBanner,
-    },
+    options: { enableStickyHeader, layoutMode, muiTableHeadProps },
     refs: { tableHeadRef },
   } = table;
-  const { isFullScreen, showAlertBanner } = getState();
+  const { isFullScreen } = getState();
 
   const tableHeadProps = {
     ...parseFromValuesOrFunc(muiTableHeadProps, { table }),
@@ -57,35 +51,14 @@ export const MRT_TableHead = <TData extends MRT_RowData>({
         borderBottom: `1px solid ${theme.palette.divider}`,
       })}
     >
-      {positionToolbarAlertBanner === 'head-overlay' &&
-      (showAlertBanner || table.getSelectedRowModel().rows.length > 0) ? (
-        <tr
-          style={{
-            display: layoutMode?.startsWith('grid') ? 'grid' : undefined,
-          }}
-        >
-          <th
-            colSpan={table.getVisibleLeafColumns().length}
-            style={{
-              display: layoutMode?.startsWith('grid') ? 'grid' : undefined,
-              padding: 0,
-            }}
-          >
-            <MRT_ToolbarAlertBanner table={table} />
-          </th>
-        </tr>
-      ) : (
-        table
-          .getHeaderGroups()
-          .map((headerGroup) => (
-            <MRT_TableHeadRow
-              columnVirtualizer={columnVirtualizer}
-              headerGroup={headerGroup as any}
-              key={headerGroup.id}
-              table={table}
-            />
-          ))
-      )}
+      {table.getHeaderGroups().map((headerGroup) => (
+        <MRT_TableHeadRow
+          columnVirtualizer={columnVirtualizer}
+          headerGroup={headerGroup as any}
+          key={headerGroup.id}
+          table={table}
+        />
+      ))}
     </TableHead>
   );
 };

@@ -32,15 +32,15 @@
     "locales"
   ],
   "size-limit": [
-  {
-    "path": "dist/index.js",
-    "limit": "80 kB"
-  },
-  {
-    "path": "dist/index.esm.js",
-    "limit": "76 kB"
-  }
-],
+    {
+      "path": "dist/index.js",
+      "limit": "80 kB"
+    },
+    {
+      "path": "dist/index.esm.js",
+      "limit": "76 kB"
+    }
+  ],
   "engines": {
     "node": ">=16"
   },
@@ -91,6 +91,7 @@
     "eslint-plugin-perfectionist": "^4.4.0",
     "eslint-plugin-storybook": "^0.11.1",
     "lodash": "^4.18.1",
+    "print-js": "^1.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-is": "^19.0.0",
@@ -112,6 +113,7 @@
     "@mui/icons-material": ">=6",
     "@mui/material": ">=6",
     "@mui/x-date-pickers": ">=7.15",
+    "print-js": ">=1.6",
     "react": ">=18.0",
     "react-dom": ">=18.0"
   },

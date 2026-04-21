@@ -288,6 +288,12 @@ export interface MRT_Localization {
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
+  // Export toolbar
+  exportButton: string;
+  exportSelectRowsTooltip: string;
+  exportPrintPdf: string;
+  exportDownload: string;
+  exportGrouped: string;
 
   // Allow for any additional keys for custom localization
   [key: string]: string;
@@ -455,6 +461,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showProgressBars: boolean;
   showSkeletons: boolean;
   showToolbarDropZone: boolean;
+  activeExports?: MRT_ActiveExportsState;
 }
 
 interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
@@ -997,6 +1004,23 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   getTotalRows?: (props: {
     table: MRT_TableInstance<TData>;
   }) => Promise<number>;
+  /**
+   * Available export definitions. When provided together with `loadExport`,
+   * an export button is rendered in the toolbar.
+   */
+  availableExports?: Record<string, MRT_ExportDefinition>;
+  /**
+   * Async function called when the user triggers an export action.
+   * The library stays backend-agnostic — implement your HTTP call here.
+   */
+  loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
+  /**
+   * Handler called when the active export state changes (selected exports,
+   * format, grouped flag). Used to persist export state via useServerTableState.
+   */
+  onActiveExportsChange?: Dispatch<
+    SetStateAction<MRT_ActiveExportsState | undefined>
+  >;
   enableSelectAll?: boolean;
   enableStickyFooter?: boolean;
   enableStickyHeader?: boolean;
@@ -1415,9 +1439,39 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   state?: Partial<MRT_TableState<TData>>;
 }
 
+export interface MRT_ExportDefinition {
+  name: string;
+  label: string;
+  formats: string[];
+}
+
+export interface MRT_ExportParams {
+  format: string | null;
+  exports: string[];
+  separated_files: boolean;
+  download: boolean;
+  ids: string;
+  type: 'download' | 'print';
+  [key: string]: unknown;
+}
+
+export interface MRT_ExportFileResponse {
+  filename: string;
+  name: string;
+  extension: string;
+  content: string;
+}
+
+export interface MRT_ActiveExportsState {
+  selectedExports: string[];
+  selectedFormat: string | null;
+  grouped: boolean;
+}
+
 export interface MRT_TableConfig<TData extends MRT_RowData> {
   columns: MRT_ColumnDef<TData, unknown>[];
   initialState?: Partial<MRT_TableState<TData>>;
+  availableExports?: Record<string, MRT_ExportDefinition>;
 }
 
 export interface MRT_TableData<TData extends MRT_RowData> {
@@ -1446,6 +1500,7 @@ export type UseServerTableStateReturn = {
     density: MRT_DensityState;
     expanded: MRT_ExpandedState;
     rowSelection: MRT_RowSelectionState;
+    activeExports?: MRT_ActiveExportsState;
   };
   // Handlers — pass into the table's `on*Change` props
   handlers: {
@@ -1460,6 +1515,9 @@ export type UseServerTableStateReturn = {
     onDensityChange: OnChangeFn<MRT_DensityState>;
     onExpandedChange: OnChangeFn<MRT_ExpandedState>;
     onRowSelectionChange: OnChangeFn<MRT_RowSelectionState>;
+    onActiveExportsChange: Dispatch<
+      SetStateAction<MRT_ActiveExportsState | undefined>
+    >;
   };
   // Only these go into useEffect deps for the data fetch
   fetchTrigger: {

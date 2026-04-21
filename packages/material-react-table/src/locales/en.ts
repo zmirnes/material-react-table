@@ -133,4 +133,9 @@ export const MRT_Localization_EN: MRT_Localization = {
   unpinAll: 'Unpin all',
   dimensionRotationEnabled: 'Rotation enabled',
   dimensionRotationDisabled: 'Rotation disabled',
+  exportButton: 'Export',
+  exportSelectRowsTooltip: 'Select rows to export',
+  exportPrintPdf: 'Print PDF',
+  exportDownload: 'Download',
+  exportGrouped: 'Group files',
 };

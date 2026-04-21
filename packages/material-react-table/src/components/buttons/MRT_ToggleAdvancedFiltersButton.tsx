@@ -51,7 +51,7 @@ export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
             onClick={handleToggleShowAdvancedFilters}
             size="small"
             startIcon={<FilterIcon />}
-            variant="soft"
+            variant="text"
             {...rest}
             title={undefined}
           >
