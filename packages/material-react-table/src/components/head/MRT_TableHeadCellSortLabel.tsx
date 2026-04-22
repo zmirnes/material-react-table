@@ -90,7 +90,6 @@ export const MRT_TableHeadCellSortLabel = <TData extends MRT_RowData>({
             },
             flex: '0 0',
             opacity: isSorted ? 1 : 0.3,
-            transition: 'all 150ms ease-in-out',
             width: '3ch',
             ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
           })}

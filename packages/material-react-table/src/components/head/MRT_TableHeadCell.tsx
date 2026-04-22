@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
 import { type Theme, useTheme } from '@mui/material/styles';
-import { type DragEvent, useCallback, useMemo } from 'react';
+import { type DragEvent, useCallback, useMemo, useState } from 'react';
 import {
   type MRT_ColumnVirtualizer,
   type MRT_Header,
@@ -9,7 +9,10 @@ import {
   type MRT_TableInstance,
 } from '../../types';
 import { cellKeyboardShortcuts } from '../../utils/cell.utils';
-import { getCommonMRTCellStyles } from '../../utils/style.utils';
+import {
+  getCommonMRTCellStyles,
+  getCommonTooltipProps,
+} from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_TableHeadCellColumnActionsButton } from './MRT_TableHeadCellColumnActionsButton';
 import { MRT_TableHeadCellFilterContainer } from './MRT_TableHeadCellFilterContainer';
@@ -17,6 +20,7 @@ import { MRT_TableHeadCellFilterLabel } from './MRT_TableHeadCellFilterLabel';
 import { MRT_TableHeadCellGrabHandle } from './MRT_TableHeadCellGrabHandle';
 import { MRT_TableHeadCellResizeHandle } from './MRT_TableHeadCellResizeHandle';
 import { MRT_TableHeadCellSortLabel } from './MRT_TableHeadCellSortLabel';
+import { Tooltip } from '@mui/material';
 
 export interface MRT_TableHeadCellProps<TData extends MRT_RowData>
   extends TableCellProps {
@@ -54,6 +58,8 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
     refs: { tableHeadCellRefs },
     setHoveredColumn,
   } = table;
+  const [isColumnCellHovered, setIsColumnCellHovered] =
+    useState(false);
   const {
     columnSizingInfo,
     density,
@@ -120,15 +126,13 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
         ? { borderRight: borderStyle }
         : { borderLeft: borderStyle };
     }
-    const draggingBorders = borderStyle
+    return borderStyle
       ? {
           borderLeft: borderStyle,
           borderRight: borderStyle,
           borderTop: borderStyle,
         }
       : undefined;
-
-    return draggingBorders;
   }, [draggingColumn, hoveredColumn, columnSizingInfo.isResizingColumn]);
 
   const handleDragEnter = (_e: DragEvent) => {
@@ -156,6 +160,13 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
       table,
       header,
     });
+  };
+
+  // Toggle the column cell hover state, but only when not actively resizing a column
+  const handleColumnCellHoverToggle = (isHovered: boolean) => {
+    if (!columnSizingInfo.isResizingColumn) {
+      setIsColumnCellHovered(isHovered);
+    }
   };
 
   const handleRef = useCallback(
@@ -202,19 +213,16 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
       data-sort={column.getIsSorted() || undefined}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
+      onMouseEnter={() => handleColumnCellHoverToggle(true)}
+      onMouseLeave={() => handleColumnCellHoverToggle(false)}
       ref={handleRef}
       tabIndex={enableKeyboardShortcuts ? 0 : undefined}
       {...tableCellProps}
       onKeyDown={handleKeyDown}
       sx={(theme: Theme) => ({
-        '& :hover': {
-          '.MuiButtonBase-root': {
-            opacity: 1,
-          },
-        },
         flexDirection: layoutMode?.startsWith('grid') ? 'column' : undefined,
         fontWeight: 'bold',
-        overflow: 'visible',
+        overflow: 'hidden',
         color: theme.palette.text.primary,
         p:
           density === 'compact'
@@ -292,28 +300,39 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
                       : undefined,
                 }}
               >
-                <Box
-                  className="Mui-TableHeadCell-Content-Wrapper"
-                  sx={{
-                    '&:hover': {
-                      textOverflow: 'clip',
-                    },
-                    minWidth: `${Math.min(columnDef.header?.length ?? 0, 4)}ch`,
-                    overflow: columnDefType === 'data' ? 'hidden' : undefined,
-                    textOverflow: 'ellipsis',
-                    whiteSpace:
-                      (columnDef.header?.length ?? 0) < 20
-                        ? 'nowrap'
-                        : 'normal',
-                  }}
+                <Tooltip
+                  {...getCommonTooltipProps('top')}
+                  title={HeaderElement}
                 >
-                  {HeaderElement}
-                </Box>
+                  <Box
+                    className="Mui-TableHeadCell-Content-Wrapper"
+                    sx={{
+                      '&:hover': {
+                        textOverflow: 'clip',
+                      },
+                      overflow: columnDefType === 'data' ? 'hidden' : undefined,
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {HeaderElement}
+                  </Box>
+                </Tooltip>
                 {column.getCanFilter() && (
                   <MRT_TableHeadCellFilterLabel header={header} table={table} />
                 )}
                 {column.getCanSort() && (
-                  <MRT_TableHeadCellSortLabel header={header} table={table} />
+                  <MRT_TableHeadCellSortLabel
+                    header={header}
+                    table={table}
+                    sx={{
+                      // Show sort label when the cell is hovered or the column is actively sorted
+                      visibility:
+                        isColumnCellHovered || column.getIsSorted()
+                          ? 'visible'
+                          : 'hidden',
+                    }}
+                  />
                 )}
               </Box>
               {columnDefType !== 'group' && (
@@ -324,9 +343,18 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: '0.25rem',
+                    gap: '0.5rem',
+                    width: isColumnCellHovered ? 'auto' : 0,
+                    visibility: isColumnCellHovered ? 'visible' : 'hidden',
+                    px: isColumnCellHovered ? '0.2rem' : 0,
                   }}
                 >
+                  {showColumnActions && (
+                    <MRT_TableHeadCellColumnActionsButton
+                      header={header}
+                      table={table}
+                    />
+                  )}
                   {showDragHandle && (
                     <MRT_TableHeadCellGrabHandle
                       column={column}
@@ -334,12 +362,6 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
                       tableHeadCellRef={{
                         current: tableHeadCellRefs.current?.[column.id]!,
                       }}
-                    />
-                  )}
-                  {showColumnActions && (
-                    <MRT_TableHeadCellColumnActionsButton
-                      header={header}
-                      table={table}
                     />
                   )}
                 </Box>
