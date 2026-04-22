@@ -58,7 +58,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
     refs: { tableHeadCellRefs },
     setHoveredColumn,
   } = table;
-  const [isColumnCellActionHovered, setIsColumnCellActionHovered] =
+  const [isColumnCellHovered, setIsColumnCellHovered] =
     useState(false);
   const {
     columnSizingInfo,
@@ -162,6 +162,13 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
     });
   };
 
+  // Toggle the column cell hover state, but only when not actively resizing a column
+  const handleColumnCellHoverToggle = (isHovered: boolean) => {
+    if (!columnSizingInfo.isResizingColumn) {
+      setIsColumnCellHovered(isHovered);
+    }
+  };
+
   const handleRef = useCallback(
     (node: HTMLTableCellElement) => {
       if (node) {
@@ -206,16 +213,8 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
       data-sort={column.getIsSorted() || undefined}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
-      onMouseEnter={() => {
-        if (!columnSizingInfo.isResizingColumn) {
-          setIsColumnCellActionHovered(true);
-        }
-      }}
-      onMouseLeave={() => {
-        if (!columnSizingInfo.isResizingColumn) {
-          setIsColumnCellActionHovered(false);
-        }
-      }}
+      onMouseEnter={() => handleColumnCellHoverToggle(true)}
+      onMouseLeave={() => handleColumnCellHoverToggle(false)}
       ref={handleRef}
       tabIndex={enableKeyboardShortcuts ? 0 : undefined}
       {...tableCellProps}
@@ -329,7 +328,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
                     sx={{
                       // Show sort label when the cell is hovered or the column is actively sorted
                       visibility:
-                        isColumnCellActionHovered || column.getIsSorted()
+                        isColumnCellHovered || column.getIsSorted()
                           ? 'visible'
                           : 'hidden',
                     }}
@@ -345,11 +344,9 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    width: isColumnCellActionHovered ? 'auto' : 0,
-                    visibility: isColumnCellActionHovered
-                      ? 'visible'
-                      : 'hidden',
-                    px: isColumnCellActionHovered ? '0.2rem' : 0,
+                    width: isColumnCellHovered ? 'auto' : 0,
+                    visibility: isColumnCellHovered ? 'visible' : 'hidden',
+                    px: isColumnCellHovered ? '0.2rem' : 0,
                   }}
                 >
                   {showColumnActions && (
