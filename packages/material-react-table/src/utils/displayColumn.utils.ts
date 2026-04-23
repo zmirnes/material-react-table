@@ -148,7 +148,7 @@ export const getDefaultColumnPinningState = <TData extends MRT_RowData>(
 
   // Only force checkbox to the front when left or right pinned columns exist
   const updatedLeft =
-    existingLeft.length > 0 || existingRight.length > 0
+    existingLeft.length > 0
       ? [CHECKBOX_DISPLAY_COLUMN_ID, ...leftWithoutCheckbox]
       : existingLeft;
   return {
