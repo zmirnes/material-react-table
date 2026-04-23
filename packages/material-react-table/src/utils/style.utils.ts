@@ -10,6 +10,7 @@ import {
   type MRT_TableOptions,
   type MRT_Theme,
 } from '../types';
+import { CHECKBOX_DISPLAY_COLUMN_ID } from './displayColumn.utils';
 import { parseFromValuesOrFunc } from './utils';
 
 export const parseCSSVarId = (id: string) => id.replace(/[^a-zA-Z0-9]/g, '_');
@@ -104,6 +105,10 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
   const isColumnPinned =
     columnDef.columnDefType !== 'group' && column.getIsPinned();
 
+  // The checkbox column is technically pinned (for sticky positioning) but
+  // should look like a regular center column — no background overlay or shadow.
+  const isCheckboxColumn = column.id === CHECKBOX_DISPLAY_COLUMN_ID;
+
   const widthStyles: CSSProperties = {
     minWidth: `max(calc(var(--${header ? 'header' : 'col'}-${parseCSSVarId(
       header?.id ?? column.id,
@@ -127,12 +132,26 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
 
   const pinnedStyles = isColumnPinned
     ? {
-        ...getCommonPinnedCellStyles({ column, table, theme }),
+        // Apply visual pinned styles (background overlay, shadow) only for
+        // non-checkbox columns — checkbox looks like a regular center column.
+        ...(isCheckboxColumn
+          ? {
+              // Use doubled class selector (&&) to beat the row-level
+              // td[data-pinned="true"]:before specificity from MRT_TableBodyRow.
+              '&&[data-pinned="true"]': {
+                '&:before': {
+                  backgroundColor: 'transparent',
+                  boxShadow: 'none',
+                },
+              },
+            }
+          : getCommonPinnedCellStyles({ column, table, theme })),
         left:
           isColumnPinned === 'left'
             ? `${column.getStart('left')}px`
             : undefined,
-        opacity: 0.97,
+        // Skip opacity reduction for checkbox — keep it fully opaque like center columns
+        opacity: isCheckboxColumn ? undefined : 0.97,
         position: 'sticky',
         right:
           isColumnPinned === 'right'

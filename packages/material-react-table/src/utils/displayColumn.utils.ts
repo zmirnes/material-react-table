@@ -118,6 +118,40 @@ export const getTrailingDisplayColumnIds = <TData extends MRT_RowData>(
     showRowSpacerColumn(tableOptions) && 'mrt-row-spacer',
   ].filter(Boolean) as MRT_DisplayColumnIds[];
 
+/** The internal ID used by TanStack Table for the row-selection checkbox column */
+export const CHECKBOX_DISPLAY_COLUMN_ID = '__check__';
+
+/**
+ * Builds the default columnPinning state so that the checkbox column
+ * is always the first (leftmost) sticky column when row selection is enabled.
+ * The checkbox is pinned for sticky positioning only — its visual styles are
+ * intentionally overridden in style.utils.ts to match center column appearance.
+ * Any user-supplied left-pinned column IDs are kept, but appended after the
+ * checkbox so they never appear to its left.
+ */
+export const getDefaultColumnPinningState = <TData extends MRT_RowData>(
+  tableOptions: MRT_StatefulTableOptions<TData>,
+  existingColumnPinning: { left?: string[]; right?: string[] } = {},
+): { left: string[]; right: string[] } => {
+  const existingLeft = existingColumnPinning.left ?? [];
+  const existingRight = existingColumnPinning.right ?? [];
+
+  // Only pin the checkbox automatically when the column is actually rendered
+  if (!showRowSelectionColumn(tableOptions)) {
+    return { left: existingLeft, right: existingRight };
+  }
+
+  // Remove checkbox from wherever it is, then force it to the front of left
+  const leftWithoutCheckbox = existingLeft.filter(
+    (colId) => colId !== CHECKBOX_DISPLAY_COLUMN_ID,
+  );
+
+  return {
+    left: [CHECKBOX_DISPLAY_COLUMN_ID, ...leftWithoutCheckbox],
+    right: existingRight,
+  };
+};
+
 export const getDefaultColumnOrderIds = <TData extends MRT_RowData>(
   tableOptions: MRT_StatefulTableOptions<TData>,
   reset = false,
