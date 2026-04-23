@@ -11,6 +11,7 @@ import {
   type MRT_Theme,
 } from '../types';
 import { parseFromValuesOrFunc } from './utils';
+import { CHECKBOX_DISPLAY_COLUMN_ID } from './displayColumn.utils';
 
 export const parseCSSVarId = (id: string) => id.replace(/[^a-zA-Z0-9]/g, '_');
 
@@ -46,7 +47,6 @@ export const commonCellBeforeAfterStyles = {
 };
 
 export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
-  column,
   table,
   theme,
 }: {
@@ -55,7 +55,6 @@ export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
   theme: Theme;
 }) => {
   const { baseBackgroundColor } = table.options.mrtTheme;
-  const isPinned = column?.getIsPinned();
 
   return {
     '&[data-pinned="true"]': {
@@ -67,13 +66,6 @@ export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
           ),
           0.97,
         ),
-        boxShadow: column
-          ? isPinned === 'left' && column.getIsLastColumn(isPinned)
-            ? `-4px 0 4px -4px ${alpha(theme.palette.grey[700], 0.5)} inset`
-            : isPinned === 'right' && column.getIsFirstColumn(isPinned)
-              ? `4px 0 4px -4px ${alpha(theme.palette.grey[700], 0.5)} inset`
-              : undefined
-          : undefined,
         ...commonCellBeforeAfterStyles,
       },
     },
@@ -125,14 +117,45 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
     widthStyles.flex = `${+(columnDef.grow || 0)} 0 auto`;
   }
 
+  // The checkbox column is technically pinned (for sticky positioning) but
+  // should look like a regular center column — no background overlay or shadow.
+  const isCheckboxColumn = column.id === CHECKBOX_DISPLAY_COLUMN_ID;
+
+  // Count all currently pinned column IDs across both sides.
+  // Checkbox is always pinned (counts as 1), so > 1 means the user has
+  // explicitly pinned at least one additional column.
+  const totalPinnedColumnCount = [
+    ...(table.getState().columnPinning.left ?? []),
+    ...(table.getState().columnPinning.right ?? []),
+  ].length;
+  const hasNoPinnedColumns = totalPinnedColumnCount === 0;
   const pinnedStyles = isColumnPinned
     ? {
-        ...getCommonPinnedCellStyles({ column, table, theme }),
+        // For checkbox: suppress pinned background/shadow only when other
+        // columns are also pinned (> 1 total). When it is the sole pinned column
+        // no override is needed. For all other columns apply standard pinned styles.
+        ...(isCheckboxColumn
+          ? hasNoPinnedColumns
+            ? {
+                // Use doubled class selector (&&) to beat the row-level
+                // td[data-pinned="true"]:before specificity from MRT_TableBodyRow.
+                '&&[data-pinned="true"]': {
+                  '&:before': {
+                    backgroundColor: 'transparent',
+                    boxShadow: 'none',
+                  },
+                },
+              }
+            : // Other columns are also pinned — apply standard pinned background
+              // so the checkbox header matches the pinned row cells below it.
+              getCommonPinnedCellStyles({ column, table, theme })
+          : getCommonPinnedCellStyles({ column, table, theme })),
         left:
           isColumnPinned === 'left'
             ? `${column.getStart('left')}px`
             : undefined,
-        opacity: 0.97,
+        // Skip opacity reduction for checkbox — keep it fully opaque like center columns
+        opacity: isCheckboxColumn ? undefined : 0.97,
         position: 'sticky',
         right:
           isColumnPinned === 'right'

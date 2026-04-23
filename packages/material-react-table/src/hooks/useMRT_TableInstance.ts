@@ -29,6 +29,7 @@ import {
 } from '../utils/column.utils';
 import {
   getDefaultColumnOrderIds,
+  getDefaultColumnPinningState,
   showRowActionsColumn,
   showRowDragColumn,
   showRowExpandColumn,
@@ -72,15 +73,27 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   //transform initial state with proper column order
   const initialState: Partial<MRT_TableState<TData>> = useMemo(() => {
     const initState = definedTableOptions.initialState ?? {};
+    // Resolve the merged options snapshot used for display-column helpers
+    const mergedOptionsSnapshot = {
+      ...definedTableOptions,
+      state: {
+        ...definedTableOptions.initialState,
+        ...definedTableOptions.state,
+      },
+    } as MRT_StatefulTableOptions<TData>;
+
     initState.columnOrder =
-      initState.columnOrder ??
-      getDefaultColumnOrderIds({
-        ...definedTableOptions,
-        state: {
-          ...definedTableOptions.initialState,
-          ...definedTableOptions.state,
-        },
-      } as MRT_StatefulTableOptions<TData>);
+      initState.columnOrder ?? getDefaultColumnOrderIds(mergedOptionsSnapshot);
+
+    // Ensure the checkbox column is always the leftmost sticky column when
+    // row selection is enabled, regardless of what the user pinned initially.
+    // The checkbox is pinned for positioning only — visual styles are overridden
+    // in style.utils.ts so it looks like a regular center column.
+    initState.columnPinning = getDefaultColumnPinningState(
+      mergedOptionsSnapshot,
+      initState.columnPinning ?? {},
+    );
+
     initState.globalFilterFn = definedTableOptions.globalFilterFn ?? 'fuzzy';
     initState.showAdvancedFilters = initState.showAdvancedFilters ?? false;
     return initState;
@@ -211,6 +224,20 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     showToolbarDropZone,
     ...definedTableOptions.state,
   };
+
+  // Normalize controlled columnPinning state: if the user passes state.columnPinning
+  // directly (controlled mode), we still need to ensure that the checkbox column
+  // is always at the front of the left-pinned group, just like we do for initialState.
+  const assembledColumnPinning = definedTableOptions.state.columnPinning;
+  if (assembledColumnPinning && !!definedTableOptions.enableRowSelection) {
+    definedTableOptions.state = {
+      ...definedTableOptions.state,
+      columnPinning: getDefaultColumnPinningState(
+        definedTableOptions,
+        assembledColumnPinning,
+      ),
+    };
+  }
 
   //The table options now include all state needed to help determine column visibility and order logic
   const statefulTableOptions =
