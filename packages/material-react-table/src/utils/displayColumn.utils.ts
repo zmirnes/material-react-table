@@ -78,9 +78,7 @@ export const showRowActionsColumn = <TData extends MRT_RowData>(
 };
 
 export const showRowSelectionColumn = <TData extends MRT_RowData>(
-  tableOptions:
-    | MRT_StatefulTableOptions<TData>
-    | MRT_DefinedTableOptions<TData>,
+  tableOptions: MRT_StatefulTableOptions<TData>,
 ): boolean => !!tableOptions.enableRowSelection;
 
 export const showRowNumbersColumn = <TData extends MRT_RowData>(
@@ -132,16 +130,14 @@ export const CHECKBOX_DISPLAY_COLUMN_ID = '__check__';
  * checkbox so they never appear to its left.
  */
 export const getDefaultColumnPinningState = <TData extends MRT_RowData>(
-  tableOptions:
-    | MRT_StatefulTableOptions<TData>
-    | MRT_DefinedTableOptions<TData>,
+  tableOptions: MRT_DefinedTableOptions<TData>,
   existingColumnPinning: { left?: string[]; right?: string[] } = {},
 ): { left: string[]; right: string[] } => {
   const existingLeft = existingColumnPinning.left ?? [];
   const existingRight = existingColumnPinning.right ?? [];
 
   // Only pin the checkbox automatically when the column is actually rendered
-  if (!showRowSelectionColumn(tableOptions)) {
+  if (!tableOptions.enableRowSelection) {
     return { left: existingLeft, right: existingRight };
   }
 
