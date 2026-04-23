@@ -229,16 +229,11 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   // directly (controlled mode), we still need to ensure that the checkbox column
   // is always at the front of the left-pinned group, just like we do for initialState.
   const assembledColumnPinning = definedTableOptions.state.columnPinning;
-  if (
-    assembledColumnPinning &&
-    showRowSelectionColumn(
-      definedTableOptions as MRT_StatefulTableOptions<TData>,
-    )
-  ) {
+  if (assembledColumnPinning && showRowSelectionColumn(definedTableOptions)) {
     definedTableOptions.state = {
       ...definedTableOptions.state,
       columnPinning: getDefaultColumnPinningState(
-        definedTableOptions as MRT_StatefulTableOptions<TData>,
+        definedTableOptions,
         assembledColumnPinning,
       ),
     };

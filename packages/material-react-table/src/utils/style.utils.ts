@@ -10,7 +10,6 @@ import {
   type MRT_TableOptions,
   type MRT_Theme,
 } from '../types';
-import { CHECKBOX_DISPLAY_COLUMN_ID } from './displayColumn.utils';
 import { parseFromValuesOrFunc } from './utils';
 
 export const parseCSSVarId = (id: string) => id.replace(/[^a-zA-Z0-9]/g, '_');
@@ -47,7 +46,6 @@ export const commonCellBeforeAfterStyles = {
 };
 
 export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
-  column,
   table,
   theme,
 }: {
@@ -56,7 +54,6 @@ export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
   theme: Theme;
 }) => {
   const { baseBackgroundColor } = table.options.mrtTheme;
-  const isPinned = column?.getIsPinned();
 
   return {
     '&[data-pinned="true"]': {
@@ -68,13 +65,6 @@ export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
           ),
           0.97,
         ),
-        boxShadow: column
-          ? isPinned === 'left' && column.getIsLastColumn(isPinned)
-            ? `-4px 0 4px -4px ${alpha(theme.palette.grey[700], 0.5)} inset`
-            : isPinned === 'right' && column.getIsFirstColumn(isPinned)
-              ? `4px 0 4px -4px ${alpha(theme.palette.grey[700], 0.5)} inset`
-              : undefined
-          : undefined,
         ...commonCellBeforeAfterStyles,
       },
     },
@@ -105,10 +95,6 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
   const isColumnPinned =
     columnDef.columnDefType !== 'group' && column.getIsPinned();
 
-  // The checkbox column is technically pinned (for sticky positioning) but
-  // should look like a regular center column — no background overlay or shadow.
-  const isCheckboxColumn = column.id === CHECKBOX_DISPLAY_COLUMN_ID;
-
   const widthStyles: CSSProperties = {
     minWidth: `max(calc(var(--${header ? 'header' : 'col'}-${parseCSSVarId(
       header?.id ?? column.id,
@@ -132,26 +118,12 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
 
   const pinnedStyles = isColumnPinned
     ? {
-        // Apply visual pinned styles (background overlay, shadow) only for
-        // non-checkbox columns — checkbox looks like a regular center column.
-        ...(isCheckboxColumn
-          ? {
-              // Use doubled class selector (&&) to beat the row-level
-              // td[data-pinned="true"]:before specificity from MRT_TableBodyRow.
-              '&&[data-pinned="true"]': {
-                '&:before': {
-                  backgroundColor: 'transparent',
-                  boxShadow: 'none',
-                },
-              },
-            }
-          : getCommonPinnedCellStyles({ column, table, theme })),
+        ...getCommonPinnedCellStyles({ column, table, theme }),
         left:
           isColumnPinned === 'left'
             ? `${column.getStart('left')}px`
             : undefined,
-        // Skip opacity reduction for checkbox — keep it fully opaque like center columns
-        opacity: isCheckboxColumn ? undefined : 0.97,
+        opacity: 0.97,
         position: 'sticky',
         right:
           isColumnPinned === 'right'
