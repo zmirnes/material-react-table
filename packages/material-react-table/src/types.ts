@@ -376,6 +376,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
     tableHeadRef: RefObject<HTMLTableSectionElement | null>;
     tablePaperRef: RefObject<HTMLDivElement | null>;
     topToolbarRef: RefObject<HTMLDivElement | null>;
+    quickFiltersRef: RefObject<HTMLDivElement | null>;
   };
   setActionCell: Dispatch<SetStateAction<MRT_Cell<TData> | null>>;
   setColumnFilterFns: Dispatch<SetStateAction<MRT_ColumnFilterFnsState>>;
@@ -1283,6 +1284,9 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     | ((props: { table: MRT_TableInstance<TData> }) => AlertProps)
     | AlertProps;
   muiTopToolbarProps?:
+    | ((props: { table: MRT_TableInstance<TData> }) => BoxProps)
+    | BoxProps;
+  muiQuickFiltersBarProps?:
     | ((props: { table: MRT_TableInstance<TData> }) => BoxProps)
     | BoxProps;
   onActionCellChange?: OnChangeFn<MRT_Cell<TData> | null>;

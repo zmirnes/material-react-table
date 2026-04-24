@@ -30,7 +30,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
       enableStickyHeader,
       muiTableContainerProps,
     },
-    refs: { bottomToolbarRef, tableContainerRef, topToolbarRef },
+    refs: { bottomToolbarRef, tableContainerRef, topToolbarRef, quickFiltersRef },
   } = table;
   const {
     actionCell,
@@ -59,12 +59,17 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
         ? (topToolbarRef.current?.offsetHeight ?? 0)
         : 0;
 
+    const quickFiltersHeight =
+      typeof document !== 'undefined'
+        ? (quickFiltersRef.current?.offsetHeight ?? 0)
+        : 0;
+
     const bottomToolbarHeight =
       typeof document !== 'undefined'
         ? (bottomToolbarRef?.current?.offsetHeight ?? 0)
         : 0;
 
-    setTotalToolbarHeight(topToolbarHeight + bottomToolbarHeight);
+    setTotalToolbarHeight(topToolbarHeight + quickFiltersHeight + bottomToolbarHeight);
   });
 
   const createModalOpen = createDisplayMode === 'modal' && creatingRow;
