@@ -112,7 +112,6 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
             ? `${rowVirtualizer.getTotalSize()}px`
             : undefined,
           minHeight: !rows.length ? '100px' : undefined,
-          overflow: 'auto',
           position: 'relative',
           ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as any),
         })}
