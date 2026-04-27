@@ -67,7 +67,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
         flexDirection: 'column',
         maxWidth: '100%',
         // Override MUI's default overflow-x: auto — scrolling is handled exclusively by MRT_TableBody
-        overflow: 'hidden',
+        overflow: 'auto',
         position: 'relative',
         ...(parseFromValuesOrFunc(tableContainerProps?.sx, theme) as any),
       })}
