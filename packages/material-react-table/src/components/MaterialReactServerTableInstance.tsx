@@ -195,5 +195,17 @@ export const MaterialReactServerTableInstance = <
     fetchTrigger.columnVisibilityShowTrigger,
   ]);
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <div
+      style={{
+        height: '100vh',
+        maxHeight: '100vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <MaterialReactTable table={table} />
+    </div>
+  );
 };

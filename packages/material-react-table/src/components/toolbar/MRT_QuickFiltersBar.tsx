@@ -9,7 +9,6 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import {
   getColumnFilterOperators,
   getFilterColumn,
@@ -224,30 +223,12 @@ export interface MRT_QuickFiltersBarProps<TData extends MRT_RowData> {
 export const MRT_QuickFiltersBar = <TData extends MRT_RowData>({
   table,
 }: MRT_QuickFiltersBarProps<TData>) => {
-  const {
-    options: { muiQuickFiltersBarProps },
-    refs: { quickFiltersRef },
-  } = table;
-
   const { filters } = table.getState();
-
-  // Resolve MUI Box props for the quick filters container (supports static object or callback)
-  const quickFiltersProps = parseFromValuesOrFunc(muiQuickFiltersBarProps, {
-    table,
-  });
 
   if (filters.pinnedFilters.length === 0) return null;
 
   return (
     <Box
-      {...quickFiltersProps}
-      ref={(ref: HTMLDivElement) => {
-        quickFiltersRef.current = ref;
-        if (quickFiltersProps?.ref) {
-          // @ts-expect-error
-          quickFiltersProps.ref.current = ref;
-        }
-      }}
       sx={{
         alignItems: 'flex-start',
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,

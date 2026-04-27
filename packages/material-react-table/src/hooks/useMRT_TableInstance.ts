@@ -67,7 +67,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const tableHeadCellRefs = useRef<Record<string, HTMLTableCellElement>>({});
   const tablePaperRef = useRef<HTMLDivElement>(null);
   const topToolbarRef = useRef<HTMLDivElement>(null);
-  const quickFiltersRef = useRef<HTMLDivElement>(null);
   const tableHeadRef = useRef<HTMLTableSectionElement>(null);
   const tableFooterRef = useRef<HTMLTableSectionElement>(null);
 
@@ -329,7 +328,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     tableHeadRef,
     tablePaperRef,
     topToolbarRef,
-    quickFiltersRef,
   };
 
   table.setActionCell =
