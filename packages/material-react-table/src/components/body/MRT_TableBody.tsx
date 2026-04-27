@@ -112,8 +112,6 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
             ? `${rowVirtualizer.getTotalSize()}px`
             : undefined,
           minHeight: !rows.length ? '100px' : undefined,
-          overflowX: 'hidden', // disable horizontal scroll on table body
-          overflowY: 'auto', // keep vertical scroll enabled
           position: 'relative',
           ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as any),
         })}
