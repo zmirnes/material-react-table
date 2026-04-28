@@ -32,6 +32,8 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 
   return {
     Cell: ({ cell, column, row, staticRowIndex, table }) => {
+      // Keep tree/group rendering on existing expand/grouping APIs for this
+      // iteration to avoid introducing parallel alias names.
       const expandButtonProps = { row, staticRowIndex, table };
       const subRowsLength = row.subRows?.length;
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {

@@ -244,6 +244,8 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
         : undefined,
     getSortedRowModel:
       enableSorting && !manualSorting ? getSortedRowModel() : undefined,
+    // Tree derivation remains on canonical MRT primitives in this iteration.
+    // No additional alias API names are introduced.
     getSubRows: (row) => row?.subRows,
     icons,
     id,

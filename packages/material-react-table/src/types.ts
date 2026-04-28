@@ -985,6 +985,11 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableRowDragging?: boolean;
   enableRowNumbers?: boolean;
   enableRowOrdering?: boolean;
+  /**
+   * Tree functionality in this iteration stays on the existing MRT API surface
+   * (grouping/expanding + getSubRows). We intentionally avoid introducing
+   * parallel alias names to keep backward compatibility and upgrade risk low.
+   */
   enableRowSelection?: ((row: MRT_Row<TData>) => boolean) | boolean;
   enableRowVirtualization?: boolean;
   /**
