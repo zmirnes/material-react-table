@@ -23,6 +23,47 @@ export const hasValidHierarchyPath = <TData extends MRT_RowData>(
 ): row is TData & MRT_RowDataWithHierarchy & { __hierarchy__: number[] } =>
   isValidHierarchyPath((row as MRT_RowDataWithHierarchy).__hierarchy__);
 
+type MRT_HierarchySkeletonRow<TData extends MRT_RowData> = TData & {
+  subRows: TData[];
+  __hierarchy__: number[];
+};
+
+type MRT_HierarchyTreeSkeleton<TData extends MRT_RowData> = {
+  rootRows: MRT_HierarchySkeletonRow<TData>[];
+  rowsByHierarchyId: Map<number, MRT_HierarchySkeletonRow<TData>>;
+  skippedRows: TData[];
+};
+
+export const createHierarchyTreeSkeleton = <TData extends MRT_RowData>(
+  flatRows: TData[],
+): MRT_HierarchyTreeSkeleton<TData> => {
+  const rowsByHierarchyId = new Map<number, MRT_HierarchySkeletonRow<TData>>();
+  const skippedRows: TData[] = [];
+
+  // Task 3 intentionally builds only the row skeleton.
+  // Parent-child linking and root assignment are done in Task 4.
+  flatRows.forEach((flatRow) => {
+    if (!hasValidHierarchyPath(flatRow)) {
+      skippedRows.push(flatRow);
+      return;
+    }
+
+    const hierarchyId = flatRow.__hierarchy__[flatRow.__hierarchy__.length - 1];
+
+    rowsByHierarchyId.set(hierarchyId, {
+      ...flatRow,
+      subRows: [],
+      __hierarchy__: [...flatRow.__hierarchy__],
+    });
+  });
+
+  return {
+    rootRows: [],
+    rowsByHierarchyId,
+    skippedRows,
+  };
+};
+
 export const getMRT_Rows = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
   all?: boolean,
