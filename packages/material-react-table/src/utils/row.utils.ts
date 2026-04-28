@@ -39,9 +39,10 @@ export const createHierarchyTreeSkeleton = <TData extends MRT_RowData>(
 ): MRT_HierarchyTreeSkeleton<TData> => {
   const rowsByHierarchyId = new Map<number, MRT_HierarchySkeletonRow<TData>>();
   const skippedRows: TData[] = [];
+  const rootRows: MRT_HierarchySkeletonRow<TData>[] = [];
 
-  // Task 3 intentionally builds only the row skeleton.
-  // Parent-child linking and root assignment are done in Task 4.
+  // Step 1: build a normalized map of rows by their own hierarchy id.
+  // Each row starts with empty subRows; we link parent-child relations later.
   flatRows.forEach((flatRow) => {
     if (!hasValidHierarchyPath(flatRow)) {
       skippedRows.push(flatRow);
@@ -57,8 +58,80 @@ export const createHierarchyTreeSkeleton = <TData extends MRT_RowData>(
     });
   });
 
+  // Memoize validity per hierarchy id so repeated parent checks stay O(1).
+  const validityByHierarchyId = new Map<number, boolean>();
+
+  // Validates that the row's parent chain is resolvable and cycle-free.
+  // `visitingHierarchyIds` tracks the current DFS stack for cycle detection.
+  const isHierarchyChainValid = (
+    row: MRT_HierarchySkeletonRow<TData>,
+    visitingHierarchyIds = new Set<number>(),
+  ): boolean => {
+    const hierarchyId = row.__hierarchy__[row.__hierarchy__.length - 1];
+    const cachedValidity = validityByHierarchyId.get(hierarchyId);
+    if (cachedValidity !== undefined) {
+      return cachedValidity;
+    }
+
+    // If the current id is already in this DFS path, we detected a cycle.
+    if (visitingHierarchyIds.has(hierarchyId)) {
+      validityByHierarchyId.set(hierarchyId, false);
+      return false;
+    }
+
+    if (row.__hierarchy__.length === 1) {
+      validityByHierarchyId.set(hierarchyId, true);
+      return true;
+    }
+
+    // Move one level up in the hierarchy path and validate parent chain.
+    visitingHierarchyIds.add(hierarchyId);
+    const parentHierarchyId = row.__hierarchy__[row.__hierarchy__.length - 2];
+    const parentRow = rowsByHierarchyId.get(parentHierarchyId);
+
+    if (!parentRow || parentHierarchyId === hierarchyId) {
+      visitingHierarchyIds.delete(hierarchyId);
+      validityByHierarchyId.set(hierarchyId, false);
+      return false;
+    }
+
+    const parentChainValid = isHierarchyChainValid(
+      parentRow,
+      visitingHierarchyIds,
+    );
+    // Always remove current id before returning so sibling traversals are clean.
+    visitingHierarchyIds.delete(hierarchyId);
+    validityByHierarchyId.set(hierarchyId, parentChainValid);
+
+    return parentChainValid;
+  };
+
+  // Step 2: assign rows to roots or parent subRows.
+  // Invalid chains are skipped and never rendered in the tree.
+  rowsByHierarchyId.forEach((row) => {
+    if (!isHierarchyChainValid(row)) {
+      skippedRows.push(row);
+      return;
+    }
+
+    if (row.__hierarchy__.length === 1) {
+      rootRows.push(row);
+      return;
+    }
+
+    const parentHierarchyId = row.__hierarchy__[row.__hierarchy__.length - 2];
+    const parentRow = rowsByHierarchyId.get(parentHierarchyId);
+
+    if (!parentRow) {
+      skippedRows.push(row);
+      return;
+    }
+
+    parentRow.subRows.push(row);
+  });
+
   return {
-    rootRows: [],
+    rootRows,
     rowsByHierarchyId,
     skippedRows,
   };
