@@ -1,11 +1,27 @@
 import { type ChangeEvent, type MouseEvent } from 'react';
 import { rankGlobalFuzzy } from '../fns/sortingFns';
 import {
+  type MRT_HierarchyPath,
   type MRT_Row,
   type MRT_RowData,
+  type MRT_RowDataWithHierarchy,
   type MRT_TableInstance,
 } from '../types';
 import { parseFromValuesOrFunc } from './utils';
+
+export const isValidHierarchyPath = (
+  hierarchyPath: unknown,
+): hierarchyPath is MRT_HierarchyPath =>
+  Array.isArray(hierarchyPath) &&
+  hierarchyPath.length > 0 &&
+  hierarchyPath.every(
+    (segment) => typeof segment === 'number' && Number.isFinite(segment),
+  );
+
+export const hasValidHierarchyPath = <TData extends MRT_RowData>(
+  row: TData,
+): row is TData & MRT_RowDataWithHierarchy & { __hierarchy__: number[] } =>
+  isValidHierarchyPath((row as MRT_RowDataWithHierarchy).__hierarchy__);
 
 export const getMRT_Rows = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,

@@ -103,6 +103,12 @@ export type MRT_FiltersLogicOperator = 'and' | 'or';
 
 export type MRT_RowData = Record<string, any>;
 
+// Internal hierarchy support used by tree-table utilities in this iteration.
+export type MRT_HierarchyPath = number[];
+export type MRT_RowDataWithHierarchy = MRT_RowData & {
+  __hierarchy__?: MRT_HierarchyPath;
+};
+
 export type MRT_ColumnFiltersState = ColumnFiltersState;
 export type MRT_ColumnOrderState = ColumnOrderState;
 export type MRT_ColumnPinningState = ColumnPinningState;
