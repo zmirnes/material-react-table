@@ -21,6 +21,10 @@ import {
   type MRT_RowData,
   type MRT_TableOptions,
 } from '../types';
+import {
+  createHierarchyTreeSkeleton,
+  hasValidHierarchyPath,
+} from '../utils/row.utils';
 import { getMRTTheme } from '../utils/style.utils';
 
 export const MRT_DefaultColumn = {
@@ -54,6 +58,7 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
   columnResizeDirection,
   columnResizeMode = 'onChange',
   createDisplayMode = 'modal',
+  data,
   defaultColumn,
   defaultDisplayColumn,
   editDisplayMode = 'modal',
@@ -170,12 +175,34 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     manualPagination = true;
   }
 
-  if (!rest.data?.length) {
+  if (!data?.length) {
     manualFiltering = true;
     manualGrouping = true;
     manualPagination = true;
     manualSorting = true;
   }
+
+  const preparedData = useMemo(() => {
+    if (!data?.length || !enableExpanding) {
+      return data;
+    }
+
+    const hasExistingSubRows = data.some((row) => Array.isArray(row.subRows));
+    if (hasExistingSubRows) {
+      return data;
+    }
+
+    const hasHierarchyPaths = data.some((row) => hasValidHierarchyPath(row));
+    if (!hasHierarchyPaths) {
+      return data;
+    }
+
+    // Keep existing MRT tree behavior: prefer provided subRows and only
+    // derive a tree from __hierarchy__ as a runtime fallback.
+    const { rootRows } = createHierarchyTreeSkeleton(data);
+
+    return rootRows;
+  }, [data, enableExpanding]);
 
   return {
     aggregationFns,
@@ -184,6 +211,7 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     columnResizeDirection,
     columnResizeMode,
     createDisplayMode,
+    data: preparedData,
     defaultColumn,
     defaultDisplayColumn,
     editDisplayMode,
