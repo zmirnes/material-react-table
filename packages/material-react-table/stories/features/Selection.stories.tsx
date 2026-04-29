@@ -3,7 +3,7 @@ import Remove from '@mui/icons-material/Remove';
 import Send from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { type Meta } from '@storybook/react';
+import { type Meta } from '@storybook/react-vite';
 import { useCallback, useEffect, useState } from 'react';
 import {
   type MRT_ColumnDef,

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react';
+import { type Meta } from '@storybook/react-vite';
 import { type MRT_ColumnDef } from '../../src';
 import { Date } from '../../src/column-types/date';
 import { EnumValue } from '../../src/column-types/enum';
