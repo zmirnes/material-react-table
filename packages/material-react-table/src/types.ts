@@ -1648,12 +1648,20 @@ export interface ColumnTypeResolver {
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
 }
-type ActionType = 'edit' | 'delete';
 
-export interface RowActionsType<TData extends MRT_RowData = MRT_RowData> {
-  action: ActionType;
-  deleteRowAction?: () => void;
-  // Callback to trigger a data refetch after the row is successfully deleted
-  refetchData?: () => void;
-  table: MRT_TableInstance<TData>;
+/**
+ * Typed container for all server table row-level actions.
+ * Each callback receives the full MRT_Row so consumers can access
+ * row.original, row.id, etc. without extra wiring.
+ */
+export interface MRT_ServerTableActions<TData extends MRT_RowData> {
+  /** Called when the user confirms deletion of a row. */
+  deleteRowAction?: (row: MRT_Row<TData>) => void;
 }
+export interface IAction {
+  name?: string;
+  label?: string;
+  description?: string;
+  componentRow?: () => ReactNode;
+}
+export type TActions = IAction[];

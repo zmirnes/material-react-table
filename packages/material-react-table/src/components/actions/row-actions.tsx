@@ -1,31 +1,31 @@
 import Box from '@mui/material/Box';
-import getRowAction from '../../utils/actions/getRowAction';
-import { MRT_RowData, MRT_TableInstance, RowActionsType } from '../../types';
+import {
+  MRT_Row,
+  MRT_RowData,
+  MRT_ServerTableActions,
+  MRT_TableInstance,
+} from '../../types';
+import { createDefaultActions } from '../../utils/actions/create-default-actions';
 
 interface RowActionsProps<TData extends MRT_RowData> {
-  deleteRowAction?: () => void;
-  // Callback to refresh table data after a row is deleted
+  actions?: MRT_ServerTableActions<TData>;
+  row: MRT_Row<TData>;
   refetchData?: () => void;
   table: MRT_TableInstance<TData>;
 }
 
 export default function RowActions<TData extends MRT_RowData>({
-  deleteRowAction,
+  actions,
+  row,
   refetchData,
   table,
 }: RowActionsProps<TData>) {
-  const actions: RowActionsType<TData>[] = [
-    {
-      action: 'edit',
-      table: table,
-    },
-    {
-      action: 'delete',
-      deleteRowAction: deleteRowAction,
-      refetchData: refetchData,
-      table: table,
-    },
-  ];
+  const defaultActions = createDefaultActions({
+    actions,
+    row,
+    refetchData,
+    table,
+  });
 
-  return <Box>{actions.map((action) => getRowAction(action))}</Box>;
+  return <Box>{defaultActions.map((action) => action.componentRow?.())}</Box>;
 }

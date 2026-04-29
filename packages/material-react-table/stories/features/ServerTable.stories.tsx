@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
-import { type MRT_ColumnDef } from '../../src';
+import { type Meta } from '@storybook/react';
+import { type MRT_ColumnDef, type MRT_ServerTableActions } from '../../src';
 import { Date } from '../../src/column-types/date';
 import { EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
@@ -265,6 +265,17 @@ const columns: MRT_ColumnDef<Person>[] = [
 const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+const actions: MRT_ServerTableActions<Person> = {
+  deleteRowAction: async (row) => {
+    await simulateDelay(400);
+    const deletedRowIndex = fakeDatabase.findIndex(
+      (dbRow) => dbRow.id === row.original.id,
+    );
+    if (deletedRowIndex !== -1) {
+      fakeDatabase.splice(deletedRowIndex, 1);
+    }
+  },
+};
 export const Basic = () => (
   <Box
     style={{
@@ -466,15 +477,7 @@ export const Basic = () => (
       onSaveFilters={async () => {
         await simulateDelay(1000);
       }}
-      onDeleteRow={async (row) => {
-        await simulateDelay(400);
-        const deletedRowIndex = fakeDatabase.findIndex(
-          (dbRow) => dbRow.id === row.original.id,
-        );
-        if (deletedRowIndex !== -1) {
-          fakeDatabase.splice(deletedRowIndex, 1);
-        }
-      }}
+      actions={actions}
     />
   </Box>
 );

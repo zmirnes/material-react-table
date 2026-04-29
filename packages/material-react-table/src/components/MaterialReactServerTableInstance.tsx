@@ -6,10 +6,10 @@ import {
   MRT_ActiveExportsState,
   MRT_ExportFileResponse,
   MRT_ExportParams,
-  MRT_Row,
   MRT_RowData,
   MRT_SavedFilter,
   MRT_SavedFilters,
+  MRT_ServerTableActions,
   MRT_TableConfig,
   MRT_TableData,
   MRT_TableInstance,
@@ -36,7 +36,7 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   initialSavedFilters?: MRT_SavedFilters;
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
-  onDeleteRow?: (row: MRT_Row<TData>) => void;
+  actions?: MRT_ServerTableActions<TData>;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -80,7 +80,7 @@ export const MaterialReactServerTableInstance = <
   initialSavedFilters,
   loadExport,
   exportPermissions,
-  onDeleteRow,
+  actions,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -157,7 +157,8 @@ export const MaterialReactServerTableInstance = <
     enableRowActions: true,
     renderRowActions: ({ row }) => (
       <RowActions
-        deleteRowAction={onDeleteRow ? () => onDeleteRow(row) : undefined}
+        actions={actions}
+        row={row}
         refetchData={() => fetchData(table.getState())}
         table={table}
       />
