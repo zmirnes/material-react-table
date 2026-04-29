@@ -321,6 +321,19 @@ export interface MRT_RowModel<TData extends MRT_RowData> {
   rowsById: { [key: string]: MRT_Row<TData> };
 }
 
+export type MRT_RowMutationPayload<TData extends MRT_RowData> =
+  Partial<TData> & {
+    id: string | number;
+  };
+
+export type MRT_UpsertRowPayload<TData extends MRT_RowData> = TData & {
+  id: string | number;
+};
+
+export type MRT_AddRowOptions = {
+  maintainPageSizeOnFirstPage?: boolean;
+};
+
 export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   Table<TData>,
   | 'getAllColumns'
@@ -391,6 +404,13 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setDraggingRow: Dispatch<SetStateAction<MRT_Row<TData> | null>>;
   setEditingCell: Dispatch<SetStateAction<MRT_Cell<TData> | null>>;
   setEditingRow: Dispatch<SetStateAction<MRT_Row<TData> | null>>;
+  setRows: Dispatch<SetStateAction<TData[]>>;
+  addRow: (newRow: TData, options?: MRT_AddRowOptions) => void;
+  updateRow: (nextRow: MRT_RowMutationPayload<TData>) => void;
+  upsertRow: (
+    nextRow: MRT_UpsertRowPayload<TData>,
+    options?: MRT_AddRowOptions,
+  ) => void;
   setFilters: Dispatch<SetStateAction<MRT_FiltersState>>;
   setGlobalFilterFn: Dispatch<SetStateAction<MRT_FilterOption>>;
   setHoveredColumn: Dispatch<SetStateAction<Partial<MRT_Column<TData>> | null>>;
