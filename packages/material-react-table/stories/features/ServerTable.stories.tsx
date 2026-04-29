@@ -265,7 +265,6 @@ const columns: MRT_ColumnDef<Person>[] = [
 const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-
 export const Basic = () => (
   <Box
     style={{
@@ -466,6 +465,15 @@ export const Basic = () => (
       }}
       onSaveFilters={async () => {
         await simulateDelay(1000);
+      }}
+      onDeleteRow={async (row) => {
+        await simulateDelay(400);
+        const deletedRowIndex = fakeDatabase.findIndex(
+          (dbRow) => dbRow.id === row.original.id,
+        );
+        if (deletedRowIndex !== -1) {
+          fakeDatabase.splice(deletedRowIndex, 1);
+        }
       }}
     />
   </Box>

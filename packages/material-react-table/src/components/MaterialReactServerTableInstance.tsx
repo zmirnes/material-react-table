@@ -6,6 +6,7 @@ import {
   MRT_ActiveExportsState,
   MRT_ExportFileResponse,
   MRT_ExportParams,
+  MRT_Row,
   MRT_RowData,
   MRT_SavedFilter,
   MRT_SavedFilters,
@@ -16,6 +17,7 @@ import {
 } from '../types';
 import { createColumnDefs } from '../utils/columns/createColumnDef';
 import { MaterialReactTable } from './MaterialReactTable';
+import RowActions from './actions/row-actions';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   config: MRT_TableConfig<TData>;
@@ -34,6 +36,7 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   initialSavedFilters?: MRT_SavedFilters;
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
+  onDeleteRow?: (row: MRT_Row<TData>) => void;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -77,6 +80,7 @@ export const MaterialReactServerTableInstance = <
   initialSavedFilters,
   loadExport,
   exportPermissions,
+  onDeleteRow,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -150,6 +154,15 @@ export const MaterialReactServerTableInstance = <
       showSkeletons: isLoading,
       ...tableState,
     },
+    enableRowActions: true,
+    renderRowActions: ({ row }) => (
+      <RowActions
+        deleteRowAction={onDeleteRow ? () => onDeleteRow(row) : undefined}
+        refetchData={() => fetchData(table.getState())}
+        table={table}
+      />
+    ),
+    positionActionsColumn: 'last',
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
     onSaveFilters,
