@@ -138,4 +138,6 @@ export const MRT_Localization_EN: MRT_Localization = {
   exportPrintPdf: 'Print PDF',
   exportDownload: 'Download',
   exportGrouped: 'Group files',
+  deleteRow: 'Delete Row',
+  deleteRowConfirmation: 'Are you sure you want to delete this row?',
 };

@@ -294,6 +294,9 @@ export interface MRT_Localization {
   exportPrintPdf: string;
   exportDownload: string;
   exportGrouped: string;
+  // Delete row dialog
+  deleteRow: string;
+  deleteRowConfirmation: string;
 
   // Allow for any additional keys for custom localization
   [key: string]: string;
@@ -1644,4 +1647,13 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
+}
+type ActionType = 'edit' | 'delete';
+
+export interface RowActionsType<TData extends MRT_RowData = MRT_RowData> {
+  action: ActionType;
+  deleteRowAction?: () => void;
+  // Callback to trigger a data refetch after the row is successfully deleted
+  refetchData?: () => void;
+  table: MRT_TableInstance<TData>;
 }

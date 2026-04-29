@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   MRT_ExportFileResponse,
   MRT_ExportParams,
+  MRT_Row,
   MRT_SavedFilter,
   MRT_SavedFilters,
   MRT_TableInstance,
@@ -29,6 +30,7 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   initialSavedFilters?: MRT_SavedFilters;
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
+  onDeleteRow?: (row: MRT_Row<TData>) => void;
 }
 
 export const MaterialReactServerTable = <
@@ -44,6 +46,7 @@ export const MaterialReactServerTable = <
   initialSavedFilters,
   loadExport,
   exportPermissions,
+  onDeleteRow,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -92,6 +95,7 @@ export const MaterialReactServerTable = <
       initialSavedFilters={initialSavedFilters}
       loadExport={loadExport}
       exportPermissions={exportPermissions}
+      onDeleteRow={onDeleteRow}
     />
   );
 };
