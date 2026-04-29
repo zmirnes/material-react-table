@@ -1472,6 +1472,7 @@ export interface MRT_TableConfig<TData extends MRT_RowData> {
   columns: MRT_ColumnDef<TData, unknown>[];
   initialState?: Partial<MRT_TableState<TData>>;
   availableExports?: Record<string, MRT_ExportDefinition>;
+  modalSections?: MRT_ModalSectionConfig[];
 }
 
 export interface MRT_TableData<TData extends MRT_RowData> {
@@ -1644,4 +1645,84 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
+}
+
+
+// ─── Modal Field Configuration ────────────────────────────────────────────────
+
+// Validation rules for an RHF field — mirrors react-hook-form RegisterOptions
+// without importing RHF into the type layer. Keeps the dependency optional.
+export interface MRT_ModalFieldRules {
+  required?: boolean | string;
+  min?: number | { value: number; message: string };
+  max?: number | { value: number; message: string };
+  minLength?: number | { value: number; message: string };
+  maxLength?: number | { value: number; message: string };
+  pattern?: RegExp | { value: RegExp; message: string };
+  validate?: (
+    value: unknown,
+    formValues: Record<string, unknown>,
+  ) => true | string | Promise<true | string>;
+}
+
+// Tells the resolver which default RHF input component to render.
+// 'auto' means: derive the component from the column type automatically.
+// 'custom' means: developer provides render() directly on the field config.
+export type MRT_ModalFieldRendererHint =
+  | 'auto'
+  | 'text'
+  | 'number'
+  | 'select'
+  | 'date'
+  | 'dateTime'
+  | 'checkbox'
+  | 'iconPicker'
+  | 'dimensionEditor'
+  | 'custom';
+
+// Props that will be passed into a custom field render function.
+export interface MRT_ModalFieldRenderProps<TData extends MRT_RowData> {
+  name: string;
+  value: unknown;
+  onChange: (value: unknown) => void;
+  onBlur: () => void;
+  error: string | undefined;
+  columnDef: MRT_ColumnDef<TData>;
+}
+
+// Config for a single column field in one mode — create OR edit.
+export interface MRT_ModalFieldModeConfig<TData extends MRT_RowData> {
+  // Must be true for the column to appear in the modal. Default false.
+  enabled?: boolean;
+  // Render order inside the section. Lower = first. Missing = last.
+  order?: number;
+  // Label override — replaces column header as the field label.
+  label?: string;
+  placeholder?: string;
+  helperText?: string;
+  // Section ID this field belongs to — must match MRT_ModalSectionConfig.id.
+  section?: string;
+  // Which default input component to use. Defaults to 'auto'.
+  renderer?: MRT_ModalFieldRendererHint;
+  // Static default value or a factory function used only in create mode.
+  defaultValue?: unknown | (() => unknown);
+  // RHF validation rules for this field.
+  rules?: MRT_ModalFieldRules;
+  // Custom render function — only used when renderer is 'custom'.
+  render?: (props: MRT_ModalFieldRenderProps<TData>) => ReactNode;
+}
+
+// Top-level config on a column — holds create and edit mode separately.
+export interface MRT_ModalFieldConfig<TData extends MRT_RowData> {
+  create?: MRT_ModalFieldModeConfig<TData>;
+  edit?: MRT_ModalFieldModeConfig<TData>;
+}
+
+// Section definition — lives at table config level.
+// Columns join a section by putting its id in modalField.create.section.
+export interface MRT_ModalSectionConfig {
+  id: string;
+  title: string;
+  // Render order of the section itself. Lower = first.
+  order?: number;
 }
