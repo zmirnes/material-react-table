@@ -36,16 +36,30 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
       // iteration to avoid introducing parallel alias names.
       const expandButtonProps = { row, staticRowIndex, table };
       const subRowsLength = row.subRows?.length;
+      const customGroupedCell = column.columnDef.GroupedCell?.({
+        cell,
+        column,
+        row,
+        table,
+        staticRowIndex,
+      });
+
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {
+        const defaultGroupedCell = (
+          <Tooltip
+            {...getCommonTooltipProps('right')}
+            title={table.getColumn(row.groupingColumnId).columnDef.header}
+          >
+            <span>{row.groupingValue as ReactNode}</span>
+          </Tooltip>
+        );
+
         return (
           <Stack alignItems="center" flexDirection="row" gap="0.25rem">
             <MRT_ExpandButton {...expandButtonProps} />
-            <Tooltip
-              {...getCommonTooltipProps('right')}
-              title={table.getColumn(row.groupingColumnId).columnDef.header}
-            >
-              <span>{row.groupingValue as ReactNode}</span>
-            </Tooltip>
+            {column.columnDef.GroupedCell
+              ? customGroupedCell
+              : defaultGroupedCell}
             {!!subRowsLength && <span>({subRowsLength})</span>}
           </Stack>
         );
@@ -53,7 +67,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
         return (
           <>
             <MRT_ExpandButton {...expandButtonProps} />
-            {column.columnDef.GroupedCell?.({ cell, column, row, table })}
+            {customGroupedCell}
           </>
         );
       }
