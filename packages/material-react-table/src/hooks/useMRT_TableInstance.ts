@@ -1,5 +1,5 @@
 import { useReactTable } from '@tanstack/react-table';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   type MRT_Cell,
   type MRT_Column,
@@ -100,6 +100,16 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   }, []);
 
   definedTableOptions.initialState = initialState;
+
+  // Keep a writable local data state so table.setRows is always guaranteed.
+  // External controlled data still wins when its reference changes.
+  const [tableData, setTableData] = useState<TData[]>(
+    () => definedTableOptions.data,
+  );
+
+  useEffect(() => {
+    setTableData(definedTableOptions.data);
+  }, [definedTableOptions.data]);
 
   const [actionCell, setActionCell] = useState<MRT_Cell<TData> | null>(
     initialState.actionCell ?? null,
@@ -281,7 +291,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     () =>
       (statefulTableOptions.state.isLoading ||
         statefulTableOptions.state.showSkeletons) &&
-      !statefulTableOptions.data.length
+      !tableData.length
         ? [
             ...Array(
               Math.min(statefulTableOptions.state.pagination.pageSize, 20),
@@ -296,9 +306,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
               ),
             ),
           )
-        : statefulTableOptions.data,
+        : tableData,
     [
-      statefulTableOptions.data,
+      tableData,
       statefulTableOptions.state.isLoading,
       statefulTableOptions.state.showSkeletons,
     ],
@@ -332,6 +342,75 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   table.setActionCell =
     statefulTableOptions.onActionCellChange ?? setActionCell;
+  table.setRows = setTableData;
+
+  // Helper: prepend row and maintain page size if needed
+  const prependRowWithPageSizeCheck = (
+    newRow: TData,
+    previousRows: TData[],
+    options?: { maintainPageSizeOnFirstPage?: boolean },
+  ): TData[] => {
+    const shouldMaintainPageSizeOnFirstPage =
+      options?.maintainPageSizeOnFirstPage ?? true;
+    const nextRows = [newRow, ...previousRows];
+
+    // Server-table behavior: on page 1, keep the visible page
+    // window stable by dropping the last row after prepending a new row.
+    if (
+      shouldMaintainPageSizeOnFirstPage &&
+      table.getState().pagination.pageIndex === 0 &&
+      table.options.manualPagination
+    ) {
+      return nextRows.slice(0, table.getState().pagination.pageSize);
+    }
+
+    return nextRows;
+  };
+
+  table.addRow = (newRow, options) => {
+    setTableData((previousRows) =>
+      prependRowWithPageSizeCheck(newRow, previousRows, options),
+    );
+  };
+  table.updateRow = (nextRow) => {
+    setTableData((previousRows) => {
+      const targetRowIndex = previousRows.findIndex(
+        (currentRow) => currentRow.id === nextRow.id,
+      );
+
+      if (targetRowIndex === -1) {
+        return previousRows;
+      }
+
+      const nextRows = [...previousRows];
+      nextRows[targetRowIndex] = {
+        ...previousRows[targetRowIndex],
+        ...nextRow,
+      };
+
+      return nextRows;
+    });
+  };
+  table.upsertRow = (nextRow, options) => {
+    setTableData((previousRows) => {
+      const targetRowIndex = previousRows.findIndex(
+        (currentRow) => currentRow.id === nextRow.id,
+      );
+
+      if (targetRowIndex !== -1) {
+        const updatedRows = [...previousRows];
+        updatedRows[targetRowIndex] = {
+          ...previousRows[targetRowIndex],
+          ...nextRow,
+        };
+
+        return updatedRows;
+      }
+
+      // If not found, insert at the beginning with page size check
+      return prependRowWithPageSizeCheck(nextRow, previousRows, options);
+    });
+  };
   table.setCreatingRow = (row: MRT_Updater<MRT_Row<TData> | null | true>) => {
     let _row = row;
     if (row === true) {
