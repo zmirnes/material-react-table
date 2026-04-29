@@ -1,3 +1,4 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from '@storybook/react-vite';
 
 import { createRequire } from 'module';
@@ -17,20 +18,19 @@ const config: StorybookConfig = {
     '../stories/**/*.mdx',
     '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
+
   addons: [
     getAbsolutePath('@storybook/addon-links'),
-    getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-a11y'),
-    getAbsolutePath('@storybook/addon-storysource'),
     getAbsolutePath('storybook-dark-mode'),
+    getAbsolutePath('@storybook/addon-docs'),
   ],
+
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
-  docs: {
-    autodocs: 'tag',
-  },
+
   typescript: {
     reactDocgen: 'react-docgen-typescript',
   },
