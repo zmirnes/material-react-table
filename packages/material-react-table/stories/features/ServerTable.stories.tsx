@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
+import Box from '@mui/material/Box';
 import { type Meta } from '@storybook/react-vite';
 import { type MRT_ColumnDef } from '../../src';
 import { Date } from '../../src/column-types/date';
 import { EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
-import Box from '@mui/material/Box';
 
 const meta: Meta = {
   title: 'Features/Server Table',
@@ -374,6 +374,7 @@ export const Basic = () => (
         await simulateDelay(600);
         const { pageIndex, pageSize } = state.pagination;
         const start = pageIndex * pageSize;
+        console.log(fakeDatabase.slice(start, start + pageSize));
         return {
           data: fakeDatabase.slice(start, start + pageSize),
           rowCount: fakeDatabase.length,

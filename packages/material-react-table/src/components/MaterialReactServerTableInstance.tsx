@@ -137,6 +137,7 @@ export const MaterialReactServerTableInstance = <
   const table = useMaterialReactTable<TData>({
     columns,
     data,
+    onDataChange: setData,
     localization: MRT_Localization_HR,
     rowCount,
     pageCount,

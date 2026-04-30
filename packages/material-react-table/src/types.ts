@@ -973,6 +973,13 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
    */
   data: TData[];
   /**
+   * Required controlled updater for table rows.
+   *
+   * Breaking change: row mutation APIs (`setRows`, `addRow`, `updateRow`, `upsertRow`)
+   * always delegate to this updater so the parent remains the single source of truth.
+   */
+  onDataChange: Dispatch<SetStateAction<TData[]>>;
+  /**
    * Instead of specifying a bunch of the same options for each column, you can just change an option in the `defaultColumn` table option to change a default option for all columns.
    */
   defaultColumn?: Partial<MRT_ColumnDef<TData>>;

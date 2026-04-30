@@ -1,5 +1,5 @@
 import { useReactTable } from '@tanstack/react-table';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   type MRT_Cell,
   type MRT_Column,
@@ -101,15 +101,8 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   definedTableOptions.initialState = initialState;
 
-  // Keep a writable local data state so table.setRows is always guaranteed.
-  // External controlled data still wins when its reference changes.
-  const [tableData, setTableData] = useState<TData[]>(
-    () => definedTableOptions.data,
-  );
-
-  useEffect(() => {
-    setTableData(definedTableOptions.data);
-  }, [definedTableOptions.data]);
+  const resolvedData = definedTableOptions.data;
+  const setRows = definedTableOptions.onDataChange;
 
   const [actionCell, setActionCell] = useState<MRT_Cell<TData> | null>(
     initialState.actionCell ?? null,
@@ -291,7 +284,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     () =>
       (statefulTableOptions.state.isLoading ||
         statefulTableOptions.state.showSkeletons) &&
-      !tableData.length
+      !resolvedData.length
         ? [
             ...Array(
               Math.min(statefulTableOptions.state.pagination.pageSize, 20),
@@ -306,9 +299,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
               ),
             ),
           )
-        : tableData,
+        : resolvedData,
     [
-      tableData,
+      resolvedData,
       statefulTableOptions.state.isLoading,
       statefulTableOptions.state.showSkeletons,
     ],
@@ -342,7 +335,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   table.setActionCell =
     statefulTableOptions.onActionCellChange ?? setActionCell;
-  table.setRows = setTableData;
+  table.setRows = setRows;
 
   // Helper: prepend row and maintain page size if needed
   const prependRowWithPageSizeCheck = (
@@ -368,12 +361,12 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   };
 
   table.addRow = (newRow, options) => {
-    setTableData((previousRows) =>
+    setRows((previousRows) =>
       prependRowWithPageSizeCheck(newRow, previousRows, options),
     );
   };
   table.updateRow = (nextRow) => {
-    setTableData((previousRows) => {
+    setRows((previousRows) => {
       const targetRowIndex = previousRows.findIndex(
         (currentRow) => currentRow.id === nextRow.id,
       );
@@ -392,7 +385,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     });
   };
   table.upsertRow = (nextRow, options) => {
-    setTableData((previousRows) => {
+    setRows((previousRows) => {
       const targetRowIndex = previousRows.findIndex(
         (currentRow) => currentRow.id === nextRow.id,
       );
