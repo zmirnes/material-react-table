@@ -1,5 +1,5 @@
 import '@tanstack/react-table'; //or vue, svelte, solid, qwik, etc.
-import { MRT_ColumnDef, MRT_ModalFieldConfig } from './types';
+import { MRT_ColumnDef } from './types';
 
 export interface IIconColTypeValue {
   color: string;
@@ -28,6 +28,5 @@ declare module '@tanstack/react-table' {
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;
     extraFieldFilters?: MRT_ColumnDef[];
-    modalField?: MRT_ModalFieldConfig<TData>;
   }
 }
