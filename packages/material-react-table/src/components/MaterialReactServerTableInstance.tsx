@@ -154,15 +154,13 @@ export const MaterialReactServerTableInstance = <
       showSkeletons: isLoading,
       ...tableState,
     },
+    enableRowSelection: true,
     enableRowActions: true,
     renderRowActions: ({ row }) => (
-      <RowActions
-        actions={actions}
-        row={row}
-        refetchData={() => fetchData(table.getState())}
-        table={table}
-      />
+      <RowActions actions={actions} row={row} table={table} />
     ),
+    tableActions: actions,
+    onRefetchData: () => fetchData(table.getState()),
     positionActionsColumn: 'last',
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,

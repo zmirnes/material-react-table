@@ -10,16 +10,14 @@ import { MRT_RowData, MRT_TableInstance } from '../../../types';
 
 interface DeleteRowActionProps<TData extends MRT_RowData> {
   deleteRowAction?: () => void;
-  refetchData?: () => void;
   table: MRT_TableInstance<TData>;
 }
 
 const DeleteRowAction = <TData extends MRT_RowData>({
   deleteRowAction,
-  refetchData,
   table,
 }: DeleteRowActionProps<TData>) => {
-  const { localization } = table.options;
+  const { localization, onRefetchData } = table.options;
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const handleOpenDialog = () => {
@@ -32,11 +30,10 @@ const DeleteRowAction = <TData extends MRT_RowData>({
 
   const handleDeleteRow = () => {
     deleteRowAction?.();
-    refetchData?.();
+    onRefetchData?.();
     setOpenDialog(false);
   };
 
-  // Styles
   const modalContainerStyle: SxProps = {
     minWidth: '400px',
     py: 2,

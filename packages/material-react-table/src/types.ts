@@ -1436,6 +1436,8 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
       }) => Partial<VirtualizerOptions<HTMLDivElement, HTMLTableRowElement>>)
     | Partial<VirtualizerOptions<HTMLDivElement, HTMLTableRowElement>>;
   selectAllMode?: 'all' | 'page';
+  tableActions?: MRT_ServerTableActions<TData>;
+  onRefetchData?: () => void;
   /**
    * Manage state externally any way you want, then pass it back into MRT.
    */
@@ -1662,6 +1664,7 @@ export interface IAction {
   name?: string;
   label?: string;
   description?: string;
-  componentRow?: () => ReactNode;
+  renderRowActions?: () => ReactNode;
+  renderToolbarActions?: () => ReactNode;
 }
 export type TActions = IAction[];

@@ -9,8 +9,7 @@ import DeleteRowAction from '../../components/actions/delete-row/delete-row';
 
 interface CreateDefaultActionsParams<TData extends MRT_RowData> {
   actions?: MRT_ServerTableActions<TData>;
-  row: MRT_Row<TData>;
-  refetchData?: () => void;
+  row?: MRT_Row<TData>;
   table: MRT_TableInstance<TData>;
 }
 
@@ -21,24 +20,32 @@ interface CreateDefaultActionsParams<TData extends MRT_RowData> {
 export function createDefaultActions<TData extends MRT_RowData>({
   actions,
   row,
-  refetchData,
   table,
 }: CreateDefaultActionsParams<TData>): TActions {
   const enabledActions: TActions = [];
 
   if (actions?.deleteRowAction) {
-    // Bind the current row so the handler does not need to accept arguments at the call site
-    const boundDeleteRowAction = () => actions.deleteRowAction!(row);
+    const handleSingleDelete = () => {
+      if (row !== undefined) {
+        actions.deleteRowAction!(row);
+      }
+    };
+    const handleMultiselectDelete = () => {
+      const selectedRows = table.getSelectedRowModel().rows;
+      selectedRows.forEach(actions.deleteRowAction!);
+    };
 
     enabledActions.push({
       name: 'delete',
       label: 'Delete',
       description: 'Delete',
-      componentRow: () => (
+      renderRowActions: () => (
+        <DeleteRowAction deleteRowAction={handleSingleDelete} table={table} />
+      ),
+      renderToolbarActions: () => (
         <DeleteRowAction
-          deleteRowAction={boundDeleteRowAction}
-          refetchData={refetchData}
           table={table}
+          deleteRowAction={handleMultiselectDelete}
         />
       ),
     });

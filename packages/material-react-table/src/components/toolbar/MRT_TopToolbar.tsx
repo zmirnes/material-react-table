@@ -8,6 +8,7 @@ import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_ToolbarInternalButtons } from './MRT_ToolbarInternalButtons';
+import ToolbarActions from '../actions/toolbar-actions';
 
 export interface MRT_TopToolbarProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -27,6 +28,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       positionPagination,
       positionToolbarDropZone,
       renderTopToolbarCustomActions,
+      tableActions,
     },
     refs: { topToolbarRef },
   } = table;
@@ -45,6 +47,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       : undefined,
     table,
   };
+  const selectedRows = table.getSelectedRowModel().rows;
 
   return (
     <Box
@@ -60,7 +63,10 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
         ...getCommonToolbarStyles({ table, theme }),
         position: isFullScreen ? 'sticky' : 'relative',
         top: isFullScreen ? '0' : undefined,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          selectedRows.length < 1
+            ? theme.palette.background.default
+            : theme.palette.primary.lighter,
         borderBottom: `1px solid ${theme.palette.divider}`,
         ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as any),
       })}
@@ -72,36 +78,43 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
           display: 'flex',
           gap: '0.5rem',
           justifyContent: 'space-between',
+          minHeight: '4rem',
           py: '1rem',
           px: '0.5rem',
           width: '100%',
         }}
       >
-        {enableGlobalFilter && positionGlobalFilter === 'left' && (
-          <MRT_GlobalFilterTextField {...globalFilterProps} />
-        )}
-        {enableToolbarInternalActions ? (
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              flexWrap: 'wrap-reverse',
-              gap: '0.5rem',
-              justifyContent: 'flex-start',
-              width: '100%',
-            }}
-          >
-            {enableGlobalFilter && positionGlobalFilter === 'right' && (
+        {selectedRows.length < 1 ? (
+          <>
+            {enableGlobalFilter && positionGlobalFilter === 'left' && (
               <MRT_GlobalFilterTextField {...globalFilterProps} />
             )}
-            {renderTopToolbarCustomActions?.({ table }) ?? <span />}
-            <MRT_ToolbarInternalButtons table={table} />
-          </Box>
+            {enableToolbarInternalActions ? (
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexWrap: 'wrap-reverse',
+                  gap: '0.5rem',
+                  justifyContent: 'flex-start',
+                  width: '100%',
+                }}
+              >
+                {enableGlobalFilter && positionGlobalFilter === 'right' && (
+                  <MRT_GlobalFilterTextField {...globalFilterProps} />
+                )}
+                {renderTopToolbarCustomActions?.({ table }) ?? <span />}
+                <MRT_ToolbarInternalButtons table={table} />
+              </Box>
+            ) : (
+              enableGlobalFilter &&
+              positionGlobalFilter === 'right' && (
+                <MRT_GlobalFilterTextField {...globalFilterProps} />
+              )
+            )}
+          </>
         ) : (
-          enableGlobalFilter &&
-          positionGlobalFilter === 'right' && (
-            <MRT_GlobalFilterTextField {...globalFilterProps} />
-          )
+          <ToolbarActions actions={tableActions} table={table} />
         )}
       </Box>
       {['both', 'top'].includes(positionToolbarDropZone ?? '') && (
