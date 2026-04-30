@@ -1645,6 +1645,9 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
+  getModalFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+  ) => ((props: MRT_ModalFieldRenderProps<TData>) => ReactNode) | null;
 }
 
 
