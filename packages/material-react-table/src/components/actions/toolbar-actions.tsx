@@ -1,25 +1,28 @@
-import Box from '@mui/material/Box';
 import {
+  IAction,
   MRT_RowData,
   MRT_ServerTableActions,
   MRT_TableInstance,
 } from '../../types';
-import { createDefaultActions } from '../../utils/actions/create-default-actions';
+import ActionsContainer, { ActionRenderStrategy } from './actions-container';
 
 interface ToolbarActionsProps<TData extends MRT_RowData> {
   actions?: MRT_ServerTableActions<TData>;
   table: MRT_TableInstance<TData>;
 }
 
+const toolbarActionsRenderStrategy: ActionRenderStrategy = (action: IAction) =>
+  action.renderToolbarActions?.() ?? null;
+
 export default function ToolbarActions<TData extends MRT_RowData>({
   actions,
   table,
 }: ToolbarActionsProps<TData>) {
-  const defaultActions = createDefaultActions({
-    actions,
-    table,
-  });
   return (
-    <Box>{defaultActions.map((action) => action.renderToolbarActions?.())}</Box>
+    <ActionsContainer
+      actions={actions}
+      table={table}
+      renderActionStrategy={toolbarActionsRenderStrategy}
+    />
   );
 }
