@@ -1,11 +1,11 @@
-import Box from '@mui/material/Box';
 import {
+  IAction,
   MRT_Row,
   MRT_RowData,
   MRT_ServerTableActions,
   MRT_TableInstance,
 } from '../../types';
-import { createDefaultActions } from '../../utils/actions/create-default-actions';
+import ActionsContainer, { ActionRenderStrategy } from './actions-container';
 
 interface RowActionsProps<TData extends MRT_RowData> {
   actions?: MRT_ServerTableActions<TData>;
@@ -13,17 +13,20 @@ interface RowActionsProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
 }
 
+const rowActionsRenderStrategy: ActionRenderStrategy = (action: IAction) =>
+  action.renderRowActions?.() ?? null;
+
 export default function RowActions<TData extends MRT_RowData>({
   actions,
   row,
   table,
 }: RowActionsProps<TData>) {
-  const defaultActions = createDefaultActions({
-    actions,
-    row,
-    table,
-  });
   return (
-    <Box>{defaultActions.map((action) => action.renderRowActions?.())}</Box>
+    <ActionsContainer
+      actions={actions}
+      row={row}
+      table={table}
+      renderActionStrategy={rowActionsRenderStrategy}
+    />
   );
 }
