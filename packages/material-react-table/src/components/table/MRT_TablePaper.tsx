@@ -74,6 +74,7 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
         height: '100%',
         overflow: 'hidden',
         transition: 'all 100ms ease-in-out',
+        borderRadius: 0,
         ...(parseFromValuesOrFunc(paperProps?.sx, theme) as any),
       })}
     >

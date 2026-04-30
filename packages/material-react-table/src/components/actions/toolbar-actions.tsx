@@ -1,29 +1,25 @@
 import Box from '@mui/material/Box';
 import {
-  MRT_Row,
   MRT_RowData,
   MRT_ServerTableActions,
   MRT_TableInstance,
 } from '../../types';
 import { createDefaultActions } from '../../utils/actions/create-default-actions';
 
-interface RowActionsProps<TData extends MRT_RowData> {
+interface ToolbarActionsProps<TData extends MRT_RowData> {
   actions?: MRT_ServerTableActions<TData>;
-  row: MRT_Row<TData>;
   table: MRT_TableInstance<TData>;
 }
 
-export default function RowActions<TData extends MRT_RowData>({
+export default function ToolbarActions<TData extends MRT_RowData>({
   actions,
-  row,
   table,
-}: RowActionsProps<TData>) {
+}: ToolbarActionsProps<TData>) {
   const defaultActions = createDefaultActions({
     actions,
-    row,
     table,
   });
   return (
-    <Box>{defaultActions.map((action) => action.renderRowActions?.())}</Box>
+    <Box>{defaultActions.map((action) => action.renderToolbarActions?.())}</Box>
   );
 }
