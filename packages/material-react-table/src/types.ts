@@ -1649,38 +1649,19 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
-  getModalFieldRenderer: <TData extends MRT_RowData>(
-  column: MRT_ColumnDef<TData>,
-  table: MRT_TableInstance<TData>,
-) => ((props: MRT_ModalFieldRenderProps<TData>) => ReactNode) | null;
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    table: MRT_TableInstance<TData>,
+  ) => ((props: MRT_ModalFieldRenderProps<TData>) => ReactNode) | null;
 }
 
 
 // ─── Modal Field Configuration ────────────────────────────────────────────────
 
 
-// Tells the resolver which default RHF input component to render.
-// 'auto' means: derive the component from the column type automatically.
-// 'custom' means: developer provides render() directly on the field config.
-export type MRT_ModalFieldRendererHint =
-  | 'auto'
-  | 'text'
-  | 'number'
-  | 'select'
-  | 'date'
-  | 'dateTime'
-  | 'checkbox'
-  | 'iconPicker'
-  | 'dimensionEditor'
-  | 'custom';
-
 // Props that will be passed into a custom field render function.
-export interface MRT_ModalFieldRenderProps<TData extends MRT_RowData, TValue = unknown> {
+export interface MRT_ModalFieldRenderProps<TData extends MRT_RowData> {
   name: string;
-  value: TValue;
-  onChange: (value: TValue) => void;
-  onBlur: () => void;
-  error: string | undefined;
   columnDef: MRT_ColumnDef<TData>;
 }
 
@@ -1696,14 +1677,12 @@ export interface MRT_ModalFieldModeConfig<TData extends MRT_RowData> {
   helperText?: string;
   // Section ID this field belongs to — must match MRT_ModalSectionConfig.id.
   section?: string;
-  // Which default input component to use. Defaults to 'auto'.
-  renderer?: MRT_ModalFieldRendererHint;
   // Static default value or a factory function used only in create mode.
   defaultValue?: unknown | (() => unknown);
   // RHF validation rules for this field.
   rules?: RegisterOptions;
   // Custom render function — only used when renderer is 'custom'.
-  render?: (props: MRT_ModalFieldRenderProps<TData, unknown>) => ReactNode;
+  render?: (props: MRT_ModalFieldRenderProps<TData>) => ReactNode;
 }
 
 // Column-level form field configuration — placed directly on the column def.
