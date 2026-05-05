@@ -73,7 +73,7 @@ import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
-import type { RegisterOptions } from 'react-hook-form'
+import type { RegisterOptions, UseFormReturn } from 'react-hook-form'
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -1674,7 +1674,7 @@ export interface MRT_FormFieldRenderProps<TData extends MRT_RowData, TValue = un
 // Configuration for a single form field — placed on a column definition via `formConfig`.
 export interface MRT_FormFieldConfig<TData extends MRT_RowData, TValue = unknown> {
   // Hides this field from the form — all data columns are shown by default, this is an opt-out flag.
-  disabled?: boolean;
+  hidden?: boolean;
   // Render order inside the section. Lower number = rendered first. Fields without order appear last.
   order?: number;
   // Label override — replaces the column header text as the field label.
@@ -1698,12 +1698,11 @@ export interface MRT_FormFieldConfig<TData extends MRT_RowData, TValue = unknown
 
 // Props passed into form-level callbacks (onSave, onCancel) and custom action button handlers.
 export interface MRT_FormCallbackProps<TData extends MRT_RowData> {
-  // Current form values at the time of the action — keyed by column accessor key.
-  values: Record<string, unknown>;
+  // React Hook Form instance — provides values, setValue, watch, reset, formState, trigger, etc.
+  form: UseFormReturn;
   // The table instance — provides access to state, options, and setters.
+  // To close the modal, call table.setCreatingRow(null).
   table: MRT_TableInstance<TData>;
-  // Closes the modal — call this after async work is done.
-  closeModal: () => void;
 }
 
 // A single custom element rendered in the form footer alongside the default Save/Cancel buttons.
@@ -1713,6 +1712,25 @@ export interface MRT_FormCustomAction<TData extends MRT_RowData> {
   key: string;
   // Render function — receives current form values, table instance, and closeModal.
   render: (props: MRT_FormCallbackProps<TData>) => ReactNode;
+}
+
+// Render props for an additional form field — no columnDef since this field is not tied to a column.
+export interface MRT_FormAdditionalFieldRenderProps<TData extends MRT_RowData> {
+  // RHF field name — use this with register/Controller.
+  name: string;
+  // The table instance — provides access to state, options, and setters.
+  table: MRT_TableInstance<TData>;
+}
+
+// A form field not tied to any column — extends MRT_FormFieldConfig but requires name and render,
+// and omits hidden (there is no reason to add a field only to hide it).
+export interface MRT_FormAdditionalField<TData extends MRT_RowData, TValue = unknown>
+  extends Omit<MRT_FormFieldConfig<TData, TValue>, 'render' | 'hidden'> {
+  // Unique name — used as the RHF field name. Must not conflict with any column accessor key.
+  name: string;
+  // Render function — required since there is no column type resolver to fall back on.
+  // Receives name and table instead of columnDef.
+  render: (props: MRT_FormAdditionalFieldRenderProps<TData>) => ReactNode;
 }
 
 // Table-level form configuration for create/edit modals.
@@ -1726,6 +1744,8 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   onSave?: (props: MRT_FormCallbackProps<TData>) => Promise<void> | void;
   // Called when the user cancels — runs before the modal closes.
   onCancel?: (props: MRT_FormCallbackProps<TData>) => void;
+  // Extra fields rendered alongside column-derived fields — use for inputs not backed by a column.
+  additionalFields?: MRT_FormAdditionalField<TData>[];
   // Additional buttons rendered in the modal footer alongside the default Save/Cancel buttons.
   customActions?: MRT_FormCustomAction<TData>[];
   // Replaces the entire form component — when provided, no fields or sections are rendered by default.
