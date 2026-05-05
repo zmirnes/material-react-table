@@ -712,8 +712,9 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
         table: MRT_TableInstance<TData>;
       }) => TableCellProps)
     | TableCellProps;
-  // Column-level form field config — defines how this column appears in create/edit modals.
-  formField?: MRT_ColumnFormFieldConfig<TData, TValue>;
+  // Form field configuration — controls how this column appears and behaves in the create/edit form.
+  // Use a config object for static settings, or a render function for full custom control.
+  formField?: MRT_FormFieldConfig<TData, TValue> | ((props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode);
   PlaceholderCell?: (props: {
     cell: MRT_Cell<TData, TValue>;
     column: MRT_Column<TData, TValue>;
@@ -1655,53 +1656,44 @@ export interface ColumnTypeResolver {
   getFormFieldRenderer: <TData extends MRT_RowData>(
     column: MRT_ColumnDef<TData>,
     table: MRT_TableInstance<TData>,
-  ) => ((props: MRT_ModalFieldRenderProps<TData>) => ReactNode) | null;
+  ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
 }
 
 
-// ─── Modal Field Configuration ────────────────────────────────────────────────
+// ─── Form Field Configuration ────────────────────────────────────────────────
 
 
-// Props that will be passed into a custom field render function.
-export interface MRT_ModalFieldRenderProps<TData extends MRT_RowData, TValue = unknown> {
+// Props passed into a custom field render function — provides RHF name and column definition.
+export interface MRT_FormFieldRenderProps<TData extends MRT_RowData, TValue = unknown> {
+  // RHF field name — matches the column accessor key, used for register/Controller.
   name: string;
+  // Column definition — provides header, type, and other column metadata.
   columnDef: MRT_ColumnDef<TData, TValue>;
 }
 
-// Config for a single column field in one mode — create OR edit.
-export interface MRT_ModalFieldModeConfig<TData extends MRT_RowData, TValue = unknown> {
-  // Set to true to explicitly hide this field in the modal.
-  // All data columns are shown by default — this is an opt-out flag.
+// Configuration for a single form field — placed on a column definition via `formConfig`.
+export interface MRT_FormFieldConfig<TData extends MRT_RowData, TValue = unknown> {
+  // Hides this field from the form — all data columns are shown by default, this is an opt-out flag.
   disabled?: boolean;
-  // Render order inside the section. Lower = first. Missing = last.
+  // Render order inside the section. Lower number = rendered first. Fields without order appear last.
   order?: number;
-  // Label override — replaces column header as the field label.
+  // Label override — replaces the column header text as the field label.
   label?: string;
+  // Input placeholder text.
   placeholder?: string;
+  // Helper text rendered below the input.
   helperText?: string;
-  // Section ID this field belongs to — must match MRT_ModalSectionConfig.id.
+  // ID of the section this field belongs to — must match MRT_FormSectionConfig.id.
   section?: string;
-  // Static default value or a factory function used only in create mode.
+  // Initial value for the field. Only applied in create mode — ignored in edit mode.
   defaultValue?: TValue | (() => TValue);
-  // RHF validation rules for this field.
+  // React Hook Form validation rules applied to this field.
   rules?: RegisterOptions;
-  // Custom render function — only used when renderer is 'custom'.
-  render?: (props: MRT_ModalFieldRenderProps<TData, TValue>) => ReactNode;
-  // Intercepts RHF field onChange — receives the new value and field name.
-  // Return a transformed value to override what RHF stores, or return void to keep the original.
+  // Custom render function — replaces the default input component for this field.
+  render?: (props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode;
+  // Intercepts RHF onChange — receives the new value and field name.
+  // Return a transformed value to override what RHF stores, or return void to keep the original value.
   onChange?: (value: TValue, fieldName: string) => TValue | void;
-}
-
-// Column-level form field configuration — placed directly on the column def.
-// `field` is shared config applied to both modes unless overridden by `create` or `edit`.
-// `create` and `edit` are merged on top of `field` for their respective modal modes.
-export interface MRT_ColumnFormFieldConfig<TData extends MRT_RowData, TValue = unknown> {
-  // Shared config — applied to both create and edit modes.
-  field?: MRT_ModalFieldModeConfig<TData, TValue> | ((props: MRT_ModalFieldRenderProps<TData, TValue>) => ReactNode);
-  // Create-mode config — merged on top of `field` when the modal is in create mode.
-  create?: MRT_ModalFieldModeConfig<TData, TValue> | ((props: MRT_ModalFieldRenderProps<TData, TValue>) => ReactNode);
-  // Edit-mode config — merged on top of `field` when the modal is in edit mode.
-  edit?: MRT_ModalFieldModeConfig<TData, TValue> | ((props: MRT_ModalFieldRenderProps<TData, TValue>) => ReactNode);
 }
 
 // Props passed into form-level callbacks (onSave, onCancel) and custom action button handlers.
@@ -1714,20 +1706,19 @@ export interface MRT_FormCallbackProps<TData extends MRT_RowData> {
   closeModal: () => void;
 }
 
-// Definition of a single custom action button rendered in the modal footer.
+// A single custom element rendered in the form footer alongside the default Save/Cancel buttons.
+// Can be a button, input, link, or any other element — full control via the render function.
 export interface MRT_FormCustomAction<TData extends MRT_RowData> {
-  // Button label text.
-  label: string;
-  // Called when the user clicks this button.
-  onClick: (props: MRT_FormCallbackProps<TData>) => void;
-  // Optional MUI ButtonProps overrides — color, variant, disabled, startIcon, etc.
-  buttonProps?: ButtonProps;
+  // Used as the React key for this action — must be unique within the customActions array.
+  key: string;
+  // Render function — receives current form values, table instance, and closeModal.
+  render: (props: MRT_FormCallbackProps<TData>) => ReactNode;
 }
 
 // Table-level form configuration for create/edit modals.
 export interface MRT_FormConfig<TData extends MRT_RowData> {
-  // Section definitions — columns reference a section by id via formField.field.section.
-  sections?: MRT_ModalSectionConfig[];
+  // Section definitions — fields reference a section by id via MRT_FormFieldConfig.section.
+  sections?: MRT_FormSectionConfig[];
   // Column IDs to exclude from the form — all data columns are shown by default.
   // Display columns (actions, checkboxes, etc.) are always excluded automatically.
   excludeColumns?: string[];
@@ -1738,17 +1729,24 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   // Additional buttons rendered in the modal footer alongside the default Save/Cancel buttons.
   customActions?: MRT_FormCustomAction<TData>[];
   // Replaces the entire form component — when provided, no fields or sections are rendered by default.
-  renderForm?: (props: {
-    table: MRT_TableInstance<TData>;
-    closeModal: () => void;
-  }) => ReactNode;
+  renderForm?: (props: MRT_FormCallbackProps<TData>) => ReactNode;
+  // Replaces the entire MUI Dialog — when provided, the default modal wrapper is not rendered at all.
+  // Use this to render a custom modal, drawer, or any other overlay instead.
+  // Unlike renderForm, there is no RHF context — the consumer owns the full overlay lifecycle.
+  // To close the modal, call table.setCreatingRow(null) from within the rendered component.
+  renderModal?: (props: { table: MRT_TableInstance<TData> }) => ReactNode;
 }
 
-// Section definition — lives at table config level, referenced by formField.field.section.
-export interface MRT_ModalSectionConfig {
+// Section definition — referenced by form field config via MRT_FormFieldConfig.section.
+export interface MRT_FormSectionConfig {
+  // Unique identifier — referenced by MRT_FormFieldConfig.section to assign a field to this section.
   id: string;
+  // Section heading displayed above the group of fields.
   title: string;
+  // Render order of this section relative to others. Lower number = rendered first.
   order?: number;
+  // Whether this section can be collapsed by the user.
   collapsible?: boolean;
+  // Initial collapsed state when the form opens.
   defaultCollapsed?: boolean;
 }
