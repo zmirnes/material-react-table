@@ -109,6 +109,19 @@ export type MRT_RowDataWithHierarchy = MRT_RowData & {
   __hierarchy__?: MRT_HierarchyPath;
 };
 
+export type MRT_TreeRowMoveDirection = 'into';
+
+export type MRT_ValidateTreeRowMoveContext<TData extends MRT_RowData> = {
+  direction: MRT_TreeRowMoveDirection;
+  sourceRows: MRT_Row<TData>[];
+  table: MRT_TableInstance<TData>;
+  targetRow: MRT_Row<TData>;
+};
+
+export type MRT_ValidateTreeRowMoveFn<TData extends MRT_RowData> = (
+  context: MRT_ValidateTreeRowMoveContext<TData>,
+) => boolean;
+
 export type MRT_ColumnFiltersState = ColumnFiltersState;
 export type MRT_ColumnOrderState = ColumnOrderState;
 export type MRT_ColumnPinningState = ColumnPinningState;
@@ -1024,6 +1037,11 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
    * parallel alias names to keep backward compatibility and upgrade risk low.
    */
   enableRowSelection?: ((row: MRT_Row<TData>) => boolean) | boolean;
+  /**
+   * Optional tree-row move validator.
+   * Return `true` to allow default move action and `false` to disable it.
+   */
+  validateTreeRowMove?: MRT_ValidateTreeRowMoveFn<TData>;
   enableRowVirtualization?: boolean;
   /**
    * Async function that returns all selectable row IDs across all pages.

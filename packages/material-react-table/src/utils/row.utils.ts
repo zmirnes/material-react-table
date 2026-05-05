@@ -6,6 +6,8 @@ import {
   type MRT_RowData,
   type MRT_RowDataWithHierarchy,
   type MRT_TableInstance,
+  type MRT_ValidateTreeRowMoveContext,
+  type MRT_ValidateTreeRowMoveFn,
 } from '../types';
 import { parseFromValuesOrFunc } from './utils';
 
@@ -22,6 +24,20 @@ export const hasValidHierarchyPath = <TData extends MRT_RowData>(
   row: TData,
 ): row is TData & MRT_RowDataWithHierarchy & { __hierarchy__: number[] } =>
   isValidHierarchyPath((row as MRT_RowDataWithHierarchy).__hierarchy__);
+
+export const getIsTreeRowMoveAllowed = <TData extends MRT_RowData>({
+  context,
+  validateTreeRowMove,
+}: {
+  context: MRT_ValidateTreeRowMoveContext<TData>;
+  validateTreeRowMove?: MRT_ValidateTreeRowMoveFn<TData>;
+}): boolean => {
+  if (!validateTreeRowMove) {
+    return true;
+  }
+
+  return validateTreeRowMove(context) === true;
+};
 
 type MRT_HierarchySkeletonRow<TData extends MRT_RowData> = TData & {
   subRows: TData[];
