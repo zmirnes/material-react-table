@@ -73,6 +73,7 @@ import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
+import type { RegisterOptions } from 'react-hook-form'
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -711,6 +712,8 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
         table: MRT_TableInstance<TData>;
       }) => TableCellProps)
     | TableCellProps;
+  // Column-level form field config — defines how this column appears in create/edit modals.
+  formField?: MRT_ColumnFormFieldConfig<TData>;
   PlaceholderCell?: (props: {
     cell: MRT_Cell<TData, TValue>;
     column: MRT_Column<TData, TValue>;
@@ -1472,6 +1475,8 @@ export interface MRT_TableConfig<TData extends MRT_RowData> {
   columns: MRT_ColumnDef<TData, unknown>[];
   initialState?: Partial<MRT_TableState<TData>>;
   availableExports?: Record<string, MRT_ExportDefinition>;
+  // Table-level form configuration — sections and future modal-level options.
+  formConfig?: MRT_FormConfig;
 }
 
 export interface MRT_TableData<TData extends MRT_RowData> {
@@ -1644,4 +1649,60 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    table: MRT_TableInstance<TData>,
+  ) => ((props: MRT_ModalFieldRenderProps<TData>) => ReactNode) | null;
+}
+
+
+// ─── Modal Field Configuration ────────────────────────────────────────────────
+
+
+// Props that will be passed into a custom field render function.
+export interface MRT_ModalFieldRenderProps<TData extends MRT_RowData> {
+  name: string;
+  columnDef: MRT_ColumnDef<TData>;
+}
+
+// Config for a single column field in one mode — create OR edit.
+export interface MRT_ModalFieldModeConfig<TData extends MRT_RowData> {
+  // Must be true for the column to appear in the modal. Default false.
+  enabled?: boolean;
+  // Render order inside the section. Lower = first. Missing = last.
+  order?: number;
+  // Label override — replaces column header as the field label.
+  label?: string;
+  placeholder?: string;
+  helperText?: string;
+  // Section ID this field belongs to — must match MRT_ModalSectionConfig.id.
+  section?: string;
+  // Static default value or a factory function used only in create mode.
+  defaultValue?: unknown | (() => unknown);
+  // RHF validation rules for this field.
+  rules?: RegisterOptions;
+  // Custom render function — only used when renderer is 'custom'.
+  render?: (props: MRT_ModalFieldRenderProps<TData>) => ReactNode;
+}
+
+// Column-level form field configuration — placed directly on the column def.
+// field can be either a full config object (with rules, label, section, etc.)
+// or a shorthand render function when no extra config is needed.
+export interface MRT_ColumnFormFieldConfig<TData extends MRT_RowData> {
+  field: MRT_ModalFieldModeConfig<TData> | ((props: MRT_ModalFieldRenderProps<TData>) => ReactNode);
+}
+
+// Table-level form configuration for create/edit modals.
+export interface MRT_FormConfig {
+  // Section definitions — columns reference a section by id via formField.field.section.
+  sections?: MRT_ModalSectionConfig[];
+}
+
+// Section definition — lives at table config level, referenced by formField.field.section.
+export interface MRT_ModalSectionConfig {
+  id: string;
+  title: string;
+  order?: number;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
 }
