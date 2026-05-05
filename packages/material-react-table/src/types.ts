@@ -415,7 +415,6 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
   setShowAdvancedFilters: Dispatch<SetStateAction<boolean>>;
-  setNewEntryModal: Dispatch<SetStateAction<MRT_NewEntryModalState>>;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -452,7 +451,6 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'showColumnFilters'
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
-      | 'newEntryModal'
     >;
   };
 
@@ -481,7 +479,6 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showProgressBars: boolean;
   showSkeletons: boolean;
   showToolbarDropZone: boolean;
-  newEntryModal: MRT_NewEntryModalState;
   activeExports?: MRT_ActiveExportsState;
 }
 
@@ -997,9 +994,6 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     [key in MRT_DisplayColumnIds]: Partial<MRT_DisplayColumnDef<TData>>;
   }>;
   editDisplayMode?: 'cell' | 'custom' | 'modal' | 'row' | 'table';
-  // Form config for create/edit modals — sections, onSave, onCancel, custom actions, and field overrides.
-  // formConfig.onSave takes priority over onCreatingRowSave when both are defined.
-  formConfig?: MRT_FormConfig<TData>;
   enableBatchRowSelection?: boolean;
   enableBottomToolbar?: boolean;
   enableCellActions?: ((cell: MRT_Cell<TData>) => boolean) | boolean;
