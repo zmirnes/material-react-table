@@ -68,7 +68,13 @@ const data = [...Array(5)].map(() => ({
 }));
 
 export const SubRowTreeEnabledDefault = () => (
-  <MaterialReactTable columns={columns} data={data} enableExpanding />
+  <MaterialReactTable
+    columns={columns}
+    data={data}
+    enableExpanding
+    enableRowReordering
+    enableRowPinning={false}
+  />
 );
 
 export const SubRowTreeLayoutGrid = () => (

@@ -1,6 +1,7 @@
-import { type ReactNode } from 'react';
+import { Checkbox } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
+import { type ReactNode } from 'react';
 import { MRT_ExpandAllButton } from '../../components/buttons/MRT_ExpandAllButton';
 import { MRT_ExpandButton } from '../../components/buttons/MRT_ExpandButton';
 import {
@@ -20,6 +21,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     groupedColumnMode,
     positionExpandColumn,
     renderDetailPanel,
+    enableRowReordering,
     state: { grouping },
   } = tableOptions;
 
@@ -34,9 +36,24 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     Cell: ({ cell, column, row, staticRowIndex, table }) => {
       const expandButtonProps = { row, staticRowIndex, table };
       const subRowsLength = row.subRows?.length;
+
+      // Izdvoji reordering checkbox
+      const reorderingCheckbox = enableRowReordering && (
+        <Checkbox
+          size="small"
+          sx={{
+            color: (theme) => theme.palette.warning.main,
+            '&.Mui-checked': {
+              color: (theme) => theme.palette.warning.main,
+            },
+          }}
+        />
+      );
+
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {
         return (
           <Stack alignItems="center" flexDirection="row" gap="0.25rem">
+            {reorderingCheckbox}
             <MRT_ExpandButton {...expandButtonProps} />
             <Tooltip
               {...getCommonTooltipProps('right')}
@@ -50,6 +67,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
       } else {
         return (
           <>
+            {reorderingCheckbox}
             <MRT_ExpandButton {...expandButtonProps} />
             {column.columnDef.GroupedCell?.({ cell, column, row, table })}
           </>
