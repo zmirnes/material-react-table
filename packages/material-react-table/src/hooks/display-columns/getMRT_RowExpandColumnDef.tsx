@@ -1,4 +1,5 @@
-import { Checkbox } from '@mui/material';
+import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import { Checkbox, IconButton } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import { type ReactNode } from 'react';
@@ -12,6 +13,41 @@ import {
 import { defaultDisplayColumnProps } from '../../utils/displayColumn.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 
+interface reorderRowCheckboxActionProps {
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isSelected: boolean;
+}
+
+const reorderRowCheckboxAction = ({
+  onChange,
+  isSelected,
+}: reorderRowCheckboxActionProps) => {
+  return (
+    <Checkbox
+      checked={isSelected}
+      color="warning"
+      disableRipple
+      onChange={onChange}
+      sx={{
+        color: (theme) => theme.palette.warning.main,
+        '&.Mui-checked': {
+          color: (theme) => theme.palette.warning.main,
+        },
+      }}
+    />
+  );
+};
+
+const insertHereAction = () => {
+  return (
+    <Tooltip title="Insert here" disableInteractive>
+      <IconButton size="small">
+        <SubdirectoryArrowRightIcon color="warning" />
+      </IconButton>
+    </Tooltip>
+  );
+};
+
 export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
   tableOptions: MRT_StatefulTableOptions<TData>,
 ): MRT_ColumnDef<TData> => {
@@ -21,8 +57,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     groupedColumnMode,
     positionExpandColumn,
     renderDetailPanel,
-    enableRowReordering,
-    state: { grouping },
+    state: { grouping, rowReorderingSelection },
   } = tableOptions;
 
   const alignProps =
@@ -34,42 +69,64 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 
   return {
     Cell: ({ cell, column, row, staticRowIndex, table }) => {
+      // Keep tree/group rendering on existing expand/grouping APIs for this
+      // iteration to avoid introducing parallel alias names.
       const expandButtonProps = { row, staticRowIndex, table };
       const subRowsLength = row.subRows?.length;
-
-      // Izdvoji reordering checkbox
-      const reorderingCheckbox = enableRowReordering && (
-        <Checkbox
-          size="small"
-          sx={{
-            color: (theme) => theme.palette.warning.main,
-            '&.Mui-checked': {
-              color: (theme) => theme.palette.warning.main,
-            },
-          }}
-        />
-      );
+      const customGroupedCell = column.columnDef.GroupedCell?.({
+        cell,
+        column,
+        row,
+        table,
+        staticRowIndex,
+      });
 
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {
+        const defaultGroupedCell = (
+          <Tooltip
+            {...getCommonTooltipProps('right')}
+            title={table.getColumn(row.groupingColumnId).columnDef.header}
+          >
+            <span>{row.groupingValue as ReactNode}</span>
+          </Tooltip>
+        );
+
         return (
           <Stack alignItems="center" flexDirection="row" gap="0.25rem">
-            {reorderingCheckbox}
+            {reorderRowCheckboxAction({
+              onChange: (event) => {
+                const checked = event.target.checked;
+                table.setRowReorderingSelection((prev) => ({
+                  ...prev,
+                  [row.id]: checked,
+                }));
+              },
+              isSelected: !!rowReorderingSelection?.[row.id],
+            })}
+            {insertHereAction()}
             <MRT_ExpandButton {...expandButtonProps} />
-            <Tooltip
-              {...getCommonTooltipProps('right')}
-              title={table.getColumn(row.groupingColumnId).columnDef.header}
-            >
-              <span>{row.groupingValue as ReactNode}</span>
-            </Tooltip>
+            {column.columnDef.GroupedCell
+              ? customGroupedCell
+              : defaultGroupedCell}
             {!!subRowsLength && <span>({subRowsLength})</span>}
           </Stack>
         );
       } else {
         return (
           <>
-            {reorderingCheckbox}
+            {reorderRowCheckboxAction({
+              onChange: (event) => {
+                const checked = event.target.checked;
+                table.setRowReorderingSelection((prev) => ({
+                  ...prev,
+                  [row.id]: checked,
+                }));
+              },
+              isSelected: !!rowReorderingSelection?.[row.id],
+            })}
+            {insertHereAction()}
             <MRT_ExpandButton {...expandButtonProps} />
-            {column.columnDef.GroupedCell?.({ cell, column, row, table })}
+            {customGroupedCell}
           </>
         );
       }
@@ -105,5 +162,6 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
             : 100,
       tableOptions,
     }),
+    enableResizing: true,
   };
 };

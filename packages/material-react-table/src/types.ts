@@ -415,6 +415,9 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
   setShowAdvancedFilters: Dispatch<SetStateAction<boolean>>;
+  setRowReorderingSelection: Dispatch<
+    SetStateAction<MRT_RowReorderingSelectionState>
+  >;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -451,6 +454,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'showColumnFilters'
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
+      | 'rowReorderingSelection'
     >;
   };
 
@@ -480,6 +484,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showSkeletons: boolean;
   showToolbarDropZone: boolean;
   activeExports?: MRT_ActiveExportsState;
+  rowReorderingSelection: MRT_RowReorderingSelectionState;
 }
 
 interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
@@ -920,6 +925,8 @@ export type MRT_InternalFilterOption = {
   option: string;
   symbol: string;
 };
+
+export type MRT_RowReorderingSelectionState = Record<string, boolean>;
 
 export type MRT_DisplayColumnIds =
   | 'mrt-row-actions'
@@ -1383,6 +1390,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   onShowColumnFiltersChange?: OnChangeFn<boolean>;
   onShowGlobalFilterChange?: OnChangeFn<boolean>;
   onShowToolbarDropZoneChange?: OnChangeFn<boolean>;
+  onRowReorderingSelectionChange?: OnChangeFn<MRT_RowReorderingSelectionState>;
   paginationDisplayMode?: 'custom' | 'default' | 'pages';
   positionActionsColumn?: 'first' | 'last';
   positionCreatingRow?: 'bottom' | 'top' | number;
