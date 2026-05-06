@@ -74,6 +74,15 @@ export const SubRowTreeEnabledDefault = () => (
     enableExpanding
     enableRowReordering
     enableRowPinning={false}
+    displayColumnDefOptions={{
+      'mrt-row-expand': {
+        GroupedCell: ({ row }) => (
+          <span style={{ fontWeight: 700 }}>
+            {row.getValue('firstName')} ({row.subRows?.length ?? 0})
+          </span>
+        ),
+      },
+    }}
   />
 );
 

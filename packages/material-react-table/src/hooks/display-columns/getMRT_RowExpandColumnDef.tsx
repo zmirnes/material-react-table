@@ -93,6 +93,10 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 
         return (
           <Stack alignItems="center" flexDirection="row" gap="0.25rem">
+            <MRT_ExpandButton {...expandButtonProps} />
+            {column.columnDef.GroupedCell
+              ? customGroupedCell
+              : defaultGroupedCell}
             {reorderRowCheckboxAction({
               onChange: (event) => {
                 const checked = event.target.checked;
@@ -104,16 +108,15 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
               isSelected: !!rowReorderingSelection?.[row.id],
             })}
             {insertHereAction()}
-            <MRT_ExpandButton {...expandButtonProps} />
-            {column.columnDef.GroupedCell
-              ? customGroupedCell
-              : defaultGroupedCell}
+
             {!!subRowsLength && <span>({subRowsLength})</span>}
           </Stack>
         );
       } else {
         return (
           <>
+            <MRT_ExpandButton {...expandButtonProps} />
+            {customGroupedCell}
             {reorderRowCheckboxAction({
               onChange: (event) => {
                 const checked = event.target.checked;
@@ -125,8 +128,6 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
               isSelected: !!rowReorderingSelection?.[row.id],
             })}
             {insertHereAction()}
-            <MRT_ExpandButton {...expandButtonProps} />
-            {customGroupedCell}
           </>
         );
       }
