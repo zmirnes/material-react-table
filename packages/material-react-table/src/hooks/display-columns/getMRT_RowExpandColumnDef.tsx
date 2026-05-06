@@ -1,4 +1,4 @@
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
 import { Checkbox, IconButton } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
@@ -7,6 +7,7 @@ import { MRT_ExpandAllButton } from '../../components/buttons/MRT_ExpandAllButto
 import { MRT_ExpandButton } from '../../components/buttons/MRT_ExpandButton';
 import {
   type MRT_ColumnDef,
+  type MRT_Row,
   type MRT_RowData,
   type MRT_StatefulTableOptions,
   type MRT_TableInstance,
@@ -43,10 +44,79 @@ const insertHereAction = () => {
   return (
     <Tooltip title="Insert here" disableInteractive>
       <IconButton size="small">
-        <SubdirectoryArrowRightIcon color="warning" />
+        <SubdirectoryArrowLeftIcon color="warning" />
       </IconButton>
     </Tooltip>
   );
+};
+
+const getDeepestSubRowDepth = <TData extends MRT_RowData>(
+  row: MRT_Row<TData>,
+): number => {
+  if (!row.subRows?.length) {
+    return row.depth;
+  }
+
+  return row.subRows.reduce(
+    (maxDepth, subRow) => Math.max(maxDepth, getDeepestSubRowDepth(subRow)),
+    row.depth,
+  );
+};
+
+const getSelectedReorderRowIds = (
+  rowReorderingSelection?: Record<string, boolean>,
+): string[] => {
+  return Object.entries(rowReorderingSelection ?? {})
+    .filter(([, isSelected]) => isSelected)
+    .map(([rowId]) => rowId);
+};
+
+const getSelectedRowsMaxRelativeDepth = <TData extends MRT_RowData>({
+  selectedRowIds,
+  table,
+}: {
+  selectedRowIds: string[];
+  table: MRT_TableInstance<TData>;
+}): number => {
+  return selectedRowIds.reduce((maxRelativeDepth, selectedRowId) => {
+    const selectedRow = table.getRow(selectedRowId, true);
+
+    if (!selectedRow) {
+      return maxRelativeDepth;
+    }
+
+    const selectedRowDeepestDescendantDepth = getDeepestSubRowDepth(
+      selectedRow as MRT_Row<TData>,
+    );
+    const currentRelativeDepth =
+      selectedRowDeepestDescendantDepth - selectedRow.depth;
+
+    return Math.max(maxRelativeDepth, currentRelativeDepth);
+  }, 0);
+};
+
+const canInsertSelectedRowsWithoutExceedingMaxDepth = ({
+  hasAnyReorderSelection,
+  maxDepth,
+  selectedRowsMaxRelativeDepth,
+  targetRowDepth,
+}: {
+  hasAnyReorderSelection: boolean;
+  maxDepth?: number;
+  selectedRowsMaxRelativeDepth: number;
+  targetRowDepth: number;
+}): boolean => {
+  if (!hasAnyReorderSelection || maxDepth === undefined) {
+    return true;
+  }
+
+  // maxDepth counts levels (depth 0..maxDepth-1), and insert action places
+  // selected rows as children of target row.
+  const maxAllowedDepth = maxDepth - 1;
+  const insertedRootDepth = targetRowDepth + 1;
+  const movedSubTreeMaxDepth = insertedRootDepth + selectedRowsMaxRelativeDepth;
+
+  return movedSubTreeMaxDepth <= maxAllowedDepth;
 };
 
 const getFirstSelectedReorderRowDepth = <TData extends MRT_RowData>({
@@ -94,6 +164,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     defaultColumn,
     enableExpandAll,
     groupedColumnMode,
+    maxDepth,
     positionExpandColumn,
     renderDetailPanel,
     state: { grouping, rowReorderingSelection },
@@ -136,10 +207,25 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 
       const hasAnyReorderSelection = Object.values(
         rowReorderingSelection ?? {},
-      ).some(Boolean);
+      ).some((selection) => selection);
+      const selectedReorderRowIds = getSelectedReorderRowIds(
+        rowReorderingSelection,
+      );
+      const selectedRowsMaxRelativeDepth = getSelectedRowsMaxRelativeDepth({
+        selectedRowIds: selectedReorderRowIds,
+        table,
+      });
 
       const shouldShowReorderCheckbox =
         canSelectForReorder && (isRowHovered || hasAnyReorderSelection);
+      const shouldShowInsertHereAction =
+        selectedReorderRowIds.length > 0 &&
+        canInsertSelectedRowsWithoutExceedingMaxDepth({
+          hasAnyReorderSelection,
+          maxDepth,
+          selectedRowsMaxRelativeDepth,
+          targetRowDepth: row.depth,
+        });
 
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {
         const defaultGroupedCell = (
@@ -175,7 +261,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
                 },
                 isSelected: !!rowReorderingSelection?.[row.id],
               })}
-            {insertHereAction()}
+            {shouldShowInsertHereAction && insertHereAction()}
 
             {!!subRowsLength && <span>({subRowsLength})</span>}
           </Stack>
@@ -202,7 +288,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
                 },
                 isSelected: !!rowReorderingSelection?.[row.id],
               })}
-            {insertHereAction()}
+            {shouldShowInsertHereAction && insertHereAction()}
           </Stack>
         );
       }
