@@ -11,6 +11,7 @@ import {
   type MRT_RowData,
   type MRT_StatefulTableOptions,
   type MRT_TableInstance,
+  type MRT_TreeRowReorderEvent,
 } from '../../types';
 import { defaultDisplayColumnProps } from '../../utils/displayColumn.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
@@ -40,10 +41,10 @@ const reorderRowCheckboxAction = ({
   );
 };
 
-const insertHereAction = () => {
+const insertHereAction = ({ onClick }: { onClick: () => void }) => {
   return (
     <Tooltip title="Insert here" disableInteractive>
-      <IconButton size="small">
+      <IconButton onClick={onClick} size="small">
         <SubdirectoryArrowLeftIcon color="warning" />
       </IconButton>
     </Tooltip>
@@ -165,6 +166,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     enableExpandAll,
     groupedColumnMode,
     maxDepth,
+    onTreeRowReorder,
     positionExpandColumn,
     renderDetailPanel,
     state: { grouping, rowReorderingSelection },
@@ -218,6 +220,33 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 
       const shouldShowReorderCheckbox =
         canSelectForReorder && (isRowHovered || hasAnyReorderSelection);
+      const selectedRowsForReorder = selectedReorderRowIds.reduce<
+        MRT_Row<TData>[]
+      >((selectedRows, selectedRowId) => {
+        const selectedRow = table.getRow(selectedRowId, true);
+
+        if (selectedRow) {
+          selectedRows.push(selectedRow as MRT_Row<TData>);
+        }
+
+        return selectedRows;
+      }, []);
+
+      const handleInsertHereActionClick = () => {
+        if (!onTreeRowReorder) {
+          return;
+        }
+
+        const treeRowReorderEvent: MRT_TreeRowReorderEvent<TData> = {
+          selectedRowIds: selectedReorderRowIds,
+          selectedRows: selectedRowsForReorder,
+          table,
+          targetRow: row as MRT_Row<TData>,
+        };
+
+        onTreeRowReorder(treeRowReorderEvent);
+      };
+
       const shouldShowInsertHereAction =
         selectedReorderRowIds.length > 0 &&
         canInsertSelectedRowsWithoutExceedingMaxDepth({
@@ -261,7 +290,10 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
                 },
                 isSelected: !!rowReorderingSelection?.[row.id],
               })}
-            {shouldShowInsertHereAction && insertHereAction()}
+            {shouldShowInsertHereAction &&
+              insertHereAction({
+                onClick: handleInsertHereActionClick,
+              })}
 
             {!!subRowsLength && <span>({subRowsLength})</span>}
           </Stack>
@@ -288,7 +320,10 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
                 },
                 isSelected: !!rowReorderingSelection?.[row.id],
               })}
-            {shouldShowInsertHereAction && insertHereAction()}
+            {shouldShowInsertHereAction &&
+              insertHereAction({
+                onClick: handleInsertHereActionClick,
+              })}
           </Stack>
         );
       }

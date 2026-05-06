@@ -928,6 +928,13 @@ export type MRT_InternalFilterOption = {
 
 export type MRT_RowReorderingSelectionState = Record<string, boolean>;
 
+export type MRT_TreeRowReorderEvent<TData extends MRT_RowData> = {
+  selectedRowIds: string[];
+  selectedRows: MRT_Row<TData>[];
+  table: MRT_TableInstance<TData>;
+  targetRow: MRT_Row<TData>;
+};
+
 export type MRT_DisplayColumnIds =
   | 'mrt-row-actions'
   | 'mrt-row-drag'
@@ -1392,6 +1399,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   onShowGlobalFilterChange?: OnChangeFn<boolean>;
   onShowToolbarDropZoneChange?: OnChangeFn<boolean>;
   onRowReorderingSelectionChange?: OnChangeFn<MRT_RowReorderingSelectionState>;
+  onTreeRowReorder?: (event: MRT_TreeRowReorderEvent<TData>) => void;
   paginationDisplayMode?: 'custom' | 'default' | 'pages';
   positionActionsColumn?: 'first' | 'last';
   positionCreatingRow?: 'bottom' | 'top' | number;
