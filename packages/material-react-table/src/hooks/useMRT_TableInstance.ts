@@ -20,6 +20,7 @@ import {
   type MRT_TableInstance,
   type MRT_TableState,
   type MRT_Updater,
+  type MRT_NewEntryModalState,
 } from '../types';
 import {
   getAllLeafColumnDefs,
@@ -188,6 +189,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [showToolbarDropZone, setShowToolbarDropZone] = useState<boolean>(
     initialState?.showToolbarDropZone ?? false,
   );
+  const [newEntryModal, setNewEntryModal] = useState<MRT_NewEntryModalState>(
+    initialState?.newEntryModal ?? { open: false },
+  );
   const [showProgressBars, setShowProgressBars] = useState<boolean>(
     initialState?.showProgressBars ?? false,
   );
@@ -222,6 +226,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     showAdvancedFilters,
     showProgressBars,
     showToolbarDropZone,
+    newEntryModal,
     ...definedTableOptions.state,
   };
 
@@ -373,6 +378,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setShowProgressBars = setShowProgressBars;
   table.setShowToolbarDropZone =
     statefulTableOptions.onShowToolbarDropZoneChange ?? setShowToolbarDropZone;
+  table.setNewEntryModal = setNewEntryModal;
   useMRT_Effects(table);
 
   return table;

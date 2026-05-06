@@ -398,6 +398,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
   setShowAdvancedFilters: Dispatch<SetStateAction<boolean>>;
+  setNewEntryModal: Dispatch<SetStateAction<MRT_NewEntryModalState>>;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -434,6 +435,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'showColumnFilters'
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
+      | 'newEntryModal'
     >;
   };
 
@@ -462,6 +464,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showProgressBars: boolean;
   showSkeletons: boolean;
   showToolbarDropZone: boolean;
+  newEntryModal: MRT_NewEntryModalState;
   activeExports?: MRT_ActiveExportsState;
 }
 
@@ -1660,6 +1663,17 @@ export interface ColumnTypeResolver {
 }
 
 
+// New entry modal state — open/close, mode (create or edit), and optional initial values.
+export interface MRT_NewEntryModalState {
+  // Whether the modal is currently open.
+  open: boolean;
+  // Whether the modal is in create or edit mode. Defaults to 'create' when not provided.
+  mode?: 'create' | 'edit';
+  // Initial values to pre-populate the form fields.
+  // For edit mode: pass row.original. For create mode: pass field defaults or leave undefined.
+  initialValues?: Record<string, unknown>;
+}
+
 // ─── Form Field Configuration ────────────────────────────────────────────────
 
 
@@ -1701,8 +1715,11 @@ export interface MRT_FormCallbackProps<TData extends MRT_RowData> {
   // React Hook Form instance — provides values, setValue, watch, reset, formState, trigger, etc.
   form: UseFormReturn;
   // The table instance — provides access to state, options, and setters.
-  // To close the modal, call table.setCreatingRow(null).
+  // To close the modal, call table.setNewEntryModal({ open: false }) from within the callback.
   table: MRT_TableInstance<TData>;
+  // Whether the form was opened in create or edit mode.
+  // Use this in onSave to decide between POST (create) and PUT/PATCH (edit).
+  mode: 'create' | 'edit';
 }
 
 // A single custom element rendered in the form footer alongside the default Save/Cancel buttons.
