@@ -1,4 +1,5 @@
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
+import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
 import { Checkbox, IconButton } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
@@ -46,6 +47,16 @@ const insertHereAction = ({ onClick }: { onClick: () => void }) => {
     <Tooltip title="Insert here" disableInteractive>
       <IconButton onClick={onClick} size="small">
         <SubdirectoryArrowLeftIcon color="warning" />
+      </IconButton>
+    </Tooltip>
+  );
+};
+
+const moveToTopLevelAction = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <Tooltip title="Move to top level" disableInteractive>
+      <IconButton onClick={onClick} size="small" sx={{ height: '1.75rem' }}>
+        <VerticalAlignTopIcon color="warning" fontSize="small" />
       </IconButton>
     </Tooltip>
   );
@@ -163,6 +174,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 ): MRT_ColumnDef<TData> => {
   const {
     defaultColumn,
+    enableRowReordering,
     enableExpandAll,
     groupedColumnMode,
     maxDepth,
@@ -330,9 +342,47 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     },
     Header: enableExpandAll
       ? ({ table }) => {
+          const selectedReorderRowIds = getSelectedReorderRowIds(
+            table.getState().rowReorderingSelection,
+          );
+          const selectedRowsForReorder = selectedReorderRowIds.reduce<
+            MRT_Row<TData>[]
+          >((selectedRows, selectedRowId) => {
+            const selectedRow = table.getRow(selectedRowId, true);
+
+            if (selectedRow) {
+              selectedRows.push(selectedRow as MRT_Row<TData>);
+            }
+
+            return selectedRows;
+          }, []);
+          const shouldShowMoveToTopLevelAction =
+            !!enableRowReordering &&
+            selectedRowsForReorder.length > 0 &&
+            selectedRowsForReorder.some((selectedRow) => selectedRow.depth > 0);
+
+          const handleMoveToTopLevelActionClick = () => {
+            if (!onTreeRowReorder) {
+              return;
+            }
+
+            const treeRowReorderEvent: MRT_TreeRowReorderEvent<TData> = {
+              selectedRowIds: selectedReorderRowIds,
+              selectedRows: selectedRowsForReorder,
+              table,
+              targetRow: null,
+            };
+
+            onTreeRowReorder(treeRowReorderEvent);
+          };
+
           return (
-            <>
+            <Stack alignItems="center" flexDirection="row" gap="0.25rem">
               <MRT_ExpandAllButton table={table} />
+              {shouldShowMoveToTopLevelAction &&
+                moveToTopLevelAction({
+                  onClick: handleMoveToTopLevelActionClick,
+                })}
               {groupedColumnMode === 'remove' &&
                 grouping
                   ?.map(
@@ -340,7 +390,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
                       table.getColumn(groupedColumnId).columnDef.header,
                   )
                   ?.join(', ')}
-            </>
+            </Stack>
           );
         }
       : undefined,

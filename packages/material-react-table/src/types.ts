@@ -932,7 +932,7 @@ export type MRT_TreeRowReorderEvent<TData extends MRT_RowData> = {
   selectedRowIds: string[];
   selectedRows: MRT_Row<TData>[];
   table: MRT_TableInstance<TData>;
-  targetRow: MRT_Row<TData>;
+  targetRow: MRT_Row<TData> | null;
 };
 
 export type MRT_DisplayColumnIds =

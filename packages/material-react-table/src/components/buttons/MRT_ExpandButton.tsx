@@ -70,7 +70,6 @@ export const MRT_ExpandButton = <TData extends MRT_RowData>({
           {...iconButtonProps}
           onClick={handleToggleExpand}
           sx={(theme) => ({
-            height: density === 'compact' ? '1.75rem' : '2.25rem',
             opacity: !canExpand && !detailPanel ? 0.3 : 1,
             [theme.direction === 'rtl' || positionExpandColumn === 'last'
               ? 'mr'
@@ -81,6 +80,7 @@ export const MRT_ExpandButton = <TData extends MRT_RowData>({
               unknown
             >),
           })}
+          size="small"
           title={undefined}
         >
           {iconButtonProps?.children ?? (

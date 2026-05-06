@@ -84,6 +84,9 @@ export const SubRowTreeEnabledDefault = () => (
       },
     }}
     maxDepth={3}
+    onTreeRowReorder={({ targetRow }) => {
+      console.log(targetRow);
+    }}
   />
 );
 
