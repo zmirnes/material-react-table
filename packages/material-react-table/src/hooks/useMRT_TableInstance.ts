@@ -188,6 +188,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [showToolbarDropZone, setShowToolbarDropZone] = useState<boolean>(
     initialState?.showToolbarDropZone ?? false,
   );
+  const [isNewEntryModalOpen, setIsNewEntryModalOpen] = useState<boolean>(
+    initialState?.isNewEntryModalOpen ?? false,
+  );
   const [showProgressBars, setShowProgressBars] = useState<boolean>(
     initialState?.showProgressBars ?? false,
   );
@@ -222,6 +225,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     showAdvancedFilters,
     showProgressBars,
     showToolbarDropZone,
+    isNewEntryModalOpen,
     ...definedTableOptions.state,
   };
 
@@ -373,6 +377,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setShowProgressBars = setShowProgressBars;
   table.setShowToolbarDropZone =
     statefulTableOptions.onShowToolbarDropZoneChange ?? setShowToolbarDropZone;
+  table.setIsNewEntryModalOpen = setIsNewEntryModalOpen;
   useMRT_Effects(table);
 
   return table;

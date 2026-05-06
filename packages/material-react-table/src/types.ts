@@ -398,6 +398,7 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
   setShowAdvancedFilters: Dispatch<SetStateAction<boolean>>;
+  setIsNewEntryModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -434,6 +435,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'showColumnFilters'
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
+      | 'isNewEntryModalOpen'
     >;
   };
 
@@ -462,6 +464,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   showProgressBars: boolean;
   showSkeletons: boolean;
   showToolbarDropZone: boolean;
+  isNewEntryModalOpen: boolean;
   activeExports?: MRT_ActiveExportsState;
 }
 
