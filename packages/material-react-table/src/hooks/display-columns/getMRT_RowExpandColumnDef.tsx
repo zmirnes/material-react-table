@@ -48,6 +48,41 @@ const insertHereAction = () => {
   );
 };
 
+const getFirstSelectedReorderRowDepth = (
+  rowReorderingSelection?: Record<string, boolean>,
+): number | undefined => {
+  const firstSelectedRowId = Object.entries(rowReorderingSelection ?? {}).find(
+    ([, isSelected]) => isSelected,
+  )?.[0];
+
+  if (!firstSelectedRowId) return undefined;
+
+  // Preserves current logic based on row id structure
+  return firstSelectedRowId.split('-').length;
+};
+
+const canSelectRowForReorder = ({
+  rowId,
+  rowDepth,
+  rowReorderingSelection,
+  firstSelectedReorderRowDepth,
+}: {
+  rowId: string;
+  rowDepth: number;
+  rowReorderingSelection?: Record<string, boolean>;
+  firstSelectedReorderRowDepth?: number;
+}): boolean => {
+  const isCurrentRowSelected = !!rowReorderingSelection?.[rowId];
+  if (isCurrentRowSelected) return true;
+
+  const hasAnySelection = Object.values(rowReorderingSelection ?? {}).some(
+    Boolean,
+  );
+  if (!hasAnySelection) return true;
+
+  return rowDepth === firstSelectedReorderRowDepth;
+};
+
 export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
   tableOptions: MRT_StatefulTableOptions<TData>,
 ): MRT_ColumnDef<TData> => {
@@ -81,6 +116,18 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
         staticRowIndex,
       });
 
+      // Can insert: If first selected row is eg. on depth 2, then only depth 2 rows can be selected for reordering
+      const firstSelectedReorderRowDepth = getFirstSelectedReorderRowDepth(
+        rowReorderingSelection,
+      );
+
+      const canSelectForReorder = canSelectRowForReorder({
+        rowId: row.id,
+        rowDepth: row.depth,
+        rowReorderingSelection,
+        firstSelectedReorderRowDepth,
+      });
+
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {
         const defaultGroupedCell = (
           <Tooltip
@@ -97,16 +144,17 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
             {column.columnDef.GroupedCell
               ? customGroupedCell
               : defaultGroupedCell}
-            {reorderRowCheckboxAction({
-              onChange: (event) => {
-                const checked = event.target.checked;
-                table.setRowReorderingSelection((prev) => ({
-                  ...prev,
-                  [row.id]: checked,
-                }));
-              },
-              isSelected: !!rowReorderingSelection?.[row.id],
-            })}
+            {canSelectForReorder &&
+              reorderRowCheckboxAction({
+                onChange: (event) => {
+                  const checked = event.target.checked;
+                  table.setRowReorderingSelection((prev) => ({
+                    ...prev,
+                    [row.id]: checked,
+                  }));
+                },
+                isSelected: !!rowReorderingSelection?.[row.id],
+              })}
             {insertHereAction()}
 
             {!!subRowsLength && <span>({subRowsLength})</span>}
@@ -117,16 +165,17 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
           <>
             <MRT_ExpandButton {...expandButtonProps} />
             {customGroupedCell}
-            {reorderRowCheckboxAction({
-              onChange: (event) => {
-                const checked = event.target.checked;
-                table.setRowReorderingSelection((prev) => ({
-                  ...prev,
-                  [row.id]: checked,
-                }));
-              },
-              isSelected: !!rowReorderingSelection?.[row.id],
-            })}
+            {canSelectForReorder &&
+              reorderRowCheckboxAction({
+                onChange: (event) => {
+                  const checked = event.target.checked;
+                  table.setRowReorderingSelection((prev) => ({
+                    ...prev,
+                    [row.id]: checked,
+                  }));
+                },
+                isSelected: !!rowReorderingSelection?.[row.id],
+              })}
             {insertHereAction()}
           </>
         );
