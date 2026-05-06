@@ -74,6 +74,7 @@ import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
+import { Action } from './types/actions-types';
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -1482,6 +1483,8 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
    * Manage state externally any way you want, then pass it back into MRT.
    */
   state?: Partial<MRT_TableState<TData>>;
+  actions?: Action<TData>[];
+  refetchData?: () => void;
 }
 
 export interface MRT_ExportDefinition {

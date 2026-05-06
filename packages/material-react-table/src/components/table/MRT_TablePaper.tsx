@@ -72,6 +72,7 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
       }}
       sx={(theme) => ({
         backgroundImage: 'unset',
+        borderRadius: 0,
         display: 'flex',
         flexDirection: 'column',
         height: '100%',

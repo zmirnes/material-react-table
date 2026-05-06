@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
-import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
 import {
   type MRT_ExportFileResponse,
   type MRT_ExportParams,
+  type MRT_RowData,
   type MRT_SavedFilter,
   type MRT_SavedFilters,
-  type MRT_TableInstance,
-  type MRT_RowData,
   type MRT_TableConfig,
   type MRT_TableData,
+  type MRT_TableInstance,
   type MRT_TableState,
 } from '../types';
+import { Action } from '../types/actions-types';
+import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
 
 export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   loadConfig: () => Promise<MRT_TableConfig<TData>>;
@@ -31,6 +32,7 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   exportPermissions?: Record<string, string[]>;
   // When true, renders a built-in "Add" button in the top toolbar that opens the new entry modal.
   enableNewEntryButton?: boolean;
+  actions?: Action<TData>[];
 }
 
 export const MaterialReactServerTable = <
@@ -47,6 +49,7 @@ export const MaterialReactServerTable = <
   loadExport,
   exportPermissions,
   enableNewEntryButton,
+  actions,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -97,6 +100,7 @@ export const MaterialReactServerTable = <
       loadExport={loadExport}
       exportPermissions={exportPermissions}
       enableNewEntryButton={enableNewEntryButton}
+      actions={actions}
     />
   );
 };

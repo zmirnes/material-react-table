@@ -1,10 +1,12 @@
+import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
+import { type Meta } from '@storybook/react-vite';
 import { type MRT_ColumnDef } from '../../src';
 import { type Date } from '../../src/column-types/date';
 import { type EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
+import { Action } from '../../src/types/actions-types';
+import { createDeleteAction } from '../../src/utils/actions/createDeleteAction';
 
 const meta: Meta = {
   title: 'Features/Server Table',
@@ -250,7 +252,28 @@ const columns: MRT_ColumnDef<Person>[] = [
 const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-
+const onDelete: Action<Person> = createDeleteAction({
+  onDelete: ({ row, table }) => {
+    const selectedRows = table?.getSelectedRowModel().rows;
+    if (!selectedRows) return;
+    const rowsToDelete =
+      row !== undefined
+        ? [row.original.id]
+        : selectedRows.map((selectedRow) => selectedRow.original.id);
+    if (rowsToDelete.length === 0) return;
+    const deleteRowById = (rowId: string) => {
+      const deletedRowIndex = fakeDatabase.findIndex(
+        (dbRow) => dbRow.id === rowId,
+      );
+      if (deletedRowIndex !== -1) {
+        fakeDatabase.splice(deletedRowIndex, 1);
+      }
+    };
+    rowsToDelete.forEach(deleteRowById);
+    table?.options.refetchData?.();
+  },
+});
+const actions: Action<Person>[] = [onDelete];
 export const Basic = () => (
   <Box
     style={{
@@ -452,6 +475,7 @@ export const Basic = () => (
       onSaveFilters={async () => {
         await simulateDelay(1000);
       }}
+      actions={actions}
     />
   </Box>
 );

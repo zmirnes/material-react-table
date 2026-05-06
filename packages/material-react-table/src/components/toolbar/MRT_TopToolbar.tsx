@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { getCommonToolbarStyles } from '../../utils/style.utils';
+import { parseFromValuesOrFunc } from '../../utils/utils';
+import ToolbarActions from '../actions/ToolbarActions';
 import { MRT_GlobalFilterTextField } from '../inputs/MRT_GlobalFilterTextField';
 import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_ToolbarInternalButtons } from './MRT_ToolbarInternalButtons';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { getCommonToolbarStyles } from '../../utils/style.utils';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_TopToolbarProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -27,6 +28,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       positionPagination,
       positionToolbarDropZone,
       renderTopToolbarCustomActions,
+      actions,
     },
     refs: { topToolbarRef },
   } = table;
@@ -46,6 +48,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
     table,
   };
 
+  const selectedRows = table.getSelectedRowModel().rows;
   return (
     <Box
       {...toolbarProps}
@@ -60,7 +63,10 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
         ...getCommonToolbarStyles({ table, theme }),
         position: isFullScreen ? 'sticky' : 'relative',
         top: isFullScreen ? '0' : 'unset',
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          selectedRows.length < 1
+            ? theme.palette.background.default
+            : theme.palette.primary.lighter,
         borderBottom: `1px solid ${theme.palette.divider}`,
         ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as Record<
           string,
@@ -75,6 +81,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
           display: 'flex',
           gap: '0.5rem',
           justifyContent: 'space-between',
+          minHeight: '4rem',
           py: '1rem',
           px: '0.5rem',
           width: '100%',
@@ -83,28 +90,37 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
         {enableGlobalFilter && positionGlobalFilter === 'left' && (
           <MRT_GlobalFilterTextField {...globalFilterProps} />
         )}
-        {enableToolbarInternalActions ? (
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              flexWrap: 'wrap-reverse',
-              gap: '0.5rem',
-              justifyContent: 'flex-start',
-              width: '100%',
-            }}
-          >
-            {enableGlobalFilter && positionGlobalFilter === 'right' && (
+        {selectedRows.length < 1 ? (
+          <>
+            {enableGlobalFilter && positionGlobalFilter === 'left' && (
               <MRT_GlobalFilterTextField {...globalFilterProps} />
             )}
-            {renderTopToolbarCustomActions?.({ table }) ?? <span />}
-            <MRT_ToolbarInternalButtons table={table} />
-          </Box>
+            {enableToolbarInternalActions ? (
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexWrap: 'wrap-reverse',
+                  gap: '0.5rem',
+                  justifyContent: 'flex-start',
+                  width: '100%',
+                }}
+              >
+                {enableGlobalFilter && positionGlobalFilter === 'right' && (
+                  <MRT_GlobalFilterTextField {...globalFilterProps} />
+                )}
+                {renderTopToolbarCustomActions?.({ table }) ?? <span />}
+                <MRT_ToolbarInternalButtons table={table} />
+              </Box>
+            ) : (
+              enableGlobalFilter &&
+              positionGlobalFilter === 'right' && (
+                <MRT_GlobalFilterTextField {...globalFilterProps} />
+              )
+            )}
+          </>
         ) : (
-          enableGlobalFilter &&
-          positionGlobalFilter === 'right' && (
-            <MRT_GlobalFilterTextField {...globalFilterProps} />
-          )
+          <ToolbarActions actions={actions} table={table} />
         )}
       </Box>
       {['both', 'top'].includes(positionToolbarDropZone ?? '') && (

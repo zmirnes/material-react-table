@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MaterialReactTable } from './MaterialReactTable';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
-import { createColumnDefs } from '../utils/columns/createColumnDef';
 import type {
   MRT_ActiveExportsState,
   MRT_ExportFileResponse,
@@ -16,6 +14,10 @@ import type {
   MRT_TableInstance,
   MRT_TableState,
 } from '../types';
+import { Action } from '../types/actions-types';
+import { createColumnDefs } from '../utils/columns/createColumnDef';
+import { RowActionsCell } from './actions/RowActionsCell';
+import { MaterialReactTable } from './MaterialReactTable';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   config: MRT_TableConfig<TData>;
@@ -35,6 +37,7 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
   enableNewEntryButton?: boolean;
+  actions?: Action<TData>[];
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -79,6 +82,7 @@ export const MaterialReactServerTableInstance = <
   loadExport,
   exportPermissions,
   enableNewEntryButton,
+  actions,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -152,6 +156,13 @@ export const MaterialReactServerTableInstance = <
       showSkeletons: isLoading,
       ...tableState,
     },
+    enableRowActions: true,
+    enableRowSelection: true,
+    renderRowActions: ({ row, table }) =>
+      actions && <RowActionsCell actions={actions} row={row} table={table} />,
+    positionActionsColumn: 'last',
+    actions: actions,
+    refetchData: () => fetchData(table.getState()),
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
     onSaveFilters,
