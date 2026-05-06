@@ -83,6 +83,7 @@ export const SubRowTreeEnabledDefault = () => (
         ),
       },
     }}
+    maxDepth={3}
   />
 );
 

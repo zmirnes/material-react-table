@@ -1,7 +1,7 @@
-import { type MouseEvent } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
+import { type MouseEvent } from 'react';
 import {
   type MRT_Row,
   type MRT_RowData,
@@ -28,6 +28,7 @@ export const MRT_ExpandButton = <TData extends MRT_RowData>({
     options: {
       icons: { ExpandMoreIcon },
       localization,
+      maxDepth,
       muiExpandButtonProps,
       positionExpandColumn,
       renderDetailPanel,
@@ -41,7 +42,8 @@ export const MRT_ExpandButton = <TData extends MRT_RowData>({
     table,
   });
 
-  const canExpand = row.getCanExpand();
+  const canExpand =
+    row.getCanExpand() && (maxDepth === undefined || row.depth < maxDepth - 1);
   const isExpanded = row.getIsExpanded();
 
   const handleToggleExpand = (event: MouseEvent<HTMLButtonElement>) => {

@@ -1017,6 +1017,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableNewEntryButton?: boolean;
   enableEditing?: ((row: MRT_Row<TData>) => boolean) | boolean;
   enableExpandAll?: boolean;
+  maxDepth?: number;
   enableRowReordering?: boolean;
   enableFacetedValues?: boolean;
   enableAdvancedFilters?: boolean;
