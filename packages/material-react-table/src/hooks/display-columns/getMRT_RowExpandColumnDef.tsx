@@ -2,13 +2,14 @@ import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRig
 import { Checkbox, IconButton } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-import { type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { MRT_ExpandAllButton } from '../../components/buttons/MRT_ExpandAllButton';
 import { MRT_ExpandButton } from '../../components/buttons/MRT_ExpandButton';
 import {
   type MRT_ColumnDef,
   type MRT_RowData,
   type MRT_StatefulTableOptions,
+  type MRT_TableInstance,
 } from '../../types';
 import { defaultDisplayColumnProps } from '../../utils/displayColumn.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
@@ -48,17 +49,20 @@ const insertHereAction = () => {
   );
 };
 
-const getFirstSelectedReorderRowDepth = (
-  rowReorderingSelection?: Record<string, boolean>,
-): number | undefined => {
+const getFirstSelectedReorderRowDepth = <TData extends MRT_RowData>({
+  rowReorderingSelection,
+  table,
+}: {
+  rowReorderingSelection?: Record<string, boolean>;
+  table: MRT_TableInstance<TData>;
+}): number | undefined => {
   const firstSelectedRowId = Object.entries(rowReorderingSelection ?? {}).find(
     ([, isSelected]) => isSelected,
   )?.[0];
 
   if (!firstSelectedRowId) return undefined;
 
-  // Preserves current logic based on row id structure
-  return firstSelectedRowId.split('-').length;
+  return table.getRow(firstSelectedRowId, true)?.depth;
 };
 
 const canSelectRowForReorder = ({
@@ -106,6 +110,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     Cell: ({ cell, column, row, staticRowIndex, table }) => {
       // Keep tree/group rendering on existing expand/grouping APIs for this
       // iteration to avoid introducing parallel alias names.
+      const [isRowHovered, setIsRowHovered] = useState(false);
       const expandButtonProps = { row, staticRowIndex, table };
       const subRowsLength = row.subRows?.length;
       const customGroupedCell = column.columnDef.GroupedCell?.({
@@ -117,9 +122,10 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
       });
 
       // Can insert: If first selected row is eg. on depth 2, then only depth 2 rows can be selected for reordering
-      const firstSelectedReorderRowDepth = getFirstSelectedReorderRowDepth(
+      const firstSelectedReorderRowDepth = getFirstSelectedReorderRowDepth({
         rowReorderingSelection,
-      );
+        table,
+      });
 
       const canSelectForReorder = canSelectRowForReorder({
         rowId: row.id,
@@ -127,6 +133,13 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
         rowReorderingSelection,
         firstSelectedReorderRowDepth,
       });
+
+      const hasAnyReorderSelection = Object.values(
+        rowReorderingSelection ?? {},
+      ).some(Boolean);
+
+      const shouldShowReorderCheckbox =
+        canSelectForReorder && (isRowHovered || hasAnyReorderSelection);
 
       if (groupedColumnMode === 'remove' && row.groupingColumnId) {
         const defaultGroupedCell = (
@@ -139,12 +152,19 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
         );
 
         return (
-          <Stack alignItems="center" flexDirection="row" gap="0.25rem">
+          <Stack
+            alignItems="center"
+            flexDirection="row"
+            gap="0.25rem"
+            onMouseEnter={() => setIsRowHovered(true)}
+            onMouseLeave={() => setIsRowHovered(false)}
+            width="100%"
+          >
             <MRT_ExpandButton {...expandButtonProps} />
             {column.columnDef.GroupedCell
               ? customGroupedCell
               : defaultGroupedCell}
-            {canSelectForReorder &&
+            {shouldShowReorderCheckbox &&
               reorderRowCheckboxAction({
                 onChange: (event) => {
                   const checked = event.target.checked;
@@ -162,10 +182,16 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
         );
       } else {
         return (
-          <>
+          <Stack
+            alignItems="center"
+            flexDirection="row"
+            onMouseEnter={() => setIsRowHovered(true)}
+            onMouseLeave={() => setIsRowHovered(false)}
+            width="100%"
+          >
             <MRT_ExpandButton {...expandButtonProps} />
             {customGroupedCell}
-            {canSelectForReorder &&
+            {shouldShowReorderCheckbox &&
               reorderRowCheckboxAction({
                 onChange: (event) => {
                   const checked = event.target.checked;
@@ -177,7 +203,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
                 isSelected: !!rowReorderingSelection?.[row.id],
               })}
             {insertHereAction()}
-          </>
+          </Stack>
         );
       }
     },
