@@ -27,7 +27,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     },
     refs: { tableContainerRef },
   } = table;
-  const { actionCell, creatingRow, editingRow, isLoading,  showLoadingOverlay, isNewEntryModalOpen } =
+  const { actionCell, creatingRow, editingRow, isLoading, showLoadingOverlay, newEntryModal } =
     getState();
 
   const loading =
@@ -40,7 +40,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     ...rest,
   };
 
-  const createModalOpen = (createDisplayMode === 'modal' && creatingRow) || isNewEntryModalOpen;
+  const createModalOpen = (createDisplayMode === 'modal' && creatingRow) || newEntryModal.open;
   const editModalOpen = editDisplayMode === 'modal' && editingRow;
 
   return (
