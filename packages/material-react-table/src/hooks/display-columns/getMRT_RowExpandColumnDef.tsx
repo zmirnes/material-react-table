@@ -56,7 +56,7 @@ const moveToTopLevelAction = ({ onClick }: { onClick: () => void }) => {
   return (
     <Tooltip title="Move to top level" disableInteractive>
       <IconButton onClick={onClick} size="small" sx={{ height: '1.75rem' }}>
-        <VerticalAlignTopIcon color="warning" fontSize="small" />
+        <VerticalAlignTopIcon fontSize="small" />
       </IconButton>
     </Tooltip>
   );
