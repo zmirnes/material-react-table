@@ -1673,8 +1673,8 @@ export interface MRT_FormFieldRenderProps<TData extends MRT_RowData, TValue = un
 
 // Configuration for a single form field — placed on a column definition via `formConfig`.
 export interface MRT_FormFieldConfig<TData extends MRT_RowData, TValue = unknown> {
-  // Hides this field from the form — all data columns are shown by default, this is an opt-out flag.
-  hidden?: boolean;
+  // Disables this field in the form — all data columns are enabled by default, this is an opt-out flag.
+  disabled?: boolean;
   // Render order inside the section. Lower number = rendered first. Fields without order appear last.
   order?: number;
   // Label override — replaces the column header text as the field label.
