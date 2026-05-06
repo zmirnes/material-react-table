@@ -8,6 +8,7 @@ import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_ToolbarInternalButtons } from './MRT_ToolbarInternalButtons';
+import { MRT_NewEntryButton } from '../buttons/MRT_NewEntryButton';
 
 export interface MRT_TopToolbarProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -20,6 +21,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
     getState,
     options: {
       enableGlobalFilter,
+      enableNewEntryButton,
       enablePagination,
       enableToolbarInternalActions,
       muiTopToolbarProps,
@@ -95,6 +97,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
               <MRT_GlobalFilterTextField {...globalFilterProps} />
             )}
             {renderTopToolbarCustomActions?.({ table }) ?? <span />}
+            {enableNewEntryButton && <MRT_NewEntryButton table={table} />}
             <MRT_ToolbarInternalButtons table={table} />
           </Box>
         ) : (

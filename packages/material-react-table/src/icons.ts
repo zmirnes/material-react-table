@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -34,6 +35,7 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export const MRT_Default_Icons = {
+  AddIcon,
   ArrowDownwardIcon,
   ArrowRightIcon,
   CancelIcon,
