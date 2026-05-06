@@ -1722,10 +1722,10 @@ export interface MRT_FormAdditionalFieldRenderProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
 }
 
-// A form field not tied to any column — extends MRT_FormFieldConfig but requires name and render,
-// and omits hidden (there is no reason to add a field only to hide it).
+// A form field not tied to any column — has all the same options as MRT_FormFieldConfig,
+// plus a required name and a required render function that receives name and table instead of columnDef.
 export interface MRT_FormAdditionalField<TData extends MRT_RowData, TValue = unknown>
-  extends Omit<MRT_FormFieldConfig<TData, TValue>, 'render' | 'hidden'> {
+  extends Omit<MRT_FormFieldConfig<TData, TValue>, 'render'> {
   // Unique name — used as the RHF field name. Must not conflict with any column accessor key.
   name: string;
   // Render function — required since there is no column type resolver to fall back on.
