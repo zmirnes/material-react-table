@@ -6,6 +6,7 @@ import {
   getFirstSelectedReorderRowDepth,
   getSelectedReorderRowIds,
   getSelectedRowsMaxRelativeDepth,
+  isValidInsertTarget,
 } from '../fns/treeRowReorderingFns';
 import {
   type MRT_Row,
@@ -74,6 +75,11 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
 
   const shouldShowInsertHereAction =
     selectedReorderRowIds.length > 0 &&
+    isValidInsertTarget({
+      targetRowId: row.id,
+      selectedRowIds: selectedReorderRowIds,
+      table,
+    }) &&
     canInsertSelectedRowsWithoutExceedingMaxDepth({
       hasAnyReorderSelection,
       maxDepth,
