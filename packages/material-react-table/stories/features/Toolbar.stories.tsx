@@ -11,7 +11,7 @@ import {
   MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
+import { type Meta } from '@storybook/react';
 
 const meta: Meta = {
   title: 'Features/Toolbar Examples',
@@ -23,22 +23,27 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     header: 'Age',
+    type: 'number',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 

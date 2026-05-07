@@ -266,6 +266,7 @@ export interface MRT_Localization {
   advancedFilters: string;
   filters: string;
   add: string;
+  newEntry: string;
   clear: string;
   discardChanges: string;
   saveFilters: string;
@@ -981,6 +982,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableColumnOrdering?: boolean;
   enableColumnVirtualization?: boolean;
   enableDensityToggle?: boolean;
+  enableNewEntryButton?: boolean;
   enableEditing?: ((row: MRT_Row<TData>) => boolean) | boolean;
   enableExpandAll?: boolean;
   enableFacetedValues?: boolean;

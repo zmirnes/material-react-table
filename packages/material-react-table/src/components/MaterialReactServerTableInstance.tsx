@@ -34,6 +34,7 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   initialSavedFilters?: MRT_SavedFilters;
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
+  enableNewEntryButton?: boolean;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -77,6 +78,7 @@ export const MaterialReactServerTableInstance = <
   initialSavedFilters,
   loadExport,
   exportPermissions,
+  enableNewEntryButton,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -157,6 +159,7 @@ export const MaterialReactServerTableInstance = <
     initialSavedFilters,
     availableExports: hasAvailableExports ? allowedExports : undefined,
     loadExport: hasAvailableExports ? loadExport : undefined,
+    enableNewEntryButton,
     ...handlers,
   });
 

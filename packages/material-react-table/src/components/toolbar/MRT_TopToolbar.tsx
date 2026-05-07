@@ -97,8 +97,8 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
               <MRT_GlobalFilterTextField {...globalFilterProps} />
             )}
             {renderTopToolbarCustomActions?.({ table }) ?? <span />}
-            {enableNewEntryButton && <MRT_NewEntryButton table={table} />}
             <MRT_ToolbarInternalButtons table={table} />
+            {enableNewEntryButton && <MRT_NewEntryButton table={table} />}
           </Box>
         ) : (
           enableGlobalFilter &&

@@ -1,8 +1,9 @@
 import Button, { type ButtonProps } from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_NewEntryButtonProps<TData extends MRT_RowData>
-  extends ButtonProps {
+  extends Omit<ButtonProps, 'children'> {
   table: MRT_TableInstance<TData>;
 }
 
@@ -23,13 +24,18 @@ export const MRT_NewEntryButton = <TData extends MRT_RowData>({
   };
 
   return (
-    <Button
-      onClick={handleOpenNewEntryModal}
-      startIcon={<AddIcon />}
-      variant="contained"
-      {...rest}
-    >
-      {localization.add}
-    </Button>
+    <Tooltip title={rest?.title ?? localization.newEntry}>
+      <Button
+        aria-label={localization.newEntry}
+        onClick={handleOpenNewEntryModal}
+        size="small"
+        startIcon={<AddIcon fontSize="small" />}
+        variant="text"
+        {...rest}
+        title={undefined}
+      >
+        {localization.newEntry}
+      </Button>
+    </Tooltip>
   );
 };
