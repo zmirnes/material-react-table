@@ -111,6 +111,7 @@ export const MRT_Localization_FR: MRT_Localization = {
   advancedFilters: 'Filtres avancÃ©s',
   filters: 'Filtres',
   add: 'Ajouter',
+  newEntry: 'Nouvelle entrÃ©e',
   clear: 'Effacer',
   discardChanges: 'Annuler les modifications',
   saveFilters: 'Enregistrer les filtres',
