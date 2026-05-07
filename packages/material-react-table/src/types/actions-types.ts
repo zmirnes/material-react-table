@@ -29,7 +29,7 @@ interface DeleteToolbarRenderContext<TData extends MRT_RowData>
   onDelete: () => void;
 }
 
-interface DeleteRowRenderContext<TData extends MRT_RowData>
+interface DeleteActionRowRenderContext<TData extends MRT_RowData>
   extends RowRenderContext<TData> {
   /**
    * Triggers the deletion of this specific row.
@@ -51,5 +51,5 @@ export interface DeleteActionConfig<TData extends MRT_RowData> {
     table?: MRT_TableInstance<TData>;
   }) => void;
   renderToolbar?: (context: DeleteToolbarRenderContext<TData>) => ReactNode;
-  renderRow?: (context: DeleteRowRenderContext<TData>) => ReactNode;
+  renderRow?: (context: DeleteActionRowRenderContext<TData>) => ReactNode;
 }

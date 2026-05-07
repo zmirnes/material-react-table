@@ -1,7 +1,7 @@
 import { MRT_Row, MRT_RowData, MRT_TableInstance } from '../../types';
 import { Action, DeleteActionConfig } from '../../types/actions-types';
 import { resolveRowsToDelete } from './resolveRowsToDelete';
-import MRT_DeleteButton from '../../components/buttons/MRT_DeleteButton';
+import DeleteRowAction from './DeleteRowAction';
 
 const buildOnDeleteHandler = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
@@ -22,21 +22,24 @@ export const createDeleteAction = <TData extends MRT_RowData>(
     name: 'delete',
     renderToolbar: (context) => {
       const onDelete = buildOnDeleteHandler(context.table, config);
-      if (config?.renderToolbar) {
-        return config.renderToolbar({ table: context.table, onDelete });
-      }
-      return <MRT_DeleteButton onClick={onDelete} />;
+      return (
+        <DeleteRowAction
+          table={context.table}
+          delete={onDelete}
+          config={config}
+        />
+      );
     },
     renderRow: (context) => {
       const onDelete = buildOnDeleteHandler(context.table, config, context.row);
-      if (config?.renderRow) {
-        return config.renderRow({
-          table: context.table,
-          row: context.row,
-          onDelete,
-        });
-      }
-      return <MRT_DeleteButton onClick={onDelete} />;
+      return (
+        <DeleteRowAction
+          table={context.table}
+          row={context.row}
+          delete={onDelete}
+          config={config}
+        />
+      );
     },
   };
 };
