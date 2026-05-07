@@ -36,61 +36,47 @@ export const getSelectedReorderRowIds = (
 };
 
 /**
- * Finds the MAXIMUM relative depth among all selected rows.
- * Relative depth = (deepest descendant) - (root row depth).
- * Used to check if there's enough space if we move this row.
- * Example: Row at depth 1 with children up to depth 4 → relative = 4 - 1 = 3
- */
-export const getSelectedRowsMaxRelativeDepth = <TData extends MRT_RowData>({
-  selectedRowIds,
-  table,
-}: {
-  selectedRowIds: string[];
-  table: MRT_TableInstance<TData>;
-}): number => {
-  return selectedRowIds.reduce((maxRelativeDepth, selectedRowId) => {
-    const selectedRow = table.getRow(selectedRowId, true);
-
-    if (!selectedRow) {
-      return maxRelativeDepth;
-    }
-
-    const selectedRowDeepestDescendantDepth = getDeepestSubRowDepth(
-      selectedRow as MRT_Row<TData>,
-    );
-    const currentRelativeDepth =
-      selectedRowDeepestDescendantDepth - selectedRow.depth;
-
-    return Math.max(maxRelativeDepth, currentRelativeDepth);
-  }, 0);
-};
-
-/**
  * Checks WHETHER we can move selected rows as children of target row
  * without exceeding the maximum allowed depth.
- * Example: maxDepth=5, target.depth=2, relativeDepth=3 → 2+1+3=6 (EXCEEDS!) → false
+ * Directly calculates the final maximum depth after the move.
+ * Example: selectedRows at depth 1-2 with descendants to depth 4, target depth 1, maxDepth 5
+ *          → new max depth = 1 + 1 + (4 - 1) = 5, which equals maxDepth, so returns false
  */
-export const canInsertSelectedRowsWithoutExceedingMaxDepth = ({
+export const canInsertSelectedRowsWithoutExceedingMaxDepth = <
+  TData extends MRT_RowData,
+>({
   hasAnyReorderSelection,
   maxDepth,
-  selectedRowsMaxRelativeDepth,
+  selectedRows,
   targetRowDepth,
 }: {
   hasAnyReorderSelection: boolean;
   maxDepth?: number;
-  selectedRowsMaxRelativeDepth: number;
+  selectedRows: MRT_Row<TData>[];
   targetRowDepth: number;
 }): boolean => {
   if (!hasAnyReorderSelection || maxDepth === undefined) {
     return true;
   }
 
-  // maxDepth counts levels (depth 0..maxDepth-1), insert places rows as children of target row
-  const maxAllowedDepth = maxDepth - 1;
-  const insertedRootDepth = targetRowDepth + 1;
-  const movedSubTreeMaxDepth = insertedRootDepth + selectedRowsMaxRelativeDepth;
+  if (selectedRows.length === 0) {
+    return true;
+  }
 
-  return movedSubTreeMaxDepth <= maxAllowedDepth;
+  // Find the deepest descendant among all selected rows
+  const maxDeepestDescendantDepth = selectedRows.reduce((max, row) => {
+    return Math.max(max, getDeepestSubRowDepth(row));
+  }, 0);
+
+  // Find the minimum depth of selected rows (to calculate relative depth)
+  const minSelectedRowDepth = Math.min(...selectedRows.map((r) => r.depth));
+
+  // Calculate the maximum depth after moving rows as children of target
+  // newMaxDepth = target.depth + 1 (as children) + relative depth of selected rows
+  const newMaxDepth =
+    targetRowDepth + 1 + (maxDeepestDescendantDepth - minSelectedRowDepth);
+
+  return newMaxDepth < maxDepth;
 };
 
 /**

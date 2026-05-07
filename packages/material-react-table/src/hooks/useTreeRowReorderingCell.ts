@@ -5,7 +5,6 @@ import {
   canSelectRowForReorder,
   getFirstSelectedReorderRowDepth,
   getSelectedReorderRowIds,
-  getSelectedRowsMaxRelativeDepth,
   isValidInsertTarget,
 } from '../fns/treeRowReorderingFns';
 import {
@@ -65,10 +64,10 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     rowReorderingSelection,
   );
 
-  const selectedRowsMaxRelativeDepth = getSelectedRowsMaxRelativeDepth({
-    selectedRowIds: selectedReorderRowIds,
+  const selectedRowsForReorder = buildSelectedRowsArray(
+    selectedReorderRowIds,
     table,
-  });
+  );
 
   const shouldShowReorderCheckbox =
     canSelectForReorder && (isRowHovered || hasAnyReorderSelection);
@@ -83,14 +82,9 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     canInsertSelectedRowsWithoutExceedingMaxDepth({
       hasAnyReorderSelection,
       maxDepth,
-      selectedRowsMaxRelativeDepth,
+      selectedRows: selectedRowsForReorder,
       targetRowDepth: row.depth,
     });
-
-  const selectedRowsForReorder = buildSelectedRowsArray(
-    selectedReorderRowIds,
-    table,
-  );
 
   const handleReorderCheckboxChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
