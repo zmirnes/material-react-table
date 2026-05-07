@@ -110,6 +110,8 @@ export type MRT_FiltersLogicOperator = 'and' | 'or';
 // to satisfy the constraint without requiring an explicit index signature.
 export type MRT_RowData = Record<string, unknown>;
 
+export type MRT_RowId = string;
+
 export type MRT_ColumnFiltersState = ColumnFiltersState;
 export type MRT_ColumnOrderState = ColumnOrderState;
 export type MRT_ColumnPinningState = ColumnPinningState;

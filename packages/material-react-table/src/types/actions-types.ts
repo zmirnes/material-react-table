@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { MRT_Row, MRT_RowData, MRT_TableInstance } from '../types';
+import { MRT_Row, MRT_RowData, MRT_RowId, MRT_TableInstance } from '../types';
 
 interface ToolbarRenderContext<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -16,20 +16,38 @@ export interface Action<TData extends MRT_RowData> {
 }
 interface DeleteToolbarRenderContext<TData extends MRT_RowData>
   extends ToolbarRenderContext<TData> {
+  /**
+   * Triggers the deletion of all currently selected rows.
+   * Internally resolves selected row IDs from the table state and calls the `onDelete` handler defined in `createDeleteAction` config.
+   * Pass this directly to the `onClick` of your custom button.
+   *
+   * @example
+   * renderToolbar: ({ onDelete }) => (
+   *   <button onClick={onDelete}>Delete selected</button>
+   * )
+   */
   onDelete: () => void;
-  defaultHandler: () => void;
 }
 
 interface DeleteRowRenderContext<TData extends MRT_RowData>
   extends RowRenderContext<TData> {
+  /**
+   * Triggers the deletion of this specific row.
+   * Internally resolves the row ID and calls the `onDelete` handler defined in `createDeleteAction` config.
+   * Pass this directly to the `onClick` of your custom button.
+   *
+   * @example
+   * renderRow: ({ onDelete }) => (
+   *   <button onClick={onDelete}>Delete row</button>
+   * )
+   */
   onDelete: () => void;
-  defaultHandler: () => void;
 }
 export interface DeleteActionConfig<TData extends MRT_RowData> {
-  // onDelete receives row and table when triggered from a row action, undefined when from toolbar
   onDelete?: (context: {
-    defaultHandler: () => void;
-    row?: MRT_Row<TData>;
+    /** List of row IDs that are about to be deleted. Computed by DeleteRows from either the single row action or all currently selected rows. */
+    rowsToDelete: MRT_RowId[];
+    /** The table instance — use it to trigger a data refetch or access table state after deletion. */
     table?: MRT_TableInstance<TData>;
   }) => void;
   renderToolbar?: (context: DeleteToolbarRenderContext<TData>) => ReactNode;
