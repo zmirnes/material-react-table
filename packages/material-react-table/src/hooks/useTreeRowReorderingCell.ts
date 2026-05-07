@@ -60,7 +60,9 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     rowReorderingSelection ?? {},
   ).some(Boolean);
 
-  const selectedReorderRowIds = getSelectedReorderRowIds(rowReorderingSelection);
+  const selectedReorderRowIds = getSelectedReorderRowIds(
+    rowReorderingSelection,
+  );
 
   const selectedRowsMaxRelativeDepth = getSelectedRowsMaxRelativeDepth({
     selectedRowIds: selectedReorderRowIds,
@@ -113,7 +115,13 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     } catch (error) {
       console.error('[MRT] Error during tree row reorder:', error);
     }
-  }, [onTreeRowReorder, selectedReorderRowIds, selectedRowsForReorder, table, row]);
+  }, [
+    onTreeRowReorder,
+    selectedReorderRowIds,
+    selectedRowsForReorder,
+    table,
+    row,
+  ]);
 
   return {
     isRowHovered,
