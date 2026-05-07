@@ -53,7 +53,7 @@
     "lib:build-locales": "node build-locales.mjs",
     "lib:build-lib": "node -e \"require('fs').rmSync('dist', {recursive:true,force:true})\" && rollup -c rollup.config.mjs && size-limit",
     "lib:dev": "rollup -c rollup.config.mjs --watch",
-    "lint": "eslint .",
+    "lint": "eslint . --config eslint.config.mjs",
     "size": "size-limit",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
@@ -66,6 +66,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
