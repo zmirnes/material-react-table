@@ -1,12 +1,10 @@
+import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
+import { type Meta } from '@storybook/react-vite';
 import { type MRT_ColumnDef } from '../../src';
 import { type Date } from '../../src/column-types/date';
 import { type EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
-import { type Action } from '../../src/types/actions/actions.types';
-import { createDeleteAction } from '../../src/utils/actions/createDeleteAction';
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Server Table',
@@ -252,9 +250,7 @@ const columns: MRT_ColumnDef<Person>[] = [
 const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-const deleteAction: Action<Person> = createDeleteAction({});
 
-const actions: Action<Person>[] = [deleteAction];
 export const Basic = () => (
   <Box
     style={{
@@ -456,7 +452,6 @@ export const Basic = () => (
       onSaveFilters={async () => {
         await simulateDelay(1000);
       }}
-      actions={actions}
     />
   </Box>
 );
