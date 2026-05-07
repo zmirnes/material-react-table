@@ -9,6 +9,7 @@ import { MRT_ToggleFiltersButton } from '../buttons/MRT_ToggleFiltersButton';
 import { MRT_ToggleFullScreenButton } from '../buttons/MRT_ToggleFullScreenButton';
 import { MRT_ToggleGlobalFilterButton } from '../buttons/MRT_ToggleGlobalFilterButton';
 import { MRT_ExportsToolbar } from './MRT_ExportsToolbar';
+import { MRT_NewEntryButton } from '../buttons/MRT_NewEntryButton';
 
 export interface MRT_ToolbarInternalButtonsProps<TData extends MRT_RowData>
   extends BoxProps {
@@ -36,6 +37,7 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
       loadExport,
       onActiveExportsChange,
       renderToolbarInternalActions,
+      enableNewEntryButton
     },
   } = table;
 
@@ -92,6 +94,7 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
                 loadExport={loadExport}
               />
             )}
+            {enableNewEntryButton && <MRT_NewEntryButton table={table} />}
         </>
       )}
     </Box>

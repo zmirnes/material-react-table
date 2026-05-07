@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
+import { type Meta } from '@storybook/react';
 import { type MRT_ColumnDef } from '../../src';
 import { Date } from '../../src/column-types/date';
 import { EnumValue } from '../../src/column-types/enum';
@@ -562,4 +562,34 @@ export const WithHasNextPage = () => (
     }}
     saveState={async () => {}}
   />
+);
+
+export const WithAddNewEntryButton = () => (
+  <Box
+    style={{
+      height: '100vh',
+      maxHeight: '100vh',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+    }}
+  >
+    <MaterialReactServerTable<Person>
+      loadConfig={async () => {
+        await simulateDelay(800);
+        return { columns };
+      }}
+      loadData={async (state) => {
+        await simulateDelay(600);
+        const { pageIndex, pageSize } = state.pagination;
+        const start = pageIndex * pageSize;
+        return {
+          data: fakeDatabase.slice(start, start + pageSize),
+          rowCount: fakeDatabase.length,
+        };
+      }}
+      saveState={async () => {}}
+      enableNewEntryButton
+    />
+  </Box>
 );

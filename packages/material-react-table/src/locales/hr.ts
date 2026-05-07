@@ -111,6 +111,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   advancedFilters: 'Napredni filteri',
   filters: 'Filteri',
   add: 'Dodaj',
+  newEntry: 'Novi unos',
   clear: 'Očisti',
   discardChanges: 'Odbaci izmjene',
   saveFilters: 'Spremi filtere',

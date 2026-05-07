@@ -29,6 +29,8 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   initialSavedFilters?: MRT_SavedFilters;
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
+  // When true, renders a built-in "Add" button in the top toolbar that opens the new entry modal.
+  enableNewEntryButton?: boolean;
 }
 
 export const MaterialReactServerTable = <
@@ -44,6 +46,7 @@ export const MaterialReactServerTable = <
   initialSavedFilters,
   loadExport,
   exportPermissions,
+  enableNewEntryButton,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -92,6 +95,7 @@ export const MaterialReactServerTable = <
       initialSavedFilters={initialSavedFilters}
       loadExport={loadExport}
       exportPermissions={exportPermissions}
+      enableNewEntryButton={enableNewEntryButton}
     />
   );
 };
