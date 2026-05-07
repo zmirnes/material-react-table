@@ -1,31 +1,16 @@
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react';
-import { type MRT_ColumnDef } from '../../src';
-import { Date } from '../../src/column-types/date';
-import { EnumValue } from '../../src/column-types/enum';
-import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
 import Box from '@mui/material/Box';
+import { type MRT_ColumnDef } from '../../src';
+import { type Date } from '../../src/column-types/date';
+import { type EnumValue } from '../../src/column-types/enum';
+import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Server Table',
 };
 
 export default meta;
-
-type TrebovanjeMaterijala = {
-  profil: boolean;
-  ojacanje: boolean;
-  aluclip: boolean;
-  okov: boolean;
-  ispuna: boolean;
-  panel: boolean;
-  inox: boolean;
-  klupica: boolean;
-  staklo: boolean;
-  roletna: boolean;
-  ostalo: boolean;
-  dihtung: boolean;
-};
 
 type Person = {
   id: string;
