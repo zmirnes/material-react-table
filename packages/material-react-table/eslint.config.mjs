@@ -30,10 +30,11 @@ export default [
       perfectionist: perfectionistPlugin,
     },
     rules: {
+      'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/ban-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/consistent-type-imports': [
         'warn',
         {
