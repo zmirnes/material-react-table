@@ -10,8 +10,6 @@ const meta: Meta = {
   title: 'Features/Server Table',
 };
 
-console.log('test');
-
 export default meta;
 
 type Person = {
