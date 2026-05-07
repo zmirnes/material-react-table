@@ -253,7 +253,7 @@ const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 const onDelete: Action<Person> = createDeleteAction({
-  onDelete: ({ rowsToDelete, table }) => {
+  onDelete: ({ rowsToDelete }) => {
     const deleteRowById = (rowId: string) => {
       const deletedRowIndex = fakeDatabase.findIndex(
         (dbRow) => dbRow.id === rowId,
@@ -263,7 +263,6 @@ const onDelete: Action<Person> = createDeleteAction({
       }
     };
     rowsToDelete.forEach(deleteRowById);
-    table?.options.refetchData?.();
   },
 });
 const actions: Action<Person>[] = [onDelete];

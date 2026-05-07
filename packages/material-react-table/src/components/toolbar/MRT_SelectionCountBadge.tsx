@@ -19,13 +19,14 @@ export const MRT_SelectionCountBadge = <TData extends MRT_RowData>({
   table,
 }: MRT_SelectionCountBadgeProps<TData>) => {
   const {
+    getState,
     options: { enableRowSelection, localization },
   } = table;
 
-  const selectedRows = table.getSelectedRowModel().rows;
+  const { rowSelection } = getState();
   const selectedCount = useMemo(
-    () => table.getSelectedRowModel().rows.length,
-    [selectedRows],
+    () => Object.values(rowSelection).filter(Boolean).length,
+    [rowSelection],
   );
 
   if (!enableRowSelection || selectedCount === 0) return null;

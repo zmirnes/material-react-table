@@ -158,11 +158,9 @@ export const MaterialReactServerTableInstance = <
     },
     enableRowActions: true,
     enableRowSelection: true,
-    renderRowActions: ({ row, table }) =>
-      actions && <RowActionsCell actions={actions} row={row} table={table} />,
+    renderRowActions: RowActionsCell,
     positionActionsColumn: 'last',
     actions: actions,
-    refetchData: () => fetchData(table.getState()),
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
     onSaveFilters,

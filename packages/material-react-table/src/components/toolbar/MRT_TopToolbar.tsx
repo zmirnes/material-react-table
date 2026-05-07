@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useMemo } from 'react';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { getCommonToolbarStyles } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
@@ -48,7 +49,11 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
     table,
   };
 
-  const selectedRows = table.getSelectedRowModel().rows;
+  const { rowSelection } = getState();
+  const selectedCount = useMemo(
+    () => Object.values(rowSelection).filter(Boolean).length,
+    [rowSelection],
+  );
   return (
     <Box
       {...toolbarProps}
@@ -64,7 +69,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
         position: isFullScreen ? 'sticky' : 'relative',
         top: isFullScreen ? '0' : 'unset',
         backgroundColor:
-          selectedRows.length < 1
+          selectedCount < 1
             ? theme.palette.background.default
             : theme.palette.primary.lighter,
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -90,7 +95,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
         {enableGlobalFilter && positionGlobalFilter === 'left' && (
           <MRT_GlobalFilterTextField {...globalFilterProps} />
         )}
-        {selectedRows.length < 1 ? (
+        {selectedCount < 1 ? (
           <>
             {enableGlobalFilter && positionGlobalFilter === 'left' && (
               <MRT_GlobalFilterTextField {...globalFilterProps} />
