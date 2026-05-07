@@ -60,9 +60,7 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     rowReorderingSelection ?? {},
   ).some(Boolean);
 
-  const selectedReorderRowIds = getSelectedReorderRowIds(
-    rowReorderingSelection,
-  );
+  const selectedReorderRowIds = getSelectedReorderRowIds(rowReorderingSelection);
 
   const selectedRowsMaxRelativeDepth = getSelectedRowsMaxRelativeDepth({
     selectedRowIds: selectedReorderRowIds,
@@ -115,13 +113,7 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     } catch (error) {
       console.error('[MRT] Error during tree row reorder:', error);
     }
-  }, [
-    onTreeRowReorder,
-    selectedReorderRowIds,
-    selectedRowsForReorder,
-    table,
-    row,
-  ]);
+  }, [onTreeRowReorder, selectedReorderRowIds, selectedRowsForReorder, table, row]);
 
   return {
     isRowHovered,
@@ -132,61 +124,5 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     handleReorderCheckboxChange,
     handleInsertHereActionClick,
     isReorderCheckboxSelected: !!rowReorderingSelection?.[row.id],
-  };
-};
-
-interface UseTreeRowReorderingHeaderProps<TData extends MRT_RowData> {
-  table: MRT_TableInstance<TData>;
-  enableRowReordering?: boolean;
-  onTreeRowReorder?: (event: MRT_TreeRowReorderEvent<TData>) => void;
-}
-
-export interface TreeRowReorderingHeaderLogic {
-  shouldShowMoveToTopLevelAction: boolean;
-  handleMoveToTopLevelActionClick: () => void;
-}
-
-export const useTreeRowReorderingHeader = <TData extends MRT_RowData>({
-  table,
-  enableRowReordering,
-  onTreeRowReorder,
-}: UseTreeRowReorderingHeaderProps<TData>): TreeRowReorderingHeaderLogic => {
-  const selectedReorderRowIds = getSelectedReorderRowIds(
-    table.getState().rowReorderingSelection,
-  );
-
-  const selectedRowsForReorder = buildSelectedRowsArray(
-    selectedReorderRowIds,
-    table,
-  );
-
-  const shouldShowMoveToTopLevelAction =
-    !!enableRowReordering &&
-    selectedRowsForReorder.length > 0 &&
-    selectedRowsForReorder.some((selectedRow) => selectedRow.depth > 0);
-
-  const handleMoveToTopLevelActionClick = useCallback(() => {
-    if (!onTreeRowReorder) {
-      console.warn('[MRT] onTreeRowReorder callback is not defined');
-      return;
-    }
-
-    try {
-      const treeRowReorderEvent: MRT_TreeRowReorderEvent<TData> = {
-        selectedRowIds: selectedReorderRowIds,
-        selectedRows: selectedRowsForReorder,
-        table,
-        targetRow: null,
-      };
-
-      onTreeRowReorder(treeRowReorderEvent);
-    } catch (error) {
-      console.error('[MRT] Error during tree row reorder to top level:', error);
-    }
-  }, [onTreeRowReorder, selectedReorderRowIds, selectedRowsForReorder, table]);
-
-  return {
-    shouldShowMoveToTopLevelAction,
-    handleMoveToTopLevelActionClick,
   };
 };

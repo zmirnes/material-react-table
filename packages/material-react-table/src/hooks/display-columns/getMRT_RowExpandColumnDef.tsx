@@ -15,8 +15,8 @@ import { defaultDisplayColumnProps } from '../../utils/displayColumn.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import {
   useTreeRowReorderingCell,
-  useTreeRowReorderingHeader,
-} from '../useMRT_TreeRowReordering';
+} from '../useTreeRowReorderingCell';
+import { useTreeRowReorderingHeader } from '../useTreeRowReorderingHeader';
 
 const TREE_REORDER_ICON_SPACING = '0.25rem';
 
