@@ -80,7 +80,6 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
       table,
     }) &&
     canInsertSelectedRowsWithoutExceedingMaxDepth({
-      hasAnyReorderSelection,
       maxDepth,
       selectedRows: selectedRowsForReorder,
       targetRowDepth: row.depth,

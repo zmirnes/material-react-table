@@ -45,21 +45,21 @@ export const getSelectedReorderRowIds = (
 export const canInsertSelectedRowsWithoutExceedingMaxDepth = <
   TData extends MRT_RowData,
 >({
-  hasAnyReorderSelection,
   maxDepth,
   selectedRows,
   targetRowDepth,
 }: {
-  hasAnyReorderSelection: boolean;
   maxDepth?: number;
   selectedRows: MRT_Row<TData>[];
   targetRowDepth: number;
 }): boolean => {
-  if (!hasAnyReorderSelection || maxDepth === undefined) {
-    return true;
+  // Cannot insert if there are no selected rows to move
+  if (selectedRows.length === 0) {
+    return false;
   }
 
-  if (selectedRows.length === 0) {
+  // No depth restriction - can insert anywhere
+  if (maxDepth === undefined) {
     return true;
   }
 
