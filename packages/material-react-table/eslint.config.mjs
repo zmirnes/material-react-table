@@ -17,6 +17,12 @@ export default [
       parser: tsEslintParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        alert: 'readonly',
+        setTimeout: 'readonly',
+        btoa: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': tsEslintPlugin,

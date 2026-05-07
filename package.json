@@ -38,7 +38,9 @@
   "lint-staged": {
     "packages/material-react-table/**/*.{ts,tsx}": [
       "eslint --fix --config packages/material-react-table/eslint.config.mjs",
-      "prettier --write",
+      "prettier --write"
+    ],
+    "packages/material-react-table/**/*.{test,spec}.{ts,tsx}": [
       "pnpm --filter=material-react-table test:run -- --run"
     ],
     "*.md": "prettier --write"
