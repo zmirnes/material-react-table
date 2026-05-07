@@ -1,12 +1,13 @@
 import TableContainer, {
   type TableContainerProps,
 } from '@mui/material/TableContainer';
-import { MRT_CellActionMenu } from '../menus/MRT_CellActionMenu';
-import { MRT_EditRowModal } from '../modals/MRT_EditRowModal';
-import { MRT_Table } from './MRT_Table';
-import { MRT_TableLoadingOverlay } from './MRT_TableLoadingOverlay';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
+import { MRT_CellActionMenu } from '../menus/MRT_CellActionMenu';
+import { MRT_EditRowModal } from '../modals/MRT_EditRowModal';
+import { MRT_NewEntryModal } from '../modals/MRT_NewEntryModal';
+import { MRT_Table } from './MRT_Table';
+import { MRT_TableLoadingOverlay } from './MRT_TableLoadingOverlay';
 
 export interface MRT_TableContainerProps<TData extends MRT_RowData>
   extends TableContainerProps {
@@ -86,6 +87,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
       {(createModalOpen || editModalOpen) && (
         <MRT_EditRowModal open table={table} />
       )}
+      {newEntryModal.open && <MRT_NewEntryModal table={table} />}
       {enableCellActions && actionCell && <MRT_CellActionMenu table={table} />}
     </TableContainer>
   );
