@@ -1,7 +1,14 @@
-import { MRT_Row, MRT_RowData, MRT_TableInstance } from '../../types';
-import { Action, DeleteActionConfig } from '../../types/actions-types';
 import { resolveRowsToDelete } from './resolveRowsToDelete';
-import DeleteRowAction from './DeleteRowAction';
+import DeleteRowAction from '../../components/actions/DeleteRowAction';
+import {
+  type MRT_Row,
+  type MRT_RowData,
+  type MRT_TableInstance,
+} from '../../types';
+import {
+  type Action,
+  type DeleteActionConfig,
+} from '../../types/actions-types';
 
 const buildOnDeleteHandler = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,

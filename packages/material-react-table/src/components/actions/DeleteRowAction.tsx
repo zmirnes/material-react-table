@@ -1,6 +1,10 @@
-import { MRT_Row, MRT_RowData, MRT_TableInstance } from '../../types';
-import { DeleteActionConfig } from '../../types/actions-types';
 import MRT_DeleteRowButton from '../../components/buttons/MRT_DeleteRowButton';
+import {
+  type MRT_Row,
+  type MRT_RowData,
+  type MRT_TableInstance,
+} from '../../types';
+import { type DeleteActionConfig } from '../../types/actions-types';
 
 export interface DeleteRowActionProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -29,4 +33,3 @@ const DeleteRowAction = <TData extends MRT_RowData>({
 };
 
 export default DeleteRowAction;
-

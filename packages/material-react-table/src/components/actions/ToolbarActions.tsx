@@ -1,6 +1,6 @@
-import { MRT_RowData, MRT_TableInstance } from '../../types';
-import Box from '@mui/material/Box';
 import { useMemo } from 'react';
+import Box from '@mui/material/Box';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 interface ToolbarActionsProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
