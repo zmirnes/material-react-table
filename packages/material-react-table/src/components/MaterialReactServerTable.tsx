@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
+import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
 import {
-  MRT_ExportFileResponse,
-  MRT_ExportParams,
-  MRT_SavedFilter,
-  MRT_SavedFilters,
-  MRT_TableInstance,
+  type MRT_ExportFileResponse,
+  type MRT_ExportParams,
+  type MRT_SavedFilter,
+  type MRT_SavedFilters,
+  type MRT_TableInstance,
   type MRT_RowData,
   type MRT_TableConfig,
   type MRT_TableData,
   type MRT_TableState,
 } from '../types';
-import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
 
 export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   loadConfig: () => Promise<MRT_TableConfig<TData>>;
@@ -63,8 +63,9 @@ export const MaterialReactServerTable = <
         if (!isMounted) return;
         setConfig(null);
       } finally {
-        if (!isMounted) return;
-        setConfigLoading(false);
+        if (isMounted) {
+          setConfigLoading(false);
+        }
       }
     };
 
