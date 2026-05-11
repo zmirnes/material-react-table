@@ -1,3 +1,4 @@
+import { type SyntheticEvent } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import { MRT_ActionMenuItem } from './MRT_ActionMenuItem';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
@@ -32,7 +33,8 @@ export const MRT_CellActionMenu = <TData extends MRT_RowData>({
   const { column } = cell;
   const { columnDef } = column;
 
-  const handleClose = () => {
+  const handleClose = (event?: SyntheticEvent) => {
+    event?.stopPropagation();
     table.setActionCell(null);
     actionCellRef.current = null;
   };
@@ -58,7 +60,8 @@ export const MRT_CellActionMenu = <TData extends MRT_RowData>({
         icon={<EditIcon />}
         key={'mrt-edit'}
         label={localization.edit}
-        onClick={() => {
+        onClick={(event) => {
+          event.stopPropagation();
           openEditingCell({ cell, table });
           handleClose();
         }}
@@ -92,7 +95,7 @@ export const MRT_CellActionMenu = <TData extends MRT_RowData>({
         anchorEl={actionCellRef.current}
         disableScrollLock
         onClick={(event) => event.stopPropagation()}
-        onClose={handleClose}
+        onClose={(event) => handleClose(event as SyntheticEvent)}
         open={!!cell}
         transformOrigin={{ horizontal: -100, vertical: 8 }}
         {...rest}
