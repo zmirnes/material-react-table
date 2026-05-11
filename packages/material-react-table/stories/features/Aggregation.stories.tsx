@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import {
   MRT_AggregationFns,
   type MRT_ColumnDef,
-  type MRT_RowData,
   MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
@@ -201,11 +200,13 @@ export const MultiAggregationPerColumn = () => (
         accessorKey: 'firstName',
         enableGrouping: false,
         header: 'First Name',
+        type: 'text',
       },
       {
         accessorKey: 'lastName',
         enableGrouping: false,
         header: 'Last Name',
+        type: 'text',
       },
       {
         AggregatedCell: ({ cell, table }) => (
@@ -232,11 +233,12 @@ export const MultiAggregationPerColumn = () => (
           </Stack>
         ),
         accessorKey: 'age',
+        type: 'number',
         //manually set multiple aggregation functions
         aggregationFn: (
           columnId,
-          leafRows: Row<MRT_RowData>[],
-          childRows: Row<MRT_RowData>[],
+          leafRows: Row<(typeof data)[0]>[],
+          childRows: Row<(typeof data)[0]>[],
         ) => [
           MRT_AggregationFns.min(columnId, leafRows, childRows),
           MRT_AggregationFns.max(columnId, leafRows, childRows),
@@ -249,10 +251,12 @@ export const MultiAggregationPerColumn = () => (
         ),
         accessorKey: 'gender',
         header: 'Gender',
+        type: 'enum',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         AggregatedCell: ({ cell, table }) => (
@@ -305,6 +309,7 @@ export const MultiAggregationPerColumn = () => (
         aggregationFn: ['count', 'mean'], //multiple aggregation functions
         enableGrouping: false,
         header: 'Salary',
+        type: 'number',
       },
     ]}
     data={data}

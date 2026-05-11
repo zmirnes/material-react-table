@@ -800,7 +800,7 @@ export type MRT_NonIconColumnDef<
 > = MRT_ColumnDefBase<TData, TValue> & {
   onClickIconTypeColumn?: never;
   iconsList?: never;
-  type?: Exclude<ColumnType, 'icon'>;
+  type: LiteralUnion<Exclude<ColumnType, 'icon'>>;
 };
 
 export type MRT_ColumnDef<TData extends MRT_RowData, TValue = unknown> =

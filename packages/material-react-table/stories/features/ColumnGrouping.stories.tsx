@@ -27,22 +27,27 @@ const columns = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'gender',
     header: 'Gender',
+    type: 'enum',
   },
   {
     accessorKey: 'city',
     header: 'City',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
 ] as MRT_ColumnDef<Person>[];
 
@@ -183,10 +188,12 @@ export const ColumnGroupingEnabledCustomAggregate = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         AggregatedCell: ({ cell }) => (
@@ -194,14 +201,17 @@ export const ColumnGroupingEnabledCustomAggregate = () => (
         ),
         accessorKey: 'gender',
         header: 'Gender',
+        type: 'enum',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -229,22 +239,27 @@ export const GroupingColumnsSetState = () => {
       {
         accessorKey: 'name.firstName', //access nested data with dot notation
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address', //normal accessorKey
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]);
 
@@ -349,10 +364,12 @@ export const GroupingAndDraggingWithSomeDisabledGrouping = () => {
         accessorKey: 'firstName',
         enableGrouping: false,
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
     ],
     [],

@@ -52,22 +52,27 @@ export const FilterModesRefetch = () => {
     {
       accessorKey: 'firstName',
       header: 'First Name',
+      type: 'string',
     },
     {
       accessorKey: 'lastName',
       header: 'Last Name',
+      type: 'string',
     },
     {
       accessorKey: 'address',
       header: 'Address',
+      type: 'string',
     },
     {
       accessorKey: 'state',
       header: 'State',
+      type: 'string',
     },
     {
       accessorKey: 'phoneNumber',
       header: 'Phone Number',
+      type: 'string',
     },
   ];
 
@@ -97,24 +102,29 @@ export const FilterOptionsAsync = () => {
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         filterSelectOptions: stateFilterOptions,
         filterVariant: 'select',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ],
     [stateFilterOptions],
@@ -144,24 +154,29 @@ export const EditOptionsAsync = () => {
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         editSelectOptions: stateEditOptions,
         editVariant: 'select',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ],
     [stateEditOptions],
@@ -191,22 +206,27 @@ export const RenderRowActionsAsync = () => {
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ],
     [],
@@ -244,22 +264,27 @@ export const RenderRowActionMenuItemsAsync = () => {
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ],
     [],
@@ -295,26 +320,31 @@ export const DelayedFacetedValues = () => {
           accessorKey: 'firstName',
           filterFn: 'fuzzy', // default
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           filterVariant: 'select',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'age',
           filterVariant: 'range-slider',
           header: 'Age',
+          type: 'number',
         },
         {
           accessorKey: 'gender',
           filterVariant: 'select',
           header: 'Gender',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           filterVariant: 'multi-select',
           header: 'State',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -337,14 +367,17 @@ export const PreventUnnecessaryPaginationChangeByOutOfBoundsCheck = () => {
     {
       accessorKey: 'firstName',
       header: 'First Name',
+      type: 'string',
     },
     {
       accessorKey: 'lastName',
       header: 'Last Name',
+      type: 'string',
     },
     {
       accessorKey: 'address',
       header: 'Address',
+      type: 'string',
     },
   ];
 

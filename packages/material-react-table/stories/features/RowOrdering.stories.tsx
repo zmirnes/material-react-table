@@ -27,30 +27,37 @@ const columns: MRT_ColumnDef<Person>[] = [
   {
     accessorKey: 'num',
     header: '#',
+    type: 'number',
   },
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'email',
     header: 'Email Address',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'city',
     header: 'City',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
 ];
 
@@ -237,6 +244,7 @@ const fakeColumns = [...Array(500)].map((_, i) => {
   return {
     accessorKey: i.toString(),
     header: 'Column ' + i.toString(),
+    type: 'string',
   };
 });
 

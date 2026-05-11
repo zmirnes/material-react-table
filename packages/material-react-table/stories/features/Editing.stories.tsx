@@ -107,23 +107,28 @@ export const EditingEnabledEditModeModalDefault = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -154,23 +159,28 @@ export const EditingFeatureEnabledConditionally = () => {
     {
       accessorKey: 'firstName',
       header: 'First Name',
+      type: 'string',
     },
     {
       accessorKey: 'lastName',
       header: 'Last Name',
+      type: 'string',
     },
     {
       accessorKey: 'address',
       header: 'Address',
+      type: 'string',
     },
     {
       accessorKey: 'state',
       header: 'State',
+      type: 'string',
     },
     {
       accessorKey: 'phoneNumber',
       enableEditing: false,
       header: 'Phone Number',
+      type: 'string',
     },
   ];
 
@@ -209,23 +219,28 @@ export const EditingEnabledEditModeRow = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -260,23 +275,28 @@ export const EditingEnabledEditModeRowCustomSave = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -316,23 +336,28 @@ export const EditingEnabledEditModeRowVirtualized = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -372,23 +397,28 @@ export const EditingEnabledEditModeCell = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -423,23 +453,28 @@ export const EditingEnabledEditModeCellWithRowActions = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -476,22 +511,27 @@ export const EditingEnabledEditModeTable = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -523,24 +563,29 @@ export const EditSelectVariant = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           editSelectOptions: usStates,
           editVariant: 'select',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -569,14 +614,17 @@ export const EditSelectVariantAlternate = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
@@ -628,10 +676,12 @@ export const EditSelectVariantAlternate = () => {
           ],
           editVariant: 'select',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -718,18 +768,22 @@ export const EditingCustomizeInput = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
           muiEditTextFieldProps: () => ({
             children: usStates.map((state) => (
               <MenuItem key={state} value={state}>
@@ -742,6 +796,7 @@ export const EditingCustomizeInput = () => {
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -775,22 +830,27 @@ export const EditingEnabledAsync = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -824,23 +884,28 @@ export const EditingNestedData = () => {
           accessorFn: (row) => row.name.firstName,
           header: 'First Name',
           id: 'firstName',
+          type: 'string',
         },
         {
           accessorKey: 'name.lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -880,23 +945,28 @@ export const EditingEnabledEditModeTableWithGroupedRows = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -927,23 +997,28 @@ export const EnableEditingConditionally = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: (row) => row.original.state.includes('N'),
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -973,23 +1048,28 @@ export const EnableEditingConditionallyCell = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: (row) => row.original.state.includes('N'),
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -1019,23 +1099,28 @@ export const EnableEditingConditionallyTable = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: (row) => row.original.state.includes('N'),
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -1061,18 +1146,22 @@ export const EditingCellManualOnChange = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
           muiEditTextFieldProps: ({ cell }) => ({
             onBlur: (event) => {
               handleSaveCell(cell, event.target.value);
@@ -1084,6 +1173,7 @@ export const EditingCellManualOnChange = () => {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}

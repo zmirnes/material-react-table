@@ -98,34 +98,41 @@ const mockColumns: MRT_ColumnDef<(typeof mockData)[0]>[] = [
     footer: 'SUM',
     header: 'No. ',
     size: 80,
+    type: 'number',
   },
   {
     accessorKey: 'name',
     header: 'NAME',
     size: 190,
+    type: 'string',
   },
   {
     accessorKey: 'firstName',
     header: 'FIRST NAME',
+    type: 'string',
   },
   {
     accessorKey: 'middleName',
     header: 'MIDDLE NAME',
     size: 150,
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'LAST NAME',
+    type: 'string',
   },
   {
     accessorKey: 'salary',
     footer: '211514964',
     header: 'SALARY',
+    type: 'number',
   },
   {
     accessorKey: 'total',
     footer: '2540568645',
     header: 'TOTAL',
+    type: 'number',
   },
 ];
 

@@ -9,7 +9,7 @@ export interface MRT_ActionMenuItemProps<TData extends MRT_RowData>
   extends MenuItemProps {
   icon: ReactNode;
   label: string;
-  onOpenSubMenu?: MenuItemProps['onClick'] | MenuItemProps['onMouseEnter'];
+  onOpenSubMenu?: (event: MouseEvent<HTMLElement>) => void;
   table: MRT_TableInstance<TData>;
 }
 
@@ -49,12 +49,8 @@ export const MRT_ActionMenuItem = <TData extends MRT_RowData>({
       </Box>
       {onOpenSubMenu && (
         <IconButton
-          onClick={(e) =>
-            onOpenSubMenu(e as unknown as MouseEvent<HTMLLIElement>)
-          }
-          onMouseEnter={(e) =>
-            onOpenSubMenu(e as unknown as MouseEvent<HTMLLIElement>)
-          }
+          onClick={(e) => onOpenSubMenu(e)}
+          onMouseEnter={(e) => onOpenSubMenu(e)}
           size="small"
           sx={{ p: 0 }}
         >
