@@ -1,11 +1,12 @@
+import { type KeyboardEvent } from 'react';
 import Paper, { type PaperProps } from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_BottomToolbar } from '../toolbar/MRT_BottomToolbar';
 import { MRT_QuickFiltersBar } from '../toolbar/MRT_QuickFiltersBar';
 import { MRT_TopToolbar } from '../toolbar/MRT_TopToolbar';
 import { MRT_TableContainer } from './MRT_TableContainer';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_TablePaperProps<TData extends MRT_RowData>
   extends PaperProps {
@@ -39,7 +40,9 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
   return (
     <Paper
       elevation={2}
-      onKeyDown={(e) => e.key === 'Escape' && table.setIsFullScreen(false)}
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) =>
+        e.key === 'Escape' && table.setIsFullScreen(false)
+      }
       {...paperProps}
       ref={(ref: HTMLDivElement) => {
         tablePaperRef.current = ref;
@@ -74,7 +77,10 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
         height: '100%',
         overflow: 'hidden',
         transition: 'all 100ms ease-in-out',
-        ...(parseFromValuesOrFunc(paperProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(paperProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       {enableTopToolbar &&

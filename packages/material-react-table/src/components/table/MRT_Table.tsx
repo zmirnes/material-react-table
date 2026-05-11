@@ -1,12 +1,12 @@
-import Table, { type TableProps } from '@mui/material/Table';
 import { useMemo } from 'react';
+import Table, { type TableProps } from '@mui/material/Table';
 import { useMRT_ColumnVirtualizer } from '../../hooks/useMRT_ColumnVirtualizer';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { parseCSSVarId } from '../../utils/style.utils';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_TableBody, Memo_MRT_TableBody } from '../body/MRT_TableBody';
 import { MRT_TableFooter } from '../footer/MRT_TableFooter';
 import { MRT_TableHead } from '../head/MRT_TableHead';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { parseCSSVarId } from '../../utils/style.utils';
+import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_TableProps<TData extends MRT_RowData> extends TableProps {
   table: MRT_TableInstance<TData>;
@@ -69,7 +69,10 @@ export const MRT_Table = <TData extends MRT_RowData>({
         display: layoutMode?.startsWith('grid') ? 'grid' : undefined,
         overflow: 'auto',
         position: 'relative',
-        ...(parseFromValuesOrFunc(tableProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       {!!Caption && <caption>{Caption}</caption>}

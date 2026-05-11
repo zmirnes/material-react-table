@@ -32,8 +32,8 @@ export const MRT_CellActionMenu = <TData extends MRT_RowData>({
   const { column } = cell;
   const { columnDef } = column;
 
-  const handleClose = (event?: any) => {
-    event?.stopPropagation();
+  const handleClose = (event?: { stopPropagation?: () => void }) => {
+    if (event?.stopPropagation) event.stopPropagation();
     table.setActionCell(null);
     actionCellRef.current = null;
   };

@@ -1,13 +1,13 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import {
-  MRT_FilterOperatorDefinition,
+  type DimensionFilterValue,
+  MRT_DimensionFilterEditor,
+} from './filterEditors';
+import {
+  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
   type MRT_RowData,
 } from '../types';
-import {
-  DimensionFilterValue,
-  MRT_DimensionFilterEditor,
-} from './filterEditors';
 
 // Resolver for dimension column type (e.g. "100 m²").
 // Renders the raw string value and supports dimension-aware filtering.

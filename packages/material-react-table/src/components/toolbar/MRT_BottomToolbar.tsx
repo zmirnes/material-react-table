@@ -1,13 +1,13 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import { alpha } from '@mui/material/styles';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { getCommonToolbarStyles } from '../../utils/style.utils';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_SelectionCountBadge } from './MRT_SelectionCountBadge';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_TotalRowsCounter } from './MRT_TotalRowsCounter';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { getCommonToolbarStyles } from '../../utils/style.utils';
+import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_BottomToolbarProps<TData extends MRT_RowData>
   extends BoxProps {
@@ -51,7 +51,7 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
       }}
       sx={(theme) => ({
         ...getCommonToolbarStyles({ table, theme }),
-        bottom: isFullScreen ? '0' : undefined,
+        bottom: isFullScreen ? '0' : 'unset',
         boxShadow: `0 1px 2px -1px ${alpha(
           theme.palette.grey[700],
           0.5,
@@ -59,7 +59,10 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
         left: 0,
         position: isFullScreen ? 'fixed' : 'relative',
         right: 0,
-        ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       <MRT_LinearProgressBar isTopToolbar={false} table={table} />

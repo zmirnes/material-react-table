@@ -1,8 +1,8 @@
+import { type MouseEvent, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
-import { type ReactNode } from 'react';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_ActionMenuItemProps<TData extends MRT_RowData>
@@ -49,8 +49,12 @@ export const MRT_ActionMenuItem = <TData extends MRT_RowData>({
       </Box>
       {onOpenSubMenu && (
         <IconButton
-          onClick={onOpenSubMenu as any}
-          onMouseEnter={onOpenSubMenu as any}
+          onClick={(e) =>
+            onOpenSubMenu(e as unknown as MouseEvent<HTMLLIElement>)
+          }
+          onMouseEnter={(e) =>
+            onOpenSubMenu(e as unknown as MouseEvent<HTMLLIElement>)
+          }
           size="small"
           sx={{ p: 0 }}
         >

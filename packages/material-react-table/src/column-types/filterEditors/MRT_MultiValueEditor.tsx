@@ -1,12 +1,12 @@
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import { getSharedTextFieldProps } from './pickerHelpers';
 import {
   type DropdownOption,
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../../types';
 import { getValueAndLabel } from '../../utils/utils';
-import { getSharedTextFieldProps } from './pickerHelpers';
 
 // Props extend the base filter editor props with the list of selectable options
 export type MRT_MultiValueEditorProps<TData extends MRT_RowData> =

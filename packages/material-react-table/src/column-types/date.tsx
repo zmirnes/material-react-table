@@ -1,10 +1,4 @@
 import {
-  MRT_FilterOperatorDefinition,
-  type ColumnTypeResolver,
-  type MRT_RowData,
-} from '../types';
-import { formatApiDate } from '../utils/date';
-import {
   MRT_FilterRuleDateEditor,
   MRT_FilterRuleDisabledDateEditor,
   MRT_FilterRuleDisabledRangeDateEditor,
@@ -14,6 +8,12 @@ import {
   computeRelativeDateRange,
   computeRelativeDateSingle,
 } from './filterEditors/relativeDateRanges';
+import {
+  type MRT_FilterOperatorDefinition,
+  type ColumnTypeResolver,
+  type MRT_RowData,
+} from '../types';
+import { formatApiDate } from '../utils/date';
 
 // Shape returned by the API for date fields
 export interface Date {

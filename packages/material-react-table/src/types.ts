@@ -1,33 +1,10 @@
-import { type AlertProps } from '@mui/material/Alert';
-import { type AutocompleteProps } from '@mui/material/Autocomplete';
-import { type BoxProps } from '@mui/material/Box';
-import { type ButtonProps } from '@mui/material/Button';
-import { type CheckboxProps } from '@mui/material/Checkbox';
-import { type ChipProps } from '@mui/material/Chip';
-import { type CircularProgressProps } from '@mui/material/CircularProgress';
-import { type DialogProps } from '@mui/material/Dialog';
-import { type IconButtonProps } from '@mui/material/IconButton';
-import { type LinearProgressProps } from '@mui/material/LinearProgress';
-import { type PaginationProps } from '@mui/material/Pagination';
-import { type PaperProps } from '@mui/material/Paper';
-import { type RadioProps } from '@mui/material/Radio';
-import { type SelectProps } from '@mui/material/Select';
-import { type SkeletonProps } from '@mui/material/Skeleton';
-import { type SliderProps } from '@mui/material/Slider';
-import { type TableProps } from '@mui/material/Table';
-import { type TableBodyProps } from '@mui/material/TableBody';
-import { type TableCellProps } from '@mui/material/TableCell';
-import { type TableContainerProps } from '@mui/material/TableContainer';
-import { type TableFooterProps } from '@mui/material/TableFooter';
-import { type TableHeadProps } from '@mui/material/TableHead';
-import { type TableRowProps } from '@mui/material/TableRow';
-import { type TextFieldProps } from '@mui/material/TextField';
-import { type Theme } from '@mui/material/styles';
 import {
-  type DatePickerProps,
-  type DateTimePickerProps,
-  type TimePickerProps,
-} from '@mui/x-date-pickers';
+  type Dispatch,
+  type ReactNode,
+  type RefObject,
+  type SetStateAction,
+} from 'react';
+import type { RegisterOptions, UseFormReturn } from 'react-hook-form';
 import {
   type AccessorFn,
   type AggregationFn,
@@ -63,17 +40,40 @@ import {
   type Virtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual';
+import { type AlertProps } from '@mui/material/Alert';
+import { type AutocompleteProps } from '@mui/material/Autocomplete';
+import { type BoxProps } from '@mui/material/Box';
+import { type ButtonProps } from '@mui/material/Button';
+import { type CheckboxProps } from '@mui/material/Checkbox';
+import { type ChipProps } from '@mui/material/Chip';
+import { type CircularProgressProps } from '@mui/material/CircularProgress';
+import { type DialogProps } from '@mui/material/Dialog';
+import { type IconButtonProps } from '@mui/material/IconButton';
+import { type LinearProgressProps } from '@mui/material/LinearProgress';
+import { type PaginationProps } from '@mui/material/Pagination';
+import { type PaperProps } from '@mui/material/Paper';
+import { type RadioProps } from '@mui/material/Radio';
+import { type SelectProps } from '@mui/material/Select';
+import { type SkeletonProps } from '@mui/material/Skeleton';
+import { type SliderProps } from '@mui/material/Slider';
+import { type Theme } from '@mui/material/styles';
+import { type TableProps } from '@mui/material/Table';
+import { type TableBodyProps } from '@mui/material/TableBody';
+import { type TableCellProps } from '@mui/material/TableCell';
+import { type TableContainerProps } from '@mui/material/TableContainer';
+import { type TableFooterProps } from '@mui/material/TableFooter';
+import { type TableHeadProps } from '@mui/material/TableHead';
+import { type TableRowProps } from '@mui/material/TableRow';
+import { type TextFieldProps } from '@mui/material/TextField';
 import {
-  type Dispatch,
-  type ReactNode,
-  type RefObject,
-  type SetStateAction,
-} from 'react';
+  type DatePickerProps,
+  type DateTimePickerProps,
+  type TimePickerProps,
+} from '@mui/x-date-pickers';
 import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
-import type { RegisterOptions, UseFormReturn } from 'react-hook-form'
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -93,7 +93,9 @@ export type Xor<A, B> =
 export type DropdownOption =
   | {
       label?: string;
-      value: any;
+      // Intentional unknown — dropdown values can be any scalar type (string, number, object).
+      // Consumers are expected to know and narrow the value type at usage sites.
+      value: unknown;
     }
   | string;
 
@@ -102,7 +104,10 @@ export type MRT_DensityState = 'comfortable' | 'compact' | 'spacious';
 export type MRT_ColumnFilterFnsState = Record<string, MRT_FilterOption>;
 export type MRT_FiltersLogicOperator = 'and' | 'or';
 
-export type MRT_RowData = Record<string, any>;
+// Record<string, unknown> is used as a generic constraint (TData extends MRT_RowData).
+// unknown is intentional — it allows any concrete row type (e.g. { name: string; age: number })
+// to satisfy the constraint without requiring an explicit index signature.
+export type MRT_RowData = Record<string, unknown>;
 
 export type MRT_ColumnFiltersState = ColumnFiltersState;
 export type MRT_ColumnOrderState = ColumnOrderState;
@@ -650,12 +655,25 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
         table: MRT_TableInstance<TData>;
       }) => TextFieldProps)
     | TextFieldProps;
+  // MUI Autocomplete has four generic parameters (Value, Multiple, DisableClearable, FreeSolo).
+  // TValue is used for the value type so it aligns with the column's accessor type.
+  // Multiple, DisableClearable and FreeSolo are widened to boolean | undefined to accept any config.
   muiFilterAutocompleteProps?:
     | ((props: {
         column: MRT_Column<TData>;
         table: MRT_TableInstance<TData>;
-      }) => AutocompleteProps<any, any, any, any>)
-    | AutocompleteProps<any, any, any, any>;
+      }) => AutocompleteProps<
+        TValue,
+        boolean | undefined,
+        boolean | undefined,
+        boolean | undefined
+      >)
+    | AutocompleteProps<
+        TValue,
+        boolean | undefined,
+        boolean | undefined,
+        boolean | undefined
+      >;
   muiFilterCheckboxProps?:
     | ((props: {
         column: MRT_Column<TData>;
@@ -718,7 +736,9 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
     | TableCellProps;
   // Form field configuration — controls how this column appears and behaves in the create/edit form.
   // Use a config object for static settings, or a render function for full custom control.
-  formField?: MRT_FormFieldConfig<TData, TValue> | ((props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode);
+  formField?:
+    | MRT_FormFieldConfig<TData, TValue>
+    | ((props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode);
   PlaceholderCell?: (props: {
     cell: MRT_Cell<TData, TValue>;
     column: MRT_Column<TData, TValue>;
@@ -780,7 +800,7 @@ export type MRT_NonIconColumnDef<
 > = MRT_ColumnDefBase<TData, TValue> & {
   onClickIconTypeColumn?: never;
   iconsList?: never;
-  type: Exclude<ColumnType, 'icon'>;
+  type?: Exclude<ColumnType, 'icon'>;
 };
 
 export type MRT_ColumnDef<TData extends MRT_RowData, TValue = unknown> =
@@ -796,7 +816,7 @@ export type MRT_DisplayColumnDef<
 >;
 
 export type MRT_GroupColumnDef<TData extends MRT_RowData> =
-  MRT_DisplayColumnDef<TData, any> & {
+  MRT_DisplayColumnDef<TData, unknown> & {
     columns: MRT_ColumnDef<TData>[];
   };
 
@@ -847,7 +867,7 @@ export type MRT_Row<TData extends MRT_RowData> = Omit<
   | 'getVisibleCells'
   | 'subRows'
 > & {
-  _valuesCache: Record<LiteralUnion<string & DeepKeys<TData>>, any>;
+  _valuesCache: Record<LiteralUnion<string & DeepKeys<TData>>, unknown>;
   getAllCells: () => MRT_Cell<TData>[];
   getParentRow: () => MRT_Row<TData> | null;
   getParentRows: () => MRT_Row<TData>[];
@@ -939,7 +959,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
    * See all Columns Options on the official docs site:
    * @link https://www.material-react-table.com/docs/api/column-options
    */
-  columns: MRT_ColumnDef<TData, any>[];
+  columns: MRT_ColumnDef<TData>[];
   columnVirtualizerInstanceRef?: RefObject<MRT_ColumnVirtualizer | null>;
   columnVirtualizerOptions?:
     | ((props: {
@@ -1134,12 +1154,25 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
         table: MRT_TableInstance<TData>;
       }) => IconButtonProps)
     | IconButtonProps;
+  // MUI Autocomplete has four generic parameters (Value, Multiple, DisableClearable, FreeSolo).
+  // unknown is used for the value type at the table-options level where column TValue is not available.
+  // Multiple, DisableClearable and FreeSolo are widened to boolean | undefined to accept any config.
   muiFilterAutocompleteProps?:
     | ((props: {
         column: MRT_Column<TData>;
         table: MRT_TableInstance<TData>;
-      }) => AutocompleteProps<any, any, any, any>)
-    | AutocompleteProps<any, any, any, any>;
+      }) => AutocompleteProps<
+        unknown,
+        boolean | undefined,
+        boolean | undefined,
+        boolean | undefined
+      >)
+    | AutocompleteProps<
+        unknown,
+        boolean | undefined,
+        boolean | undefined,
+        boolean | undefined
+      >;
   muiFilterCheckboxProps?:
     | ((props: {
         column: MRT_Column<TData>;
@@ -1308,7 +1341,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     exitCreatingMode: () => void;
     row: MRT_Row<TData>;
     table: MRT_TableInstance<TData>;
-    values: Record<LiteralUnion<string & DeepKeys<TData>>, any>;
+    values: Record<LiteralUnion<string & DeepKeys<TData>>, unknown>;
   }) => Promise<void> | void;
   onDensityChange?: OnChangeFn<MRT_DensityState>;
   onDraggingColumnChange?: OnChangeFn<MRT_Column<TData> | null>;
@@ -1323,7 +1356,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     exitEditingMode: () => void;
     row: MRT_Row<TData>;
     table: MRT_TableInstance<TData>;
-    values: Record<LiteralUnion<string & DeepKeys<TData>>, any>;
+    values: Record<LiteralUnion<string & DeepKeys<TData>>, unknown>;
   }) => Promise<void> | void;
   onFiltersChange?: OnChangeFn<MRT_FiltersState>;
   onGlobalFilterFnChange?: OnChangeFn<MRT_FilterOption>;
@@ -1664,7 +1697,6 @@ export interface ColumnTypeResolver {
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
 }
 
-
 // New entry modal state — open/close, mode (create or edit), and optional initial values.
 export interface MRT_NewEntryModalState {
   // Whether the modal is currently open.
@@ -1678,9 +1710,11 @@ export interface MRT_NewEntryModalState {
 
 // ─── Form Field Configuration ────────────────────────────────────────────────
 
-
 // Props passed into a custom field render function — provides RHF name and column definition.
-export interface MRT_FormFieldRenderProps<TData extends MRT_RowData, TValue = unknown> {
+export interface MRT_FormFieldRenderProps<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> {
   // RHF field name — matches the column accessor key, used for register/Controller.
   name: string;
   // Column definition — provides header, type, and other column metadata.
@@ -1688,7 +1722,10 @@ export interface MRT_FormFieldRenderProps<TData extends MRT_RowData, TValue = un
 }
 
 // Configuration for a single form field — placed on a column definition via `formConfig`.
-export interface MRT_FormFieldConfig<TData extends MRT_RowData, TValue = unknown> {
+export interface MRT_FormFieldConfig<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> {
   // Disables this field in the form — all data columns are enabled by default, this is an opt-out flag.
   disabled?: boolean;
   // Render order inside the section. Lower number = rendered first. Fields without order appear last.
@@ -1743,8 +1780,10 @@ export interface MRT_FormAdditionalFieldRenderProps<TData extends MRT_RowData> {
 
 // A form field not tied to any column — has all the same options as MRT_FormFieldConfig,
 // plus a required name and a required render function that receives name and table instead of columnDef.
-export interface MRT_FormAdditionalField<TData extends MRT_RowData, TValue = unknown>
-  extends Omit<MRT_FormFieldConfig<TData, TValue>, 'render'> {
+export interface MRT_FormAdditionalField<
+  TData extends MRT_RowData,
+  TValue = unknown,
+> extends Omit<MRT_FormFieldConfig<TData, TValue>, 'render'> {
   // Unique name — used as the RHF field name. Must not conflict with any column accessor key.
   name: string;
   // Render function — required since there is no column type resolver to fall back on.

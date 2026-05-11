@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FormHelperText from '@mui/material/FormHelperText';
 import Slider, { type SliderProps } from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
@@ -115,7 +115,10 @@ export const MRT_FilterRangeSlider = <TData extends MRT_RowData>({
           mt: !showChangeModeButton ? '10px' : '6px',
           px: '4px',
           width: 'calc(100% - 8px)',
-          ...(parseFromValuesOrFunc(sliderProps?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(sliderProps?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       />
       {showChangeModeButton ? (

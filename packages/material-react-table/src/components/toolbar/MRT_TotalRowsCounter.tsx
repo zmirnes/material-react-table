@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
-import { useState } from 'react';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_TotalRowsCounterProps<TData extends MRT_RowData> {

@@ -1,13 +1,13 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
+import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 import {
-  MRT_FilterOperatorDefinition,
+  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
   type MRT_ColumnDef,
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../types';
-import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
-import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 
 // Shape of an enum cell value — resolved label is shown in the cell
 export type EnumValue = {

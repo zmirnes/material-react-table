@@ -16,7 +16,7 @@ const fuzzy = <TData extends MRT_RowData>(
   }
   // Provide a fallback for when the item ranks are equal
   return dir === 0
-    ? sortingFns.alphanumeric(rowA as Row<any>, rowB as Row<any>, columnId)
+    ? sortingFns.alphanumeric(rowA as Row<TData>, rowB as Row<TData>, columnId)
     : dir;
 };
 
@@ -29,5 +29,13 @@ export const rankGlobalFuzzy = <TData extends MRT_RowData>(
   rowA: MRT_Row<TData>,
   rowB: MRT_Row<TData>,
 ) =>
-  Math.max(...Object.values(rowB.columnFiltersMeta).map((v: any) => v.rank)) -
-  Math.max(...Object.values(rowA.columnFiltersMeta).map((v: any) => v.rank));
+  Math.max(
+    ...Object.values(rowB.columnFiltersMeta).map(
+      (v) => (v as RankingInfo).rank,
+    ),
+  ) -
+  Math.max(
+    ...Object.values(rowA.columnFiltersMeta).map(
+      (v) => (v as RankingInfo).rank,
+    ),
+  );

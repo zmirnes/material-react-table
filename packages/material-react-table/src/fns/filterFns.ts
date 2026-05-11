@@ -23,7 +23,7 @@ const fuzzy = <TData extends MRT_RowData>(
   return itemRank.passed;
 };
 
-fuzzy.autoRemove = (val: any) => !val;
+fuzzy.autoRemove = (val: unknown) => !val;
 
 const contains = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -37,7 +37,7 @@ const contains = <TData extends MRT_RowData>(
     .trim()
     .includes(filterValue.toString().toLowerCase().trim());
 
-contains.autoRemove = (val: any) => !val;
+contains.autoRemove = (val: unknown) => !val;
 
 const startsWith = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -51,7 +51,7 @@ const startsWith = <TData extends MRT_RowData>(
     .trim()
     .startsWith(filterValue.toString().toLowerCase().trim());
 
-startsWith.autoRemove = (val: any) => !val;
+startsWith.autoRemove = (val: unknown) => !val;
 
 const endsWith = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -65,7 +65,7 @@ const endsWith = <TData extends MRT_RowData>(
     .trim()
     .endsWith(filterValue.toString().toLowerCase().trim());
 
-endsWith.autoRemove = (val: any) => !val;
+endsWith.autoRemove = (val: unknown) => !val;
 
 const equals = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -75,7 +75,7 @@ const equals = <TData extends MRT_RowData>(
   row.getValue<number | string | null>(id)?.toString().toLowerCase().trim() ===
   filterValue.toString().toLowerCase().trim();
 
-equals.autoRemove = (val: any) => !val;
+equals.autoRemove = (val: unknown) => !val;
 
 const notEquals = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -85,7 +85,7 @@ const notEquals = <TData extends MRT_RowData>(
   row.getValue<number | string | null>(id)?.toString().toLowerCase().trim() !==
   filterValue.toString().toLowerCase().trim();
 
-notEquals.autoRemove = (val: any) => !val;
+notEquals.autoRemove = (val: unknown) => !val;
 
 const greaterThan = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -99,7 +99,7 @@ const greaterThan = <TData extends MRT_RowData>(
         .toLowerCase()
         .trim() > filterValue.toString().toLowerCase().trim();
 
-greaterThan.autoRemove = (val: any) => !val;
+greaterThan.autoRemove = (val: unknown) => !val;
 
 const greaterThanOrEqualTo = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -107,7 +107,7 @@ const greaterThanOrEqualTo = <TData extends MRT_RowData>(
   filterValue: number | string,
 ): boolean => equals(row, id, filterValue) || greaterThan(row, id, filterValue);
 
-greaterThanOrEqualTo.autoRemove = (val: any) => !val;
+greaterThanOrEqualTo.autoRemove = (val: unknown) => !val;
 
 const lessThan = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -121,7 +121,7 @@ const lessThan = <TData extends MRT_RowData>(
         .toLowerCase()
         .trim() < filterValue.toString().toLowerCase().trim();
 
-lessThan.autoRemove = (val: any) => !val;
+lessThan.autoRemove = (val: unknown) => !val;
 
 const lessThanOrEqualTo = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -129,37 +129,45 @@ const lessThanOrEqualTo = <TData extends MRT_RowData>(
   filterValue: number | string,
 ): boolean => equals(row, id, filterValue) || lessThan(row, id, filterValue);
 
-lessThanOrEqualTo.autoRemove = (val: any) => !val;
+lessThanOrEqualTo.autoRemove = (val: unknown) => !val;
 
 const between = <TData extends MRT_RowData>(
   row: Row<TData>,
   id: string,
   filterValues: [number | string, number | string],
 ): boolean =>
-  ((['', undefined] as any[]).includes(filterValues[0]) ||
+  ((['', undefined] as (string | number | undefined)[]).includes(
+    filterValues[0],
+  ) ||
     greaterThan(row, id, filterValues[0])) &&
   ((!isNaN(+filterValues[0]) &&
     !isNaN(+filterValues[1]) &&
     +filterValues[0] > +filterValues[1]) ||
-    (['', undefined] as any[]).includes(filterValues[1]) ||
+    (['', undefined] as (string | number | undefined)[]).includes(
+      filterValues[1],
+    ) ||
     lessThan(row, id, filterValues[1]));
 
-between.autoRemove = (val: any) => !val;
+between.autoRemove = (val: unknown) => !val;
 
 const betweenInclusive = <TData extends MRT_RowData>(
   row: Row<TData>,
   id: string,
   filterValues: [number | string, number | string],
 ): boolean =>
-  ((['', undefined] as any[]).includes(filterValues[0]) ||
+  ((['', undefined] as (string | number | undefined)[]).includes(
+    filterValues[0],
+  ) ||
     greaterThanOrEqualTo(row, id, filterValues[0])) &&
   ((!isNaN(+filterValues[0]) &&
     !isNaN(+filterValues[1]) &&
     +filterValues[0] > +filterValues[1]) ||
-    (['', undefined] as any[]).includes(filterValues[1]) ||
+    (['', undefined] as (string | number | undefined)[]).includes(
+      filterValues[1],
+    ) ||
     lessThanOrEqualTo(row, id, filterValues[1]));
 
-betweenInclusive.autoRemove = (val: any) => !val;
+betweenInclusive.autoRemove = (val: unknown) => !val;
 
 const empty = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -167,7 +175,7 @@ const empty = <TData extends MRT_RowData>(
   _filterValue: number | string,
 ): boolean => !row.getValue<number | string | null>(id)?.toString().trim();
 
-empty.autoRemove = (val: any) => !val;
+empty.autoRemove = (val: unknown) => !val;
 
 const notEmpty = <TData extends MRT_RowData>(
   row: Row<TData>,
@@ -175,7 +183,7 @@ const notEmpty = <TData extends MRT_RowData>(
   _filterValue: number | string,
 ): boolean => !!row.getValue<number | string | null>(id)?.toString().trim();
 
-notEmpty.autoRemove = (val: any) => !val;
+notEmpty.autoRemove = (val: unknown) => !val;
 
 export const MRT_FilterFns = {
   ...filterFns,
