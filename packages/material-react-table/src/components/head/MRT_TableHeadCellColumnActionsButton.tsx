@@ -1,6 +1,7 @@
+import { type MouseEvent, useState } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { type MouseEvent, useState } from 'react';
+import { MRT_ColumnActionMenu } from '../menus/MRT_ColumnActionMenu';
 import {
   type MRT_Header,
   type MRT_RowData,
@@ -8,7 +9,6 @@ import {
 } from '../../types';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_ColumnActionMenu } from '../menus/MRT_ColumnActionMenu';
 
 export interface MRT_TableHeadCellColumnActionsButtonProps<
   TData extends MRT_RowData,
@@ -74,7 +74,10 @@ export const MRT_TableHeadCellColumnActionsButton = <
             transition: 'all 150ms',
             width: '1.5rem',
             height: '1.5rem',
-            ...(parseFromValuesOrFunc(iconButtonProps?.sx, theme) as any),
+            ...(parseFromValuesOrFunc(iconButtonProps?.sx, theme) as Record<
+              string,
+              unknown
+            >),
           })}
           title={undefined}
         >

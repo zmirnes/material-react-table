@@ -1,4 +1,5 @@
-import TableRow, { type TableRowProps } from '@mui/material/TableRow';
+import { type DragEvent, memo, useMemo, useRef } from 'react';
+import { type VirtualItem } from '@tanstack/react-virtual';
 import {
   type Theme,
   alpha,
@@ -6,8 +7,9 @@ import {
   lighten,
   useTheme,
 } from '@mui/material/styles';
-import { type VirtualItem } from '@tanstack/react-virtual';
-import { type DragEvent, memo, useMemo, useRef } from 'react';
+import TableRow, { type TableRowProps } from '@mui/material/TableRow';
+import { MRT_TableBodyCell, Memo_MRT_TableBodyCell } from './MRT_TableBodyCell';
+import { MRT_TableDetailPanel } from './MRT_TableDetailPanel';
 import {
   type MRT_Cell,
   type MRT_ColumnVirtualizer,
@@ -23,8 +25,6 @@ import {
   getCommonPinnedCellStyles,
 } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_TableBodyCell, Memo_MRT_TableBodyCell } from './MRT_TableBodyCell';
-import { MRT_TableDetailPanel } from './MRT_TableDetailPanel';
 
 export interface MRT_TableBodyRowProps<TData extends MRT_RowData>
   extends TableRowProps {
@@ -123,7 +123,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
   const tableFooterHeight =
     (enableStickyFooter && tableFooterRef.current?.clientHeight) || 0;
 
-  const sx = parseFromValuesOrFunc(tableRowProps?.sx, theme as any);
+  const sx = parseFromValuesOrFunc(tableRowProps?.sx, theme as Theme);
 
   const defaultRowHeight =
     density === 'compact' ? 37 : density === 'comfortable' ? 53 : 69;
@@ -227,7 +227,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
           width: '100%',
           zIndex:
             rowPinningDisplayMode?.includes('sticky') && isRowPinned ? 2 : 0,
-          ...(sx as any),
+          ...(sx as Record<string, unknown>),
         })}
       >
         {virtualPaddingLeft ? (

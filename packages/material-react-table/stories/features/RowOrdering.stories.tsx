@@ -27,30 +27,37 @@ const columns: MRT_ColumnDef<Person>[] = [
   {
     accessorKey: 'num',
     header: '#',
+    type: 'number',
   },
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'email',
     header: 'Email Address',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'city',
     header: 'City',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
 ];
 
@@ -79,7 +86,7 @@ export const RowOrderingEnabled = () => {
           const { draggingRow, hoveredRow } = table.getState();
           if (hoveredRow && draggingRow) {
             data.splice(
-              (hoveredRow as MRT_Row<Person>).index,
+              (hoveredRow as unknown as MRT_Row<Person>).index,
               0,
               data.splice(draggingRow.index, 1)[0],
             );
@@ -221,7 +228,7 @@ export const RowOrderingWithRowVirtualization = () => {
           const { draggingRow, hoveredRow } = table.getState();
           if (hoveredRow && draggingRow) {
             data.splice(
-              (hoveredRow as MRT_Row<Person>).index,
+              (hoveredRow as unknown as MRT_Row<Person>).index,
               0,
               data.splice(draggingRow.index, 1)[0],
             );
@@ -237,6 +244,7 @@ const fakeColumns = [...Array(500)].map((_, i) => {
   return {
     accessorKey: i.toString(),
     header: 'Column ' + i.toString(),
+    type: 'string',
   };
 });
 
@@ -269,7 +277,7 @@ export const RowOrderingWithColumnVirtualization = () => {
           const { draggingRow, hoveredRow } = table.getState();
           if (hoveredRow && draggingRow) {
             data.splice(
-              (hoveredRow as MRT_Row<any>).index,
+              (hoveredRow as unknown as MRT_Row<Person>).index,
               0,
               data.splice(draggingRow.index, 1)[0],
             );

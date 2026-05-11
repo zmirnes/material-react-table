@@ -1,7 +1,7 @@
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { useEffect, useState } from 'react';
 import {
   type MRT_Column,
   type MRT_FilterOperatorDefinition,
@@ -63,7 +63,6 @@ const MRT_QuickFilterItem = <TData extends MRT_RowData>({
   //   - Rule is removed from filters.rules (deleted in drawer) → reset to initial value
   useEffect(() => {
     setLocalValue(rule?.value ?? operator.getInitialValue());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rule?.value]);
 
   // The rule object passed into editComponent.

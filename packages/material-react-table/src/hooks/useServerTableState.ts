@@ -1,7 +1,6 @@
+import { type Dispatch, type SetStateAction, useMemo, useState } from 'react';
 import { functionalUpdate } from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-import {
+import type {
   MRT_ActiveExportsState,
   MRT_ColumnOrderState,
   MRT_ColumnPinningState,
@@ -19,6 +18,7 @@ import {
   UseServerTableStateOptions,
   UseServerTableStateReturn,
 } from '../types';
+import { useDebouncedCallback } from 'use-debounce';
 
 export const useServerTableState = <TData extends MRT_RowData>({
   initialState,
@@ -100,11 +100,11 @@ export const useServerTableState = <TData extends MRT_RowData>({
 
   // --- Internal helper: creates a handler that updates state and debounced-saves ---
   const makePersistentHandler = <T>(
-    setter: React.Dispatch<React.SetStateAction<T>>,
+    setter: Dispatch<SetStateAction<T>>,
     currentValue: T,
     stateKey: keyof MRT_TableState<TData>,
   ) => {
-    return (updater: React.SetStateAction<T>) => {
+    return (updater: SetStateAction<T>) => {
       setter(updater);
       debouncedSave({
         [stateKey]: functionalUpdate(updater, currentValue),
@@ -189,7 +189,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
         'rowSelection',
       ),
       onActiveExportsChange: (
-        updater: React.SetStateAction<MRT_ActiveExportsState | undefined>,
+        updater: SetStateAction<MRT_ActiveExportsState | undefined>,
       ) => {
         const newValue = functionalUpdate(updater, activeExports);
         setActiveExports(newValue);

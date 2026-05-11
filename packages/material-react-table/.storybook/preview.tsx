@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
 import { createTheme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Preview } from '@storybook/react';
-import { useEffect, useState } from 'react';
+import ThemeProvider from '../src/theme';
+import { type Preview } from '@storybook/react';
 import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 import { addons } from 'storybook/preview-api';
-import ThemeProvider from '../src/theme';
 
 const channel = addons.getChannel();
 

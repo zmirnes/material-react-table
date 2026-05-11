@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  createFilterRule,
+  getDefaultFiltersState,
+  getFilterableColumns,
+  isFilterRuleIncomplete,
+} from './utils';
+import {
   type MRT_FilterRule,
   type MRT_FiltersLogicOperator,
   type MRT_FiltersState,
@@ -7,12 +13,6 @@ import {
   type MRT_SavedFilter,
   type MRT_TableInstance,
 } from '../../types';
-import {
-  createFilterRule,
-  getDefaultFiltersState,
-  getFilterableColumns,
-  isFilterRuleIncomplete,
-} from './utils';
 
 // Manages a local draft copy of the filter state that is edited inside the drawer.
 // The draft is only committed to the table when the user clicks "Apply".

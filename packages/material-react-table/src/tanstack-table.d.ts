@@ -1,5 +1,5 @@
-import '@tanstack/react-table'; //or vue, svelte, solid, qwik, etc.
-import { MRT_ColumnDef } from './types';
+import type { RowData } from '@tanstack/react-table';
+import type { MRT_ColumnDef } from './types';
 
 export interface IIconColTypeValue {
   color: string;
@@ -23,7 +23,8 @@ export interface MRT_DimensionsDef {
 }
 
 declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue> {
+  // Generics prefixed with _ to satisfy no-unused-vars rule (required by TanStack augmentation signature)
+  interface ColumnMeta<_TData extends RowData, _TValue> {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;

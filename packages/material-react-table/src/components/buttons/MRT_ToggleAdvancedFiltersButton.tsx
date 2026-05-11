@@ -1,8 +1,8 @@
 import Badge from '@mui/material/Badge';
 import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { MRT_AdvancedFilters } from '../advanced-filters/MRT_AdvancedFilters';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_ToggleAdvancedFiltersButtonProps<TData extends MRT_RowData>
   extends Omit<ButtonProps, 'children'> {

@@ -25,7 +25,7 @@ export const MRT_FilterRangeFields = <TData extends MRT_RowData>({
         display: 'grid',
         gap: '1rem',
         gridTemplateColumns: '1fr 1fr',
-        ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<string, unknown>),
       })}
     >
       {[0, 1].map((rangeFilterIndex) => (

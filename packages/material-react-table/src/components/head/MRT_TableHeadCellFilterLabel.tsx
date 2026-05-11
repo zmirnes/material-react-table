@@ -138,7 +138,10 @@ export const MRT_TableHeadCellFilterLabel = <TData extends MRT_RowData = {}>({
                 transform: 'scale(0.75)',
                 transition: 'all 150ms ease-in-out',
                 width: '16px',
-                ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+                ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+                  string,
+                  unknown
+                >),
               })}
             >
               <FilterAltIcon />

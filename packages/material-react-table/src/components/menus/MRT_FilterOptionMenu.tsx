@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import { MRT_ActionMenuItem } from './MRT_ActionMenuItem';
 import {
+  type MRT_Column,
   type MRT_FilterOption,
   type MRT_Header,
   type MRT_InternalFilterOption,
@@ -110,7 +111,7 @@ export interface MRT_FilterOptionMenuProps<TData extends MRT_RowData>
   header?: MRT_Header<TData>;
   onSelect?: () => void;
   setAnchorEl: (anchorEl: HTMLElement | null) => void;
-  setFilterValue?: (filterValue: any) => void;
+  setFilterValue?: (filterValue: unknown) => void;
   table: MRT_TableInstance<TData>;
 }
 
@@ -171,7 +172,7 @@ export const MRT_FilterOptionMenu = <TData extends MRT_RowData>({
       setGlobalFilterFn(option);
     } else if (option !== prevFilterMode) {
       // column filter mode
-      setColumnFilterFns((prev: { [key: string]: any }) => ({
+      setColumnFilterFns((prev: { [key: string]: string }) => ({
         ...prev,
         [header.id]: option,
       }));
@@ -194,7 +195,7 @@ export const MRT_FilterOptionMenu = <TData extends MRT_RowData>({
         // will now be array filter mode
         if (
           currentFilterValue instanceof String ||
-          (currentFilterValue as Array<any>)?.length
+          (currentFilterValue as Array<unknown>)?.length
         ) {
           column.setFilterValue([]);
           setFilterValue?.([]);
@@ -208,7 +209,7 @@ export const MRT_FilterOptionMenu = <TData extends MRT_RowData>({
         // will now be range filter mode
         if (
           !Array.isArray(currentFilterValue) ||
-          (!(currentFilterValue as Array<any>)?.every((v) => v === '') &&
+          (!(currentFilterValue as Array<unknown>)?.every((v) => v === '') &&
             !rangeModes.includes(prevFilterMode))
         ) {
           column.setFilterValue(['', '']);
@@ -255,13 +256,13 @@ export const MRT_FilterOptionMenu = <TData extends MRT_RowData>({
     >
       {(header && column && columnDef
         ? (columnDef.renderColumnFilterModeMenuItems?.({
-            column: column as any,
+            column: column as MRT_Column<TData>,
             internalFilterOptions,
             onSelectFilterMode: handleSelectFilterMode,
             table,
           }) ??
           renderColumnFilterModeMenuItems?.({
-            column: column as any,
+            column: column as MRT_Column<TData>,
             internalFilterOptions,
             onSelectFilterMode: handleSelectFilterMode,
             table,

@@ -57,7 +57,10 @@ export const MRT_ExpandAllButton = <TData extends MRT_RowData>({
             height: density === 'compact' ? '1.75rem' : '2.25rem',
             mt: density !== 'compact' ? '-0.25rem' : undefined,
             width: density === 'compact' ? '1.75rem' : '2.25rem',
-            ...(parseFromValuesOrFunc(iconButtonProps?.sx, theme) as any),
+            ...(parseFromValuesOrFunc(iconButtonProps?.sx, theme) as Record<
+              string,
+              unknown
+            >),
           })}
           title={undefined}
         >

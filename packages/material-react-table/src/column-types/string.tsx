@@ -1,12 +1,12 @@
 import {
-  MRT_FilterOperatorDefinition,
-  type ColumnTypeResolver,
-  type MRT_RowData,
-} from '../types';
-import {
   MRT_FilterRuleMultiTextEditor,
   MRT_FilterRuleTextEditor,
 } from './filterEditors';
+import {
+  type MRT_FilterOperatorDefinition,
+  type ColumnTypeResolver,
+  type MRT_RowData,
+} from '../types';
 
 // Resolver for plain string column type.
 // Supports text-based operators plus empty/not-empty checks.

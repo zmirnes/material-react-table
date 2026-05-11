@@ -96,7 +96,7 @@ export const EditingEnabledEditModeModalDefault = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -107,23 +107,28 @@ export const EditingEnabledEditModeModalDefault = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -145,7 +150,7 @@ export const EditingFeatureEnabledConditionally = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -154,23 +159,28 @@ export const EditingFeatureEnabledConditionally = () => {
     {
       accessorKey: 'firstName',
       header: 'First Name',
+      type: 'string',
     },
     {
       accessorKey: 'lastName',
       header: 'Last Name',
+      type: 'string',
     },
     {
       accessorKey: 'address',
       header: 'Address',
+      type: 'string',
     },
     {
       accessorKey: 'state',
       header: 'State',
+      type: 'string',
     },
     {
       accessorKey: 'phoneNumber',
       enableEditing: false,
       header: 'Phone Number',
+      type: 'string',
     },
   ];
 
@@ -198,7 +208,7 @@ export const EditingEnabledEditModeRow = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -209,23 +219,28 @@ export const EditingEnabledEditModeRow = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -249,7 +264,7 @@ export const EditingEnabledEditModeRowCustomSave = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -260,23 +275,28 @@ export const EditingEnabledEditModeRowCustomSave = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -305,7 +325,7 @@ export const EditingEnabledEditModeRowVirtualized = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -316,23 +336,28 @@ export const EditingEnabledEditModeRowVirtualized = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -360,7 +385,7 @@ export const EditingEnabledEditModeRowVirtualized = () => {
 export const EditingEnabledEditModeCell = () => {
   const [tableData, setTableData] = useState(data);
 
-  const handleSaveCell = (cell: MRT_Cell<Person>, value: any) => {
+  const handleSaveCell = (cell: MRT_Cell<Person>, value: unknown) => {
     //@ts-expect-error
     tableData[cell.row.index][cell.column.id] = value;
     setTableData([...tableData]);
@@ -372,23 +397,28 @@ export const EditingEnabledEditModeCell = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -411,7 +441,7 @@ export const EditingEnabledEditModeCell = () => {
 export const EditingEnabledEditModeCellWithRowActions = () => {
   const [tableData, setTableData] = useState(data);
 
-  const handleSaveCell = (cell: MRT_Cell<Person>, value: any) => {
+  const handleSaveCell = (cell: MRT_Cell<Person>, value: unknown) => {
     //@ts-expect-error
     tableData[cell.row.index][cell.column.id] = value;
     setTableData([...tableData]);
@@ -423,23 +453,28 @@ export const EditingEnabledEditModeCellWithRowActions = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -476,22 +511,27 @@ export const EditingEnabledEditModeTable = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -513,7 +553,7 @@ export const EditSelectVariant = () => {
     row,
     values,
   }) => {
-    tableData[+row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
   };
 
@@ -523,24 +563,29 @@ export const EditSelectVariant = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           editSelectOptions: usStates,
           editVariant: 'select',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -559,7 +604,7 @@ export const EditSelectVariantAlternate = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
   };
 
@@ -569,14 +614,17 @@ export const EditSelectVariantAlternate = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
@@ -628,10 +676,12 @@ export const EditSelectVariantAlternate = () => {
           ],
           editVariant: 'select',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -651,7 +701,7 @@ export const EditingCustomizeInput = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
   };
 
@@ -718,18 +768,22 @@ export const EditingCustomizeInput = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
           muiEditTextFieldProps: () => ({
             children: usStates.map((state) => (
               <MenuItem key={state} value={state}>
@@ -742,6 +796,7 @@ export const EditingCustomizeInput = () => {
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -763,7 +818,7 @@ export const EditingEnabledAsync = () => {
   }) => {
     setIsSaving(true);
     setTimeout(() => {
-      tableData[row.index] = values;
+      tableData[row.index] = values as unknown as Person;
       setTableData([...tableData]);
       setIsSaving(false);
     }, 1500);
@@ -775,22 +830,27 @@ export const EditingEnabledAsync = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -824,36 +884,41 @@ export const EditingNestedData = () => {
           accessorFn: (row) => row.name.firstName,
           header: 'First Name',
           id: 'firstName',
+          type: 'string',
         },
         {
           accessorKey: 'name.lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
       enableEditing
       onEditingRowSave={({ row, values }) => {
         tableData[row.index] = {
-          address: row._valuesCache.address,
+          address: row._valuesCache.address as string,
           name: {
-            firstName: values.firstName,
-            lastName: values['name.lastName'],
+            firstName: values.firstName as string,
+            lastName: values['name.lastName'] as string,
           },
-          phoneNumber: row._valuesCache.phoneNumber,
-          state: row._valuesCache.state,
+          phoneNumber: row._valuesCache.phoneNumber as string,
+          state: row._valuesCache.state as string,
         };
         setTableData([...tableData]);
       }}
@@ -869,7 +934,7 @@ export const EditingEnabledEditModeTableWithGroupedRows = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -880,23 +945,28 @@ export const EditingEnabledEditModeTableWithGroupedRows = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -916,7 +986,7 @@ export const EnableEditingConditionally = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -927,23 +997,28 @@ export const EnableEditingConditionally = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: (row) => row.original.state.includes('N'),
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -962,7 +1037,7 @@ export const EnableEditingConditionallyCell = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -973,23 +1048,28 @@ export const EnableEditingConditionallyCell = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: (row) => row.original.state.includes('N'),
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -1008,7 +1088,7 @@ export const EnableEditingConditionallyTable = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -1019,23 +1099,28 @@ export const EnableEditingConditionallyTable = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: (row) => row.original.state.includes('N'),
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -1049,7 +1134,7 @@ export const EnableEditingConditionallyTable = () => {
 export const EditingCellManualOnChange = () => {
   const [tableData, setTableData] = useState(data);
 
-  const handleSaveCell = (cell: MRT_Cell<Person>, value: any) => {
+  const handleSaveCell = (cell: MRT_Cell<Person>, value: unknown) => {
     //@ts-expect-error
     tableData[cell.row.index][cell.column.id] = value;
     setTableData([...tableData]);
@@ -1061,30 +1146,34 @@ export const EditingCellManualOnChange = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
           muiEditTextFieldProps: ({ cell }) => ({
             onBlur: (event) => {
               handleSaveCell(cell, event.target.value);
             },
-            onChange: (event) =>
-              console.log('state col onChange', event.target.value),
+            onChange: (_event) => undefined,
           }),
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       data={tableData}
@@ -1094,8 +1183,7 @@ export const EditingCellManualOnChange = () => {
         onBlur: (event) => {
           handleSaveCell(cell, event.target.value);
         },
-        onChange: (event) =>
-          console.log('all col onChange', event.target.value),
+        onChange: (_event) => undefined,
       })}
     />
   );

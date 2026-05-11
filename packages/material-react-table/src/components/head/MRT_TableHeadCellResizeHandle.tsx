@@ -88,7 +88,10 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
             : 'all 150ms ease-in-out',
           userSelect: 'none',
           zIndex: 4,
-          ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       />
     </Box>

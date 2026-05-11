@@ -149,7 +149,7 @@ export const MRT_EditCellTextField = <TData extends MRT_RowData>({
           ...(parseFromValuesOrFunc(
             textFieldProps?.InputProps?.sx,
             theme,
-          ) as any),
+          ) as Record<string, unknown>),
         }),
       }}
       SelectProps={{

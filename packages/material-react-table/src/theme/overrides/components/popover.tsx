@@ -1,7 +1,6 @@
-import { listClasses } from "@mui/material/List";
-import { type Theme } from "@mui/material/styles";
-
-import { paper } from "../../css";
+import { listClasses } from '@mui/material/List';
+import { type Theme } from '@mui/material/styles';
+import { paper } from '../../css';
 
 // ----------------------------------------------------------------------
 

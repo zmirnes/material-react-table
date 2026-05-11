@@ -1,8 +1,8 @@
 import { type DragEvent, useEffect } from 'react';
 import Box, { type BoxProps } from '@mui/material/Box';
 import Fade from '@mui/material/Fade';
-import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
@@ -66,7 +66,10 @@ export const MRT_ToolbarDropZone = <TData extends MRT_RowData>({
           position: 'absolute',
           width: '100%',
           zIndex: 4,
-          ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       >
         <Typography fontStyle="italic">

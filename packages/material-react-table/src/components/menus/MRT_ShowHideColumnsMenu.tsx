@@ -1,8 +1,9 @@
+import { useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Menu, { type MenuProps } from '@mui/material/Menu';
-import { useMemo, useState } from 'react';
+import { MRT_ShowHideColumnsMenuItems } from './MRT_ShowHideColumnsMenuItems';
 import {
   type MRT_Column,
   type MRT_RowData,
@@ -10,7 +11,6 @@ import {
   type MRT_VisibilityState,
 } from '../../types';
 import { getDefaultColumnOrderIds } from '../../utils/displayColumn.utils';
-import { MRT_ShowHideColumnsMenuItems } from './MRT_ShowHideColumnsMenuItems';
 
 export interface MRT_ShowHideColumnsMenuProps<TData extends MRT_RowData>
   extends Partial<MenuProps> {

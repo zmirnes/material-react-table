@@ -1,9 +1,9 @@
+import { type MouseEvent, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import { type MouseEvent, useState } from 'react';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { getIsAllPagesSelectionActive } from '../../utils/row.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';

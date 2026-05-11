@@ -1,3 +1,4 @@
+import type React from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -33,6 +34,7 @@ import SortIcon from '@mui/icons-material/Sort';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import type { SvgIconProps } from '@mui/material/SvgIcon';
 
 export const MRT_Default_Icons = {
   AddIcon,
@@ -72,4 +74,9 @@ export const MRT_Default_Icons = {
   VisibilityOffIcon,
 } as const;
 
-export type MRT_Icons = Record<keyof typeof MRT_Default_Icons, any>;
+// Each icon value is a React component (class or function) that accepts SvgIconProps.
+// ComponentType<SvgIconProps> is the correct type for all MUI SvgIcon components.
+export type MRT_Icons = Record<
+  keyof typeof MRT_Default_Icons,
+  React.ComponentType<SvgIconProps>
+>;

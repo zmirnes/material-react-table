@@ -5,6 +5,7 @@ import {
   type MRT_RowData,
   type MRT_RowVirtualizer,
   type MRT_TableInstance,
+  type MRT_VirtualItem,
 } from '../types';
 import { parseFromValuesOrFunc } from '../utils/utils';
 import { extraIndexRangeExtractor } from '../utils/virtualization.utils';
@@ -77,7 +78,8 @@ export const useMRT_RowVirtualizer = <
     ...rowVirtualizerProps,
   }) as unknown as MRT_RowVirtualizer<TScrollElement, TItemElement>;
 
-  rowVirtualizer.virtualRows = rowVirtualizer.getVirtualItems() as any;
+  rowVirtualizer.virtualRows =
+    rowVirtualizer.getVirtualItems() as MRT_VirtualItem[];
 
   if (rowVirtualizerInstanceRef) {
     //@ts-expect-error

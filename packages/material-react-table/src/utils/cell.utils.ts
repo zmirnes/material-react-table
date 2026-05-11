@@ -1,14 +1,15 @@
-import {
-  MRT_Header,
-  type MRT_Cell,
-  type MRT_RowData,
-  type MRT_TableInstance,
-} from '../types';
+import type React from 'react';
 import {
   getMRT_RowSelectionHandler,
   getMRT_SelectAllHandler,
 } from './row.utils';
 import { parseFromValuesOrFunc } from './utils';
+import {
+  type MRT_Header,
+  type MRT_Cell,
+  type MRT_RowData,
+  type MRT_TableInstance,
+} from '../types';
 
 const isWinCtrlMacMeta = (event: React.KeyboardEvent<HTMLTableCellElement>) => {
   return (
@@ -94,7 +95,7 @@ export const cellKeyboardShortcuts = <TData extends MRT_RowData = MRT_RowData>({
         table,
         //@ts-expect-error
         staticRowIndex: +event.target.getAttribute('data-index'),
-      })(event as any);
+      })(event as unknown as React.ChangeEvent<HTMLInputElement>);
     } else if (
       header?.column?.id === '__check__' &&
       table.options.enableSelectAll
@@ -102,7 +103,7 @@ export const cellKeyboardShortcuts = <TData extends MRT_RowData = MRT_RowData>({
       event.preventDefault();
       getMRT_SelectAllHandler({
         table,
-      })(event as any);
+      })(event as unknown as React.ChangeEvent<HTMLInputElement>);
     } else if (
       cell?.column?.id === 'mrt-row-expand' &&
       (cell.row.getCanExpand() ||

@@ -12,9 +12,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField, { type TextFieldProps } from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import { debounce } from '@mui/material/utils';
+import { MRT_FilterOptionMenu } from '../menus/MRT_FilterOptionMenu';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_FilterOptionMenu } from '../menus/MRT_FilterOptionMenu';
 
 export interface MRT_GlobalFilterTextFieldProps<TData extends MRT_RowData>
   extends TextFieldProps<'standard'> {
@@ -142,7 +142,7 @@ export const MRT_GlobalFilterTextField = <TData extends MRT_RowData>({
             ...(parseFromValuesOrFunc(
               textFieldProps?.InputProps?.sx,
               theme,
-            ) as any),
+            ) as Record<string, unknown>),
           }),
         }}
         inputRef={(inputRef) => {

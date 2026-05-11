@@ -11,68 +11,6 @@ const meta: Meta = {
 
 export default meta;
 
-const longColumns: MRT_ColumnDef<any>[] = [
-  {
-    accessorKey: 'firstName',
-    header: 'First Name',
-  },
-  {
-    accessorKey: 'middleName',
-    header: 'Middle Name',
-  },
-  {
-    accessorKey: 'lastName',
-    header: 'Last Name',
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email Address',
-    size: 300,
-  },
-  {
-    accessorKey: 'phoneNumber',
-    header: 'Phone Number',
-  },
-  {
-    accessorKey: 'address',
-    header: 'Address',
-  },
-  {
-    accessorKey: 'zipCode',
-    header: 'Zip Code',
-  },
-  {
-    accessorKey: 'city',
-    header: 'City',
-  },
-  {
-    accessorKey: 'state',
-    header: 'State',
-  },
-  {
-    accessorKey: 'country',
-    header: 'Country',
-    size: 200,
-  },
-  {
-    accessorKey: 'favoriteColor',
-    header: 'Favorite Color',
-  },
-  {
-    accessorKey: 'favoriteQuote',
-    header: 'Favorite Quote',
-    size: 700,
-  },
-  {
-    accessorKey: 'petName',
-    header: 'Pet Name',
-  },
-  {
-    accessorKey: 'petType',
-    header: 'Pet Type',
-  },
-];
-
 const longData = [...Array(5000)].map(() => ({
   address: faker.location.streetAddress(),
   city: faker.location.city(),
@@ -89,6 +27,82 @@ const longData = [...Array(5000)].map(() => ({
   state: faker.location.state(),
   zipCode: faker.location.zipCode(),
 }));
+
+const longColumns: MRT_ColumnDef<(typeof longData)[0]>[] = [
+  {
+    accessorKey: 'firstName',
+    header: 'First Name',
+    type: 'string',
+  },
+  {
+    accessorKey: 'middleName',
+    header: 'Middle Name',
+    type: 'string',
+  },
+  {
+    accessorKey: 'lastName',
+    header: 'Last Name',
+    type: 'string',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email Address',
+    size: 300,
+    type: 'string',
+  },
+  {
+    accessorKey: 'phoneNumber',
+    header: 'Phone Number',
+    type: 'string',
+  },
+  {
+    accessorKey: 'address',
+    header: 'Address',
+    type: 'string',
+  },
+  {
+    accessorKey: 'zipCode',
+    header: 'Zip Code',
+    type: 'string',
+  },
+  {
+    accessorKey: 'city',
+    header: 'City',
+    type: 'string',
+  },
+  {
+    accessorKey: 'state',
+    header: 'State',
+    type: 'string',
+  },
+  {
+    accessorKey: 'country',
+    header: 'Country',
+    size: 200,
+    type: 'string',
+  },
+  {
+    accessorKey: 'favoriteColor',
+    header: 'Favorite Color',
+    type: 'string',
+  },
+  {
+    accessorKey: 'favoriteQuote',
+    header: 'Favorite Quote',
+    size: 700,
+    type: 'string',
+  },
+  {
+    accessorKey: 'petName',
+    header: 'Pet Name',
+    type: 'string',
+  },
+  {
+    accessorKey: 'petType',
+    header: 'Pet Type',
+    type: 'string',
+  },
+];
 
 export const EnableRowVirtualizationDense = () => (
   <MaterialReactTable
@@ -217,16 +231,19 @@ export const EnableRowVirtualizationStickyFooter = () => (
         accessorKey: 'firstName',
         footer: 'First Name',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'middleName',
         footer: 'Middle Name',
         header: 'Middle Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         footer: 'Last Name',
         header: 'Last Name',
+        type: 'string',
       },
     ]}
     data={longData}
@@ -273,16 +290,19 @@ export const EnableColumnVirtualizationWithFooter = () => (
         accessorKey: 'firstName',
         footer: 'First Name',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'middleName',
         footer: 'Middle Name',
         header: 'Middle Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         footer: 'Last Name',
         header: 'Last Name',
+        type: 'string',
       },
     ]}
     data={longData.slice(0, 15)}
@@ -298,16 +318,19 @@ export const EnableColumnVirtualizationStickyFooter = () => (
         accessorKey: 'firstName',
         footer: 'First Name',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'middleName',
         footer: 'Middle Name',
         header: 'Middle Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         footer: 'Last Name',
         header: 'Last Name',
+        type: 'string',
       },
     ]}
     data={longData.slice(0, 50)}
@@ -349,6 +372,7 @@ const fakeColumns = [...Array(500)].map((_, i) => {
   return {
     accessorKey: i.toString(),
     header: 'Column ' + i.toString(),
+    type: 'string',
   };
 });
 

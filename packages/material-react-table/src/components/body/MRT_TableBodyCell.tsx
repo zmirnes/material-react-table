@@ -1,7 +1,4 @@
-import Skeleton from '@mui/material/Skeleton';
-import TableCell, { type TableCellProps } from '@mui/material/TableCell';
-import { useTheme } from '@mui/material/styles';
-import {
+import React, {
   type DragEvent,
   type MouseEvent,
   type RefObject,
@@ -10,6 +7,12 @@ import {
   useMemo,
   useState,
 } from 'react';
+import Skeleton from '@mui/material/Skeleton';
+import { useTheme } from '@mui/material/styles';
+import TableCell, { type TableCellProps } from '@mui/material/TableCell';
+import { MRT_CopyButton } from '../buttons/MRT_CopyButton';
+import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
+import { MRT_TableBodyCellValue } from './MRT_TableBodyCellValue';
 import {
   type MRT_Cell,
   type MRT_RowData,
@@ -22,9 +25,6 @@ import {
 } from '../../utils/cell.utils';
 import { getCommonMRTCellStyles } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_CopyButton } from '../buttons/MRT_CopyButton';
-import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
-import { MRT_TableBodyCellValue } from './MRT_TableBodyCellValue';
 
 export interface MRT_TableBodyCellProps<TData extends MRT_RowData>
   extends TableCellProps {
@@ -320,7 +320,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
             columnDef.Cell?.({
               cell,
               column,
-              renderedCellValue: cell.renderValue() as any,
+              renderedCellValue: cell.renderValue() as React.ReactNode,
               row,
               rowRef,
               staticColumnIndex,

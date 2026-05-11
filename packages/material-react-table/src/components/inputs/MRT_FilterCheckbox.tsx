@@ -76,7 +76,10 @@ export const MRT_FilterCheckbox = <TData extends MRT_RowData>({
             sx={(theme) => ({
               height: '2.5rem',
               width: '2.5rem',
-              ...(parseFromValuesOrFunc(checkboxProps?.sx, theme) as any),
+              ...(parseFromValuesOrFunc(checkboxProps?.sx, theme) as Record<
+                string,
+                unknown
+              >),
             })}
           />
         }

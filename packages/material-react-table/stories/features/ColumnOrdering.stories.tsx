@@ -1,11 +1,11 @@
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
 import { useState } from 'react';
 import {
   type MRT_ColumnDef,
   type MRT_ColumnOrderState,
   MaterialReactTable,
 } from '../../src';
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Column Ordering Examples',

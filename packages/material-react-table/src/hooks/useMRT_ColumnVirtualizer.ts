@@ -4,6 +4,7 @@ import {
   type MRT_ColumnVirtualizer,
   type MRT_RowData,
   type MRT_TableInstance,
+  type MRT_VirtualItem,
 } from '../types';
 import { parseFromValuesOrFunc } from '../utils/utils';
 import { extraIndexRangeExtractor } from '../utils/virtualization.utils';
@@ -91,7 +92,7 @@ export const useMRT_ColumnVirtualizer = <
   }) as unknown as MRT_ColumnVirtualizer<TScrollElement, TItemElement>;
 
   const virtualColumns = columnVirtualizer.getVirtualItems();
-  columnVirtualizer.virtualColumns = virtualColumns as any;
+  columnVirtualizer.virtualColumns = virtualColumns as MRT_VirtualItem[];
   const numColumns = virtualColumns.length;
 
   if (numColumns) {
@@ -120,5 +121,5 @@ export const useMRT_ColumnVirtualizer = <
     columnVirtualizerInstanceRef.current = columnVirtualizer;
   }
 
-  return columnVirtualizer as any;
+  return columnVirtualizer as unknown as MRT_ColumnVirtualizer;
 };

@@ -36,7 +36,7 @@ export const MRT_ColumnPinningButtons = <TData extends MRT_RowData>({
       sx={(theme) => ({
         minWidth: '70px',
         textAlign: 'center',
-        ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<string, unknown>),
       })}
     >
       {column.getIsPinned() ? (

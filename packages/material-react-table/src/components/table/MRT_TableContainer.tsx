@@ -1,12 +1,12 @@
 import TableContainer, {
   type TableContainerProps,
 } from '@mui/material/TableContainer';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_CellActionMenu } from '../menus/MRT_CellActionMenu';
 import { MRT_EditRowModal } from '../modals/MRT_EditRowModal';
 import { MRT_Table } from './MRT_Table';
 import { MRT_TableLoadingOverlay } from './MRT_TableLoadingOverlay';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_TableContainerProps<TData extends MRT_RowData>
   extends TableContainerProps {
@@ -27,8 +27,14 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     },
     refs: { tableContainerRef },
   } = table;
-  const { actionCell, creatingRow, editingRow, isLoading, showLoadingOverlay, newEntryModal } =
-    getState();
+  const {
+    actionCell,
+    creatingRow,
+    editingRow,
+    isLoading,
+    showLoadingOverlay,
+    newEntryModal,
+  } = getState();
 
   const loading =
     showLoadingOverlay !== false && (isLoading || showLoadingOverlay);
@@ -40,7 +46,8 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     ...rest,
   };
 
-  const createModalOpen = (createDisplayMode === 'modal' && creatingRow) || newEntryModal.open;
+  const createModalOpen =
+    (createDisplayMode === 'modal' && creatingRow) || newEntryModal.open;
   const editModalOpen = editDisplayMode === 'modal' && editingRow;
 
   return (
@@ -68,7 +75,10 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
         maxWidth: '100%',
         overflow: 'auto',
         position: 'relative',
-        ...(parseFromValuesOrFunc(tableContainerProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableContainerProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       {loading ? <MRT_TableLoadingOverlay table={table} /> : null}

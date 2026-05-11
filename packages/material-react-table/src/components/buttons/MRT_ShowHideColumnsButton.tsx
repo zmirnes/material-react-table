@@ -1,8 +1,8 @@
+import { type MouseEvent, useState } from 'react';
 import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { type MouseEvent, useState } from 'react';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { MRT_ShowHideColumnsMenu } from '../menus/MRT_ShowHideColumnsMenu';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_ShowHideColumnsButtonProps<TData extends MRT_RowData>
   extends Omit<ButtonProps, 'children'> {

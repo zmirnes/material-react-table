@@ -1,4 +1,3 @@
-import { ColumnType, ColumnTypeResolver } from '../types';
 import { BooleanColumnResolver } from './boolean';
 import { DateColumnResolver } from './date';
 import { DateTimeColumnResolver } from './dateTime';
@@ -7,6 +6,7 @@ import { EnumColumnResolver } from './enum';
 import { IconColumnResolver } from './icon';
 import { NumberColumnResolver } from './number';
 import { StringColumnResolver } from './string';
+import { type ColumnType, type ColumnTypeResolver } from '../types';
 
 export const columnTypeResolvers: Record<
   Exclude<ColumnType, 'object'>,

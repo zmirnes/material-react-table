@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   type MRT_Column,
   type MRT_ColumnDef,
+  type MRT_RowData,
   MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
@@ -14,6 +15,7 @@ const meta: Meta = {
 export default meta;
 
 interface Person {
+  [key: string]: unknown;
   city: string;
   firstName: string;
   gender: string;
@@ -25,26 +27,31 @@ const columns = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'gender',
     header: 'Gender',
+    type: 'enum',
   },
   {
     accessorKey: 'city',
     header: 'City',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
 ] as MRT_ColumnDef<Person>[];
 
-const data = [...Array(300)].map(() => ({
+const data: Person[] = [...Array(300)].map(() => ({
   city: faker.location.city(),
   firstName: faker.person.firstName(),
   gender: Math.random() < 0.95 ? faker.person.sex() : faker.person.gender(),
@@ -181,10 +188,12 @@ export const ColumnGroupingEnabledCustomAggregate = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         AggregatedCell: ({ cell }) => (
@@ -192,14 +201,17 @@ export const ColumnGroupingEnabledCustomAggregate = () => (
         ),
         accessorKey: 'gender',
         header: 'Gender',
+        type: 'enum',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -217,8 +229,8 @@ export const ColumnGroupingBannerOnBottom = () => (
 );
 
 export const GroupingColumnsSetState = () => {
-  const [columns, setColumns] = useState<MRT_ColumnDef<any>[]>([]);
-  const [data, setData] = useState<any>([]);
+  const [columns, setColumns] = useState<MRT_ColumnDef<MRT_RowData>[]>([]);
+  const [data, setData] = useState<MRT_RowData[]>([]);
 
   useEffect(() => {
     // Do something and set columns and data
@@ -227,22 +239,27 @@ export const GroupingColumnsSetState = () => {
       {
         accessorKey: 'name.firstName', //access nested data with dot notation
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address', //normal accessorKey
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]);
 
@@ -347,10 +364,12 @@ export const GroupingAndDraggingWithSomeDisabledGrouping = () => {
         accessorKey: 'firstName',
         enableGrouping: false,
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
     ],
     [],

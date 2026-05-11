@@ -11,7 +11,7 @@ import {
   MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Toolbar Examples',
@@ -355,7 +355,7 @@ export const ToolbarAlertBannerBottomWithActionsAlsoBottom = () => (
   />
 );
 
-export const renderCustomTopToolbar = () => (
+export const RenderCustomTopToolbar = () => (
   <MaterialReactTable
     columns={columns}
     data={data}
@@ -363,7 +363,7 @@ export const renderCustomTopToolbar = () => (
   />
 );
 
-export const renderCustomBottomToolbar = () => (
+export const RenderCustomBottomToolbar = () => (
   <MaterialReactTable
     columns={columns}
     data={data}

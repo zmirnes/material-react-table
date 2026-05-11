@@ -50,7 +50,7 @@ export const MRT_EditActionButtons = <TData extends MRT_RowData>({
       onEditingRowCancel?.({ row, table });
       setEditingRow(null);
     }
-    row._valuesCache = {} as any; //reset values cache
+    row._valuesCache = {} as Record<string, unknown>; //reset values cache
   };
 
   const handleSubmitRow = () => {
@@ -89,7 +89,7 @@ export const MRT_EditActionButtons = <TData extends MRT_RowData>({
       sx={(theme) => ({
         display: 'flex',
         gap: '0.75rem',
-        ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<string, unknown>),
       })}
     >
       {variant === 'icon' ? (

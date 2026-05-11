@@ -1,5 +1,5 @@
-import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
+import Typography from '@mui/material/Typography';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_SelectionCountBadgeProps<TData extends MRT_RowData> {

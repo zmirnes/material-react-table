@@ -2,15 +2,16 @@ import { useState } from 'react';
 import Add from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import {
   type MRT_TableOptions,
   MaterialReactTable,
   createRow,
-  MRT_Row,
+  type MRT_Row,
 } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
-import { MenuItem, Select } from '@mui/material';
 
 const meta: Meta = {
   title: 'Features/Creating Examples',

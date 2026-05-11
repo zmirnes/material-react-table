@@ -1,5 +1,5 @@
+import { type MRT_ExportFileResponse } from '../../types';
 import printJS from 'print-js';
-import { MRT_ExportFileResponse } from '../../types';
 
 export const printExportFiles = (files: MRT_ExportFileResponse[]): void => {
   files.forEach((file) => {

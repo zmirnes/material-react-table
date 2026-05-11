@@ -1,3 +1,4 @@
+import { type Row } from '@tanstack/react-table';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import {
@@ -199,11 +200,13 @@ export const MultiAggregationPerColumn = () => (
         accessorKey: 'firstName',
         enableGrouping: false,
         header: 'First Name',
+        type: 'text',
       },
       {
         accessorKey: 'lastName',
         enableGrouping: false,
         header: 'Last Name',
+        type: 'text',
       },
       {
         AggregatedCell: ({ cell, table }) => (
@@ -230,8 +233,13 @@ export const MultiAggregationPerColumn = () => (
           </Stack>
         ),
         accessorKey: 'age',
+        type: 'number',
         //manually set multiple aggregation functions
-        aggregationFn: (columnId, leafRows: any, childRows: any) => [
+        aggregationFn: (
+          columnId,
+          leafRows: Row<(typeof data)[0]>[],
+          childRows: Row<(typeof data)[0]>[],
+        ) => [
           MRT_AggregationFns.min(columnId, leafRows, childRows),
           MRT_AggregationFns.max(columnId, leafRows, childRows),
         ],
@@ -243,10 +251,12 @@ export const MultiAggregationPerColumn = () => (
         ),
         accessorKey: 'gender',
         header: 'Gender',
+        type: 'enum',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         AggregatedCell: ({ cell, table }) => (
@@ -299,6 +309,7 @@ export const MultiAggregationPerColumn = () => (
         aggregationFn: ['count', 'mean'], //multiple aggregation functions
         enableGrouping: false,
         header: 'Salary',
+        type: 'number',
       },
     ]}
     data={data}

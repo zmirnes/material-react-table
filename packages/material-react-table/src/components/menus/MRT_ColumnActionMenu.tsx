@@ -100,7 +100,7 @@ export const MRT_ColumnActionMenu = <TData extends MRT_RowData>({
 
   const handleGroupByColumn = () => {
     column.toggleGrouping();
-    setColumnOrder((old: any) => ['mrt-row-expand', ...old]);
+    setColumnOrder((old: string[]) => ['mrt-row-expand', ...old]);
     setAnchorEl(null);
   };
 

@@ -1,25 +1,25 @@
-import { buttonClasses } from "@mui/material/Button";
-import { type Theme } from "@mui/material/styles";
-import Iconify from "../../../components/iconify";
+import { buttonClasses } from '@mui/material/Button';
+import { type Theme } from '@mui/material/styles';
+import Iconify from '../../../components/iconify';
 
 // ----------------------------------------------------------------------
 
 const dateList = [
-  "DatePicker",
-  "DateTimePicker",
-  "StaticDatePicker",
-  "DesktopDatePicker",
-  "DesktopDateTimePicker",
+  'DatePicker',
+  'DateTimePicker',
+  'StaticDatePicker',
+  'DesktopDatePicker',
+  'DesktopDateTimePicker',
   //
-  "MobileDatePicker",
-  "MobileDateTimePicker",
+  'MobileDatePicker',
+  'MobileDateTimePicker',
 ];
 
 const timeList = [
-  "TimePicker",
-  "MobileTimePicker",
-  "StaticTimePicker",
-  "DesktopTimePicker",
+  'TimePicker',
+  'MobileTimePicker',
+  'StaticTimePicker',
+  'DesktopTimePicker',
 ];
 
 const switchIcon = () => <Iconify icon="eva:chevron-down-fill" width={24} />;
@@ -39,7 +39,7 @@ const clockIcon = () => (
 );
 
 const desktopTypes = dateList.reduce(
-  (result: Record<string, any>, currentValue) => {
+  (result: Record<string, unknown>, currentValue) => {
     result[`Mui${currentValue}`] = {
       defaultProps: {
         slots: {
@@ -57,7 +57,7 @@ const desktopTypes = dateList.reduce(
 );
 
 const timeTypes = timeList.reduce(
-  (result: Record<string, any>, currentValue) => {
+  (result: Record<string, unknown>, currentValue) => {
     result[`Mui${currentValue}`] = {
       defaultProps: {
         slots: {
@@ -78,11 +78,11 @@ export function datePicker(theme: Theme) {
     MuiPickersLayout: {
       styleOverrides: {
         root: {
-          "& .MuiPickersLayout-actionBar": {
+          '& .MuiPickersLayout-actionBar': {
             [`& .${buttonClasses.root}:last-of-type`]: {
               backgroundColor: theme.palette.text.primary,
               color:
-                theme.palette.mode === "light"
+                theme.palette.mode === 'light'
                   ? theme.palette.common.white
                   : theme.palette.grey[800],
             },

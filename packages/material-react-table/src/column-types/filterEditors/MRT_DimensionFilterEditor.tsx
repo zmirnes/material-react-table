@@ -1,10 +1,10 @@
+import { type CSSProperties } from 'react';
 import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
-import { type CSSProperties } from 'react';
 import {
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,

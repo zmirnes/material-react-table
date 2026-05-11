@@ -1,8 +1,15 @@
+import {
+  type Dispatch,
+  type MouseEvent,
+  type SetStateAction,
+  useMemo,
+  useState,
+} from 'react';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PrintIcon from '@mui/icons-material/Print';
-import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -14,8 +21,9 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { Dispatch, MouseEvent, SetStateAction, useMemo, useState } from 'react';
-import {
+import { downloadExportFiles } from '../../utils/exports/download-files';
+import { printExportFiles } from '../../utils/exports/print-pdf';
+import type {
   MRT_ActiveExportsState,
   MRT_ExportDefinition,
   MRT_ExportFileResponse,
@@ -23,8 +31,6 @@ import {
   MRT_RowData,
   MRT_TableInstance,
 } from '../../types';
-import { downloadExportFiles } from '../../utils/exports/download-files';
-import { printExportFiles } from '../../utils/exports/print-pdf';
 
 export interface MRT_ExportsToolbarProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;

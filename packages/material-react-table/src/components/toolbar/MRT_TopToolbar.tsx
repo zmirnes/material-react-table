@@ -1,13 +1,13 @@
 import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { getCommonToolbarStyles } from '../../utils/style.utils';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import { MRT_GlobalFilterTextField } from '../inputs/MRT_GlobalFilterTextField';
 import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_ToolbarInternalButtons } from './MRT_ToolbarInternalButtons';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { getCommonToolbarStyles } from '../../utils/style.utils';
+import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_TopToolbarProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -59,10 +59,13 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       sx={(theme) => ({
         ...getCommonToolbarStyles({ table, theme }),
         position: isFullScreen ? 'sticky' : 'relative',
-        top: isFullScreen ? '0' : undefined,
+        top: isFullScreen ? '0' : 'unset',
         backgroundColor: theme.palette.background.default,
         borderBottom: `1px solid ${theme.palette.divider}`,
-        ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       <Box
@@ -96,7 +99,6 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
             )}
             {renderTopToolbarCustomActions?.({ table }) ?? <span />}
             <MRT_ToolbarInternalButtons table={table} />
-            
           </Box>
         ) : (
           enableGlobalFilter &&

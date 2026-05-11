@@ -1,9 +1,9 @@
+import { MRT_FilterRuleBooleanEditor } from './filterEditors';
 import {
-  MRT_FilterOperatorDefinition,
+  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
   type MRT_RowData,
 } from '../types';
-import { MRT_FilterRuleBooleanEditor } from './filterEditors';
 
 // Resolver for boolean column type.
 // Disables aggregation since booleans can't be meaningfully aggregated.

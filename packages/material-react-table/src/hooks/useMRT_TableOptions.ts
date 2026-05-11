@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles';
+import { useId, useMemo } from 'react';
 import {
   getCoreRowModel,
   getExpandedRowModel,
@@ -10,7 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { useId, useMemo } from 'react';
+import { useTheme } from '@mui/material/styles';
 import { MRT_AggregationFns } from '../fns/aggregationFns';
 import { MRT_FilterFns } from '../fns/filterFns';
 import { MRT_SortingFns } from '../fns/sortingFns';
@@ -266,7 +266,7 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     rowPinningDisplayMode,
     selectAllMode,
     sortingFns,
-    enableAdvancedFilters: true,
+    enableAdvancedFilters,
     ...rest,
   } as MRT_DefinedTableOptions<TData>;
 };

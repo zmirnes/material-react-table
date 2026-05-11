@@ -1,11 +1,11 @@
-import { faker } from '@faker-js/faker';
-import { type Meta } from '@storybook/react-vite';
 import { useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
   type MRT_ColumnDef,
 } from '../../src';
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react-vite';
 const meta: Meta = {
   title: 'Fixed Bugs/dragging virtual when filtered',
 };

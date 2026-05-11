@@ -1,17 +1,19 @@
-import { Box, IconButton, Tooltip } from '@mui/material';
-import { MouseEvent } from 'react';
-import Iconify from '../components/iconify';
-import { IIconColTypeValue } from '../tanstack-table';
-import {
-  ColumnTypeResolver,
-  MRT_ColumnDef,
-  MRT_FilterOperatorDefinition,
-  MRT_FilterOperatorEditComponentProps,
-  MRT_IconColumnDef,
-  MRT_RowData,
-} from '../types';
+import { type MouseEvent } from 'react';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { MRT_IconMultiValueEditor } from './filterEditors/MRT_IconMultiValueEditor';
 import { MRT_IconSingleValueEditor } from './filterEditors/MRT_IconSingleValueEditor';
+import Iconify from '../components/iconify';
+import { type IIconColTypeValue } from '../tanstack-table';
+import {
+  type ColumnTypeResolver,
+  type MRT_ColumnDef,
+  type MRT_FilterOperatorDefinition,
+  type MRT_FilterOperatorEditComponentProps,
+  type MRT_IconColumnDef,
+  type MRT_RowData,
+} from '../types';
 
 export const IconColumnResolver: ColumnTypeResolver = {
   createColumnDef: (column) => ({

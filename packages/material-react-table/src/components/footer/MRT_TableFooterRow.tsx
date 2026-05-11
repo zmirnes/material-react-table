@@ -62,7 +62,10 @@ export const MRT_TableFooterRow = <TData extends MRT_RowData>({
         display: layoutMode?.startsWith('grid') ? 'flex' : undefined,
         position: 'relative',
         width: '100%',
-        ...(parseFromValuesOrFunc(tableRowProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableRowProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       {virtualPaddingLeft ? (
