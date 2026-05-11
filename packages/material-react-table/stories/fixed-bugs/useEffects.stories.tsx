@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
+import { type Updater } from '@tanstack/react-table';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import {
   type MRT_ColumnDef,
   type MRT_ColumnFiltersState,
-  MRT_PaginationState,
+  type MRT_PaginationState,
   MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
-import { Updater } from '@tanstack/react-table';
 
 const meta: Meta = {
   title: 'Fixed Bugs/useEffects',
@@ -19,6 +19,7 @@ const meta: Meta = {
 export default meta;
 
 interface Person {
+  [key: string]: unknown;
   address: string;
   age: number;
   firstName: string;
@@ -44,7 +45,7 @@ export const FilterModesRefetch = () => {
   );
 
   useEffect(() => {
-    console.log('refetch', columnFilters);
+    void columnFilters;
   }, [columnFilters]);
 
   const columns: MRT_ColumnDef<Person>[] = [
@@ -229,7 +230,7 @@ export const RenderRowActionsAsync = () => {
   );
 };
 
-export const renderRowActionMenuItemsAsync = () => {
+export const RenderRowActionMenuItemsAsync = () => {
   const [rowActions, setRowActions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -348,7 +349,6 @@ export const PreventUnnecessaryPaginationChangeByOutOfBoundsCheck = () => {
   ];
 
   const handlePaginationChange = (updater: Updater<MRT_PaginationState>) => {
-    console.log('Pagination change should not be triggered');
     setPagination(updater);
   };
 

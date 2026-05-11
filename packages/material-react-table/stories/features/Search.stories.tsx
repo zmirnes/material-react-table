@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
-import { useState } from 'react';
 
 const meta: Meta = {
   title: 'Features/Search Examples',

@@ -1,16 +1,19 @@
+import {
+  type Dispatch,
+  type DragEvent,
+  type RefObject,
+  type SetStateAction,
+  useRef,
+  useState,
+} from 'react';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
 import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import {
-  type Dispatch,
-  type DragEvent,
-  type SetStateAction,
-  useRef,
-  useState,
-} from 'react';
+import { MRT_ColumnPinningButtons } from '../buttons/MRT_ColumnPinningButtons';
+import { MRT_GrabHandleButton } from '../buttons/MRT_GrabHandleButton';
 import {
   type MRT_Column,
   type MRT_RowData,
@@ -19,8 +22,6 @@ import {
 import { reorderColumn } from '../../utils/column.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_ColumnPinningButtons } from '../buttons/MRT_ColumnPinningButtons';
-import { MRT_GrabHandleButton } from '../buttons/MRT_GrabHandleButton';
 
 export interface MRT_ShowHideColumnsMenuItemsProps<TData extends MRT_RowData>
   extends MenuItemProps {
@@ -114,7 +115,7 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
       <MenuItem
         disableRipple
         onDragEnter={handleDragEnter}
-        ref={menuItemRef as any}
+        ref={menuItemRef as RefObject<HTMLLIElement>}
         {...rest}
         sx={(theme) => ({
           alignItems: 'center',
@@ -129,7 +130,10 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
           outlineOffset: '-2px',
           pl: `${(column.depth + 0.5) * 2}rem`,
           py: '6px',
-          ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       >
         <Box

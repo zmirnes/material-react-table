@@ -3,14 +3,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Stack from '@mui/material/Stack';
+import { MRT_EditActionButtons } from '../buttons/MRT_EditActionButtons';
+import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
 import {
+  type MRT_Cell,
   type MRT_Row,
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_EditActionButtons } from '../buttons/MRT_EditActionButtons';
-import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
 
 export interface MRT_EditRowModalProps<TData extends MRT_RowData>
   extends Partial<DialogProps> {
@@ -52,9 +53,9 @@ export const MRT_EditRowModal = <TData extends MRT_RowData>({
     .filter((cell) => cell.column.columnDef.columnDefType === 'data')
     .map((cell) => (
       <MRT_EditCellTextField
-        cell={cell as any}
+        cell={cell as MRT_Cell<TData>}
         key={cell.id}
-        table={table as any}
+        table={table}
       />
     ));
 
@@ -70,7 +71,7 @@ export const MRT_EditRowModal = <TData extends MRT_RowData>({
           onEditingRowCancel?.({ row, table });
           setEditingRow(null);
         }
-        row._valuesCache = {} as any; //reset values cache
+        row._valuesCache = {} as Record<string, unknown>; //reset values cache
         dialogProps.onClose?.(event, reason);
       }}
       open={open}

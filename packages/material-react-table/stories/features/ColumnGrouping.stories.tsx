@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   type MRT_Column,
   type MRT_ColumnDef,
+  type MRT_RowData,
   MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
@@ -14,6 +15,7 @@ const meta: Meta = {
 export default meta;
 
 interface Person {
+  [key: string]: unknown;
   city: string;
   firstName: string;
   gender: string;
@@ -44,7 +46,7 @@ const columns = [
   },
 ] as MRT_ColumnDef<Person>[];
 
-const data = [...Array(300)].map(() => ({
+const data: Person[] = [...Array(300)].map(() => ({
   city: faker.location.city(),
   firstName: faker.person.firstName(),
   gender: Math.random() < 0.95 ? faker.person.sex() : faker.person.gender(),
@@ -217,8 +219,8 @@ export const ColumnGroupingBannerOnBottom = () => (
 );
 
 export const GroupingColumnsSetState = () => {
-  const [columns, setColumns] = useState<MRT_ColumnDef<any>[]>([]);
-  const [data, setData] = useState<any>([]);
+  const [columns, setColumns] = useState<MRT_ColumnDef<MRT_RowData>[]>([]);
+  const [data, setData] = useState<MRT_RowData[]>([]);
 
   useEffect(() => {
     // Do something and set columns and data

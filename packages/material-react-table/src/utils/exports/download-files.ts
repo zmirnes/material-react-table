@@ -1,4 +1,4 @@
-import { MRT_ExportFileResponse } from '../../types';
+import { type MRT_ExportFileResponse } from '../../types';
 
 export const downloadExportFiles = (files: MRT_ExportFileResponse[]): void => {
   files.forEach((file) => {

@@ -1,7 +1,6 @@
+import { type Components } from '@mui/material';
 import { type Theme } from '@mui/material/styles';
-
 import { menuItem } from '../../css';
-import { Components } from '@mui/material';
 
 // ----------------------------------------------------------------------
 

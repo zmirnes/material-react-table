@@ -101,7 +101,7 @@ const columnsWithFooters: MRT_ColumnDef<(typeof data)[0]>[] = [
   },
 ];
 
-export const disableStickyFooter = () => (
+export const DisableStickyFooter = () => (
   <MaterialReactTable
     columns={columnsWithFooters}
     data={data}
@@ -113,7 +113,7 @@ export const disableStickyFooter = () => (
   />
 );
 
-export const enableStickyFooter = () => (
+export const EnableStickyFooter = () => (
   <MaterialReactTable
     columns={columnsWithFooters}
     data={data}

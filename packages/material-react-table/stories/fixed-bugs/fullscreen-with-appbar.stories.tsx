@@ -1,10 +1,13 @@
-import { AppBar, Box, CssBaseline, Toolbar } from '@mui/material';
-import { type Meta } from '@storybook/react-vite';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Toolbar from '@mui/material/Toolbar';
 import {
   MaterialReactTable,
   useMaterialReactTable,
   type MRT_ColumnDef,
 } from '../../src';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Fixed Bugs/AppBar overlaps with Fullscreen Modal',

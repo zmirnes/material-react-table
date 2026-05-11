@@ -1,10 +1,9 @@
-import { Components } from '@mui/material';
+import { type Components } from '@mui/material';
 import { filledInputClasses } from '@mui/material/FilledInput';
 import { inputBaseClasses } from '@mui/material/InputBase';
 import { inputLabelClasses } from '@mui/material/InputLabel';
 import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 import { alpha, type Theme } from '@mui/material/styles';
-
 // Import za TypeScript support
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 

@@ -1,5 +1,5 @@
 import { columnTypeResolvers } from '../../column-types/registy';
-import { MRT_ColumnDef, MRT_RowData } from '../../types';
+import { type MRT_ColumnDef, type MRT_RowData } from '../../types';
 
 export function createColumnDef<TData extends MRT_RowData>(
   column: MRT_ColumnDef<TData>,

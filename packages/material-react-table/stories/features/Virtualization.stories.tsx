@@ -11,7 +11,24 @@ const meta: Meta = {
 
 export default meta;
 
-const longColumns: MRT_ColumnDef<any>[] = [
+const longData = [...Array(5000)].map(() => ({
+  address: faker.location.streetAddress(),
+  city: faker.location.city(),
+  country: faker.location.country(),
+  email: faker.internet.email(),
+  favoriteColor: faker.internet.color(),
+  favoriteQuote: faker.lorem.sentence(),
+  firstName: faker.person.firstName(),
+  lastName: faker.person.lastName(),
+  middleName: faker.person.firstName(),
+  petName: faker.animal.cat(),
+  petType: faker.animal.type(),
+  phoneNumber: faker.phone.number(),
+  state: faker.location.state(),
+  zipCode: faker.location.zipCode(),
+}));
+
+const longColumns: MRT_ColumnDef<(typeof longData)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
@@ -72,23 +89,6 @@ const longColumns: MRT_ColumnDef<any>[] = [
     header: 'Pet Type',
   },
 ];
-
-const longData = [...Array(5000)].map(() => ({
-  address: faker.location.streetAddress(),
-  city: faker.location.city(),
-  country: faker.location.country(),
-  email: faker.internet.email(),
-  favoriteColor: faker.internet.color(),
-  favoriteQuote: faker.lorem.sentence(),
-  firstName: faker.person.firstName(),
-  lastName: faker.person.lastName(),
-  middleName: faker.person.firstName(),
-  petName: faker.animal.cat(),
-  petType: faker.animal.type(),
-  phoneNumber: faker.phone.number(),
-  state: faker.location.state(),
-  zipCode: faker.location.zipCode(),
-}));
 
 export const EnableRowVirtualizationDense = () => (
   <MaterialReactTable

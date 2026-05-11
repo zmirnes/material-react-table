@@ -1,10 +1,8 @@
-import { faker } from '@faker-js/faker';
+import { useCallback, useEffect, useState } from 'react';
 import Remove from '@mui/icons-material/Remove';
 import Send from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { type Meta } from '@storybook/react-vite';
-import { useCallback, useEffect, useState } from 'react';
 import {
   type MRT_ColumnDef,
   MRT_SelectCheckbox,
@@ -12,6 +10,8 @@ import {
   getMRT_RowSelectionHandler,
   useMaterialReactTable,
 } from '../../src';
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Selection Examples',

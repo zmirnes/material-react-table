@@ -2,8 +2,11 @@ import { type ReactNode, type JSX } from 'react';
 import {
   createRow as _createRow,
   flexRender as _flexRender,
+  type AccessorFn,
+  type DeepKeys,
   type Renderable,
 } from '@tanstack/react-table';
+import { getAllLeafColumnDefs, getColumnId } from './column.utils';
 import {
   type MRT_ColumnHelper,
   type MRT_DisplayColumnDef,
@@ -12,31 +15,29 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../types';
-import { getAllLeafColumnDefs, getColumnId } from './column.utils';
 
 export const flexRender = _flexRender as (
-  Comp: Renderable<any>,
-  props: any,
+  Comp: Renderable<unknown>,
+  props: unknown,
 ) => JSX.Element | ReactNode;
 
 export function createMRTColumnHelper<
   TData extends MRT_RowData,
 >(): MRT_ColumnHelper<TData> {
   return {
-    accessor: (accessor, column) => {
+    accessor: (
+      accessor: AccessorFn<TData> | DeepKeys<TData>,
+      column: MRT_DisplayColumnDef<TData>,
+    ) => {
       return typeof accessor === 'function'
-        ? ({
-            ...column,
-            accessorFn: accessor,
-          } as any)
-        : {
-            ...column,
-            accessorKey: accessor,
-          };
+        ? { ...column, accessorFn: accessor }
+        : { ...column, accessorKey: accessor };
     },
-    display: (column) => column as MRT_DisplayColumnDef<TData>,
-    group: (column) => column as MRT_GroupColumnDef<TData>,
-  };
+    display: (column: MRT_DisplayColumnDef<TData>) =>
+      column as MRT_DisplayColumnDef<TData>,
+    group: (column: MRT_GroupColumnDef<TData>) =>
+      column as MRT_GroupColumnDef<TData>,
+  } as unknown as MRT_ColumnHelper<TData>;
 }
 
 export const createRow = <TData extends MRT_RowData>(
@@ -48,7 +49,7 @@ export const createRow = <TData extends MRT_RowData>(
   parentId?: string,
 ): MRT_Row<TData> =>
   _createRow(
-    table as any,
+    table as unknown as Parameters<typeof _createRow>[0],
     'mrt-row-create',
     originalRow ??
       Object.assign(
@@ -59,6 +60,6 @@ export const createRow = <TData extends MRT_RowData>(
       ),
     rowIndex,
     depth,
-    subRows as any,
+    subRows as unknown as Parameters<typeof _createRow>[5],
     parentId,
   ) as MRT_Row<TData>;

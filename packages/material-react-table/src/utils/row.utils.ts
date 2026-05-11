@@ -1,11 +1,11 @@
 import { type ChangeEvent, type MouseEvent } from 'react';
+import { parseFromValuesOrFunc } from './utils';
 import { rankGlobalFuzzy } from '../fns/sortingFns';
 import {
   type MRT_Row,
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../types';
-import { parseFromValuesOrFunc } from './utils';
 
 export const getMRT_Rows = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
@@ -201,7 +201,7 @@ export const getMRT_RowSelectionHandler =
     if (
       enableBatchRowSelection &&
       enableMultiRowSelection &&
-      (event as any).nativeEvent.shiftKey &&
+      (event as MouseEvent<HTMLTableRowElement>).nativeEvent.shiftKey &&
       lastSelectedRowId.current !== null
     ) {
       const rows = getMRT_Rows(table, true);
@@ -269,14 +269,19 @@ export const getMRT_SelectAllHandler =
 
     // Reset global-select-all flag whenever the user deselects via the
     // standard select-all toggle (e.g. the "Clear selection" button).
-    const checked = value ?? (event as any).target.checked;
+    const checked =
+      value ?? (event as ChangeEvent<HTMLInputElement>).target.checked;
     if (!checked) {
       allSelectableRowIdsRef.current = [];
     }
 
     selectAllMode === 'all' || forceAll
-      ? table.toggleAllRowsSelected(value ?? (event as any).target.checked)
-      : table.toggleAllPageRowsSelected(value ?? (event as any).target.checked);
+      ? table.toggleAllRowsSelected(
+          value ?? (event as ChangeEvent<HTMLInputElement>).target.checked,
+        )
+      : table.toggleAllPageRowsSelected(
+          value ?? (event as ChangeEvent<HTMLInputElement>).target.checked,
+        );
     if (enableRowPinning && rowPinningDisplayMode?.includes('select')) {
       table.setRowPinning({ bottom: [], top: [] });
     }

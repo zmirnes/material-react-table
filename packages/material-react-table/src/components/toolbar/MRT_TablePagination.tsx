@@ -4,12 +4,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination, { type PaginationProps } from '@mui/material/Pagination';
 import PaginationItem, {
-  PaginationItemProps,
+  type PaginationItemProps,
 } from '@mui/material/PaginationItem';
 import Select, { type SelectProps } from '@mui/material/Select';
+import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { flipIconStyles, getCommonTooltipProps } from '../../utils/style.utils';
@@ -134,7 +134,7 @@ export const MRT_TablePagination = <TData extends MRT_RowData>({
             }}
             label={localization.rowsPerPage}
             onChange={(event) =>
-              table.setPageSize(+(event.target.value as any))
+              table.setPageSize(+(event.target.value as string))
             }
             sx={{ mb: 0, minWidth: 48 }}
             value={pageSize}

@@ -1,11 +1,10 @@
-import { buttonClasses } from "@mui/material/Button";
-import { listClasses } from "@mui/material/List";
-import { listItemIconClasses } from "@mui/material/ListItemIcon";
-import { paperClasses } from "@mui/material/Paper";
-import { type Theme, alpha } from "@mui/material/styles";
-import { tablePaginationClasses } from "@mui/material/TablePagination";
-
-import { paper } from "../../css";
+import { buttonClasses } from '@mui/material/Button';
+import { listClasses } from '@mui/material/List';
+import { listItemIconClasses } from '@mui/material/ListItemIcon';
+import { paperClasses } from '@mui/material/Paper';
+import { type Theme, alpha } from '@mui/material/styles';
+import { tablePaginationClasses } from '@mui/material/TablePagination';
+import { paper } from '../../css';
 
 // ----------------------------------------------------------------------
 
@@ -22,14 +21,14 @@ export function dataGrid(theme: Theme) {
             borderTop: 0,
           },
           [`& .${tablePaginationClasses.toolbar}`]: {
-            height: "auto",
+            height: 'auto',
           },
         },
         cell: {
           borderBottom: `1px dashed ${theme.palette.divider}`,
         },
         selectedRowCount: {
-          whiteSpace: "nowrap",
+          whiteSpace: 'nowrap',
         },
         columnSeparator: {
           color: theme.palette.divider,
@@ -64,13 +63,13 @@ export function dataGrid(theme: Theme) {
         },
         panelFooter: {
           padding: theme.spacing(2),
-          justifyContent: "flex-end",
+          justifyContent: 'flex-end',
           borderTop: `dashed 1px ${theme.palette.divider}`,
           [`& .${buttonClasses.root}`]: {
-            "&:first-of-type": {
+            '&:first-of-type': {
               border: `solid 1px ${alpha(theme.palette.grey[500], 0.24)}`,
             },
-            "&:last-of-type": {
+            '&:last-of-type': {
               marginLeft: theme.spacing(1.5),
               color: theme.palette.background.paper,
               backgroundColor: theme.palette.text.primary,

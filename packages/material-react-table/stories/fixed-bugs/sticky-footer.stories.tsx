@@ -1,4 +1,4 @@
-import { MaterialReactTable } from '../../src';
+import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
 import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
@@ -7,7 +7,7 @@ const meta: Meta = {
 
 export default meta;
 
-const mockData: any = [
+const mockData = [
   {
     firstName: 'Michael',
     lastName: 'Jordan',
@@ -91,7 +91,7 @@ const mockData: any = [
   },
 ];
 
-const mockColumns: any = [
+const mockColumns: MRT_ColumnDef<(typeof mockData)[0]>[] = [
   {
     accessorKey: 'no',
     filterVariant: 'multi-select',

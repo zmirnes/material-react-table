@@ -96,7 +96,7 @@ export const EditingEnabledEditModeModalDefault = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -145,7 +145,7 @@ export const EditingFeatureEnabledConditionally = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -198,7 +198,7 @@ export const EditingEnabledEditModeRow = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -249,7 +249,7 @@ export const EditingEnabledEditModeRowCustomSave = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -305,7 +305,7 @@ export const EditingEnabledEditModeRowVirtualized = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -360,7 +360,7 @@ export const EditingEnabledEditModeRowVirtualized = () => {
 export const EditingEnabledEditModeCell = () => {
   const [tableData, setTableData] = useState(data);
 
-  const handleSaveCell = (cell: MRT_Cell<Person>, value: any) => {
+  const handleSaveCell = (cell: MRT_Cell<Person>, value: unknown) => {
     //@ts-expect-error
     tableData[cell.row.index][cell.column.id] = value;
     setTableData([...tableData]);
@@ -411,7 +411,7 @@ export const EditingEnabledEditModeCell = () => {
 export const EditingEnabledEditModeCellWithRowActions = () => {
   const [tableData, setTableData] = useState(data);
 
-  const handleSaveCell = (cell: MRT_Cell<Person>, value: any) => {
+  const handleSaveCell = (cell: MRT_Cell<Person>, value: unknown) => {
     //@ts-expect-error
     tableData[cell.row.index][cell.column.id] = value;
     setTableData([...tableData]);
@@ -513,7 +513,7 @@ export const EditSelectVariant = () => {
     row,
     values,
   }) => {
-    tableData[+row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
   };
 
@@ -559,7 +559,7 @@ export const EditSelectVariantAlternate = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
   };
 
@@ -651,7 +651,7 @@ export const EditingCustomizeInput = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
   };
 
@@ -763,7 +763,7 @@ export const EditingEnabledAsync = () => {
   }) => {
     setIsSaving(true);
     setTimeout(() => {
-      tableData[row.index] = values;
+      tableData[row.index] = values as unknown as Person;
       setTableData([...tableData]);
       setIsSaving(false);
     }, 1500);
@@ -847,13 +847,13 @@ export const EditingNestedData = () => {
       enableEditing
       onEditingRowSave={({ row, values }) => {
         tableData[row.index] = {
-          address: row._valuesCache.address,
+          address: row._valuesCache.address as string,
           name: {
-            firstName: values.firstName,
-            lastName: values['name.lastName'],
+            firstName: values.firstName as string,
+            lastName: values['name.lastName'] as string,
           },
-          phoneNumber: row._valuesCache.phoneNumber,
-          state: row._valuesCache.state,
+          phoneNumber: row._valuesCache.phoneNumber as string,
+          state: row._valuesCache.state as string,
         };
         setTableData([...tableData]);
       }}
@@ -869,7 +869,7 @@ export const EditingEnabledEditModeTableWithGroupedRows = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -916,7 +916,7 @@ export const EnableEditingConditionally = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -962,7 +962,7 @@ export const EnableEditingConditionallyCell = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -1008,7 +1008,7 @@ export const EnableEditingConditionallyTable = () => {
     row,
     values,
   }) => {
-    tableData[row.index] = values;
+    tableData[row.index] = values as unknown as Person;
     setTableData([...tableData]);
     exitEditingMode();
   };
@@ -1049,7 +1049,7 @@ export const EnableEditingConditionallyTable = () => {
 export const EditingCellManualOnChange = () => {
   const [tableData, setTableData] = useState(data);
 
-  const handleSaveCell = (cell: MRT_Cell<Person>, value: any) => {
+  const handleSaveCell = (cell: MRT_Cell<Person>, value: unknown) => {
     //@ts-expect-error
     tableData[cell.row.index][cell.column.id] = value;
     setTableData([...tableData]);
@@ -1077,8 +1077,7 @@ export const EditingCellManualOnChange = () => {
             onBlur: (event) => {
               handleSaveCell(cell, event.target.value);
             },
-            onChange: (event) =>
-              console.log('state col onChange', event.target.value),
+            onChange: (_event) => undefined,
           }),
         },
         {
@@ -1094,8 +1093,7 @@ export const EditingCellManualOnChange = () => {
         onBlur: (event) => {
           handleSaveCell(cell, event.target.value);
         },
-        onChange: (event) =>
-          console.log('all col onChange', event.target.value),
+        onChange: (_event) => undefined,
       })}
     />
   );

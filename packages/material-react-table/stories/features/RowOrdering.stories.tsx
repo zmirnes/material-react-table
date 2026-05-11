@@ -79,7 +79,7 @@ export const RowOrderingEnabled = () => {
           const { draggingRow, hoveredRow } = table.getState();
           if (hoveredRow && draggingRow) {
             data.splice(
-              (hoveredRow as MRT_Row<Person>).index,
+              (hoveredRow as unknown as MRT_Row<Person>).index,
               0,
               data.splice(draggingRow.index, 1)[0],
             );
@@ -221,7 +221,7 @@ export const RowOrderingWithRowVirtualization = () => {
           const { draggingRow, hoveredRow } = table.getState();
           if (hoveredRow && draggingRow) {
             data.splice(
-              (hoveredRow as MRT_Row<Person>).index,
+              (hoveredRow as unknown as MRT_Row<Person>).index,
               0,
               data.splice(draggingRow.index, 1)[0],
             );
@@ -269,7 +269,7 @@ export const RowOrderingWithColumnVirtualization = () => {
           const { draggingRow, hoveredRow } = table.getState();
           if (hoveredRow && draggingRow) {
             data.splice(
-              (hoveredRow as MRT_Row<any>).index,
+              (hoveredRow as unknown as MRT_Row<Person>).index,
               0,
               data.splice(draggingRow.index, 1)[0],
             );

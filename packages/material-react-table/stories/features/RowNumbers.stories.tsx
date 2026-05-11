@@ -41,11 +41,11 @@ const data = [...Array(100)].map(() => ({
   state: faker.location.state(),
 }));
 
-export const enableRowNumbersStatic = () => (
+export const EnableRowNumbersStatic = () => (
   <MaterialReactTable columns={columns} data={data} enableRowNumbers />
 );
 
-export const enableRowNumbersConditionally = () => {
+export const EnableRowNumbersConditionally = () => {
   const [enableRowNumbers, setEnableRowNumbers] = useState(false);
   return (
     <MaterialReactTable
@@ -61,7 +61,7 @@ export const enableRowNumbersConditionally = () => {
   );
 };
 
-export const enableRowNumbersStaticGrid = () => (
+export const EnableRowNumbersStaticGrid = () => (
   <MaterialReactTable
     columns={columns}
     data={data}
@@ -70,7 +70,7 @@ export const enableRowNumbersStaticGrid = () => (
   />
 );
 
-export const enableRowNumbersStaticGridNoGrow = () => (
+export const EnableRowNumbersStaticGridNoGrow = () => (
   <MaterialReactTable
     columns={columns}
     data={data}
@@ -79,7 +79,7 @@ export const enableRowNumbersStaticGridNoGrow = () => (
   />
 );
 
-export const enableRowNumbersOriginal = () => (
+export const EnableRowNumbersOriginal = () => (
   <MaterialReactTable
     columns={columns}
     data={data}
@@ -89,7 +89,7 @@ export const enableRowNumbersOriginal = () => (
   />
 );
 
-export const enableRowNumbersOriginalVirtual = () => (
+export const EnableRowNumbersOriginalVirtual = () => (
   <MaterialReactTable
     columns={columns}
     data={data}
@@ -100,7 +100,7 @@ export const enableRowNumbersOriginalVirtual = () => (
   />
 );
 
-export const enableRowNumbersStaticVirtual = () => (
+export const EnableRowNumbersStaticVirtual = () => (
   <MaterialReactTable
     columns={columns}
     data={data}
