@@ -59,7 +59,10 @@ export const MRT_RowPinButton = <TData extends MRT_RowData>({
         sx={(theme) => ({
           height: '24px',
           width: '24px',
-          ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       >
         {isPinned ? (

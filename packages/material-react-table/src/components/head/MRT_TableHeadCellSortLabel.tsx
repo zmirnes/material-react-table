@@ -91,7 +91,10 @@ export const MRT_TableHeadCellSortLabel = <TData extends MRT_RowData>({
             flex: '0 0',
             opacity: isSorted ? 1 : 0.3,
             width: '3ch',
-            ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+            ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+              string,
+              unknown
+            >),
           })}
         />
       </Badge>

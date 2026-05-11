@@ -1,4 +1,5 @@
 import TableRow, { type TableRowProps } from '@mui/material/TableRow';
+import { MRT_TableHeadCell } from './MRT_TableHeadCell';
 import {
   type MRT_ColumnVirtualizer,
   type MRT_Header,
@@ -8,7 +9,6 @@ import {
   type MRT_VirtualItem,
 } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_TableHeadCell } from './MRT_TableHeadCell';
 
 export interface MRT_TableHeadRowProps<TData extends MRT_RowData>
   extends TableRowProps {
@@ -54,7 +54,10 @@ export const MRT_TableHeadRow = <TData extends MRT_RowData>({
             ? 'sticky'
             : 'relative',
         top: 0,
-        ...(parseFromValuesOrFunc(tableRowProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableRowProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       {virtualPaddingLeft ? (

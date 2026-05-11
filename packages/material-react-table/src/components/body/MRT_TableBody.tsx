@@ -2,9 +2,9 @@ import { memo, useMemo } from 'react';
 import { type VirtualItem } from '@tanstack/react-virtual';
 import TableBody, { type TableBodyProps } from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
-import { MRT_TableBodyRow, Memo_MRT_TableBodyRow } from './MRT_TableBodyRow';
-import { useMRT_RowVirtualizer } from '../../hooks/useMRT_RowVirtualizer';
 import { useMRT_Rows } from '../../hooks/useMRT_Rows';
+import { useMRT_RowVirtualizer } from '../../hooks/useMRT_RowVirtualizer';
+import { MRT_TableBodyRow, Memo_MRT_TableBodyRow } from './MRT_TableBodyRow';
 import {
   type MRT_ColumnVirtualizer,
   type MRT_Row,
@@ -87,7 +87,10 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
               position: 'sticky',
               top: tableHeadHeight - 1,
               zIndex: 1,
-              ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as any),
+              ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as Record<
+                string,
+                unknown
+              >),
             })}
           >
             {getTopRows().map((row, staticRowIndex) => {
@@ -113,7 +116,10 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
             : undefined,
           minHeight: !rows.length ? '100px' : undefined,
           position: 'relative',
-          ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       >
         {tableBodyProps?.children ??
@@ -196,7 +202,10 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
               display: layoutMode?.startsWith('grid') ? 'grid' : undefined,
               position: 'sticky',
               zIndex: 1,
-              ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as any),
+              ...(parseFromValuesOrFunc(tableBodyProps?.sx, theme) as Record<
+                string,
+                unknown
+              >),
             })}
           >
             {getBottomRows().map((row, staticRowIndex) => {

@@ -1,21 +1,21 @@
+import type React from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
-import type React from 'react';
-import {
-  type MRT_Column,
-  type MRT_FilterRule,
-  type MRT_RowData,
-  type MRT_TableInstance,
-} from '../../types';
 import {
   createFilterRule,
   getColumnFilterOperators,
   getFilterColumn,
   getLocalizedFilterOperatorLabel,
 } from './utils';
+import {
+  type MRT_Column,
+  type MRT_FilterRule,
+  type MRT_RowData,
+  type MRT_TableInstance,
+} from '../../types';
 
 export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   filterableColumns: MRT_Column<TData>[];

@@ -4,11 +4,11 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { MRT_AdvancedFiltersRuleRow } from './MRT_AdvancedFiltersRuleRow';
 import { MRT_SaveFiltersInput } from './MRT_SaveFiltersInput';
 import { useMRT_AdvancedFiltersDraft } from './useMRT_AdvancedFiltersDraft';
 import { getDefaultFiltersState } from './utils';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_AdvancedFiltersProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;

@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsEslintParser from '@typescript-eslint/parser';
 import muiPathImportsPlugin from 'eslint-plugin-mui-path-imports';
@@ -18,6 +19,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
+        ...globals.browser,
         console: 'readonly',
         alert: 'readonly',
         setTimeout: 'readonly',

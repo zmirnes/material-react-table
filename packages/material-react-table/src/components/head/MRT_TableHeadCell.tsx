@@ -1,7 +1,15 @@
-import Box from '@mui/material/Box';
-import TableCell, { type TableCellProps } from '@mui/material/TableCell';
-import { type Theme, useTheme } from '@mui/material/styles';
+import React from 'react';
 import { type DragEvent, useCallback, useMemo, useState } from 'react';
+import Box from '@mui/material/Box';
+import { type Theme, useTheme } from '@mui/material/styles';
+import TableCell, { type TableCellProps } from '@mui/material/TableCell';
+import Tooltip from '@mui/material/Tooltip';
+import { MRT_TableHeadCellColumnActionsButton } from './MRT_TableHeadCellColumnActionsButton';
+import { MRT_TableHeadCellFilterContainer } from './MRT_TableHeadCellFilterContainer';
+import { MRT_TableHeadCellFilterLabel } from './MRT_TableHeadCellFilterLabel';
+import { MRT_TableHeadCellGrabHandle } from './MRT_TableHeadCellGrabHandle';
+import { MRT_TableHeadCellResizeHandle } from './MRT_TableHeadCellResizeHandle';
+import { MRT_TableHeadCellSortLabel } from './MRT_TableHeadCellSortLabel';
 import {
   type MRT_ColumnVirtualizer,
   type MRT_Header,
@@ -14,13 +22,6 @@ import {
   getCommonTooltipProps,
 } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_TableHeadCellColumnActionsButton } from './MRT_TableHeadCellColumnActionsButton';
-import { MRT_TableHeadCellFilterContainer } from './MRT_TableHeadCellFilterContainer';
-import { MRT_TableHeadCellFilterLabel } from './MRT_TableHeadCellFilterLabel';
-import { MRT_TableHeadCellGrabHandle } from './MRT_TableHeadCellGrabHandle';
-import { MRT_TableHeadCellResizeHandle } from './MRT_TableHeadCellResizeHandle';
-import { MRT_TableHeadCellSortLabel } from './MRT_TableHeadCellSortLabel';
-import { Tooltip } from '@mui/material';
 
 export interface MRT_TableHeadCellProps<TData extends MRT_RowData>
   extends TableCellProps {
@@ -58,8 +59,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
     refs: { tableHeadCellRefs },
     setHoveredColumn,
   } = table;
-  const [isColumnCellHovered, setIsColumnCellHovered] =
-    useState(false);
+  const [isColumnCellHovered, setIsColumnCellHovered] = useState(false);
   const {
     columnSizingInfo,
     density,

@@ -1,11 +1,12 @@
 import TableFooter, { type TableFooterProps } from '@mui/material/TableFooter';
+import { MRT_TableFooterRow } from './MRT_TableFooterRow';
 import {
   type MRT_ColumnVirtualizer,
+  type MRT_HeaderGroup,
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_TableFooterRow } from './MRT_TableFooterRow';
 
 export interface MRT_TableFooterProps<TData extends MRT_RowData>
   extends TableFooterProps {
@@ -72,13 +73,16 @@ export const MRT_TableFooter = <TData extends MRT_RowData>({
           : undefined,
         position: stickFooter ? 'sticky' : 'relative',
         zIndex: stickFooter ? 1 : undefined,
-        ...(parseFromValuesOrFunc(tableFooterProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableFooterProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       {footerGroups.map((footerGroup) => (
         <MRT_TableFooterRow
           columnVirtualizer={columnVirtualizer}
-          footerGroup={footerGroup as any}
+          footerGroup={footerGroup as MRT_HeaderGroup<TData>}
           key={footerGroup.id}
           table={table}
         />

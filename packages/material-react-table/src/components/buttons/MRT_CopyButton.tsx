@@ -78,7 +78,10 @@ export const MRT_CopyButton = <TData extends MRT_RowData>({
           py: 0,
           textAlign: 'inherit',
           textTransform: 'inherit',
-          ...(parseFromValuesOrFunc(buttonProps?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(buttonProps?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
         title={undefined}
       />

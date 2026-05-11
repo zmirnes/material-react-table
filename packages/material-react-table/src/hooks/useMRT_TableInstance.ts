@@ -1,5 +1,13 @@
-import { useReactTable } from '@tanstack/react-table';
 import { useMemo, useRef, useState } from 'react';
+import { useReactTable } from '@tanstack/react-table';
+import { getMRT_RowActionsColumnDef } from './display-columns/getMRT_RowActionsColumnDef';
+import { getMRT_RowDragColumnDef } from './display-columns/getMRT_RowDragColumnDef';
+import { getMRT_RowExpandColumnDef } from './display-columns/getMRT_RowExpandColumnDef';
+import { getMRT_RowNumbersColumnDef } from './display-columns/getMRT_RowNumbersColumnDef';
+import { getMRT_RowPinningColumnDef } from './display-columns/getMRT_RowPinningColumnDef';
+import { getMRT_RowSelectColumnDef } from './display-columns/getMRT_RowSelectColumnDef';
+import { getMRT_RowSpacerColumnDef } from './display-columns/getMRT_RowSpacerColumnDef';
+import { useMRT_Effects } from './useMRT_Effects';
 import {
   type MRT_Cell,
   type MRT_Column,
@@ -12,6 +20,7 @@ import {
   type MRT_FilterOption,
   type MRT_FiltersState,
   type MRT_GroupingState,
+  type MRT_NewEntryModalState,
   type MRT_PaginationState,
   type MRT_Row,
   type MRT_RowData,
@@ -20,7 +29,6 @@ import {
   type MRT_TableInstance,
   type MRT_TableState,
   type MRT_Updater,
-  type MRT_NewEntryModalState,
 } from '../types';
 import {
   getAllLeafColumnDefs,
@@ -40,14 +48,6 @@ import {
   showRowSpacerColumn,
 } from '../utils/displayColumn.utils';
 import { createRow } from '../utils/tanstack.helpers';
-import { getMRT_RowActionsColumnDef } from './display-columns/getMRT_RowActionsColumnDef';
-import { getMRT_RowDragColumnDef } from './display-columns/getMRT_RowDragColumnDef';
-import { getMRT_RowExpandColumnDef } from './display-columns/getMRT_RowExpandColumnDef';
-import { getMRT_RowNumbersColumnDef } from './display-columns/getMRT_RowNumbersColumnDef';
-import { getMRT_RowPinningColumnDef } from './display-columns/getMRT_RowPinningColumnDef';
-import { getMRT_RowSelectColumnDef } from './display-columns/getMRT_RowSelectColumnDef';
-import { getMRT_RowSpacerColumnDef } from './display-columns/getMRT_RowSpacerColumnDef';
-import { useMRT_Effects } from './useMRT_Effects';
 
 /**
  * The MRT hook that wraps the TanStack useReactTable hook and adds additional functionality

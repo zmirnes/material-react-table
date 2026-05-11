@@ -1,3 +1,4 @@
+import React, { useMemo, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { hrHR, type Localization } from '@mui/material/locale';
 import {
@@ -5,20 +6,17 @@ import {
   ThemeProvider as MuiThemeProvider,
   type ThemeOptions,
 } from '@mui/material/styles';
-import merge from 'lodash/merge';
-import { useMemo, useState } from 'react';
-
 import { customShadows } from './custom-shadows';
 import { createContrast } from './options/contrast';
 import { createPresets } from './options/presets';
 // options
 import RTL from './options/right-to-left';
 import { componentsOverrides } from './overrides';
-
 // system
 import { palette } from './palette';
 import { shadows } from './shadows';
 import { typography } from './typography';
+import merge from 'lodash/merge';
 
 // ----------------------------------------------------------------------
 

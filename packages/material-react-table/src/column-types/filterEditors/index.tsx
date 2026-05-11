@@ -3,16 +3,16 @@
 // (MRT_SingleValueEditor, MRT_SingleDateValueEditor, MRT_RangeDateValueEditor)
 // with the correct inputType, transformValue, and valueFormatter for its data type.
 
-import {
-  type DropdownOption,
-  type MRT_FilterOperatorEditComponentProps,
-  type MRT_RowData,
-} from '../../types';
 import { MRT_FreeMultiValueEditor } from './MRT_FreeMultiValueEditor';
 import { MRT_MultiValueEditor } from './MRT_MultiValueEditor';
 import { MRT_RangeDateValueEditor } from './MRT_RangeDateValueEditor';
 import { MRT_SingleDateValueEditor } from './MRT_SingleDateValueEditor';
 import { MRT_SingleValueEditor } from './MRT_SingleValueEditor';
+import {
+  type DropdownOption,
+  type MRT_FilterOperatorEditComponentProps,
+  type MRT_RowData,
+} from '../../types';
 
 // Plain text input — no transformation needed
 export const MRT_FilterRuleTextEditor = <TData extends MRT_RowData>(

@@ -1,11 +1,12 @@
 import TableHead, { type TableHeadProps } from '@mui/material/TableHead';
+import { MRT_TableHeadRow } from './MRT_TableHeadRow';
 import {
   type MRT_ColumnVirtualizer,
+  type MRT_HeaderGroup,
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_TableHeadRow } from './MRT_TableHeadRow';
 
 export interface MRT_TableHeadProps<TData extends MRT_RowData>
   extends TableHeadProps {
@@ -47,14 +48,17 @@ export const MRT_TableHead = <TData extends MRT_RowData>({
         position: stickyHeader ? 'sticky' : 'relative',
         top: stickyHeader && layoutMode?.startsWith('grid') ? 0 : undefined,
         zIndex: stickyHeader ? 2 : undefined,
-        ...(parseFromValuesOrFunc(tableHeadProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableHeadProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
         borderBottom: `1px solid ${theme.palette.divider}`,
       })}
     >
       {table.getHeaderGroups().map((headerGroup) => (
         <MRT_TableHeadRow
           columnVirtualizer={columnVirtualizer}
-          headerGroup={headerGroup as any}
+          headerGroup={headerGroup as MRT_HeaderGroup<TData>}
           key={headerGroup.id}
           table={table}
         />

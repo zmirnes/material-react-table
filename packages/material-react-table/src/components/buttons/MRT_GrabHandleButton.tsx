@@ -54,7 +54,10 @@ export const MRT_GrabHandleButton = <TData extends MRT_RowData>({
           opacity: location === 'row' ? 1 : 0.5,
           p: '2px',
           transition: 'all 150ms ease-in-out',
-          ...(parseFromValuesOrFunc(rest?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(rest?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
         title={undefined}
       >

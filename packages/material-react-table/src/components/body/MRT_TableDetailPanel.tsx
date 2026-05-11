@@ -80,7 +80,10 @@ export const MRT_TableDetailPanel = <TData extends MRT_RowData>({
           ? `translateY(${virtualRow?.start}px)`
           : undefined,
         width: '100%',
-        ...(parseFromValuesOrFunc(tableRowProps?.sx, theme) as any),
+        ...(parseFromValuesOrFunc(tableRowProps?.sx, theme) as Record<
+          string,
+          unknown
+        >),
       })}
     >
       <TableCell
@@ -94,7 +97,10 @@ export const MRT_TableDetailPanel = <TData extends MRT_RowData>({
           py: !!DetailPanel && row.getIsExpanded() ? '1rem' : 0,
           transition: !virtualRow ? 'all 150ms ease-in-out' : undefined,
           width: `100%`,
-          ...(parseFromValuesOrFunc(tableCellProps?.sx, theme) as any),
+          ...(parseFromValuesOrFunc(tableCellProps?.sx, theme) as Record<
+            string,
+            unknown
+          >),
         })}
       >
         {virtualRow ? (

@@ -1,6 +1,7 @@
 import { type MouseEvent, useState } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { MRT_RowActionMenu } from '../menus/MRT_RowActionMenu';
 import { MRT_EditActionButtons } from './MRT_EditActionButtons';
 import {
   type MRT_Cell,
@@ -10,7 +11,6 @@ import {
 } from '../../types';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
-import { MRT_RowActionMenu } from '../menus/MRT_RowActionMenu';
 
 const commonIconButtonStyles = {
   '&:hover': {
@@ -95,10 +95,11 @@ export const MRT_ToggleRowActionMenuButton = <TData extends MRT_RowData>({
           </IconButton>
         </Tooltip>
       ) : renderRowActionMenuItems?.({
+          closeMenu: () => {},
           row,
           staticRowIndex,
           table,
-        } as any)?.length ? (
+        })?.length ? (
         <>
           <Tooltip {...getCommonTooltipProps()} title={localization.rowActions}>
             <IconButton

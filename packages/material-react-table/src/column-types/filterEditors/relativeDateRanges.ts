@@ -1,5 +1,5 @@
-import dayjs from 'dayjs';
 import { type DateRangeFilterValue } from './pickerHelpers';
+import dayjs from 'dayjs';
 
 // Computes the date range for relative date filter operators.
 // The range is computed at rule creation time and stored as Unix ms timestamps.
