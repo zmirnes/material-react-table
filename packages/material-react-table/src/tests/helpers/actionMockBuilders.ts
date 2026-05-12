@@ -1,5 +1,5 @@
 import type { MRT_Row, MRT_TableInstance } from '../../types';
-import type { Action } from '../../types/actions-types';
+import type { Action } from '../../types/actions.types';
 
 // Minimal row shape shared across all action-related tests
 export type TestRowData = { id: string; name: string };

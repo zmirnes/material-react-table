@@ -1,52 +1,110 @@
-import { resolveRowsToDelete } from './resolveRowsToDelete';
 import DeleteRowAction from '../../components/actions/DeleteRowAction';
-import {
-  type MRT_Row,
-  type MRT_RowData,
-  type MRT_TableInstance,
-} from '../../types';
+import { type MRT_RowData } from '../../types';
 import {
   type Action,
-  type DeleteActionConfig,
-} from '../../types/actions-types';
+  type ActionRowRenderContext,
+  type ActionToolbarRenderContext,
+  type CreateDeleteActionOptions,
+  type OnDeleteActionContext,
+} from '../../types/actions.types';
 
-const buildOnDeleteHandler = <TData extends MRT_RowData>(
-  table: MRT_TableInstance<TData>,
-  config: DeleteActionConfig<TData> | undefined,
-  row?: MRT_Row<TData>,
-): (() => void) => {
-  return () => {
-    const rowsToDelete = resolveRowsToDelete(table, row);
-    if (rowsToDelete.length === 0) return;
-    config?.onDelete?.({ rowsToDelete, table });
+export const createDeleteAction = <TData extends MRT_RowData>({
+  onDelete,
+  renderRow: customRenderRow,
+  renderToolbar: customRenderToolbar,
+  ...rest
+}: CreateDeleteActionOptions<TData>): Action<TData> => {
+  // Default delete behavior used when the consumer does not provide a custom onDelete.
+  // Also exposed to custom onDelete through context.defaultOnDelete for composition.
+  const defaultOnDelete = ({ rowsToDelete }: OnDeleteActionContext<TData>) => {
+    // Nothing to delete, so exit early.
+    if (!rowsToDelete.length) {
+      return;
+    }
+
+    // Placeholder default behavior. Consumers can replace this with domain logic.
+    console.info('Default delete executed for rows:', rowsToDelete);
   };
-};
 
-export const createDeleteAction = <TData extends MRT_RowData>(
-  config?: DeleteActionConfig<TData>,
-): Action<TData> => {
+  // Single execution pipeline for every delete flow (row or toolbar).
+  // If a custom handler exists, it receives defaultOnDelete and decides when to call it.
+  const executeDelete = (context: OnDeleteActionContext<TData>) => {
+    const executeDefaultDelete = () => defaultOnDelete(context);
+
+    if (onDelete) {
+      return onDelete({
+        ...context,
+        defaultOnDelete: executeDefaultDelete,
+      });
+    }
+
+    return executeDefaultDelete();
+  };
+
+  // Resolves selected rows from table state for toolbar-triggered delete.
+  const handleMultipleRowDelete = ({
+    table,
+  }: ActionToolbarRenderContext<TData>) => {
+    const rowsToDelete = table.getSelectedRowModel().rows;
+    return executeDelete({ table, rowsToDelete });
+  };
+
+  // Resolves only the active row for row-triggered delete.
+  const handleSingleRowDelete = ({
+    table,
+    row,
+  }: ActionRowRenderContext<TData>) => {
+    return executeDelete({ table, rowsToDelete: [row] });
+  };
+
+  // Wraps row context into a zero-argument callback expected by row action UI.
+  const createRowDeleteExecutor = (context: ActionRowRenderContext<TData>) => {
+    return () => {
+      void handleSingleRowDelete(context);
+    };
+  };
+
+  // Wraps toolbar context into a zero-argument callback expected by toolbar action UI.
+  const createToolbarDeleteExecutor = (
+    context: ActionToolbarRenderContext<TData>,
+  ) => {
+    return () => {
+      void handleMultipleRowDelete(context);
+    };
+  };
+
+  // Uses custom row renderer when provided; otherwise renders default delete action UI.
+  const renderRowAction = (context: ActionRowRenderContext<TData>) => {
+    const onRowDelete = createRowDeleteExecutor(context);
+
+    if (customRenderRow) {
+      return customRenderRow({
+        ...context,
+        onDelete: onRowDelete,
+      });
+    }
+
+    return <DeleteRowAction onDeleteConfirm={onRowDelete} />;
+  };
+
+  // Uses custom toolbar renderer when provided; otherwise renders default delete action UI.
+  const renderToolbarAction = (context: ActionToolbarRenderContext<TData>) => {
+    const onToolbarDelete = createToolbarDeleteExecutor(context);
+
+    if (customRenderToolbar) {
+      return customRenderToolbar({
+        ...context,
+        onDelete: onToolbarDelete,
+      });
+    }
+
+    return <DeleteRowAction onDeleteConfirm={onToolbarDelete} />;
+  };
+
   return {
     name: 'delete',
-    renderToolbar: (context) => {
-      const onDelete = buildOnDeleteHandler(context.table, config);
-      return (
-        <DeleteRowAction
-          table={context.table}
-          delete={onDelete}
-          config={config}
-        />
-      );
-    },
-    renderRow: (context) => {
-      const onDelete = buildOnDeleteHandler(context.table, config, context.row);
-      return (
-        <DeleteRowAction
-          table={context.table}
-          row={context.row}
-          delete={onDelete}
-          config={config}
-        />
-      );
-    },
+    renderRow: renderRowAction,
+    renderToolbar: renderToolbarAction,
+    ...rest,
   };
 };

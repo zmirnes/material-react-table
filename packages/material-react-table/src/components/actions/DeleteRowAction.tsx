@@ -1,35 +1,47 @@
+import { useState } from 'react';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
 import MRT_DeleteRowButton from '../../components/buttons/MRT_DeleteRowButton';
-import {
-  type MRT_Row,
-  type MRT_RowData,
-  type MRT_TableInstance,
-} from '../../types';
-import { type DeleteActionConfig } from '../../types/actions-types';
 
-export interface DeleteRowActionProps<TData extends MRT_RowData> {
-  table: MRT_TableInstance<TData>;
-  row?: MRT_Row<TData>;
-  delete: () => void;
-  config?: DeleteActionConfig<TData>;
+interface DeleteRowActionProps {
+  onDeleteConfirm: () => void;
 }
 
-const DeleteRowAction = <TData extends MRT_RowData>({
-  table,
-  row,
-  delete: onDelete,
-  config,
-}: DeleteRowActionProps<TData>) => {
+const DeleteRowAction = ({ onDeleteConfirm }: DeleteRowActionProps) => {
   // Toolbar context — no specific row is targeted
-  if (!row && config?.renderToolbar) {
-    return config.renderToolbar({ table, onDelete });
-  }
+  const [open, setOpen] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
 
-  // Row context — a specific row is targeted
-  if (row && config?.renderRow) {
-    return config.renderRow({ table, row, onDelete });
-  }
+  const handleDeleteRowButtonClick = () => {
+    setOpen(true);
+  };
 
-  return <MRT_DeleteRowButton onClick={onDelete} />;
+  const handleConfirmDelete = async () => {
+    setDeleting(true);
+    setTimeout(() => {
+      onDeleteConfirm();
+      setDeleting(false);
+      setOpen(false);
+    }, 3000);
+  };
+
+  return (
+    <>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <Typography>
+          Are you sure you want to delete the selected row(s)?
+        </Typography>
+        <Button onClick={handleConfirmDelete} disabled={deleting}>
+          {deleting ? 'Deleting...' : 'Yes'}
+        </Button>
+        <Button onClick={() => setOpen(false)} disabled={deleting}>
+          No
+        </Button>
+      </Dialog>
+      <MRT_DeleteRowButton onClick={handleDeleteRowButtonClick} />
+    </>
+  );
 };
 
 export default DeleteRowAction;

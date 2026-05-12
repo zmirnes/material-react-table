@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
 import {
   type MRT_ExportFileResponse,
   type MRT_ExportParams,
@@ -10,8 +11,7 @@ import {
   type MRT_TableInstance,
   type MRT_TableState,
 } from '../types';
-import { Action } from '../types/actions-types';
-import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
+import { type Action } from '../types/actions.types';
 
 export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   loadConfig: () => Promise<MRT_TableConfig<TData>>;

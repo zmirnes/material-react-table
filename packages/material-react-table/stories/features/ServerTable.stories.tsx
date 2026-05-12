@@ -1,12 +1,12 @@
-import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
-import { type Meta } from '@storybook/react-vite';
 import { type MRT_ColumnDef } from '../../src';
 import { type Date } from '../../src/column-types/date';
 import { type EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
-import { Action } from '../../src/types/actions-types';
+import { type Action } from '../../src/types/actions.types';
 import { createDeleteAction } from '../../src/utils/actions/createDeleteAction';
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Server Table',
@@ -252,20 +252,9 @@ const columns: MRT_ColumnDef<Person>[] = [
 const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-const onDelete: Action<Person> = createDeleteAction({
-  onDelete: ({ rowsToDelete }) => {
-    const deleteRowById = (rowId: string) => {
-      const deletedRowIndex = fakeDatabase.findIndex(
-        (dbRow) => dbRow.id === rowId,
-      );
-      if (deletedRowIndex !== -1) {
-        fakeDatabase.splice(deletedRowIndex, 1);
-      }
-    };
-    rowsToDelete.forEach(deleteRowById);
-  },
-});
-const actions: Action<Person>[] = [onDelete];
+const deleteAction: Action<Person> = createDeleteAction({});
+
+const actions: Action<Person>[] = [deleteAction];
 export const Basic = () => (
   <Box
     style={{

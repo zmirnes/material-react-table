@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { RowActionsCell } from './actions/RowActionsCell';
+import { MaterialReactTable } from './MaterialReactTable';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
+import { type Action } from '../types/actions.types';
+import { createColumnDefs } from '../utils/columns/createColumnDef';
 import type {
   MRT_ActiveExportsState,
   MRT_ExportFileResponse,
@@ -14,10 +18,6 @@ import type {
   MRT_TableInstance,
   MRT_TableState,
 } from '../types';
-import { Action } from '../types/actions-types';
-import { createColumnDefs } from '../utils/columns/createColumnDef';
-import { RowActionsCell } from './actions/RowActionsCell';
-import { MaterialReactTable } from './MaterialReactTable';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   config: MRT_TableConfig<TData>;

@@ -65,16 +65,14 @@ import { type TableFooterProps } from '@mui/material/TableFooter';
 import { type TableHeadProps } from '@mui/material/TableHead';
 import { type TableRowProps } from '@mui/material/TableRow';
 import { type TextFieldProps } from '@mui/material/TextField';
-import {
-  type DatePickerProps,
-  type DateTimePickerProps,
-  type TimePickerProps,
-} from '@mui/x-date-pickers';
+import { type DatePickerProps } from '@mui/x-date-pickers/DatePicker';
+import { type DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
+import { type TimePickerProps } from '@mui/x-date-pickers/TimePicker';
 import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
-import { Action } from './types/actions-types';
+import { type Action } from './types/actions.types';
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
