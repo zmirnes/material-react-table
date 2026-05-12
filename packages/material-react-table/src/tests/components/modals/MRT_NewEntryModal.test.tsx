@@ -31,7 +31,9 @@ interface MockTableConfig {
   // Passed directly to muiNewEntryModalProps to test style/behaviour overrides.
   muiNewEntryModalProps?: MRT_NewEntryModalOverrides;
   // When provided, sets formConfig.renderModal to delegate rendering.
-  renderModalFn?: (args: { table: MRT_TableInstance<Record<string, unknown>> }) => React.ReactNode;
+  renderModalFn?: (args: {
+    table: MRT_TableInstance<Record<string, unknown>>;
+  }) => React.ReactNode;
 }
 
 // Builds a minimal MRT_TableInstance mock that satisfies MRT_NewEntryModal's needs.
@@ -74,7 +76,9 @@ describe('MRT_NewEntryModal', () => {
 
       // Assert — custom content is rendered; built-in modal title is absent.
       expect(screen.getByTestId(CUSTOM_CONTENT_TEST_ID)).toBeInTheDocument();
-      expect(screen.queryByText(MOCK_LOCALIZATION.newEntry)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(MOCK_LOCALIZATION.newEntry),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -87,7 +91,9 @@ describe('MRT_NewEntryModal', () => {
       renderWithTheme(<MRT_NewEntryModal table={table} />);
 
       // Assert — MUI Modal unmounts its children when open={false} by default.
-      expect(screen.queryByText(MOCK_LOCALIZATION.newEntry)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(MOCK_LOCALIZATION.newEntry),
+      ).not.toBeInTheDocument();
     });
 
     it('shows modal content when open is true', () => {
@@ -104,7 +110,9 @@ describe('MRT_NewEntryModal', () => {
 
   describe('title resolution', () => {
     it('shows the "New Entry" localization key when mode is "create"', () => {
-      const { table } = buildMockTable({ newEntryModalState: { mode: 'create', open: true } });
+      const { table } = buildMockTable({
+        newEntryModalState: { mode: 'create', open: true },
+      });
       renderWithTheme(<MRT_NewEntryModal table={table} />);
       expect(screen.getByText(MOCK_LOCALIZATION.newEntry)).toBeInTheDocument();
     });
@@ -117,7 +125,9 @@ describe('MRT_NewEntryModal', () => {
     });
 
     it('shows the "Edit" localization key when mode is "edit"', () => {
-      const { table } = buildMockTable({ newEntryModalState: { mode: 'edit', open: true } });
+      const { table } = buildMockTable({
+        newEntryModalState: { mode: 'edit', open: true },
+      });
       renderWithTheme(<MRT_NewEntryModal table={table} />);
       expect(screen.getByText(MOCK_LOCALIZATION.edit)).toBeInTheDocument();
     });
@@ -133,7 +143,9 @@ describe('MRT_NewEntryModal', () => {
 
       // Custom title overrides both create and edit localization keys.
       expect(screen.getByText(CUSTOM_TITLE)).toBeInTheDocument();
-      expect(screen.queryByText(MOCK_LOCALIZATION.newEntry)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(MOCK_LOCALIZATION.newEntry),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -144,7 +156,9 @@ describe('MRT_NewEntryModal', () => {
       renderWithTheme(<MRT_NewEntryModal table={table} />);
 
       // Find the close button by its aria-label set from localization.close.
-      const closeButton = screen.getByRole('button', { name: MOCK_LOCALIZATION.close });
+      const closeButton = screen.getByRole('button', {
+        name: MOCK_LOCALIZATION.close,
+      });
       fireEvent.click(closeButton);
 
       // setNewEntryModal must be called once with the closed state.
@@ -160,12 +174,34 @@ describe('MRT_NewEntryModal', () => {
 
       renderWithTheme(<MRT_NewEntryModal table={table} />);
 
-      const closeButton = screen.getByRole('button', { name: MOCK_LOCALIZATION.close });
+      const closeButton = screen.getByRole('button', {
+        name: MOCK_LOCALIZATION.close,
+      });
       fireEvent.click(closeButton);
 
       // Consumer's onClick is called before the built-in close handler.
       expect(customOnClick).toHaveBeenCalledTimes(1);
       expect(setNewEntryModal).toHaveBeenCalledWith({ open: false });
+    });
+
+    it('does not close the modal when closeButtonProps.onClick calls e.preventDefault()', () => {
+      // Consumer calls e.preventDefault() to prevent the built-in close handler.
+      const customOnClick = vi.fn((e: React.MouseEvent) => e.preventDefault());
+      const { setNewEntryModal, table } = buildMockTable({
+        muiNewEntryModalProps: { closeButtonProps: { onClick: customOnClick } },
+      });
+
+      renderWithTheme(<MRT_NewEntryModal table={table} />);
+
+      const closeButton = screen.getByRole('button', {
+        name: MOCK_LOCALIZATION.close,
+      });
+      fireEvent.click(closeButton);
+
+      // Consumer's onClick is still invoked.
+      expect(customOnClick).toHaveBeenCalledTimes(1);
+      // setNewEntryModal must NOT be called because default was prevented.
+      expect(setNewEntryModal).not.toHaveBeenCalled();
     });
   });
 
@@ -185,8 +221,12 @@ describe('MRT_NewEntryModal', () => {
       renderWithTheme(<MRT_NewEntryModal table={table} />);
 
       // Neither title nor close button should be present.
-      expect(screen.queryByText(MOCK_LOCALIZATION.newEntry)).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: MOCK_LOCALIZATION.close })).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(MOCK_LOCALIZATION.newEntry),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: MOCK_LOCALIZATION.close }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -195,7 +235,9 @@ describe('MRT_NewEntryModal', () => {
       const HEADER_BADGE_TEST_ID = 'header-badge';
       const { table } = buildMockTable({
         muiNewEntryModalProps: {
-          headerComponents: <span data-testid={HEADER_BADGE_TEST_ID}>Required</span>,
+          headerComponents: (
+            <span data-testid={HEADER_BADGE_TEST_ID}>Required</span>
+          ),
         },
       });
 

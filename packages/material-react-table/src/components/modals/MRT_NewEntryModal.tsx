@@ -155,9 +155,12 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
               color="error"
               {...closeButtonProps}
               onClick={(e) => {
-                // Run consumer's onClick first, then close the modal.
+                // Run consumer's onClick first.
+                // Consumer can call e.preventDefault() to prevent the modal from closing.
                 closeButtonProps?.onClick?.(e);
-                handleClose();
+                if (!e.defaultPrevented) {
+                  handleClose();
+                }
               }}
               sx={{ ml: 'auto', ...closeButtonProps?.sx }}
             >
@@ -167,10 +170,21 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
         )}
 
         {/* Scrollable content area — form body rendered by a subsequent task (MRT_NewEntryForm) */}
-        <Stack height="100%" overflow="auto" px={2} {...bodyProps} sx={{ pt: 2, pb: 1, ...bodySx }} />
+        <Stack
+          height="100%"
+          overflow="auto"
+          px={2}
+          {...bodyProps}
+          sx={{ pt: 2, pb: 1, ...bodySx }}
+        />
 
         {/* Footer actions — save/cancel buttons rendered by a subsequent task */}
-        <Stack direction="row" justifyContent="flex-end" {...footerProps} sx={{ gap: 1, px: 2, pt: 1, ...footerSx }} />
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          {...footerProps}
+          sx={{ gap: 1, px: 2, pt: 1, ...footerSx }}
+        />
       </Stack>
     </Modal>
   );
