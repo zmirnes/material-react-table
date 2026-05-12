@@ -9,7 +9,9 @@ import { describe, expect, it } from 'vitest';
 const DEFAULT_THEME = createTheme();
 
 // Shape of one data row — content is irrelevant for modal flow tests.
+// Index signature is required to satisfy the MRT_RowData constraint.
 interface Person {
+  [key: string]: unknown;
   age: number;
   name: string;
 }
@@ -85,7 +87,9 @@ describe('MRT_NewEntryModal — integration flow', () => {
       // 2. The modal header Typography h6 title.
       // Note: MUI Modal uses role="presentation", not role="dialog" — we assert on text.
       await waitFor(() => {
-        expect(screen.getAllByText(NEW_ENTRY_LABEL).length).toBeGreaterThanOrEqual(2);
+        expect(
+          screen.getAllByText(NEW_ENTRY_LABEL).length,
+        ).toBeGreaterThanOrEqual(2);
       });
     });
 
@@ -97,7 +101,9 @@ describe('MRT_NewEntryModal — integration flow', () => {
       // The Typography h6 inside MRT_NewEntryModal renders as a heading element.
       // getByRole('heading') finds it without ambiguity with the toolbar button.
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: NEW_ENTRY_LABEL })).toBeInTheDocument();
+        expect(
+          screen.getByRole('heading', { name: NEW_ENTRY_LABEL }),
+        ).toBeInTheDocument();
       });
     });
   });
@@ -110,7 +116,9 @@ describe('MRT_NewEntryModal — integration flow', () => {
       await user.click(screen.getByRole('button', { name: NEW_ENTRY_LABEL }));
       await waitFor(() => {
         // Modal is open — title appears in the heading AND the toolbar button.
-        expect(screen.getAllByText(NEW_ENTRY_LABEL).length).toBeGreaterThanOrEqual(2);
+        expect(
+          screen.getAllByText(NEW_ENTRY_LABEL).length,
+        ).toBeGreaterThanOrEqual(2);
       });
 
       // Step 2 — click the X IconButton whose aria-label is localization.close.
@@ -130,7 +138,9 @@ describe('MRT_NewEntryModal — integration flow', () => {
       // Open → verify open.
       await user.click(screen.getByRole('button', { name: NEW_ENTRY_LABEL }));
       await waitFor(() =>
-        expect(screen.getAllByText(NEW_ENTRY_LABEL).length).toBeGreaterThanOrEqual(2),
+        expect(
+          screen.getAllByText(NEW_ENTRY_LABEL).length,
+        ).toBeGreaterThanOrEqual(2),
       );
 
       // Close → verify closed.
@@ -142,9 +152,10 @@ describe('MRT_NewEntryModal — integration flow', () => {
       // Reopen → verify open again — confirms the state cycle is repeatable.
       await user.click(screen.getByRole('button', { name: NEW_ENTRY_LABEL }));
       await waitFor(() =>
-        expect(screen.getAllByText(NEW_ENTRY_LABEL).length).toBeGreaterThanOrEqual(2),
+        expect(
+          screen.getAllByText(NEW_ENTRY_LABEL).length,
+        ).toBeGreaterThanOrEqual(2),
       );
     });
   });
 });
-

@@ -47,8 +47,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     ...rest,
   };
 
-  const createModalOpen =
-    (createDisplayMode === 'modal' && creatingRow) || newEntryModal.open;
+  const createModalOpen = createDisplayMode === 'modal' && creatingRow;
   const editModalOpen = editDisplayMode === 'modal' && editingRow;
 
   return (
