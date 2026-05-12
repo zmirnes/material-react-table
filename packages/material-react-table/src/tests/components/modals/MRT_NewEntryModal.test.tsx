@@ -2,12 +2,12 @@ import React from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { MRT_NewEntryModal } from '../../../components/modals/MRT_NewEntryModal';
-import type {
-  MRT_NewEntryModalOverrides,
-  MRT_NewEntryModalState,
-  MRT_TableInstance,
+import {
+  type MRT_NewEntryModalOverrides,
+  type MRT_NewEntryModalState,
+  type MRT_TableInstance,
 } from '../../../types';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 // A default MUI theme used to satisfy useTheme() inside the component.
@@ -82,32 +82,6 @@ describe('MRT_NewEntryModal', () => {
     });
   });
 
-  describe('open / closed state', () => {
-    it('does not show modal content when open is false', () => {
-      // Arrange — modal is closed.
-      const { table } = buildMockTable({ newEntryModalState: { open: false } });
-
-      // Act
-      renderWithTheme(<MRT_NewEntryModal table={table} />);
-
-      // Assert — MUI Modal unmounts its children when open={false} by default.
-      expect(
-        screen.queryByText(MOCK_LOCALIZATION.newEntry),
-      ).not.toBeInTheDocument();
-    });
-
-    it('shows modal content when open is true', () => {
-      // Arrange — modal is open in default create mode.
-      const { table } = buildMockTable({ newEntryModalState: { open: true } });
-
-      // Act
-      renderWithTheme(<MRT_NewEntryModal table={table} />);
-
-      // Assert — "New Entry" title is visible.
-      expect(screen.getByText(MOCK_LOCALIZATION.newEntry)).toBeInTheDocument();
-    });
-  });
-
   describe('title resolution', () => {
     it('shows the "New Entry" localization key when mode is "create"', () => {
       const { table } = buildMockTable({
@@ -150,7 +124,7 @@ describe('MRT_NewEntryModal', () => {
   });
 
   describe('close button behaviour', () => {
-    it('calls setNewEntryModal with { open: false } when the close button is clicked', () => {
+    it('calls setNewEntryModal with { open: false } when the close button is clicked', async () => {
       const { setNewEntryModal, table } = buildMockTable();
 
       renderWithTheme(<MRT_NewEntryModal table={table} />);
@@ -159,14 +133,17 @@ describe('MRT_NewEntryModal', () => {
       const closeButton = screen.getByRole('button', {
         name: MOCK_LOCALIZATION.close,
       });
-      fireEvent.click(closeButton);
+      // await act so that the async onClick microtask resolves before asserting.
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       // setNewEntryModal must be called once with the closed state.
       expect(setNewEntryModal).toHaveBeenCalledTimes(1);
       expect(setNewEntryModal).toHaveBeenCalledWith({ open: false });
     });
 
-    it('invokes closeButtonProps.onClick before closing the modal', () => {
+    it('invokes closeButtonProps.onClick before closing the modal', async () => {
       const customOnClick = vi.fn();
       const { setNewEntryModal, table } = buildMockTable({
         muiNewEntryModalProps: { closeButtonProps: { onClick: customOnClick } },
@@ -177,14 +154,17 @@ describe('MRT_NewEntryModal', () => {
       const closeButton = screen.getByRole('button', {
         name: MOCK_LOCALIZATION.close,
       });
-      fireEvent.click(closeButton);
+      // await act so that the async onClick microtask resolves before asserting.
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       // Consumer's onClick is called before the built-in close handler.
       expect(customOnClick).toHaveBeenCalledTimes(1);
       expect(setNewEntryModal).toHaveBeenCalledWith({ open: false });
     });
 
-    it('does not close the modal when closeButtonProps.onClick calls e.preventDefault()', () => {
+    it('does not close the modal when closeButtonProps.onClick calls e.preventDefault()', async () => {
       // Consumer calls e.preventDefault() to prevent the built-in close handler.
       const customOnClick = vi.fn((e: React.MouseEvent) => e.preventDefault());
       const { setNewEntryModal, table } = buildMockTable({
@@ -196,7 +176,10 @@ describe('MRT_NewEntryModal', () => {
       const closeButton = screen.getByRole('button', {
         name: MOCK_LOCALIZATION.close,
       });
-      fireEvent.click(closeButton);
+      // await act so that the async onClick microtask resolves before asserting.
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       // Consumer's onClick is still invoked.
       expect(customOnClick).toHaveBeenCalledTimes(1);

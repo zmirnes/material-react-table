@@ -154,10 +154,10 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
               aria-label={localization.close}
               color="error"
               {...closeButtonProps}
-              onClick={(e) => {
+              onClick={async (e) => {
                 // Run consumer's onClick first.
                 // Consumer can call e.preventDefault() to prevent the modal from closing.
-                closeButtonProps?.onClick?.(e);
+                await Promise.resolve(closeButtonProps?.onClick?.(e));
                 if (!e.defaultPrevented) {
                   handleClose();
                 }
