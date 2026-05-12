@@ -6,7 +6,7 @@ import {
   type ActionToolbarRenderContext,
   type CreateDeleteActionOptions,
   type OnDeleteActionContext,
-} from '../../types/actions.types';
+} from '../../types/actions/actions.types';
 
 export const createDeleteAction = <TData extends MRT_RowData>({
   onDelete,

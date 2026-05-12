@@ -1,73 +1,112 @@
-import type { ReactElement } from 'react';
+import { type MRT_Row, type MRT_TableInstance } from '../../../types';
 import { createDeleteAction } from '../../../utils/actions/createDeleteAction';
-import {
-  buildMockRow,
-  buildMockTable,
-  type TestRowData,
-} from '../../helpers/actionMockBuilders';
-import type { DeleteActionConfig } from '../../../types/actions-types';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event/dist/cjs/index.js';
 import { describe, expect, it, vi } from 'vitest';
 
-// Shape of the props that DeleteRowAction receives — only the fields we care about
-type DeleteRowActionProps = {
-  delete: () => void;
-};
+type TestRow = { id: string };
 
-// Extracts the onDelete handler injected into the returned React element's props.
-// React elements are plain objects — no rendering needed to access their props.
-const extractDeleteHandler = (element: ReactElement): (() => void) =>
-  (element.props as DeleteRowActionProps).delete;
+const buildMockRow = (id: string): MRT_Row<TestRow> =>
+  ({ id, original: { id } }) as unknown as MRT_Row<TestRow>;
 
+const buildMockTable = (
+  selectedRows: MRT_Row<TestRow>[] = [],
+): MRT_TableInstance<TestRow> =>
+  ({
+    getSelectedRowModel: () => ({ rows: selectedRows }),
+  }) as unknown as MRT_TableInstance<TestRow>;
+const user = userEvent.setup();
 describe('createDeleteAction', () => {
-  it('returns an action with name "delete"', () => {
-    const action = createDeleteAction<TestRowData>();
-
-    expect(action.name).toBe('delete');
+  describe('renderRow', () => {
+    it('should render the custom renderRow when it is provided', async () => {
+      const action = createDeleteAction<TestRow>({
+        renderRow: () => <button>Render row button</button>,
+      });
+      render(
+        action.renderRow?.({
+          table: buildMockTable([]),
+          row: buildMockRow('row-1'),
+        }),
+      );
+      expect(
+        screen.getByRole('button', { name: 'Render row button' }),
+      ).toBeInTheDocument();
+    });
   });
 
-  it('exposes renderToolbar and renderRow as functions', () => {
-    const action = createDeleteAction<TestRowData>();
-
-    expect(typeof action.renderToolbar).toBe('function');
-    expect(typeof action.renderRow).toBe('function');
+  describe('renderToolbar', () => {
+    it('should render the custom renderToolbar when it is provided', async () => {
+      const action = createDeleteAction<TestRow>({
+        renderToolbar: () => <button>Render toolbar button</button>,
+      });
+      render(
+        action.renderToolbar?.({
+          table: buildMockTable([]),
+        }),
+      );
+      expect(
+        screen.getByRole('button', { name: 'Render toolbar button' }),
+      ).toBeInTheDocument();
+    });
   });
 
-  it('does not call onDelete when renderToolbar delete handler is invoked with no selected rows', () => {
-    const mockDelete = vi.fn();
-    const config: DeleteActionConfig<TestRowData> = { onDelete: mockDelete };
-    const tableWithNoSelection = buildMockTable([]);
+  describe('customRenderRow', () => {
+    it('should render the custom renderRow with onDelete wired when it is provided', async () => {
+      const onDeleteMock = vi.fn();
 
-    const action = createDeleteAction<TestRowData>(config);
-    const toolbarElement = action.renderToolbar!({
-      table: tableWithNoSelection,
-    }) as ReactElement;
-    const onDelete = extractDeleteHandler(toolbarElement);
+      const action = createDeleteAction<TestRow>({
+        onDelete: onDeleteMock,
+        renderRow: ({ onDelete }) => (
+          <button onClick={onDelete}>Render row button</button>
+        ),
+      });
 
-    onDelete();
+      expect(
+        screen.queryByRole('button', { name: 'Render row button' }),
+      ).not.toBeInTheDocument();
 
-    expect(mockDelete).not.toHaveBeenCalled();
+      render(
+        action.renderRow?.({
+          table: buildMockTable([]),
+          row: buildMockRow('row-1'),
+        }),
+      );
+      expect(
+        screen.getByRole('button', { name: 'Render row button' }),
+      ).toBeInTheDocument();
+      const renderRowButton = screen.getByRole('button');
+      await user.click(renderRowButton);
+
+      expect(onDeleteMock).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it('calls onDelete with the specific row ID when renderRow delete handler is invoked', () => {
-    const mockDelete = vi.fn();
-    const config: DeleteActionConfig<TestRowData> = { onDelete: mockDelete };
-    const tableWithNoSelection = buildMockTable([]);
-    const specificRow = buildMockRow('row-99');
+  describe('customRenderToolbar', () => {
+    it('should render the custom renderToolbar with onDelete wired when it is provided', async () => {
+      const onDeleteMock = vi.fn();
 
-    const action = createDeleteAction<TestRowData>(config);
-    // renderRow returns a React element — extract its delete prop without mounting
-    const rowElement = action.renderRow!({
-      table: tableWithNoSelection,
-      row: specificRow,
-    }) as ReactElement;
-    const onDelete = extractDeleteHandler(rowElement);
+      const action = createDeleteAction<TestRow>({
+        onDelete: onDeleteMock,
+        renderToolbar: ({ onDelete }) => (
+          <button onClick={onDelete}>Render toolbar button</button>
+        ),
+      });
 
-    onDelete();
+      expect(
+        screen.queryByRole('button', { name: 'Render toolbar button' }),
+      ).not.toBeInTheDocument();
+      render(
+        action.renderToolbar?.({
+          table: buildMockTable([]),
+        }),
+      );
+      expect(
+        screen.getByRole('button', { name: 'Render toolbar button' }),
+      ).toBeInTheDocument();
+      const renderToolbarButton = screen.getByRole('button');
+      await user.click(renderToolbarButton);
 
-    expect(mockDelete).toHaveBeenCalledOnce();
-    expect(mockDelete).toHaveBeenCalledWith({
-      rowsToDelete: ['row-99'],
-      table: tableWithNoSelection,
+      expect(onDeleteMock).toHaveBeenCalledTimes(1);
     });
   });
 });

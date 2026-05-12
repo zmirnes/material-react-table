@@ -3,7 +3,7 @@ import { type MRT_ColumnDef } from '../../src';
 import { type Date } from '../../src/column-types/date';
 import { type EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
-import { type Action } from '../../src/types/actions.types';
+import { type Action } from '../../src/types/actions/actions.types';
 import { createDeleteAction } from '../../src/utils/actions/createDeleteAction';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';

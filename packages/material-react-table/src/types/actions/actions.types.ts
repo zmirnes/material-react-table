@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { type MRT_Row, type MRT_RowData, type MRT_TableInstance } from '../types';
+import { type MRT_Row, type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface ActionToolbarRenderContext<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
