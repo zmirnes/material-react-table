@@ -24,6 +24,7 @@ export const MRT_SelectionCountBadge = <TData extends MRT_RowData>({
   } = table;
 
   const { rowSelection } = getState();
+
   const selectedCount = useMemo(
     () => Object.values(rowSelection).filter(Boolean).length,
     [rowSelection],
