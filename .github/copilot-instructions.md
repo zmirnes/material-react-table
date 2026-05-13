@@ -1,8 +1,8 @@
 # Copilot Custom Instructions
 
 ## 🔒 PR & Workflow Rules (HIGHEST PRIORITY)
+
 - **Before ANY AI changes, code review, or project work:**
-- 
   - Force the user to open a PR for the current branch FIRST.
   - If no PR is open, STOP and refuse to continue until the user confirms it.
 
