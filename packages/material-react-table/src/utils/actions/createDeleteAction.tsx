@@ -16,14 +16,15 @@ export const createDeleteAction = <TData extends MRT_RowData>({
 }: CreateDeleteActionOptions<TData>): Action<TData> => {
   // Default delete behavior used when the consumer does not provide a custom onDelete.
   // Also exposed to custom onDelete through context.defaultOnDelete for composition.
-  const defaultOnDelete = ({ rowsToDelete }: OnDeleteActionContext<TData>) => {
+  const defaultOnDelete = async ({
+    rowsToDelete,
+    table,
+  }: OnDeleteActionContext<TData>) => {
     // Nothing to delete, so exit early.
     if (!rowsToDelete.length) {
       return;
     }
-
-    // Placeholder default behavior. Consumers can replace this with domain logic.
-    console.info('Default delete executed for rows:', rowsToDelete);
+    await table.options.deleteRowsFn?.({ rowsToDelete, table });
   };
 
   // Single execution pipeline for every delete flow (row or toolbar).
@@ -84,7 +85,9 @@ export const createDeleteAction = <TData extends MRT_RowData>({
       });
     }
 
-    return <DeleteRowAction onDeleteConfirm={onRowDelete} />;
+    return (
+      <DeleteRowAction onDeleteConfirm={onRowDelete} table={context.table} />
+    );
   };
 
   // Uses custom toolbar renderer when provided; otherwise renders default delete action UI.
@@ -98,7 +101,12 @@ export const createDeleteAction = <TData extends MRT_RowData>({
       });
     }
 
-    return <DeleteRowAction onDeleteConfirm={onToolbarDelete} />;
+    return (
+      <DeleteRowAction
+        onDeleteConfirm={onToolbarDelete}
+        table={context.table}
+      />
+    );
   };
 
   return {

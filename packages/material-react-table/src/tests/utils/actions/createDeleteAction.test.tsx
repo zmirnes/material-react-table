@@ -1,22 +1,21 @@
-import { type MRT_Row, type MRT_TableInstance } from '../../../types';
+import { useMaterialReactTable } from '../../../hooks/useMaterialReactTable';
 import { createDeleteAction } from '../../../utils/actions/createDeleteAction';
-import { render, screen } from '@testing-library/react';
+import { render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event/dist/cjs/index.js';
 import { describe, expect, it, vi } from 'vitest';
 
 type TestRow = { id: string };
 
-const buildMockRow = (id: string): MRT_Row<TestRow> =>
-  ({ id, original: { id } }) as unknown as MRT_Row<TestRow>;
-
-const buildMockTable = (
-  selectedRows: MRT_Row<TestRow>[] = [],
-): MRT_TableInstance<TestRow> =>
-  ({
-    getSelectedRowModel: () => ({ rows: selectedRows }),
-  }) as unknown as MRT_TableInstance<TestRow>;
 const user = userEvent.setup();
 describe('createDeleteAction', () => {
+  const { result } = renderHook(() =>
+    useMaterialReactTable<TestRow>({
+      columns: [{ accessorKey: 'id', header: 'ID', type: 'string' }],
+      data: [{ id: 'row-1' }],
+    }),
+  );
+  const table = result.current;
+  const row = table.getRowModel().rows[0];
   describe('renderRow', () => {
     it('should render the custom renderRow when it is provided', async () => {
       const action = createDeleteAction<TestRow>({
@@ -24,8 +23,8 @@ describe('createDeleteAction', () => {
       });
       render(
         action.renderRow?.({
-          table: buildMockTable([]),
-          row: buildMockRow('row-1'),
+          table,
+          row,
         }),
       );
       expect(
@@ -41,7 +40,7 @@ describe('createDeleteAction', () => {
       });
       render(
         action.renderToolbar?.({
-          table: buildMockTable([]),
+          table,
         }),
       );
       expect(
@@ -61,14 +60,10 @@ describe('createDeleteAction', () => {
         ),
       });
 
-      expect(
-        screen.queryByRole('button', { name: 'Render row button' }),
-      ).not.toBeInTheDocument();
-
       render(
         action.renderRow?.({
-          table: buildMockTable([]),
-          row: buildMockRow('row-1'),
+          table,
+          row,
         }),
       );
       expect(
@@ -97,7 +92,7 @@ describe('createDeleteAction', () => {
       ).not.toBeInTheDocument();
       render(
         action.renderToolbar?.({
-          table: buildMockTable([]),
+          table,
         }),
       );
       expect(

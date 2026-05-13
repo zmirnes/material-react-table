@@ -72,7 +72,10 @@ import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
-import { type Action } from './types/actions.types';
+import {
+  type Action,
+  type OnDeleteActionContext,
+} from './types/actions/actions.types';
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -107,8 +110,6 @@ export type MRT_FiltersLogicOperator = 'and' | 'or';
 // unknown is intentional — it allows any concrete row type (e.g. { name: string; age: number })
 // to satisfy the constraint without requiring an explicit index signature.
 export type MRT_RowData = Record<string, unknown>;
-
-export type MRT_RowId = string;
 
 export type MRT_ColumnFiltersState = ColumnFiltersState;
 export type MRT_ColumnOrderState = ColumnOrderState;
@@ -302,6 +303,11 @@ export interface MRT_Localization {
   exportPrintPdf: string;
   exportDownload: string;
   exportGrouped: string;
+  // Delete row confirmation dialog message and button labels
+  deleteConfirmation: string;
+  deleteConfirmYes: string;
+  deleteConfirmNo: string;
+  deleteConfirmDeleting: string;
 
   // Allow for any additional keys for custom localization
   [key: string]: string;
@@ -1484,6 +1490,10 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
    */
   state?: Partial<MRT_TableState<TData>>;
   actions?: Action<TData>[];
+  deleteRowsFn?: ({
+    rowsToDelete,
+    table,
+  }: OnDeleteActionContext<TData>) => Promise<void> | void;
 }
 
 export interface MRT_ExportDefinition {
