@@ -3,14 +3,18 @@ import { MaterialReactServerTableInstance } from './MaterialReactServerTableInst
 import {
   type MRT_ExportFileResponse,
   type MRT_ExportParams,
+  type MRT_RowData,
   type MRT_SavedFilter,
   type MRT_SavedFilters,
-  type MRT_TableInstance,
-  type MRT_RowData,
   type MRT_TableConfig,
   type MRT_TableData,
+  type MRT_TableInstance,
   type MRT_TableState,
 } from '../types';
+import {
+  type Action,
+  type OnDeleteActionContext,
+} from '../types/actions/actions.types';
 
 export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   loadConfig: () => Promise<MRT_TableConfig<TData>>;
@@ -31,6 +35,11 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
   exportPermissions?: Record<string, string[]>;
   // When true, renders a built-in "Add" button in the top toolbar that opens the new entry modal.
   enableNewEntryButton?: boolean;
+  actions?: Action<TData>[];
+  deleteRowsFn?: ({
+    rowsToDelete,
+    table,
+  }: OnDeleteActionContext<TData>) => Promise<void> | void;
 }
 
 export const MaterialReactServerTable = <
@@ -47,6 +56,8 @@ export const MaterialReactServerTable = <
   loadExport,
   exportPermissions,
   enableNewEntryButton,
+  actions,
+  deleteRowsFn,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -97,6 +108,8 @@ export const MaterialReactServerTable = <
       loadExport={loadExport}
       exportPermissions={exportPermissions}
       enableNewEntryButton={enableNewEntryButton}
+      actions={actions}
+      deleteRowsFn={deleteRowsFn}
     />
   );
 };

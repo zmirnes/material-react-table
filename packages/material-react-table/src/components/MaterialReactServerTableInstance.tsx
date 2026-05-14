@@ -1,21 +1,26 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { RowActionsCell } from './actions/RowActionsCell';
 import { MaterialReactTable } from './MaterialReactTable';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
-import { createColumnDefs } from '../utils/columns/createColumnDef';
-import type {
-  MRT_ActiveExportsState,
-  MRT_ExportFileResponse,
-  MRT_ExportParams,
-  MRT_RowData,
-  MRT_SavedFilter,
-  MRT_SavedFilters,
-  MRT_TableConfig,
-  MRT_TableData,
-  MRT_TableInstance,
-  MRT_TableState,
+import {
+  type MRT_ActiveExportsState,
+  type MRT_ExportFileResponse,
+  type MRT_ExportParams,
+  type MRT_RowData,
+  type MRT_SavedFilter,
+  type MRT_SavedFilters,
+  type MRT_TableConfig,
+  type MRT_TableData,
+  type MRT_TableInstance,
+  type MRT_TableState,
 } from '../types';
+import {
+  type Action,
+  type OnDeleteActionContext,
+} from '../types/actions/actions.types';
+import { createColumnDefs } from '../utils/columns/createColumnDef';
 
 type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   config: MRT_TableConfig<TData>;
@@ -35,6 +40,11 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
   loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
   exportPermissions?: Record<string, string[]>;
   enableNewEntryButton?: boolean;
+  actions?: Action<TData>[];
+  deleteRowsFn?: ({
+    rowsToDelete,
+    table,
+  }: OnDeleteActionContext<TData>) => Promise<void> | void;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -79,6 +89,8 @@ export const MaterialReactServerTableInstance = <
   loadExport,
   exportPermissions,
   enableNewEntryButton,
+  actions,
+  deleteRowsFn,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -135,7 +147,6 @@ export const MaterialReactServerTableInstance = <
   );
 
   const hasAvailableExports = Object.keys(allowedExports).length > 0;
-
   const table = useMaterialReactTable<TData>({
     columns,
     data,
@@ -152,8 +163,13 @@ export const MaterialReactServerTableInstance = <
       showSkeletons: isLoading,
       ...tableState,
     },
+    enableRowActions: true,
+    renderRowActions: RowActionsCell,
+    positionActionsColumn: 'last',
+    actions: actions,
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
+    deleteRowsFn,
     onSaveFilters,
     onDeleteSavedFilter,
     initialSavedFilters,

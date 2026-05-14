@@ -1,13 +1,15 @@
 import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useMemo } from 'react';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { getCommonToolbarStyles } from '../../utils/style.utils';
+import { parseFromValuesOrFunc } from '../../utils/utils';
+import ToolbarActions from '../actions/ToolbarActions';
 import { MRT_GlobalFilterTextField } from '../inputs/MRT_GlobalFilterTextField';
 import { MRT_LinearProgressBar } from './MRT_LinearProgressBar';
 import { MRT_TablePagination } from './MRT_TablePagination';
 import { MRT_ToolbarDropZone } from './MRT_ToolbarDropZone';
 import { MRT_ToolbarInternalButtons } from './MRT_ToolbarInternalButtons';
-import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { getCommonToolbarStyles } from '../../utils/style.utils';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 
 export interface MRT_TopToolbarProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -46,6 +48,11 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
     table,
   };
 
+  const { rowSelection } = getState();
+  const selectedCount = useMemo(
+    () => Object.values(rowSelection).filter(Boolean).length,
+    [rowSelection],
+  );
   return (
     <Box
       {...toolbarProps}
@@ -78,34 +85,41 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
           py: '1rem',
           px: '0.5rem',
           width: '100%',
+          position: 'relative',
         }}
       >
         {enableGlobalFilter && positionGlobalFilter === 'left' && (
           <MRT_GlobalFilterTextField {...globalFilterProps} />
         )}
-        {enableToolbarInternalActions ? (
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              flexWrap: 'wrap-reverse',
-              gap: '0.5rem',
-              justifyContent: 'flex-start',
-              width: '100%',
-            }}
-          >
-            {enableGlobalFilter && positionGlobalFilter === 'right' && (
-              <MRT_GlobalFilterTextField {...globalFilterProps} />
-            )}
-            {renderTopToolbarCustomActions?.({ table }) ?? <span />}
-            <MRT_ToolbarInternalButtons table={table} />
-          </Box>
-        ) : (
-          enableGlobalFilter &&
-          positionGlobalFilter === 'right' && (
+        <>
+          {enableGlobalFilter && positionGlobalFilter === 'left' && (
             <MRT_GlobalFilterTextField {...globalFilterProps} />
-          )
-        )}
+          )}
+          {enableToolbarInternalActions ? (
+            <Box
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                flexWrap: 'wrap-reverse',
+                gap: '0.5rem',
+                justifyContent: 'flex-start',
+                width: '100%',
+              }}
+            >
+              {enableGlobalFilter && positionGlobalFilter === 'right' && (
+                <MRT_GlobalFilterTextField {...globalFilterProps} />
+              )}
+              {renderTopToolbarCustomActions?.({ table }) ?? <span />}
+              <MRT_ToolbarInternalButtons table={table} />
+            </Box>
+          ) : (
+            enableGlobalFilter &&
+            positionGlobalFilter === 'right' && (
+              <MRT_GlobalFilterTextField {...globalFilterProps} />
+            )
+          )}
+        </>
+        <ToolbarActions table={table} />
       </Box>
       {['both', 'top'].includes(positionToolbarDropZone ?? '') && (
         <MRT_ToolbarDropZone table={table} />

@@ -139,4 +139,9 @@ export const MRT_Localization_NL: MRT_Localization = {
   exportPrintPdf: 'PDF afdrukken',
   exportDownload: 'Downloaden',
   exportGrouped: 'Bestanden groeperen',
+  deleteConfirmation:
+    'Weet u zeker dat u de geselecteerde rij(en) wilt verwijderen?',
+  deleteConfirmYes: 'Ja',
+  deleteConfirmNo: 'Nee',
+  deleteConfirmDeleting: 'Verwijderen...',
 };
