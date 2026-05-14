@@ -16,7 +16,6 @@ const EditRowAction = <TData extends MRT_RowData>({
       mode: 'edit',
     });
   };
-
   return (
     <>
       <MRT_EditRowButton onClick={handleOpenEditModal} />
