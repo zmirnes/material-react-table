@@ -1,5 +1,4 @@
-import React from 'react';
-import { type DragEvent, useCallback, useMemo, useState } from 'react';
+import React, { type DragEvent, useCallback, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import { type Theme, useTheme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
@@ -302,7 +301,11 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
               >
                 <Tooltip
                   {...getCommonTooltipProps('top')}
-                  title={HeaderElement}
+                  title={
+                    typeof HeaderElement === 'string'
+                      ? HeaderElement
+                      : undefined
+                  }
                 >
                   <Box
                     className="Mui-TableHeadCell-Content-Wrapper"
