@@ -6,36 +6,36 @@ import DialogTitle from '@mui/material/DialogTitle';
 import MRT_DeleteRowButton from '../../components/buttons/MRT_DeleteRowButton';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
-interface DeleteRowActionConfig {
-  deleteConfirmationMessage?: string;
-  confirmDeleteButtonText?: string;
-  cancelDeleteButtonText?: string;
+interface DeleteConfirmationConfig {
+  message?: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
 }
 interface DeleteRowActionProps<TData extends MRT_RowData> {
-  onDeleteConfirm: () => void;
+  onDeleteConfirm: () => Promise<void> | void;
   table: MRT_TableInstance<TData>;
-  rowConfig?: DeleteRowActionConfig;
+  deleteConfirmation?: DeleteConfirmationConfig;
 }
 
 const DeleteRowAction = <TData extends MRT_RowData>({
   onDeleteConfirm,
   table,
-  rowConfig,
+  deleteConfirmation,
 }: DeleteRowActionProps<TData>) => {
   // Toolbar context — no specific row is targeted
   const [open, setOpen] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<boolean>(false);
 
   const deleteConfirmationMessage =
-    rowConfig?.deleteConfirmationMessage ||
+    deleteConfirmation?.message ||
     table.options.localization.deleteConfirmation;
 
   const confirmButtonLabel =
-    rowConfig?.confirmDeleteButtonText ||
+    deleteConfirmation?.confirmButtonText ||
     table.options.localization.deleteConfirmYes;
 
   const cancelButtonLabel =
-    rowConfig?.cancelDeleteButtonText ||
+    deleteConfirmation?.cancelButtonText ||
     table.options.localization.deleteConfirmNo;
 
   const deletingLabel = table.options.localization.deleteConfirmDeleting;
@@ -46,7 +46,7 @@ const DeleteRowAction = <TData extends MRT_RowData>({
 
   const handleConfirmDelete = async () => {
     setDeleting(true);
-    onDeleteConfirm();
+    await onDeleteConfirm();
     setDeleting(false);
     setOpen(false);
   };
