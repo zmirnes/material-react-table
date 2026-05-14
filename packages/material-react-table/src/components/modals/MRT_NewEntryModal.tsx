@@ -3,6 +3,9 @@ import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { MRT_NewEntryForm } from './MRT_NewEntryForm';
+import { MRT_NewEntryFormActions } from './MRT_NewEntryFormActions';
+import { MRT_NewEntryFormProvider } from './MRT_NewEntryFormProvider';
 import {
   type MRT_ModalPosition,
   type MRT_NewEntryModalOverrides,
@@ -72,8 +75,6 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
     headerProps,
     bodySx,
     bodyProps,
-    footerSx,
-    footerProps,
     modalSx,
     modalProps,
     closeButtonProps,
@@ -169,22 +170,22 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
           </Stack>
         )}
 
-        {/* Scrollable content area — form body rendered by a subsequent task (MRT_NewEntryForm) */}
-        <Stack
-          height="100%"
-          overflow="auto"
-          px={2}
-          {...bodyProps}
-          sx={{ pt: 2, pb: 1, ...bodySx }}
-        />
+        {/* MRT_NewEntryFormProvider wraps body + footer so both share the same RHF context and <form> element */}
+        <MRT_NewEntryFormProvider table={table}>
+          {/* Scrollable body — MRT_NewEntryForm auto-generates fields from column definitions */}
+          <Stack
+            height="100%"
+            overflow="auto"
+            px={2}
+            {...bodyProps}
+            sx={{ pb: 1, pt: 2, ...bodySx }}
+          >
+            <MRT_NewEntryForm table={table} />
+          </Stack>
 
-        {/* Footer actions — save/cancel buttons rendered by a subsequent task */}
-        <Stack
-          direction="row"
-          justifyContent="flex-end"
-          {...footerProps}
-          sx={{ gap: 1, px: 2, pt: 1, ...footerSx }}
-        />
+          {/* Footer — MRT_NewEntryFormActions owns its own Stack with footerProps/footerSx */}
+          <MRT_NewEntryFormActions table={table} />
+        </MRT_NewEntryFormProvider>
       </Stack>
     </Modal>
   );
