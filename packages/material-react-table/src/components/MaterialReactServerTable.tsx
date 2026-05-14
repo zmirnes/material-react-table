@@ -14,6 +14,7 @@ import {
 import {
   type Action,
   type OnDeleteActionContext,
+  type OnEditActionContext,
 } from '../types/actions/actions.types';
 
 export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
@@ -40,6 +41,10 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
     rowsToDelete,
     table,
   }: OnDeleteActionContext<TData>) => Promise<void> | void;
+  editRowFn?: ({
+    rowToEdit,
+    table,
+  }: OnEditActionContext<TData>) => Promise<void> | void;
 }
 
 export const MaterialReactServerTable = <
@@ -58,6 +63,7 @@ export const MaterialReactServerTable = <
   enableNewEntryButton,
   actions,
   deleteRowsFn,
+  editRowFn,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -110,6 +116,7 @@ export const MaterialReactServerTable = <
       enableNewEntryButton={enableNewEntryButton}
       actions={actions}
       deleteRowsFn={deleteRowsFn}
+      editRowFn={editRowFn}
     />
   );
 };
