@@ -1,7 +1,11 @@
 import {
+  buildSelectedRowsArray,
   canInsertSelectedRowsWithoutExceedingMaxDepth,
+  canSelectRowForReorder,
   getDeepestSubRowDepth,
+  getFirstSelectedReorderRowDepth,
   getSelectedReorderRowIds,
+  isValidInsertTarget,
 } from '../../fns/treeRowReorderingFns';
 import { useMaterialReactTable } from '../../hooks/useMaterialReactTable';
 import {
@@ -312,5 +316,229 @@ describe('canInsertSelectedRowsWithoutExceedingMaxDepth', () => {
     });
 
     expect(result).toBe(true);
+  });
+});
+
+describe('getFirstSelectedReorderRowDepth', () => {
+  it('should return undefined when selection is undefined', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }],
+    });
+
+    const result = getFirstSelectedReorderRowDepth({
+      rowReorderingSelection: undefined,
+      table,
+    });
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should return undefined when no rows are selected', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }, { id: 'row2' }],
+    });
+
+    const result = getFirstSelectedReorderRowDepth({
+      rowReorderingSelection: {
+        row1: false,
+        row2: false,
+      },
+      table,
+    });
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should return depth of first selected row by selection object order', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [
+        { id: 'row1' },
+        {
+          id: 'row2',
+          subRows: [{ id: 'row2-child' }],
+        },
+      ],
+      getRowId: (originalRow) => originalRow.id,
+    });
+
+    const childRow = table.getRowModel().rows[1]?.subRows?.[0];
+    expect(childRow).toBeDefined();
+
+    const result = getFirstSelectedReorderRowDepth({
+      rowReorderingSelection: {
+        'row2-child': true,
+        row1: true,
+      },
+      table,
+    });
+
+    expect(result).toBe(1);
+  });
+});
+
+describe('canSelectRowForReorder', () => {
+  it('should return true when current row is already selected', () => {
+    const result = canSelectRowForReorder({
+      rowId: 'row1',
+      rowDepth: 2,
+      rowReorderingSelection: {
+        row1: true,
+        row2: true,
+      },
+      firstSelectedReorderRowDepth: 0,
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true when selection is undefined', () => {
+    const result = canSelectRowForReorder({
+      rowId: 'row1',
+      rowDepth: 1,
+      rowReorderingSelection: undefined,
+      firstSelectedReorderRowDepth: undefined,
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true when no rows are selected', () => {
+    const result = canSelectRowForReorder({
+      rowId: 'row1',
+      rowDepth: 1,
+      rowReorderingSelection: {
+        row1: false,
+        row2: false,
+      },
+      firstSelectedReorderRowDepth: undefined,
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true when row depth matches first selected row depth', () => {
+    const result = canSelectRowForReorder({
+      rowId: 'row2',
+      rowDepth: 1,
+      rowReorderingSelection: {
+        row1: true,
+      },
+      firstSelectedReorderRowDepth: 1,
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false when row depth does not match first selected row depth', () => {
+    const result = canSelectRowForReorder({
+      rowId: 'row2',
+      rowDepth: 2,
+      rowReorderingSelection: {
+        row1: true,
+      },
+      firstSelectedReorderRowDepth: 1,
+    });
+
+    expect(result).toBe(false);
+  });
+});
+
+describe('buildSelectedRowsArray', () => {
+  it('should return an empty array when selectedRowIds is empty', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }, { id: 'row2' }],
+    });
+
+    const result = buildSelectedRowsArray([], table);
+
+    expect(result).toEqual([]);
+  });
+
+  it('should return an array of rows matching the selectedRowIds', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }, { id: 'row2', subRows: [{ id: 'row2-child' }] }],
+      getRowId: (originalRow) => originalRow.id,
+    });
+
+    const result = buildSelectedRowsArray(['row1', 'row2'], table);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].id).toBe('row1');
+    expect(result[1].id).toBe('row2');
+  });
+});
+
+describe('isValidInsertTarget', () => {
+  it('should return false if the target row is already selected', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }, { id: 'row2' }],
+    });
+
+    const result = isValidInsertTarget({
+      targetRowId: 'row1',
+      selectedRowIds: ['row1'],
+      table,
+    });
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the target row is a descendant of a selected row', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [
+        {
+          id: 'row1',
+          subRows: [{ id: 'row1-child', subRows: [{ id: 'row1-grandchild' }] }],
+        },
+      ],
+      getRowId: (originalRow) => originalRow.id,
+    });
+
+    const result = isValidInsertTarget({
+      targetRowId: 'row1-grandchild',
+      selectedRowIds: ['row1'],
+      table,
+    });
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if the target row is not selected and not a descendant of any selected row', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }, { id: 'row2' }],
+      getRowId: (originalRow) => originalRow.id,
+    });
+
+    const result = isValidInsertTarget({
+      targetRowId: 'row2',
+      selectedRowIds: ['row1'],
+      table,
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false if no rows are selected', () => {
+    const table = createMockTable({
+      columns: [],
+      data: [{ id: 'row1' }, { id: 'row2' }],
+      getRowId: (originalRow) => originalRow.id,
+    });
+
+    const result = isValidInsertTarget({
+      targetRowId: 'row1',
+      selectedRowIds: [],
+      table,
+    });
+
+    expect(result).toBe(false);
   });
 });

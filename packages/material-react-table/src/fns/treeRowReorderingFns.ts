@@ -198,7 +198,7 @@ export const isValidInsertTarget = <TData extends MRT_RowData>({
   table: MRT_TableInstance<TData>;
 }): boolean => {
   // Rule 1: Target row cannot be already selected
-  if (selectedRowIds.includes(targetRowId)) {
+  if (selectedRowIds.includes(targetRowId) || selectedRowIds.length === 0) {
     return false;
   }
 
