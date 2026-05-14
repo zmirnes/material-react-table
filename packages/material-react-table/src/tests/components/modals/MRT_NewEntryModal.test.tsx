@@ -50,6 +50,7 @@ const buildMockTable = ({
 
   // Cast to unknown first to avoid having to satisfy the full MRT_TableInstance shape.
   const table = {
+    getAllLeafColumns: () => [],
     getState: () => ({ newEntryModal: newEntryModalState }),
     options: {
       formConfig: renderModalFn ? { renderModal: renderModalFn } : undefined,
