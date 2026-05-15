@@ -39,7 +39,11 @@ export interface DeleteActionToolbarRenderContext<TData extends MRT_RowData>
   // Context-aware delete handler for currently selected rows.
   onDelete: DeleteActionExecutor;
 }
-
+export interface DeleteConfirmationConfig {
+  message?: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+}
 export interface CreateDeleteActionOptions<TData extends MRT_RowData>
   extends Partial<Omit<Action<TData>, 'renderRow' | 'renderToolbar'>> {
   // Custom delete behavior with access to default behavior via defaultOnDelete.
@@ -50,6 +54,7 @@ export interface CreateDeleteActionOptions<TData extends MRT_RowData>
   renderToolbar?: (
     context: DeleteActionToolbarRenderContext<TData>,
   ) => ReactNode;
+  deleteConfirmation?: DeleteConfirmationConfig;
 }
 
 export interface OnEditActionContext<TData extends MRT_RowData> {

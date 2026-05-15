@@ -58,7 +58,7 @@ export const createEditAction = <TData extends MRT_RowData>({
         onEdit: onRowEdit,
       });
     }
-    return <EditRowAction onEditConfirm={onRowEdit} />;
+    return <EditRowAction onEditButtonClick={onRowEdit} />;
   };
   return {
     name: 'edit',

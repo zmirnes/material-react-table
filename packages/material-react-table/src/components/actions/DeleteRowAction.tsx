@@ -5,12 +5,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import MRT_DeleteRowButton from '../../components/buttons/MRT_DeleteRowButton';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { type DeleteConfirmationConfig } from '../../types/actions/actions.types';
 
-interface DeleteConfirmationConfig {
-  message?: string;
-  confirmButtonText?: string;
-  cancelButtonText?: string;
-}
 interface DeleteRowActionProps<TData extends MRT_RowData> {
   onDeleteConfirm: () => Promise<void> | void;
   table: MRT_TableInstance<TData>;
