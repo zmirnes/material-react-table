@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
 import { type Meta } from '@storybook/react-vite';
-import { type MRT_ColumnDef } from '../../src';
+import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
 import { type Date } from '../../src/column-types/date';
 import { type EnumValue } from '../../src/column-types/enum';
 import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
@@ -577,4 +577,48 @@ export const WithAddNewEntryButton = () => (
       enableNewEntryButton
     />
   </Box>
+);
+
+// Standalone story for testing the new-entry form with formConfig.
+// Uses MaterialReactTable directly since MaterialReactServerTable does not expose formConfig.
+export const WithNewEntryFormConfig = () => (
+  <MaterialReactTable<Person>
+    columns={[
+      {
+        accessorKey: 'firstName',
+        header: 'First Name',
+        type: 'string',
+        formField: {
+          section: 'basic',
+          order: 1,
+          rules: { required: 'Required' },
+        },
+      },
+      {
+        accessorKey: 'age',
+        header: 'Age',
+        type: 'number',
+        formField: {
+          section: 'basic',
+          order: 2,
+          rules: { min: { value: 18, message: 'Min 18' } },
+        },
+      },
+    ]}
+    data={fakeDatabase.slice(0, 10)}
+    enableNewEntryButton
+    localization={{
+      close: 'Close',
+      newEntry: 'New Entry',
+      edit: 'Edit',
+      save: 'Save',
+      cancel: 'Cancel',
+    }}
+    formConfig={{
+      sections: [{ id: 'basic', title: 'Basic Info', order: 1 }],
+      onSave: ({ form, mode }) => {
+        alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
+      },
+    }}
+  />
 );

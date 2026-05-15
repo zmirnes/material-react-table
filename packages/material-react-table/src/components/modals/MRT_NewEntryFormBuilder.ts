@@ -34,7 +34,7 @@ export const sortByOrder = <T extends { order?: number | undefined }>(
 // ─── Field Resolution ─────────────────────────────────────────────────────────
 
 // Extracts and enriches form field entries from the table's leaf columns.
-// Applies exclusion rules: display columns, formConfig.excludeColumns, and disabled fields.
+// Applies exclusion rules: display columns and formConfig.excludeColumns.
 export const resolveFormFields = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
 ): MRT_FormFieldEntry<TData>[] => {
@@ -48,26 +48,14 @@ export const resolveFormFields = <TData extends MRT_RowData>(
       if (column.columnDef.columnDefType === 'display') return false;
       // Columns listed in formConfig.excludeColumns are omitted from the form.
       if (excludedColumnIds.has(column.id)) return false;
-      // A config-object formField with disabled: true opts this column out of the form.
-      const rawFormField = column.columnDef.formField;
-      if (
-        rawFormField !== null &&
-        typeof rawFormField === 'object' &&
-        (rawFormField as MRT_FormFieldConfig<TData>).disabled === true
-      ) {
-        return false;
-      }
       return true;
     })
     .map((column) => {
       const rawFormField = column.columnDef.formField;
       // Distinguish a config object from a render function — both are valid for formField.
+      // TypeScript narrows to MRT_FormFieldConfig when formField is not a function.
       const fieldConfig =
-        rawFormField !== null &&
-        typeof rawFormField === 'object' &&
-        typeof rawFormField !== 'function'
-          ? (rawFormField as MRT_FormFieldConfig<TData>)
-          : null;
+        typeof rawFormField !== 'function' ? (rawFormField ?? null) : null;
 
       return {
         columnId: column.id,
@@ -124,13 +112,7 @@ export const buildDefaultValues = <TData extends MRT_RowData>(
 
     const rawFormField = column.columnDef.formField;
     const fieldConfig =
-      rawFormField !== null &&
-      typeof rawFormField === 'object' &&
-      typeof rawFormField !== 'function'
-        ? rawFormField
-        : null;
-
-    if (fieldConfig?.disabled === true) continue;
+      typeof rawFormField !== 'function' ? (rawFormField ?? null) : null;
 
     values[column.id] = resolveDefaultValue(fieldConfig?.defaultValue);
   }
