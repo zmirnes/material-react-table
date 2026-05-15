@@ -1357,6 +1357,8 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     | BoxProps;
   // Styling overrides for MRT_NewEntryModal.
   muiNewEntryModalProps?: MRT_NewEntryModalOverrides;
+  // Table-level form configuration — sections, field overrides, callbacks, and additional fields.
+  formConfig?: MRT_FormConfig<TData>;
   onActionCellChange?: OnChangeFn<MRT_Cell<TData> | null>;
   onColumnFilterFnsChange?: OnChangeFn<{ [key: string]: MRT_FilterOption }>;
   onCreatingRowCancel?: (props: {
