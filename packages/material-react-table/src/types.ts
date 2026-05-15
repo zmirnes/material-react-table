@@ -40,7 +40,7 @@ import {
   type Virtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual';
-import { type ModalProps, type StackProps,type SxProps } from '@mui/material';
+import { type ModalProps, type StackProps, type SxProps } from '@mui/material';
 import { type AlertProps } from '@mui/material/Alert';
 import { type AutocompleteProps } from '@mui/material/Autocomplete';
 import { type BoxProps } from '@mui/material/Box';
@@ -456,7 +456,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
       | 'newEntryModal'
-      | 'rowReorderingSelection
+      | 'rowReorderingSelection'
     >;
   };
 
