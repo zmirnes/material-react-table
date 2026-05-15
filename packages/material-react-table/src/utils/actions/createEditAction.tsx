@@ -14,11 +14,22 @@ export const createEditAction = <TData extends MRT_RowData>({
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => {
-    // Nothing to delete, so exit early.
+    // Nothing to edit, so exit early.
     if (!rowToEdit) {
       return;
     }
-    await table.options.editRowFn?.({ rowToEdit, table });
+    const { setNewEntryModal } = table;
+    const handleOpenEditModal = () => {
+      setNewEntryModal({
+        open: true,
+        mode: 'edit',
+      });
+    };
+    if (table.options.editRowFn) {
+      await table.options.editRowFn({ rowToEdit, table });
+      return;
+    }
+    handleOpenEditModal();
   };
   const executeEdit = (context: OnEditActionContext<TData>) => {
     const executeDefaultEdit = () => defaultOnEdit(context);
@@ -47,7 +58,7 @@ export const createEditAction = <TData extends MRT_RowData>({
         onEdit: onRowEdit,
       });
     }
-    return <EditRowAction onEditConfirm={onRowEdit} table={context.table} />;
+    return <EditRowAction onEditConfirm={onRowEdit} />;
   };
   return {
     name: 'edit',
