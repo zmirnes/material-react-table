@@ -39,7 +39,11 @@ export interface DeleteActionToolbarRenderContext<TData extends MRT_RowData>
   // Context-aware delete handler for currently selected rows.
   onDelete: DeleteActionExecutor;
 }
-
+export interface DeleteConfirmationConfig {
+  message?: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+}
 export interface CreateDeleteActionOptions<TData extends MRT_RowData>
   extends Partial<Omit<Action<TData>, 'renderRow' | 'renderToolbar'>> {
   // Custom delete behavior with access to default behavior via defaultOnDelete.
@@ -50,4 +54,28 @@ export interface CreateDeleteActionOptions<TData extends MRT_RowData>
   renderToolbar?: (
     context: DeleteActionToolbarRenderContext<TData>,
   ) => ReactNode;
+  deleteConfirmation?: DeleteConfirmationConfig;
+}
+
+export interface OnEditActionContext<TData extends MRT_RowData> {
+  rowToEdit: MRT_Row<TData>;
+  table: MRT_TableInstance<TData>;
+}
+type EditActionExecutor = () => void | Promise<void>;
+interface EditActionRowRenderContext<TData extends MRT_RowData>
+  extends ActionRowRenderContext<TData> {
+  onEdit: EditActionExecutor;
+}
+export interface CustomOnEditActionContext<TData extends MRT_RowData>
+  extends OnEditActionContext<TData> {
+  // Allows custom edit logic to call the built-in default edit behavior.
+  defaultOnEdit: EditActionExecutor;
+}
+export interface CreateEditActionOptions<TData extends MRT_RowData>
+  extends Partial<Omit<Action<TData>, 'renderRow'>> {
+  // Custom edit behavior with access to default behavior via defaultOnDelete.
+  onEdit?: (
+    context: CustomOnEditActionContext<TData>,
+  ) => void | Promise<void>;
+  renderRow?: (context: EditActionRowRenderContext<TData>) => ReactNode;
 }

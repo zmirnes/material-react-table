@@ -12,6 +12,7 @@ export const createDeleteAction = <TData extends MRT_RowData>({
   onDelete,
   renderRow: customRenderRow,
   renderToolbar: customRenderToolbar,
+  deleteConfirmation,
   ...rest
 }: CreateDeleteActionOptions<TData>): Action<TData> => {
   // Default delete behavior used when the consumer does not provide a custom onDelete.
@@ -86,7 +87,11 @@ export const createDeleteAction = <TData extends MRT_RowData>({
     }
 
     return (
-      <DeleteRowAction onDeleteConfirm={onRowDelete} table={context.table} />
+      <DeleteRowAction
+        onDeleteConfirm={onRowDelete}
+        table={context.table}
+        deleteConfirmation={deleteConfirmation}
+      />
     );
   };
 

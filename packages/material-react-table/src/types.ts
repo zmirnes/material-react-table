@@ -1,33 +1,10 @@
-import { type AlertProps } from '@mui/material/Alert';
-import { type AutocompleteProps } from '@mui/material/Autocomplete';
-import { type BoxProps } from '@mui/material/Box';
-import { type ButtonProps } from '@mui/material/Button';
-import { type CheckboxProps } from '@mui/material/Checkbox';
-import { type ChipProps } from '@mui/material/Chip';
-import { type CircularProgressProps } from '@mui/material/CircularProgress';
-import { type DialogProps } from '@mui/material/Dialog';
-import { type IconButtonProps } from '@mui/material/IconButton';
-import { type LinearProgressProps } from '@mui/material/LinearProgress';
-import { type PaginationProps } from '@mui/material/Pagination';
-import { type PaperProps } from '@mui/material/Paper';
-import { type RadioProps } from '@mui/material/Radio';
-import { type SelectProps } from '@mui/material/Select';
-import { type SkeletonProps } from '@mui/material/Skeleton';
-import { type SliderProps } from '@mui/material/Slider';
-import { type Theme } from '@mui/material/styles';
-import { type TableProps } from '@mui/material/Table';
-import { type TableBodyProps } from '@mui/material/TableBody';
-import { type TableCellProps } from '@mui/material/TableCell';
-import { type TableContainerProps } from '@mui/material/TableContainer';
-import { type TableFooterProps } from '@mui/material/TableFooter';
-import { type TableHeadProps } from '@mui/material/TableHead';
-import { type TableRowProps } from '@mui/material/TableRow';
-import { type TextFieldProps } from '@mui/material/TextField';
 import {
-  type DatePickerProps,
-  type DateTimePickerProps,
-  type TimePickerProps,
-} from '@mui/x-date-pickers';
+  type Dispatch,
+  type ReactNode,
+  type RefObject,
+  type SetStateAction,
+} from 'react';
+import type { RegisterOptions, UseFormReturn } from 'react-hook-form';
 import {
   type AccessorFn,
   type AggregationFn,
@@ -63,17 +40,46 @@ import {
   type Virtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual';
+import { type ModalProps, type StackProps, type SxProps } from '@mui/material';
+import { type AlertProps } from '@mui/material/Alert';
+import { type AutocompleteProps } from '@mui/material/Autocomplete';
+import { type BoxProps } from '@mui/material/Box';
+import { type ButtonProps } from '@mui/material/Button';
+import { type CheckboxProps } from '@mui/material/Checkbox';
+import { type ChipProps } from '@mui/material/Chip';
+import { type CircularProgressProps } from '@mui/material/CircularProgress';
+import { type DialogProps } from '@mui/material/Dialog';
+import { type IconButtonProps } from '@mui/material/IconButton';
+import { type LinearProgressProps } from '@mui/material/LinearProgress';
+import { type PaginationProps } from '@mui/material/Pagination';
+import { type PaperProps } from '@mui/material/Paper';
+import { type RadioProps } from '@mui/material/Radio';
+import { type SelectProps } from '@mui/material/Select';
+import { type SkeletonProps } from '@mui/material/Skeleton';
+import { type SliderProps } from '@mui/material/Slider';
+import { type Theme } from '@mui/material/styles';
+import { type TableProps } from '@mui/material/Table';
+import { type TableBodyProps } from '@mui/material/TableBody';
+import { type TableCellProps } from '@mui/material/TableCell';
+import { type TableContainerProps } from '@mui/material/TableContainer';
+import { type TableFooterProps } from '@mui/material/TableFooter';
+import { type TableHeadProps } from '@mui/material/TableHead';
+import { type TableRowProps } from '@mui/material/TableRow';
+import { type TextFieldProps } from '@mui/material/TextField';
 import {
-  type Dispatch,
-  type ReactNode,
-  type RefObject,
-  type SetStateAction,
-} from 'react';
-import type { RegisterOptions, UseFormReturn } from 'react-hook-form';
+  type DatePickerProps,
+  type DateTimePickerProps,
+  type TimePickerProps,
+} from '@mui/x-date-pickers';
 import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
 import { type MRT_Icons } from './icons';
+import {
+  type Action,
+  type OnDeleteActionContext,
+  type OnEditActionContext,
+} from './types/actions/actions.types';
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -449,6 +455,7 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'showColumnFilters'
       | 'showGlobalFilter'
       | 'showToolbarDropZone'
+      | 'newEntryModal'
       | 'rowReorderingSelection'
     >;
   };
@@ -1508,6 +1515,10 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     rowsToDelete,
     table,
   }: OnDeleteActionContext<TData>) => Promise<void> | void;
+  editRowFn?: ({
+    rowToEdit,
+    table,
+  }: OnEditActionContext<TData>) => Promise<void> | void;
 }
 
 export interface MRT_ExportDefinition {
@@ -1721,6 +1732,54 @@ export interface ColumnTypeResolver {
     column: MRT_ColumnDef<TData>,
     table: MRT_TableInstance<TData>,
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
+}
+
+// Controls the position of MRT_NewEntryModal on the screen.
+// Mirrors the TModalPosition interface from the existing CustomModal component.
+export interface MRT_ModalPosition {
+  // Vertical alignment of the modal card.
+  vertical: 'top' | 'center' | 'bottom';
+  // Horizontal alignment of the modal card.
+  horizontal: 'left' | 'center' | 'right';
+  // Fine-tune vertical position as a percentage offset (-100 to 100). Default 10.
+  verticalOffset?: number;
+  // Fine-tune horizontal position as a percentage offset (-100 to 100). Default 0.
+  horizontalOffset?: number;
+}
+
+// Style overrides for each visual section of MRT_NewEntryModal.
+// Used as the value type for muiNewEntryModalProps on MRT_TableOptions.
+export interface MRT_NewEntryModalOverrides {
+  // Override the modal title — replaces the default localization key.
+  title?: string;
+  // Sx overrides for the outer content container (the white card).
+  contentContainerSx?: SxProps<Theme>;
+  // Sx overrides for the header row (title + close button).
+  headerSx?: SxProps<Theme>;
+  // Sx overrides for the scrollable body area.
+  bodySx?: SxProps<Theme>;
+  // Sx overrides for the footer row (action buttons).
+  footerSx?: SxProps<Theme>;
+  // Sx overrides for the MUI Modal backdrop/wrapper.
+  modalSx?: SxProps<Theme>;
+  // Additional props forwarded to the header Stack.
+  headerProps?: Omit<StackProps, 'sx'>;
+  // Additional props forwarded to the body Stack.
+  bodyProps?: Omit<StackProps, 'sx'>;
+  // Additional props forwarded to the footer Stack.
+  footerProps?: Omit<StackProps, 'sx'>;
+  // Props forwarded to the close (X) IconButton — color, sx, disabled, aria-label, onClick, etc.
+  // When onClick is provided it runs BEFORE the default close handler.
+  closeButtonProps?: IconButtonProps;
+  // When true, hides the entire header row (title + close button).
+  disableHeader?: boolean;
+  // Controls the modal card position on screen.
+  // When omitted, defaults to top-center with a 10% vertical offset.
+  position?: MRT_ModalPosition;
+  // Additional components rendered inside the header row, between the title and the close button.
+  headerComponents?: ReactNode;
+  // Full MUI Modal props passthrough — open, onClose, and sx are excluded (controlled internally).
+  modalProps?: Omit<Partial<ModalProps>, 'open' | 'onClose' | 'sx'>;
 }
 
 // New entry modal state — open/close, mode (create or edit), and optional initial values.

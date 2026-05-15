@@ -19,6 +19,7 @@ import {
 import {
   type Action,
   type OnDeleteActionContext,
+  type OnEditActionContext,
 } from '../types/actions/actions.types';
 import { createColumnDefs } from '../utils/columns/createColumnDef';
 
@@ -45,6 +46,10 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
     rowsToDelete,
     table,
   }: OnDeleteActionContext<TData>) => Promise<void> | void;
+  editRowFn?: ({
+    rowToEdit,
+    table,
+  }: OnEditActionContext<TData>) => Promise<void> | void;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -91,6 +96,7 @@ export const MaterialReactServerTableInstance = <
   enableNewEntryButton,
   actions,
   deleteRowsFn,
+  editRowFn,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
@@ -170,6 +176,7 @@ export const MaterialReactServerTableInstance = <
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
     deleteRowsFn,
+    editRowFn,
     onSaveFilters,
     onDeleteSavedFilter,
     initialSavedFilters,
