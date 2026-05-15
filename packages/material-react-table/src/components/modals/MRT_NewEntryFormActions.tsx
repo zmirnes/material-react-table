@@ -40,7 +40,7 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
           {customAction.render({ form: methods, mode, table })}
         </span>
       ))}
-      <Button onClick={handleCancel} variant="text">
+      <Button onClick={handleCancel} variant="outlined">
         {localization.cancel}
       </Button>
       <Button type="submit" variant="contained">

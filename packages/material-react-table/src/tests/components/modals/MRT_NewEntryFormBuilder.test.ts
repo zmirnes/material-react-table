@@ -117,7 +117,7 @@ describe('resolveFormFields', () => {
     expect(fields.map((f) => f.columnId)).not.toContain('internalId');
   });
 
-  it('excludes columns whose formField config has disabled: true', () => {
+  it('includes columns whose formField config has disabled: true — disabled affects the input, not field presence', () => {
     const table = buildMockTable({
       columns: [
         { id: 'name', columnDefType: 'data' },
@@ -125,7 +125,11 @@ describe('resolveFormFields', () => {
       ],
     });
     const fields = resolveFormFields(table);
-    expect(fields.map((f) => f.columnId)).not.toContain('secret');
+    // disabled field is still included — it will be rendered as a disabled input.
+    expect(fields.map((f) => f.columnId)).toContain('secret');
+    // The fieldConfig carries the disabled flag so FormFieldControl can pass it to TextField.
+    const secretField = fields.find((f) => f.columnId === 'secret');
+    expect(secretField?.fieldConfig?.disabled).toBe(true);
   });
 
   it('sets fieldConfig to null when formField is a render function', () => {
@@ -313,7 +317,7 @@ describe('buildDefaultValues', () => {
       expect(Object.keys(result)).not.toContain('mrt-row-actions');
     });
 
-    it('skips disabled columns when building default values', () => {
+    it('includes disabled columns in default values — disabled fields are rendered and must have a value', () => {
       const table = buildMockTable({
         columns: [
           { id: 'name', columnDefType: 'data' },
@@ -325,7 +329,7 @@ describe('buildDefaultValues', () => {
         ],
       });
       const result = buildDefaultValues(table, undefined, 'create');
-      expect(Object.keys(result)).not.toContain('secret');
+      expect(Object.keys(result)).toContain('secret');
     });
 
     it('includes defaultValue for additionalFields in the result', () => {

@@ -155,7 +155,7 @@ describe('MRT_NewEntryForm', () => {
       expect(screen.queryByLabelText('Internal ID')).not.toBeInTheDocument();
     });
 
-    it('does not render a field when formField.disabled is true', () => {
+    it('renders a disabled TextField when formField.disabled is true', () => {
       const { table } = buildMockTable({
         columns: [
           { id: 'name', header: 'Name', columnDefType: 'data' },
@@ -171,7 +171,10 @@ describe('MRT_NewEntryForm', () => {
       renderFormWithProvider(table);
 
       expect(screen.getByLabelText('Name')).toBeInTheDocument();
-      expect(screen.queryByLabelText('Secret')).not.toBeInTheDocument();
+      // Disabled field is rendered — just not interactive.
+      const secretInput = screen.getByLabelText('Secret');
+      expect(secretInput).toBeInTheDocument();
+      expect(secretInput).toBeDisabled();
     });
 
     it('uses formField.label override as the TextField label when provided', () => {

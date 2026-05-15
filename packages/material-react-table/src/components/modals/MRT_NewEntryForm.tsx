@@ -1,9 +1,8 @@
 import type React from 'react';
-import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import Collapse from '@mui/material/Collapse';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -70,6 +69,7 @@ const FormFieldControl = <TData extends MRT_RowData>({
           {...field}
           error={!!fieldState.error}
           fullWidth
+          disabled={fieldConfig?.disabled}
           helperText={fieldState.error?.message ?? fieldConfig?.helperText}
           label={fieldConfig?.label ?? columnDef.header}
           placeholder={fieldConfig?.placeholder}
@@ -111,51 +111,42 @@ interface FormSectionBlockProps {
   children: React.ReactNode;
 }
 
-// Renders a section header, a divider, and its child fields inside an optional Collapse.
+// Renders a collapsible or static section using MUI Accordion.
+// When collapsible is false the Accordion is permanently expanded and the expand icon is hidden.
 const FormSectionBlock = ({
   expandMoreIcon: ExpandIcon,
   sectionConfig,
   children,
-}: FormSectionBlockProps) => {
-  const [isExpanded, setIsExpanded] = useState(!sectionConfig.defaultCollapsed);
-
-  const handleToggle = () => {
-    setIsExpanded((prev) => !prev);
-  };
-
-  return (
-    <Stack>
-      <Stack
-        alignItems="center"
-        direction="row"
-        justifyContent="space-between"
-        onClick={sectionConfig.collapsible ? handleToggle : undefined}
-        sx={{
-          cursor: sectionConfig.collapsible ? 'pointer' : 'default',
-          mb: 0.5,
-        }}
-      >
-        <Typography fontWeight={600} variant="subtitle2">
-          {sectionConfig.title}
-        </Typography>
-        {sectionConfig.collapsible && (
-          <IconButton size="small">
-            <ExpandIcon
-              sx={{
-                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: 'transform 200ms',
-              }}
-            />
-          </IconButton>
-        )}
-      </Stack>
-      <Divider sx={{ mb: 2 }} />
-      <Collapse in={isExpanded} unmountOnExit>
-        <Stack gap={FORM_BODY_FIELD_GAP}>{children}</Stack>
-      </Collapse>
-    </Stack>
-  );
-};
+}: FormSectionBlockProps) => (
+  <Accordion
+    // Controlled expansion is only needed when the section is collapsible.
+    // When not collapsible, we keep it always expanded by omitting the controlled props.
+    defaultExpanded={!sectionConfig.defaultCollapsed}
+    disableGutters
+    disabled={false}
+    // Remove the MUI Accordion elevation so it blends into the modal body.
+    elevation={0}
+    // Disable the expand/collapse interaction entirely for non-collapsible sections.
+    expanded={sectionConfig.collapsible ? undefined : true}
+    square
+    sx={{ '&:before': { display: 'none' }, border: 'none' }}
+    // Unmount collapsed children to match the original Collapse unmountOnExit behaviour.
+    TransitionProps={{ unmountOnExit: true }}
+  >
+    <AccordionSummary
+      // Hide the expand icon when the section cannot be collapsed.
+      expandIcon={sectionConfig.collapsible ? <ExpandIcon /> : null}
+      sx={{ px: 0, fontWeight: 600 }}
+    >
+      <Typography fontWeight={600} variant="subtitle2">
+        {sectionConfig.title}
+      </Typography>
+    </AccordionSummary>
+    <AccordionDetails sx={{ px: 0 }}>
+      <Stack gap={FORM_BODY_FIELD_GAP}>{children}</Stack>
+    </AccordionDetails>
+  </Accordion>
+);
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 
@@ -182,6 +173,11 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
   const { newEntryModal } = getState();
   const mode = newEntryModal.mode ?? 'create';
 
+  // Consumer controls the entire form body — skip all field calculations.
+  if (formConfig?.renderForm) {
+    return <>{formConfig.renderForm({ form: methods, mode, table })}</>;
+  }
+
   // Collect all eligible form fields from the table's leaf columns.
   const allFormFields = resolveFormFields(table);
   const additionalFields = formConfig?.additionalFields ?? [];
@@ -200,24 +196,9 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
   // Additional fields sorted by order — rendered after all column fields.
   const sortedAdditionalFields = sortByOrder(additionalFields);
 
-  // Consumer controls the entire form body when renderForm is provided.
-  if (formConfig?.renderForm) {
-    return <>{formConfig.renderForm({ form: methods, mode, table })}</>;
-  }
-
   return (
     <Stack gap={FORM_BODY_FIELD_GAP}>
-      {/* Unsectioned fields rendered before any defined sections */}
-      {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
-        <FormFieldControl
-          columnDef={columnDef}
-          columnId={columnId}
-          fieldConfig={fieldConfig}
-          key={columnId}
-        />
-      ))}
-
-      {/* Sections with their grouped fields */}
+      {/* Sections with their grouped fields — primary layout when sections are defined */}
       {sortedSections.map((sectionConfig) => {
         const sectionFields = sortByOrder(
           fieldsBySection[sectionConfig.id] ?? [],
@@ -239,6 +220,16 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
           </FormSectionBlock>
         );
       })}
+
+      {/* Unsectioned fields rendered after sections — fallback for fields not assigned to any section */}
+      {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
+        <FormFieldControl
+          columnDef={columnDef}
+          columnId={columnId}
+          fieldConfig={fieldConfig}
+          key={columnId}
+        />
+      ))}
 
       {/* Additional non-column fields rendered after all column fields */}
       {sortedAdditionalFields.map((additionalField) => (

@@ -1,35 +1,10 @@
-import { type AlertProps } from '@mui/material/Alert';
-import { type AutocompleteProps } from '@mui/material/Autocomplete';
-import { type BoxProps } from '@mui/material/Box';
-import { type ButtonProps } from '@mui/material/Button';
-import { type CheckboxProps } from '@mui/material/Checkbox';
-import { type ChipProps } from '@mui/material/Chip';
-import { type CircularProgressProps } from '@mui/material/CircularProgress';
-import { type DialogProps } from '@mui/material/Dialog';
-import { type IconButtonProps } from '@mui/material/IconButton';
-import { type LinearProgressProps } from '@mui/material/LinearProgress';
-import { type ModalProps } from '@mui/material/Modal';
-import { type PaginationProps } from '@mui/material/Pagination';
-import { type PaperProps } from '@mui/material/Paper';
-import { type RadioProps } from '@mui/material/Radio';
-import { type SelectProps } from '@mui/material/Select';
-import { type SkeletonProps } from '@mui/material/Skeleton';
-import { type SliderProps } from '@mui/material/Slider';
-import { type StackProps } from '@mui/material/Stack';
-import { type SxProps, type Theme } from '@mui/material/styles';
-import { type TableProps } from '@mui/material/Table';
-import { type TableBodyProps } from '@mui/material/TableBody';
-import { type TableCellProps } from '@mui/material/TableCell';
-import { type TableContainerProps } from '@mui/material/TableContainer';
-import { type TableFooterProps } from '@mui/material/TableFooter';
-import { type TableHeadProps } from '@mui/material/TableHead';
-import { type TableRowProps } from '@mui/material/TableRow';
-import { type TextFieldProps } from '@mui/material/TextField';
 import {
-  type DatePickerProps,
-  type DateTimePickerProps,
-  type TimePickerProps,
-} from '@mui/x-date-pickers';
+  type Dispatch,
+  type ReactNode,
+  type RefObject,
+  type SetStateAction,
+} from 'react';
+import type { RegisterOptions, UseFormReturn } from 'react-hook-form';
 import {
   type AccessorFn,
   type AggregationFn,
@@ -65,13 +40,38 @@ import {
   type Virtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual';
+import { type AlertProps } from '@mui/material/Alert';
+import { type AutocompleteProps } from '@mui/material/Autocomplete';
+import { type BoxProps } from '@mui/material/Box';
+import { type ButtonProps } from '@mui/material/Button';
+import { type CheckboxProps } from '@mui/material/Checkbox';
+import { type ChipProps } from '@mui/material/Chip';
+import { type CircularProgressProps } from '@mui/material/CircularProgress';
+import { type DialogProps } from '@mui/material/Dialog';
+import { type IconButtonProps } from '@mui/material/IconButton';
+import { type LinearProgressProps } from '@mui/material/LinearProgress';
+import { type ModalProps } from '@mui/material/Modal';
+import { type PaginationProps } from '@mui/material/Pagination';
+import { type PaperProps } from '@mui/material/Paper';
+import { type RadioProps } from '@mui/material/Radio';
+import { type SelectProps } from '@mui/material/Select';
+import { type SkeletonProps } from '@mui/material/Skeleton';
+import { type SliderProps } from '@mui/material/Slider';
+import { type StackProps } from '@mui/material/Stack';
+import { type SxProps, type Theme } from '@mui/material/styles';
+import { type TableProps } from '@mui/material/Table';
+import { type TableBodyProps } from '@mui/material/TableBody';
+import { type TableCellProps } from '@mui/material/TableCell';
+import { type TableContainerProps } from '@mui/material/TableContainer';
+import { type TableFooterProps } from '@mui/material/TableFooter';
+import { type TableHeadProps } from '@mui/material/TableHead';
+import { type TableRowProps } from '@mui/material/TableRow';
+import { type TextFieldProps } from '@mui/material/TextField';
 import {
-  type Dispatch,
-  type ReactNode,
-  type RefObject,
-  type SetStateAction,
-} from 'react';
-import type { RegisterOptions, UseFormReturn } from 'react-hook-form';
+  type DatePickerProps,
+  type DateTimePickerProps,
+  type TimePickerProps,
+} from '@mui/x-date-pickers';
 import { type MRT_AggregationFns } from './fns/aggregationFns';
 import { type MRT_FilterFns } from './fns/filterFns';
 import { type MRT_SortingFns } from './fns/sortingFns';
@@ -1701,7 +1701,6 @@ export interface ColumnTypeResolver {
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
 }
 
-
 // Controls the position of MRT_NewEntryModal on the screen.
 // Mirrors the TModalPosition interface from the existing CustomModal component.
 export interface MRT_ModalPosition {
@@ -1854,7 +1853,7 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   // Called when the user submits the form successfully.
   onSave?: (props: MRT_FormCallbackProps<TData>) => Promise<void> | void;
   // Called when the user cancels — runs before the modal closes.
-  onCancel?: (props: MRT_FormCallbackProps<TData>) => void;
+  onCancel?: (props: MRT_FormCallbackProps<TData>) => Promise<void> | void;
   // Extra fields rendered alongside column-derived fields — use for inputs not backed by a column.
   additionalFields?: MRT_FormAdditionalField<TData>[];
   // Additional buttons rendered in the modal footer alongside the default Save/Cancel buttons.

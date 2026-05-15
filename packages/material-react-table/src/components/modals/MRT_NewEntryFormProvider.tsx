@@ -43,8 +43,9 @@ export const MRT_NewEntryFormProvider = <TData extends MRT_RowData>({
   });
 
   // Notifies the consumer via onCancel then closes the modal.
-  const handleCancel = () => {
-    formConfig?.onCancel?.({ form: methods, mode, table });
+  // onCancel may be async — modal closes only after the callback resolves.
+  const handleCancel = async () => {
+    await formConfig?.onCancel?.({ form: methods, mode, table });
     setNewEntryModal({ open: false });
   };
 
