@@ -9,6 +9,7 @@ import { getMRT_RowSelectColumnDef } from './display-columns/getMRT_RowSelectCol
 import { getMRT_RowSpacerColumnDef } from './display-columns/getMRT_RowSpacerColumnDef';
 import { useMRT_Effects } from './useMRT_Effects';
 import {
+  MRT_RowReorderingSelectionState,
   type MRT_Cell,
   type MRT_Column,
   type MRT_ColumnDef,
@@ -201,6 +202,12 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     definedTableOptions.initialSavedFilters ?? {},
   );
 
+  // Row reordering selection state
+  const [rowReorderingSelection, setRowReorderingSelection] =
+    useState<MRT_RowReorderingSelectionState>(
+      initialState?.rowReorderingSelection ?? {},
+    );
+
   definedTableOptions.state = {
     actionCell,
     columnFilterFns,
@@ -219,6 +226,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     hoveredRow,
     isFullScreen,
     pagination,
+    rowReorderingSelection,
     savedFilters,
     showAlertBanner,
     showColumnFilters,
@@ -379,6 +387,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setShowToolbarDropZone =
     statefulTableOptions.onShowToolbarDropZoneChange ?? setShowToolbarDropZone;
   table.setNewEntryModal = setNewEntryModal;
+  table.setRowReorderingSelection =
+    statefulTableOptions.onRowReorderingSelectionChange ??
+    setRowReorderingSelection;
   useMRT_Effects(table);
 
   return table;

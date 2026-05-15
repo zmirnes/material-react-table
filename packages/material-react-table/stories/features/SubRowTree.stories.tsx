@@ -14,22 +14,27 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     header: 'Age',
+    type: 'number',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 
@@ -63,7 +68,26 @@ const data = [...Array(5)].map(() => ({
 }));
 
 export const SubRowTreeEnabledDefault = () => (
-  <MaterialReactTable columns={columns} data={data} enableExpanding />
+  <MaterialReactTable
+    columns={columns}
+    data={data}
+    enableExpanding
+    enableRowReordering
+    enableRowPinning={false}
+    displayColumnDefOptions={{
+      'mrt-row-expand': {
+        GroupedCell: ({ row }) => (
+          <span style={{ fontWeight: 700 }}>
+            {row.getValue('firstName')} ({row.subRows?.length ?? 0})
+          </span>
+        ),
+      },
+    }}
+    maxDepth={3}
+    onTreeRowReorder={({ targetRow }) => {
+      console.log(targetRow);
+    }}
+  />
 );
 
 export const SubRowTreeLayoutGrid = () => (
