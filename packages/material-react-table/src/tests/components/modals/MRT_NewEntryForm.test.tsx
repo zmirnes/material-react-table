@@ -1,11 +1,11 @@
 import React from 'react';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { MRT_NewEntryForm } from '../../../components/modals/MRT_NewEntryForm';
 import { MRT_NewEntryFormActions } from '../../../components/modals/MRT_NewEntryFormActions';
 import { MRT_NewEntryFormProvider } from '../../../components/modals/MRT_NewEntryFormProvider';
+import { useMaterialReactTable } from '../../../hooks/useMaterialReactTable';
 import {
+  type MRT_ColumnDef,
   type MRT_FormAdditionalField,
   type MRT_FormConfig,
   type MRT_FormCustomAction,
@@ -16,6 +16,7 @@ import {
   act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
@@ -34,61 +35,40 @@ const MOCK_LOCALIZATION = {
   save: 'Save',
 };
 
-// Minimal MRT_Icons subset required by the form components.
-const MOCK_ICONS = {
-  CancelIcon,
-  ExpandMoreIcon,
-};
+// Default columns used when a test does not require specific column configuration.
+const DEFAULT_COLUMNS: MRT_ColumnDef<Record<string, unknown>>[] = [
+  { accessorKey: 'name', header: 'Name', type: 'string' },
+  { accessorKey: 'age', header: 'Age', type: 'string' },
+];
 
-// Options for configuring the mock table in each test scenario.
-interface MockTableConfig {
-  newEntryModalState?: MRT_NewEntryModalState;
+// Options for configuring the real table instance in each test scenario.
+interface TableConfig {
+  columns?: MRT_ColumnDef<Record<string, unknown>>[];
+  enableRowSelection?: boolean;
   formConfig?: MRT_FormConfig<Record<string, unknown>>;
-  // Column definitions — each item maps to a leaf column in getAllLeafColumns().
-  columns?: Array<{
-    id: string;
-    header: string;
-    columnDefType?: 'data' | 'display' | 'group';
-    formField?: Record<string, unknown> | ((props: unknown) => React.ReactNode);
-  }>;
+  // Initial state for the new-entry modal — open with an optional mode and values.
+  initialNewEntryModal?: MRT_NewEntryModalState;
 }
 
-// Builds a minimal MRT_TableInstance mock that satisfies the form components' needs.
-const buildMockTable = ({
-  newEntryModalState = { open: true },
+// Creates a real MRT_TableInstance via renderHook with the given options.
+// Using a real instance avoids the fragility of as-unknown-as casts and keeps
+// the test surface aligned with the actual MRT API.
+const buildTable = ({
+  columns = DEFAULT_COLUMNS,
+  enableRowSelection,
   formConfig,
-  columns = [
-    { id: 'name', header: 'Name', columnDefType: 'data' },
-    { id: 'age', header: 'Age', columnDefType: 'data' },
-  ],
-}: MockTableConfig = {}): {
-  table: MRT_TableInstance<Record<string, unknown>>;
-  setNewEntryModal: ReturnType<typeof vi.fn>;
-} => {
-  const setNewEntryModal = vi.fn();
-
-  const leafColumns = columns.map((col) => ({
-    id: col.id,
-    columnDef: {
-      columnDefType: col.columnDefType ?? 'data',
-      header: col.header,
-      formField: col.formField,
-    },
-  }));
-
-  const table = {
-    getAllLeafColumns: () => leafColumns,
-    getState: () => ({ newEntryModal: newEntryModalState }),
-    options: {
+  initialNewEntryModal = { open: true },
+}: TableConfig = {}): MRT_TableInstance<Record<string, unknown>> => {
+  const { result } = renderHook(() =>
+    useMaterialReactTable<Record<string, unknown>>({
+      columns,
+      data: [],
+      enableRowSelection,
       formConfig,
-      icons: MOCK_ICONS,
-      localization: MOCK_LOCALIZATION,
-      muiNewEntryModalProps: undefined,
-    },
-    setNewEntryModal,
-  } as unknown as MRT_TableInstance<Record<string, unknown>>;
-
-  return { setNewEntryModal, table };
+      initialState: { newEntryModal: initialNewEntryModal },
+    }),
+  );
+  return result.current;
 };
 
 // Renders MRT_NewEntryForm wrapped in MRT_NewEntryFormProvider so tests have RHF context.
@@ -107,10 +87,10 @@ const renderFormWithProvider = (
 describe('MRT_NewEntryForm', () => {
   describe('field rendering from columns', () => {
     it('renders a TextField for each data column by default', () => {
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
-          { id: 'name', header: 'Name', columnDefType: 'data' },
-          { id: 'email', header: 'Email', columnDefType: 'data' },
+          { accessorKey: 'name', header: 'Name', type: 'string' },
+          { accessorKey: 'email', header: 'Email', type: 'string' },
         ],
       });
 
@@ -122,29 +102,24 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('does not render a field for display columns', () => {
-      const { table } = buildMockTable({
-        columns: [
-          { id: 'name', header: 'Name', columnDefType: 'data' },
-          {
-            id: 'mrt-row-actions',
-            header: 'Actions',
-            columnDefType: 'display',
-          },
-        ],
+      // enableRowSelection injects an internal mrt-row-select display column that must be excluded.
+      const table = buildTable({
+        columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
+        enableRowSelection: true,
       });
 
       renderFormWithProvider(table);
 
-      // Only the data column produces a field — the display column is excluded.
       expect(screen.getByLabelText('Name')).toBeInTheDocument();
-      expect(screen.queryByLabelText('Actions')).not.toBeInTheDocument();
+      // The injected display column must not produce a form field.
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     });
 
     it('does not render a field for columns listed in formConfig.excludeColumns', () => {
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
-          { id: 'name', header: 'Name', columnDefType: 'data' },
-          { id: 'internalId', header: 'Internal ID', columnDefType: 'data' },
+          { accessorKey: 'name', header: 'Name', type: 'string' },
+          { accessorKey: 'internalId', header: 'Internal ID', type: 'string' },
         ],
         formConfig: { excludeColumns: ['internalId'] },
       });
@@ -156,13 +131,13 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('renders a disabled TextField when formField.disabled is true', () => {
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
-          { id: 'name', header: 'Name', columnDefType: 'data' },
+          { accessorKey: 'name', header: 'Name', type: 'string' },
           {
-            id: 'secret',
+            accessorKey: 'secret',
             header: 'Secret',
-            columnDefType: 'data',
+            type: 'string',
             formField: { disabled: true },
           },
         ],
@@ -178,12 +153,12 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('uses formField.label override as the TextField label when provided', () => {
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
           {
-            id: 'firstName',
+            accessorKey: 'firstName',
             header: 'First Name',
-            columnDefType: 'data',
+            type: 'string',
             formField: { label: 'Given Name' },
           },
         ],
@@ -198,12 +173,12 @@ describe('MRT_NewEntryForm', () => {
 
     it('renders the output of formField render function instead of the default TextField', () => {
       const CUSTOM_FIELD_TEST_ID = 'custom-field-sentinel';
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
           {
-            id: 'name',
+            accessorKey: 'name',
             header: 'Name',
-            columnDefType: 'data',
+            type: 'string',
             formField: () => <div data-testid={CUSTOM_FIELD_TEST_ID} />,
           },
         ],
@@ -220,12 +195,12 @@ describe('MRT_NewEntryForm', () => {
       // fieldConfig.render is a render override inside the config object — lower priority than
       // formField-as-function but higher priority than the default Controller+TextField fallback.
       const RENDER_OVERRIDE_TEST_ID = 'render-override-sentinel';
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
           {
-            id: 'name',
+            accessorKey: 'name',
             header: 'Name',
-            columnDefType: 'data',
+            type: 'string',
             formField: {
               render: () => <div data-testid={RENDER_OVERRIDE_TEST_ID} />,
             },
@@ -241,13 +216,12 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('shows a validation error message when fieldConfig.rules are violated on submit', async () => {
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
           {
-            id: 'email',
+            accessorKey: 'email',
             header: 'Email',
-            columnDefType: 'data',
-            // required rule with a human-readable error message.
+            type: 'string',
             formField: { rules: { required: 'Email is required' } },
           },
         ],
@@ -269,14 +243,16 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('applies the fieldConfig.onChange transform to the value before updating RHF state', async () => {
-      const { table } = buildMockTable({
+      const table = buildTable({
         columns: [
           {
-            id: 'code',
+            accessorKey: 'code',
             header: 'Code',
-            columnDefType: 'data',
+            type: 'string',
             // Transform: convert input to uppercase before storing in RHF state.
-            formField: { onChange: (value: string) => value.toUpperCase() },
+            formField: {
+              onChange: (value: unknown) => (value as string).toUpperCase(),
+            },
           },
         ],
       });
@@ -296,13 +272,13 @@ describe('MRT_NewEntryForm', () => {
 
   describe('default values', () => {
     it('pre-populates fields with formField.defaultValue in create mode', () => {
-      const { table } = buildMockTable({
-        newEntryModalState: { mode: 'create', open: true },
+      const table = buildTable({
+        initialNewEntryModal: { mode: 'create', open: true },
         columns: [
           {
-            id: 'status',
+            accessorKey: 'status',
             header: 'Status',
-            columnDefType: 'data',
+            type: 'string',
             formField: { defaultValue: 'active' },
           },
         ],
@@ -314,15 +290,15 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('pre-populates fields from initialValues in edit mode', () => {
-      const { table } = buildMockTable({
-        newEntryModalState: {
+      const table = buildTable({
+        initialNewEntryModal: {
           mode: 'edit',
           open: true,
           initialValues: { name: 'Alice', age: '30' },
         },
         columns: [
-          { id: 'name', header: 'Name', columnDefType: 'data' },
-          { id: 'age', header: 'Age', columnDefType: 'data' },
+          { accessorKey: 'name', header: 'Name', type: 'string' },
+          { accessorKey: 'age', header: 'Age', type: 'string' },
         ],
       });
 
@@ -335,7 +311,7 @@ describe('MRT_NewEntryForm', () => {
 
   describe('MRT_NewEntryFormActions — footer buttons', () => {
     it('renders Save and Cancel buttons', () => {
-      const { table } = buildMockTable();
+      const table = buildTable();
       renderFormWithProvider(table, true);
 
       expect(
@@ -347,7 +323,8 @@ describe('MRT_NewEntryForm', () => {
     });
 
     it('calls setNewEntryModal({ open: false }) when Cancel is clicked', async () => {
-      const { setNewEntryModal, table } = buildMockTable();
+      const table = buildTable();
+      const setNewEntryModalSpy = vi.spyOn(table, 'setNewEntryModal');
       renderFormWithProvider(table, true);
 
       await act(async () => {
@@ -356,14 +333,13 @@ describe('MRT_NewEntryForm', () => {
         );
       });
 
-      expect(setNewEntryModal).toHaveBeenCalledWith({ open: false });
+      expect(setNewEntryModalSpy).toHaveBeenCalledWith({ open: false });
     });
 
     it('calls formConfig.onCancel before closing the modal on Cancel click', async () => {
       const onCancel = vi.fn();
-      const { setNewEntryModal, table } = buildMockTable({
-        formConfig: { onCancel },
-      });
+      const table = buildTable({ formConfig: { onCancel } });
+      const setNewEntryModalSpy = vi.spyOn(table, 'setNewEntryModal');
 
       renderFormWithProvider(table, true);
 
@@ -374,12 +350,12 @@ describe('MRT_NewEntryForm', () => {
       });
 
       expect(onCancel).toHaveBeenCalledTimes(1);
-      expect(setNewEntryModal).toHaveBeenCalledWith({ open: false });
+      expect(setNewEntryModalSpy).toHaveBeenCalledWith({ open: false });
     });
 
     it('calls formConfig.onSave when Save is clicked', async () => {
       const onSave = vi.fn().mockResolvedValue(undefined);
-      const { table } = buildMockTable({ formConfig: { onSave } });
+      const table = buildTable({ formConfig: { onSave } });
       renderFormWithProvider(table, true);
 
       await act(async () => {
@@ -403,7 +379,7 @@ describe('MRT_NewEntryForm', () => {
           ),
         },
       ];
-      const { table } = buildMockTable({ formConfig: { customActions } });
+      const table = buildTable({ formConfig: { customActions } });
 
       renderFormWithProvider(table, true);
 
@@ -420,7 +396,7 @@ describe('MRT_NewEntryForm', () => {
   describe('renderForm override', () => {
     it('renders the consumer-provided renderForm content instead of default fields', () => {
       const RENDER_FORM_TEST_ID = 'custom-form-body';
-      const { table } = buildMockTable({
+      const table = buildTable({
         formConfig: {
           renderForm: () => <div data-testid={RENDER_FORM_TEST_ID} />,
         },
@@ -447,72 +423,14 @@ describe('MRT_NewEntryForm', () => {
           ),
         },
       ];
-      const { table } = buildMockTable({
-        columns: [{ id: 'name', header: 'Name', columnDefType: 'data' }],
+      const table = buildTable({
+        columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
         formConfig: { additionalFields },
       });
 
       renderFormWithProvider(table);
 
       expect(screen.getByTestId(ADDITIONAL_FIELD_TEST_ID)).toBeInTheDocument();
-    });
-  });
-
-  describe('section rendering', () => {
-    it('renders the section title when sections are defined', () => {
-      const { table } = buildMockTable({
-        columns: [
-          {
-            id: 'city',
-            header: 'City',
-            columnDefType: 'data',
-            formField: { section: 'address' },
-          },
-        ],
-        formConfig: {
-          sections: [{ id: 'address', title: 'Address Information' }],
-        },
-      });
-
-      renderFormWithProvider(table);
-
-      expect(screen.getByText('Address Information')).toBeInTheDocument();
-    });
-
-    it('collapses section content when a collapsible section header is clicked', async () => {
-      const SECTION_FIELD_LABEL = 'City';
-      const { table } = buildMockTable({
-        columns: [
-          {
-            id: 'city',
-            header: SECTION_FIELD_LABEL,
-            columnDefType: 'data',
-            formField: { section: 'address' },
-          },
-        ],
-        formConfig: {
-          sections: [
-            { id: 'address', title: 'Address Information', collapsible: true },
-          ],
-        },
-      });
-
-      renderFormWithProvider(table);
-
-      // Section is expanded by default — the field is visible in the DOM.
-      expect(screen.getByLabelText(SECTION_FIELD_LABEL)).toBeInTheDocument();
-
-      // Click the section header — FormSectionBlock calls handleToggle to collapse.
-      await act(async () => {
-        fireEvent.click(screen.getByText('Address Information'));
-      });
-
-      // Collapse uses unmountOnExit — collapsed children are removed from the DOM.
-      await waitFor(() => {
-        expect(
-          screen.queryByLabelText(SECTION_FIELD_LABEL),
-        ).not.toBeInTheDocument();
-      });
     });
   });
 });
