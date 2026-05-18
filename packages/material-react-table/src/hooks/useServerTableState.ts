@@ -145,8 +145,6 @@ export const useServerTableState = <TData extends MRT_RowData>({
       },
       onPaginationChange: setPagination,
       onSortingChange: setSorting,
-      // onGroupingChange: setGrouping,
-      // Grouping change make persistent
       onGroupingChange: makePersistentHandler(
         setGrouping,
         grouping,
