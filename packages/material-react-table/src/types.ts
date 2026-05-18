@@ -1519,7 +1519,6 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
-  saveState: (state: MRT_TableState<TData>) => Promise<void> | void;
 }
 
 export interface MRT_ExportDefinition {

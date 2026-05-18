@@ -51,7 +51,6 @@ export const MRT_ColumnActionMenu = <TData extends MRT_RowData>({
       localization,
       mrtTheme: { menuBackgroundColor },
       renderColumnActionsMenuItems,
-      saveState,
     },
     refs: { filterInputRefs },
     setColumnFilterFns,
@@ -101,7 +100,6 @@ export const MRT_ColumnActionMenu = <TData extends MRT_RowData>({
 
   const handleGroupByColumn = () => {
     column.toggleGrouping();
-    saveState(getState());
     setColumnOrder((old: string[]) => ['mrt-row-expand', ...old]);
     setAnchorEl(null);
   };
