@@ -6,6 +6,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
 import {
   groupFieldsBySection,
   resolveFormFields,
@@ -13,7 +14,6 @@ import {
 } from './MRT_NewEntryFormBuilder';
 import {
   type MRT_ColumnDef,
-  type MRT_FormAdditionalField,
   type MRT_FormFieldConfig,
   type MRT_FormSectionConfig,
   type MRT_RowData,
@@ -88,20 +88,6 @@ const FormFieldControl = <TData extends MRT_RowData>({
     />
   );
 };
-
-// Props for a single additional (non-column) field renderer.
-interface AdditionalFieldControlProps<TData extends MRT_RowData> {
-  additionalField: MRT_FormAdditionalField<TData>;
-  table: MRT_TableInstance<TData>;
-}
-
-// Renders one additional field by delegating entirely to its required render function.
-const AdditionalFieldControl = <TData extends MRT_RowData>({
-  additionalField,
-  table,
-}: AdditionalFieldControlProps<TData>) => (
-  <>{additionalField.render({ name: additionalField.name, table })}</>
-);
 
 // Props for a section block that wraps a group of related form fields.
 interface FormSectionBlockProps {
@@ -233,7 +219,7 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
 
       {/* Additional non-column fields rendered after all column fields */}
       {sortedAdditionalFields.map((additionalField) => (
-        <AdditionalFieldControl
+        <MRT_NewEntryFormAdditionalFieldControl
           additionalField={additionalField}
           key={additionalField.name}
           table={table}

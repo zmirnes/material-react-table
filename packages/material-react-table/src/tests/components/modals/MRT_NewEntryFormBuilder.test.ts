@@ -5,42 +5,9 @@ import {
   sortByOrder,
   type MRT_FormFieldEntry,
 } from '../../../components/modals/MRT_NewEntryFormBuilder';
-import { type MRT_TableInstance } from '../../../types';
+import { useMaterialReactTable } from '../../../hooks/useMaterialReactTable';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-// Minimal column shape accepted by resolveFormFields and buildDefaultValues.
-interface MockColumn {
-  id: string;
-  columnDefType?: 'data' | 'display' | 'group';
-  formField?:
-    | Record<string, unknown>
-    | ((...args: unknown[]) => unknown)
-    | null;
-}
-
-// Builds a minimal MRT_TableInstance stub for builder function tests.
-// Only the fields actually read by the builder functions are populated.
-const buildMockTable = ({
-  columns = [] as MockColumn[],
-  formConfig = {} as Record<string, unknown>,
-}: {
-  columns?: MockColumn[];
-  formConfig?: Record<string, unknown>;
-} = {}): MRT_TableInstance<Record<string, unknown>> =>
-  ({
-    getAllLeafColumns: () =>
-      columns.map((col) => ({
-        id: col.id,
-        columnDef: {
-          columnDefType: col.columnDefType ?? 'data',
-          formField: col.formField ?? undefined,
-        },
-      })),
-    getState: () => ({ newEntryModal: { open: true } }),
-    options: { formConfig },
-  }) as unknown as MRT_TableInstance<Record<string, unknown>>;
 
 // ─── sortByOrder ──────────────────────────────────────────────────────────────
 
@@ -84,47 +51,63 @@ describe('sortByOrder', () => {
 
 describe('resolveFormFields', () => {
   it('includes data columns in the resolved fields', () => {
-    const table = buildMockTable({
-      columns: [{ id: 'name', columnDefType: 'data' }],
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
+        data: [],
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     expect(fields).toHaveLength(1);
     expect(fields[0].columnId).toBe('name');
   });
 
   it('excludes display columns from the resolved fields', () => {
-    const table = buildMockTable({
-      columns: [
-        { id: 'name', columnDefType: 'data' },
-        { id: 'mrt-row-actions', columnDefType: 'display' },
-      ],
-    });
-    const fields = resolveFormFields(table);
-    // Only the data column is included — display columns are always excluded.
+    // enableRowSelection causes MRT to inject an internal mrt-row-select display column.
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
+        data: [],
+        enableRowSelection: true,
+      }),
+    );
+    const fields = resolveFormFields(result.current);
+    // Only the user data column is included — internal display columns are excluded.
     expect(fields).toHaveLength(1);
     expect(fields[0].columnId).toBe('name');
   });
 
   it('excludes columns listed in formConfig.excludeColumns', () => {
-    const table = buildMockTable({
-      columns: [
-        { id: 'name', columnDefType: 'data' },
-        { id: 'internalId', columnDefType: 'data' },
-      ],
-      formConfig: { excludeColumns: ['internalId'] },
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [
+          { accessorKey: 'name', header: 'Name', type: 'string' },
+          { accessorKey: 'internalId', header: 'Internal ID', type: 'string' },
+        ],
+        data: [],
+        formConfig: { excludeColumns: ['internalId'] },
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     expect(fields.map((f) => f.columnId)).not.toContain('internalId');
   });
 
   it('includes columns whose formField config has disabled: true — disabled affects the input, not field presence', () => {
-    const table = buildMockTable({
-      columns: [
-        { id: 'name', columnDefType: 'data' },
-        { id: 'secret', columnDefType: 'data', formField: { disabled: true } },
-      ],
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [
+          { accessorKey: 'name', header: 'Name', type: 'string' },
+          {
+            accessorKey: 'secret',
+            header: 'Secret',
+            type: 'string',
+            formField: { disabled: true },
+          },
+        ],
+        data: [],
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     // disabled field is still included — it will be rendered as a disabled input.
     expect(fields.map((f) => f.columnId)).toContain('secret');
     // The fieldConfig carries the disabled flag so FormFieldControl can pass it to TextField.
@@ -133,46 +116,67 @@ describe('resolveFormFields', () => {
   });
 
   it('sets fieldConfig to null when formField is a render function', () => {
-    const table = buildMockTable({
-      columns: [{ id: 'name', columnDefType: 'data', formField: () => null }],
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [
+          {
+            accessorKey: 'name',
+            header: 'Name',
+            type: 'string',
+            formField: () => null,
+          },
+        ],
+        data: [],
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     expect(fields[0].fieldConfig).toBeNull();
   });
 
   it('populates fieldConfig when formField is a config object', () => {
-    const table = buildMockTable({
-      columns: [
-        {
-          id: 'name',
-          columnDefType: 'data',
-          formField: { label: 'Full Name' },
-        },
-      ],
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [
+          {
+            accessorKey: 'name',
+            header: 'Name',
+            type: 'string',
+            formField: { label: 'Full Name' },
+          },
+        ],
+        data: [],
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     expect(fields[0].fieldConfig).toMatchObject({ label: 'Full Name' });
   });
 
   it('sets sectionId from fieldConfig.section', () => {
-    const table = buildMockTable({
-      columns: [
-        {
-          id: 'city',
-          columnDefType: 'data',
-          formField: { section: 'address' },
-        },
-      ],
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: 'City',
+            type: 'string',
+            formField: { section: 'address' },
+          },
+        ],
+        data: [],
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     expect(fields[0].sectionId).toBe('address');
   });
 
   it('sets sectionId to undefined when no section is configured', () => {
-    const table = buildMockTable({
-      columns: [{ id: 'name', columnDefType: 'data' }],
-    });
-    const fields = resolveFormFields(table);
+    const { result } = renderHook(() =>
+      useMaterialReactTable<Record<string, unknown>>({
+        columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
+        data: [],
+      }),
+    );
+    const fields = resolveFormFields(result.current);
     expect(fields[0].sectionId).toBeUndefined();
   });
 });
@@ -253,95 +257,120 @@ describe('buildDefaultValues', () => {
   describe('edit mode', () => {
     it('returns initialValues directly in edit mode without resolving column defaults', () => {
       const initialValues = { name: 'Alice', age: 30 };
-      const table = buildMockTable({
-        columns: [
-          {
-            id: 'name',
-            columnDefType: 'data',
-            formField: { defaultValue: 'fallback' },
-          },
-        ],
-      });
-      const result = buildDefaultValues(table, initialValues, 'edit');
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [
+            {
+              accessorKey: 'name',
+              header: 'Name',
+              type: 'string',
+              formField: { defaultValue: 'fallback' },
+            },
+          ],
+          data: [],
+        }),
+      );
+      const values = buildDefaultValues(result.current, initialValues, 'edit');
       // Exact initialValues object is returned — column defaultValue is ignored.
-      expect(result).toBe(initialValues);
+      expect(values).toBe(initialValues);
     });
   });
 
   describe('create mode', () => {
     it('resolves static defaultValue from formField config', () => {
-      const table = buildMockTable({
-        columns: [
-          {
-            id: 'status',
-            columnDefType: 'data',
-            formField: { defaultValue: 'active' },
-          },
-        ],
-      });
-      const result = buildDefaultValues(table, undefined, 'create');
-      expect(result['status']).toBe('active');
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [
+            {
+              accessorKey: 'status',
+              header: 'Status',
+              type: 'string',
+              formField: { defaultValue: 'active' },
+            },
+          ],
+          data: [],
+        }),
+      );
+      const values = buildDefaultValues(result.current, undefined, 'create');
+      expect(values['status']).toBe('active');
     });
 
     it('resolves factory-function defaultValue by calling it with no arguments', () => {
-      const table = buildMockTable({
-        columns: [
-          {
-            id: 'token',
-            columnDefType: 'data',
-            formField: { defaultValue: () => 'generated-token' },
-          },
-        ],
-      });
-      const result = buildDefaultValues(table, undefined, 'create');
-      expect(result['token']).toBe('generated-token');
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [
+            {
+              accessorKey: 'token',
+              header: 'Token',
+              type: 'string',
+              formField: { defaultValue: () => 'generated-token' },
+            },
+          ],
+          data: [],
+        }),
+      );
+      const values = buildDefaultValues(result.current, undefined, 'create');
+      expect(values['token']).toBe('generated-token');
     });
 
     it('falls back to empty string when no defaultValue is configured', () => {
-      const table = buildMockTable({
-        columns: [{ id: 'name', columnDefType: 'data' }],
-      });
-      const result = buildDefaultValues(table, undefined, 'create');
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
+          data: [],
+        }),
+      );
+      const values = buildDefaultValues(result.current, undefined, 'create');
       // undefined defaultValue resolves to empty string so RHF inputs are controlled.
-      expect(result['name']).toBe('');
+      expect(values['name']).toBe('');
     });
 
     it('skips display columns when building default values', () => {
-      const table = buildMockTable({
-        columns: [
-          { id: 'name', columnDefType: 'data' },
-          { id: 'mrt-row-actions', columnDefType: 'display' },
-        ],
-      });
-      const result = buildDefaultValues(table, undefined, 'create');
-      expect(Object.keys(result)).not.toContain('mrt-row-actions');
+      // enableRowSelection causes MRT to inject a real mrt-row-select display column.
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [{ accessorKey: 'name', header: 'Name', type: 'string' }],
+          data: [],
+          enableRowSelection: true,
+        }),
+      );
+      const values = buildDefaultValues(result.current, undefined, 'create');
+      expect(Object.keys(values)).not.toContain('mrt-row-select');
     });
 
     it('includes disabled columns in default values — disabled fields are rendered and must have a value', () => {
-      const table = buildMockTable({
-        columns: [
-          { id: 'name', columnDefType: 'data' },
-          {
-            id: 'secret',
-            columnDefType: 'data',
-            formField: { disabled: true },
-          },
-        ],
-      });
-      const result = buildDefaultValues(table, undefined, 'create');
-      expect(Object.keys(result)).toContain('secret');
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [
+            { accessorKey: 'name', header: 'Name', type: 'string' },
+            {
+              accessorKey: 'secret',
+              header: 'Secret',
+              type: 'string',
+              formField: { disabled: true },
+            },
+          ],
+          data: [],
+        }),
+      );
+      const values = buildDefaultValues(result.current, undefined, 'create');
+      expect(Object.keys(values)).toContain('secret');
     });
 
     it('includes defaultValue for additionalFields in the result', () => {
-      const table = buildMockTable({
-        formConfig: {
-          additionalFields: [
-            { name: 'notes', defaultValue: 'n/a', render: () => null },
-          ],
-        },
-      });
-      const result = buildDefaultValues(table, undefined, 'create');
-      expect(result['notes']).toBe('n/a');
+      const { result } = renderHook(() =>
+        useMaterialReactTable<Record<string, unknown>>({
+          columns: [],
+          data: [],
+          formConfig: {
+            additionalFields: [
+              { name: 'notes', defaultValue: 'n/a', render: () => null },
+            ],
+          },
+        }),
+      );
+      const values = buildDefaultValues(result.current, undefined, 'create');
+      expect(values['notes']).toBe('n/a');
     });
   });
 });
