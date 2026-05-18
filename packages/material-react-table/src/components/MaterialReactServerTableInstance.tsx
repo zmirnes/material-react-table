@@ -175,6 +175,7 @@ export const MaterialReactServerTableInstance = <
     actions: actions,
     getAllSelectableRowIds,
     getTotalRows: wrappedGetTotalRows,
+    saveState,
     deleteRowsFn,
     editRowFn,
     onSaveFilters,
