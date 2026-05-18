@@ -318,12 +318,6 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
               column.id,
             ) ||
               !row.getIsGrouped()) ? (
-            // Rendered as a JSX component (separate fiber) so that any React
-            // hooks inside columnDef.Cell (e.g. useTreeRowReorderingCell) are
-            // registered under MRT_DisplayColumnCellRenderer's fiber and NOT
-            // under MRT_TableBodyCell's fiber.  Without this isolation, switching
-            // into the skeleton/loading branch would change the hook count and
-            // React would throw "Rendered fewer hooks than expected".
             <MRT_DisplayColumnCellRenderer
               cell={cell}
               rowRef={rowRef}
@@ -331,8 +325,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
               staticRowIndex={staticRowIndex}
               table={table}
             />
-          ) : // <button>+</button>
-          isCreating || isEditing ? (
+          ) : isCreating || isEditing ? (
             <MRT_EditCellTextField cell={cell} table={table} />
           ) : showClickToCopyButton && columnDef.enableClickToCopy !== false ? (
             <MRT_CopyButton cell={cell} table={table}>
