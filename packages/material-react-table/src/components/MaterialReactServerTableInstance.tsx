@@ -217,7 +217,6 @@ export const MaterialReactServerTableInstance = <
     fetchTrigger.filterRules,
     fetchTrigger.pagination,
     fetchTrigger.sorting,
-    fetchTrigger.grouping,
     fetchTrigger.columnVisibilityShowTrigger,
   ]);
 

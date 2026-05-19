@@ -1,8 +1,8 @@
 import React, {
   type DragEvent,
+  memo,
   type MouseEvent,
   type RefObject,
-  memo,
   useEffect,
   useMemo,
   useState,
@@ -12,6 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
 import { MRT_CopyButton } from '../buttons/MRT_CopyButton';
 import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
+import { MRT_DisplayColumnCellRenderer } from './MRT_DisplayColumnCellRenderer';
 import { MRT_TableBodyCellValue } from './MRT_TableBodyCellValue';
 import {
   type MRT_Cell,
@@ -317,16 +318,13 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
               column.id,
             ) ||
               !row.getIsGrouped()) ? (
-            columnDef.Cell?.({
-              cell,
-              column,
-              renderedCellValue: cell.renderValue() as React.ReactNode,
-              row,
-              rowRef,
-              staticColumnIndex,
-              staticRowIndex,
-              table,
-            })
+            <MRT_DisplayColumnCellRenderer
+              cell={cell}
+              rowRef={rowRef}
+              staticColumnIndex={staticColumnIndex}
+              staticRowIndex={staticRowIndex}
+              table={table}
+            />
           ) : isCreating || isEditing ? (
             <MRT_EditCellTextField cell={cell} table={table} />
           ) : showClickToCopyButton && columnDef.enableClickToCopy !== false ? (

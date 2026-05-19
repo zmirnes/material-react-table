@@ -145,8 +145,11 @@ export const useServerTableState = <TData extends MRT_RowData>({
       },
       onPaginationChange: setPagination,
       onSortingChange: setSorting,
-      onGroupingChange: setGrouping,
-
+      onGroupingChange: makePersistentHandler(
+        setGrouping,
+        grouping,
+        'grouping',
+      ),
       // Persistent handlers — update state and debounced-save
       onColumnSizingChange: makePersistentHandler(
         setColumnSizing,
@@ -202,7 +205,6 @@ export const useServerTableState = <TData extends MRT_RowData>({
       filterRules,
       pagination,
       sorting,
-      grouping,
       columnVisibilityShowTrigger,
     },
   };
