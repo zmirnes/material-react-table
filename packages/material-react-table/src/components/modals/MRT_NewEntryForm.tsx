@@ -51,15 +51,6 @@ const FormFieldControl = <TData extends MRT_RowData>({
   table,
 }: FormFieldControlProps<TData>) => {
   const { control } = useFormContext();
-<<<<<<< HEAD
-=======
-  const rawFormField = columnDef.formField;
-
-  // formField is a function — the consumer owns the full field rendering.
-  if (typeof rawFormField === 'function') {
-    return <>{rawFormField({ columnDef, name: columnId })}</>;
-  }
->>>>>>> cfcb0d64d (Korekcije za input tip komponentu)
 
   // formField config has an explicit render override — delegate to it.
   if (fieldConfig?.render) {
