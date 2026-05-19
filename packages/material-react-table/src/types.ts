@@ -1742,7 +1742,9 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
-  getFormFieldRenderer: <TData extends MRT_RowData>(
+  // Optional — not all column types need a custom form input yet.
+  // Resolvers that do not implement this fall back to the generic TextField in FormFieldControl.
+  getFormFieldRenderer?: <TData extends MRT_RowData>(
     column: MRT_ColumnDef<TData>,
     table: MRT_TableInstance<TData>,
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;

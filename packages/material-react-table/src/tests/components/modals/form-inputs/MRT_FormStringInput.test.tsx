@@ -121,6 +121,26 @@ describe('MRT_FormStringInput', () => {
 
       expect(screen.getByText('Your full legal name')).toBeInTheDocument();
     });
+
+    it('applies small size by default when fieldConfig.size is not specified', () => {
+      renderStringInput({ fieldConfig: null });
+
+      // MUI v6 applies size="small" as MuiInputBase-sizeSmall on the InputBase wrapper.
+      const inputWrapper = screen
+        .getByLabelText('Name')
+        .closest('.MuiInputBase-root');
+      expect(inputWrapper).toHaveClass('MuiInputBase-sizeSmall');
+    });
+
+    it('applies medium size when fieldConfig.size is medium', () => {
+      renderStringInput({ fieldConfig: { size: 'medium' } });
+
+      // Medium size does not carry the sizeSmall class.
+      const inputWrapper = screen
+        .getByLabelText('Name')
+        .closest('.MuiInputBase-root');
+      expect(inputWrapper).not.toHaveClass('MuiInputBase-sizeSmall');
+    });
   });
 
   describe('pre-populated value (edit mode)', () => {

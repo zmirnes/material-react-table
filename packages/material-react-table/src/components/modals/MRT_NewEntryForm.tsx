@@ -8,8 +8,9 @@ import {
   sortByOrder,
 } from './MRT_NewEntryFormBuilder';
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
-import { MRT_FormStringInput } from './form-inputs/MRT_FormStringInput';
+import { columnTypeResolvers } from '../../column-types/registy';
 import {
+  type ColumnType,
   type MRT_ColumnDef,
   type MRT_FormFieldConfig,
   type MRT_RowData,
@@ -19,37 +20,48 @@ import {
 // Default MUI TextField size applied when no per-field size is specified.
 const DEFAULT_FIELD_SIZE = 'small';
 
+// Renders one column-backed form field using the best available renderer:
+// 1. formField render function (full control, column-level)
+// 2. fieldConfig.render (render override inside a config object)
+// 3. Column type resolver — type-specific input component
+// 4. Fallback controlled MUI TextField for unresolved column types
 interface FormFieldControlProps<TData extends MRT_RowData> {
   columnId: string;
   columnDef: MRT_ColumnDef<TData>;
   fieldConfig: MRT_FormFieldConfig<TData> | null;
+  // Required for passing to the column type resolver — some resolvers need table state.
+  table: MRT_TableInstance<TData>;
 }
 
 const FormFieldControl = <TData extends MRT_RowData>({
   columnId,
   columnDef,
   fieldConfig,
+  table,
 }: FormFieldControlProps<TData>) => {
   const { control } = useFormContext();
   const rawFormField = columnDef.formField;
 
+  // formField is a function — the consumer owns the full field rendering.
   if (typeof rawFormField === 'function') {
     return <>{rawFormField({ columnDef, name: columnId })}</>;
   }
 
+  // formField config has an explicit render override — delegate to it.
   if (fieldConfig?.render) {
     return <>{fieldConfig.render({ columnDef, name: columnId })}</>;
   }
 
-  if (columnDef.type === 'string') {
-    return (
-      <MRT_FormStringInput
-        name={columnId}
-        columnDef={columnDef}
-        fieldConfig={fieldConfig as MRT_FormFieldConfig<TData, string> | null}
-      />
-    );
+  // Delegate to the column type resolver to get the type-specific form input renderer.
+  // Double optional chaining guards against resolvers that have not yet implemented getFormFieldRenderer.
+  const resolver =
+    columnTypeResolvers[columnDef.type as Exclude<ColumnType, 'object'>];
+  const typeRenderer = resolver?.getFormFieldRenderer?.(columnDef, table);
+  if (typeRenderer) {
+    return <>{typeRenderer({ columnDef, name: columnId })}</>;
   }
+
+  // Fallback: render a controlled MUI TextField for unresolved column types.
   return (
     <Controller
       control={control}
@@ -143,6 +155,7 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
                 columnId={columnId}
                 fieldConfig={fieldConfig}
                 key={columnId}
+                table={table}
               />
             ))}
           </MRT_NewEntryFormSectionBlock>
@@ -156,6 +169,7 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
           columnId={columnId}
           fieldConfig={fieldConfig}
           key={columnId}
+          table={table}
         />
       ))}
 

@@ -1,12 +1,17 @@
+import { MRT_FormStringInput } from '../components/modals/form-inputs/MRT_FormStringInput';
+import {
+  type ColumnTypeResolver,
+  type MRT_ColumnDef,
+  type MRT_FilterOperatorDefinition,
+  type MRT_FormFieldConfig,
+  type MRT_FormFieldRenderProps,
+  type MRT_RowData,
+  type MRT_TableInstance,
+} from '../types';
 import {
   MRT_FilterRuleMultiTextEditor,
   MRT_FilterRuleTextEditor,
 } from './filterEditors';
-import {
-  type ColumnTypeResolver,
-  type MRT_FilterOperatorDefinition,
-  type MRT_RowData,
-} from '../types';
 
 // Resolver for plain string column type.
 // Supports text-based operators plus empty/not-empty checks.
@@ -100,5 +105,25 @@ export const StringColumnResolver: ColumnTypeResolver = {
         valueShape: 'multi',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
-  getFormFieldRenderer: () => null,
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    // table is part of the resolver interface — not needed for the string input
+    _table: MRT_TableInstance<TData>,
+  ) => {
+    // Extract the object-shaped fieldConfig from the column definition.
+    // Function-shaped formField is handled by FormFieldControl before the resolver is called.
+    const fieldConfig =
+      typeof column.formField !== 'function'
+        ? ((column.formField as
+            | MRT_FormFieldConfig<TData, string>
+            | undefined) ?? null)
+        : null;
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormStringInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        name={name}
+      />
+    );
+  },
 };
