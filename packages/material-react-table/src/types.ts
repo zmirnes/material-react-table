@@ -1611,7 +1611,6 @@ export type UseServerTableStateReturn = {
     };
     pagination: MRT_PaginationState;
     sorting: MRT_SortingState;
-    grouping: MRT_GroupingState;
     // Increments only when a column transitions from hidden to visible (false → true)
     columnVisibilityShowTrigger: number;
   };

@@ -1,5 +1,5 @@
-import { useServerTableState } from '../../hooks/useServerTableState';
-import type { MRT_GroupingState } from '../../types';
+import { useServerTableState } from '../../../hooks/useServerTableState';
+import { type MRT_GroupingState } from '../../../types';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -58,26 +58,6 @@ describe('useServerTableState — onGroupingChange', () => {
     });
 
     expect(result.current.tableState.grouping).toEqual([]);
-  });
-
-  it('should expose grouping inside fetchTrigger', () => {
-    const initialGrouping: MRT_GroupingState = ['category'];
-    const { result } = renderHook(() =>
-      useServerTableState<TestRowData>({
-        initialState: { grouping: initialGrouping },
-      }),
-    );
-    expect(result.current.fetchTrigger.grouping).toEqual(initialGrouping);
-  });
-
-  it('should update fetchTrigger.grouping when grouping changes', () => {
-    const { result } = renderHook(() => useServerTableState<TestRowData>({}));
-
-    act(() => {
-      result.current.handlers.onGroupingChange(['region']);
-    });
-
-    expect(result.current.fetchTrigger.grouping).toEqual(['region']);
   });
 
   describe('debounced saveState behaviour', () => {

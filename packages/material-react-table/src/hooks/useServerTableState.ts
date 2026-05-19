@@ -205,7 +205,6 @@ export const useServerTableState = <TData extends MRT_RowData>({
       filterRules,
       pagination,
       sorting,
-      grouping,
       columnVisibilityShowTrigger,
     },
   };
