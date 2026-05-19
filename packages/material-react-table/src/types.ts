@@ -762,10 +762,8 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
       }) => TableCellProps)
     | TableCellProps;
   // Form field configuration — controls how this column appears and behaves in the create/edit form.
-  // Use a config object for static settings, or a render function for full custom control.
-  formField?:
-    | MRT_FormFieldConfig<TData, TValue>
-    | ((props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode);
+  // Use render inside MRT_FormFieldConfig for full custom control of the input component.
+  formField?: MRT_FormFieldConfig<TData, TValue>;
   PlaceholderCell?: (props: {
     cell: MRT_Cell<TData, TValue>;
     column: MRT_Column<TData, TValue>;

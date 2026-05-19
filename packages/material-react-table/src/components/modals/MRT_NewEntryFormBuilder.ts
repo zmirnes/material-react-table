@@ -51,11 +51,7 @@ export const resolveFormFields = <TData extends MRT_RowData>(
       return true;
     })
     .map((column) => {
-      const rawFormField = column.columnDef.formField;
-      // Distinguish a config object from a render function — both are valid for formField.
-      // TypeScript narrows to MRT_FormFieldConfig when formField is not a function.
-      const fieldConfig =
-        typeof rawFormField !== 'function' ? (rawFormField ?? null) : null;
+      const fieldConfig = column.columnDef.formField ?? null;
 
       return {
         columnId: column.id,
@@ -110,9 +106,7 @@ export const buildDefaultValues = <TData extends MRT_RowData>(
     if (column.columnDef.columnDefType === 'display') continue;
     if (excludedColumnIds.has(column.id)) continue;
 
-    const rawFormField = column.columnDef.formField;
-    const fieldConfig =
-      typeof rawFormField !== 'function' ? (rawFormField ?? null) : null;
+    const fieldConfig = column.columnDef.formField ?? null;
 
     values[column.id] = resolveDefaultValue(fieldConfig?.defaultValue);
   }

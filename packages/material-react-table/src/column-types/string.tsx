@@ -110,14 +110,10 @@ export const StringColumnResolver: ColumnTypeResolver = {
     // table is part of the resolver interface — not needed for the string input
     _table: MRT_TableInstance<TData>,
   ) => {
-    // Extract the object-shaped fieldConfig from the column definition.
-    // Function-shaped formField is handled by FormFieldControl before the resolver is called.
+    // Cast TValue to string — this resolver is only called for string-typed columns.
     const fieldConfig =
-      typeof column.formField !== 'function'
-        ? ((column.formField as
-            | MRT_FormFieldConfig<TData, string>
-            | undefined) ?? null)
-        : null;
+      (column.formField as MRT_FormFieldConfig<TData, string> | undefined) ??
+      null;
     return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
       <MRT_FormStringInput
         columnDef={columnDef}

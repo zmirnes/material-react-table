@@ -171,26 +171,6 @@ describe('MRT_NewEntryForm', () => {
       expect(screen.queryByLabelText('First Name')).not.toBeInTheDocument();
     });
 
-    it('renders the output of formField render function instead of the default TextField', () => {
-      const CUSTOM_FIELD_TEST_ID = 'custom-field-sentinel';
-      const table = buildTable({
-        columns: [
-          {
-            accessorKey: 'name',
-            header: 'Name',
-            type: 'string',
-            formField: () => <div data-testid={CUSTOM_FIELD_TEST_ID} />,
-          },
-        ],
-      });
-
-      renderFormWithProvider(table);
-
-      expect(screen.getByTestId(CUSTOM_FIELD_TEST_ID)).toBeInTheDocument();
-      // No default TextField should be present for this column.
-      expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
-    });
-
     it('renders the output of fieldConfig.render when provided as a config-level render override', () => {
       // fieldConfig.render is a render override inside the config object — lower priority than
       // formField-as-function but higher priority than the default Controller+TextField fallback.
