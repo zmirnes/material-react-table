@@ -335,6 +335,10 @@ export interface MRT_RowModel<TData extends MRT_RowData> {
   rowsById: { [key: string]: MRT_Row<TData> };
 }
 
+export type MRT_RowManipulationInput<TData extends MRT_RowData> =
+  | TData
+  | TData[];
+
 export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   Table<TData>,
   | 'getAllColumns'
@@ -421,6 +425,11 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setRowReorderingSelection: Dispatch<
     SetStateAction<MRT_RowReorderingSelectionState>
   >;
+  addRow: (rows: MRT_RowManipulationInput<TData>) => void;
+  updateRow: (rows: MRT_RowManipulationInput<TData>) => void;
+  setRows: (rows: MRT_RowManipulationInput<TData>) => void;
+  upsertRow: (rows: MRT_RowManipulationInput<TData>) => void;
+  removeRow: (rows: string | string[]) => void;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -949,6 +958,12 @@ export type MRT_DisplayColumnIds =
   | '__check__'
   | 'mrt-row-spacer';
 
+export type MRT_GetRowId<TData extends MRT_RowData> = (
+  originalRow: TData,
+  index: number,
+  parentRow?: MRT_Row<TData>,
+) => string;
+
 /**
  * `columns` and `data` props are the only required props, but there are over 170 other optional props.
  *
@@ -1000,7 +1015,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
    * See the usage guide for more info on creating columns and data:
    * @link https://www.material-react-table.com/docs/getting-started/usage
    */
-  data: TData[];
+  data?: TData[];
   /**
    * Instead of specifying a bunch of the same options for each column, you can just change an option in the `defaultColumn` table option to change a default option for all columns.
    */
@@ -1087,11 +1102,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableToolbarInternalActions?: boolean;
   enableTopToolbar?: boolean;
   expandRowsFn?: (dataRow: TData) => TData[];
-  getRowId?: (
-    originalRow: TData,
-    index: number,
-    parentRow: MRT_Row<TData>,
-  ) => string;
+  getRowId?: MRT_GetRowId<TData>;
   globalFilterFn?: MRT_FilterOption;
   globalFilterModeOptions?: MRT_FilterOption[] | null;
   icons?: Partial<MRT_Icons>;

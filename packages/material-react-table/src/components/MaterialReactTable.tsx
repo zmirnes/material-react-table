@@ -1,3 +1,10 @@
+import {
+  forwardRef,
+  useImperativeHandle,
+  type ForwardedRef,
+  type ReactElement,
+  type Ref,
+} from 'react';
 import { MRT_TablePaper } from './table/MRT_TablePaper';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import {
@@ -21,16 +28,23 @@ const isTableInstanceProp = <TData extends MRT_RowData>(
 ): props is TableInstanceProp<TData> =>
   (props as TableInstanceProp<TData>).table !== undefined;
 
-export const MaterialReactTable = <TData extends MRT_RowData>(
+const MaterialReactTableComponent = <TData extends MRT_RowData>(
   props: MaterialReactTableProps<TData>,
+  ref: ForwardedRef<MRT_TableInstance<TData>>,
 ) => {
-  let table: MRT_TableInstance<TData>;
+  const table = isTableInstanceProp(props)
+    ? props.table
+    : useMaterialReactTable(props);
 
-  if (isTableInstanceProp(props)) {
-    table = props.table;
-  } else {
-    table = useMaterialReactTable(props);
-  }
+  useImperativeHandle(ref, () => table, [table]);
 
   return <MRT_TablePaper table={table} />;
 };
+
+export const MaterialReactTable = forwardRef(MaterialReactTableComponent) as <
+  TData extends MRT_RowData,
+>(
+  props: MaterialReactTableProps<TData> & {
+    ref?: Ref<MRT_TableInstance<TData>>;
+  },
+) => ReactElement;

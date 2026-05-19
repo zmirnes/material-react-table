@@ -9,7 +9,13 @@ import { getMRT_RowSelectColumnDef } from './display-columns/getMRT_RowSelectCol
 import { getMRT_RowSpacerColumnDef } from './display-columns/getMRT_RowSpacerColumnDef';
 import { useMRT_Effects } from './useMRT_Effects';
 import {
-  MRT_RowReorderingSelectionState,
+  handleAddRow,
+  handleRemoveRow,
+  handleSetRows,
+  handleUpdateRow,
+  handleUpsertRow,
+} from '../fns/tableCrudFns';
+import {
   type MRT_Cell,
   type MRT_Column,
   type MRT_ColumnDef,
@@ -25,6 +31,7 @@ import {
   type MRT_PaginationState,
   type MRT_Row,
   type MRT_RowData,
+  type MRT_RowReorderingSelectionState,
   type MRT_SavedFilters,
   type MRT_StatefulTableOptions,
   type MRT_TableInstance,
@@ -207,6 +214,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     useState<MRT_RowReorderingSelectionState>(
       initialState?.rowReorderingSelection ?? {},
     );
+  const [rows, setRowsState] = useState<TData[]>(
+    definedTableOptions.data ?? [],
+  );
 
   definedTableOptions.state = {
     actionCell,
@@ -256,6 +266,11 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const statefulTableOptions =
     definedTableOptions as MRT_StatefulTableOptions<TData>;
 
+  const resolveRowId =
+    statefulTableOptions.getRowId ??
+    ((_originalRow: TData, index: number, _parentRow?: MRT_Row<TData>) =>
+      String(index));
+
   //don't recompute columnDefs while resizing column or dragging column/row
   const columnDefsRef = useRef<MRT_ColumnDef<TData>[]>([]);
   statefulTableOptions.columns =
@@ -294,7 +309,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     () =>
       (statefulTableOptions.state.isLoading ||
         statefulTableOptions.state.showSkeletons) &&
-      !statefulTableOptions.data.length
+      !rows.length
         ? [
             ...Array(
               Math.min(statefulTableOptions.state.pagination.pageSize, 20),
@@ -309,9 +324,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
               ),
             ),
           )
-        : statefulTableOptions.data,
+        : rows,
     [
-      statefulTableOptions.data,
+      rows,
       statefulTableOptions.state.isLoading,
       statefulTableOptions.state.showSkeletons,
     ],
@@ -390,6 +405,26 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setRowReorderingSelection =
     statefulTableOptions.onRowReorderingSelectionChange ??
     setRowReorderingSelection;
+  table.addRow = handleAddRow({
+    setRowsState,
+    getRowId: resolveRowId,
+  });
+  table.updateRow = handleUpdateRow({
+    setRowsState,
+    getRowId: resolveRowId,
+  });
+  table.setRows = handleSetRows({
+    setRowsState,
+    getRowId: resolveRowId,
+  });
+  table.upsertRow = handleUpsertRow({
+    setRowsState,
+    getRowId: resolveRowId,
+  });
+  table.removeRow = handleRemoveRow({
+    setRowsState,
+    getRowId: resolveRowId,
+  });
   useMRT_Effects(table);
 
   return table;
