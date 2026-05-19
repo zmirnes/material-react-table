@@ -8,6 +8,7 @@ import {
   sortByOrder,
 } from './MRT_NewEntryFormBuilder';
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
+import { MRT_FormStringInput } from './form-inputs/MRT_FormStringInput';
 import {
   type MRT_ColumnDef,
   type MRT_FormFieldConfig,
@@ -15,23 +16,15 @@ import {
   type MRT_TableInstance,
 } from '../../types';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 // Default MUI TextField size applied when no per-field size is specified.
-const DEFAULT_FIELD_SIZE = 'small' as const;
+const DEFAULT_FIELD_SIZE = 'small';
 
-// Props for a single column-backed form field renderer.
 interface FormFieldControlProps<TData extends MRT_RowData> {
   columnId: string;
   columnDef: MRT_ColumnDef<TData>;
-  // null when formField is a render function; only populated for object-shaped formField.
   fieldConfig: MRT_FormFieldConfig<TData> | null;
 }
 
-// Renders one column-backed form field using the best available renderer:
-// 1. formField render function (full control, column-level)
-// 2. fieldConfig.render (render override inside a config object)
-// 3. Default controlled MUI TextField
 const FormFieldControl = <TData extends MRT_RowData>({
   columnId,
   columnDef,
@@ -40,17 +33,23 @@ const FormFieldControl = <TData extends MRT_RowData>({
   const { control } = useFormContext();
   const rawFormField = columnDef.formField;
 
-  // formField is a function — the consumer owns the full field rendering.
   if (typeof rawFormField === 'function') {
     return <>{rawFormField({ columnDef, name: columnId })}</>;
   }
 
-  // formField config has an explicit render override — delegate to it.
   if (fieldConfig?.render) {
     return <>{fieldConfig.render({ columnDef, name: columnId })}</>;
   }
 
-  // Fallback: render a controlled MUI TextField with optional RHF validation rules.
+  if (columnDef.type === 'string') {
+    return (
+      <MRT_FormStringInput
+        name={columnId}
+        columnDef={columnDef}
+        fieldConfig={fieldConfig as MRT_FormFieldConfig<TData, string> | null}
+      />
+    );
+  }
   return (
     <Controller
       control={control}
@@ -67,21 +66,17 @@ const FormFieldControl = <TData extends MRT_RowData>({
           placeholder={fieldConfig?.placeholder}
           size={DEFAULT_FIELD_SIZE}
           onChange={(e) => {
-            const rawValue = e.target.value;
-            // Allow the consumer to intercept and transform the incoming value.
             const transformed = fieldConfig?.onChange?.(
-              rawValue as never,
+              e.target.value,
               columnId,
             );
-            field.onChange(transformed !== undefined ? transformed : rawValue);
+            field.onChange(transformed ?? e.target.value);
           }}
         />
       )}
     />
   );
 };
-
-// ─── Main Component ────────────────────────────────────────────────────────────
 
 export interface MRT_NewEntryFormProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -130,7 +125,7 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
   const sortedAdditionalFields = sortByOrder(additionalFields);
 
   return (
-    <Stack gap={2} padding={2}>
+    <Stack gap={2}>
       {/* Defined sections — each section groups its assigned fields under a collapsible heading */}
       {sortedSections.map((sectionConfig) => {
         const sectionFields = sortByOrder(

@@ -79,14 +79,14 @@ export * from './components/menus/MRT_ShowHideColumnsMenu';
 export * from './components/menus/MRT_ShowHideColumnsMenuItems';
 //modal components
 export * from './components/modals/MRT_EditRowModal';
+export * from './components/modals/MRT_NewEntryForm';
 export * from './components/modals/MRT_NewEntryFormActions';
 export * from './components/modals/MRT_NewEntryFormActionsContext';
 export * from './components/modals/MRT_NewEntryFormBuilder';
-export * from './components/modals/MRT_NewEntryForm';
 export * from './components/modals/MRT_NewEntryFormProvider';
 export * from './components/modals/MRT_NewEntryModal';
 //RHF components
-export * from './components/RHF_Form/RHF_Form_Provider';
+export * from './components/rhf_form/RHF_Form_Provider';
 //table components
 export * from './components/table/MRT_Table';
 export * from './components/table/MRT_TableContainer';

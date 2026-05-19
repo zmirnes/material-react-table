@@ -1844,8 +1844,11 @@ export interface MRT_FormFieldConfig<
   // Custom render function — replaces the default input component for this field.
   render?: (props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode;
   // Intercepts RHF onChange — receives the new value and field name.
-  // Return a transformed value to override what RHF stores, or return void to keep the original value.
+  // Return a transformed value to override what RHF stores, or return void to keep the original.
+  // Use void return for side-effects only (logging, syncing) when no transformation is needed.
   onChange?: (value: TValue, fieldName: string) => TValue | void;
+  // Input size — defaults to 'small' when not specified.
+  size?: 'small' | 'medium';
 }
 
 // Props passed into form-level callbacks (onSave, onCancel) and custom action button handlers.
