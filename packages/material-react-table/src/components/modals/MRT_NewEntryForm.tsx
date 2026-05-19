@@ -1,13 +1,6 @@
-import { Controller, useFormContext } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
-import {
-  groupFieldsBySection,
-  resolveFormFields,
-  sortByOrder,
-} from './MRT_NewEntryFormBuilder';
-import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
+import { Controller, useFormContext } from 'react-hook-form';
 import { columnTypeResolvers } from '../../column-types/registy';
 import {
   type ColumnType,
@@ -16,6 +9,13 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
+import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
+import {
+  groupFieldsBySection,
+  resolveFormFields,
+  sortByOrder,
+} from './MRT_NewEntryFormBuilder';
+import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
 
 // Default MUI TextField size applied when no per-field size is specified.
 const DEFAULT_FIELD_SIZE = 'small';
@@ -41,7 +41,6 @@ const FormFieldControl = <TData extends MRT_RowData>({
 }: FormFieldControlProps<TData>) => {
   const { control } = useFormContext();
 
-  // formField config has an explicit render override — delegate to it.
   if (fieldConfig?.render) {
     return <>{fieldConfig.render({ columnDef, name: columnId })}</>;
   }
