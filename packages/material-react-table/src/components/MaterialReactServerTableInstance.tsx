@@ -98,7 +98,6 @@ export const MaterialReactServerTableInstance = <
   deleteRowsFn,
   editRowFn,
 }: MaterialReactServerTableInstanceProps<TData>) => {
-  const [data, setData] = useState<TData[]>([]);
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +154,6 @@ export const MaterialReactServerTableInstance = <
   const hasAvailableExports = Object.keys(allowedExports).length > 0;
   const table = useMaterialReactTable<TData>({
     columns,
-    data,
     localization: MRT_Localization_HR,
     rowCount,
     pageCount,
@@ -187,15 +185,15 @@ export const MaterialReactServerTableInstance = <
   });
 
   const fetchData = useCallback(
-    async (state: MRT_TableState<TData>) => {
+    async (tableInstance: MRT_TableInstance<TData>) => {
       setIsLoading(true);
       try {
         const {
           data: newData,
           rowCount: newRowCount,
           hasNextPage,
-        } = await loadData(state);
-        setData(newData);
+        } = await loadData(tableInstance.getState());
+        tableInstance.setRows(newData);
 
         if (hasNextPage) {
           setPageCount(-1);
@@ -212,8 +210,10 @@ export const MaterialReactServerTableInstance = <
   );
 
   useEffect(() => {
-    void fetchData(table.getState());
+    void fetchData(table);
   }, [
+    table,
+    fetchData,
     fetchTrigger.filterRules,
     fetchTrigger.pagination,
     fetchTrigger.sorting,

@@ -3,8 +3,8 @@ import {
   MRT_FilterRuleTextEditor,
 } from './filterEditors';
 import {
-  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
+  type MRT_FilterOperatorDefinition,
   type MRT_RowData,
 } from '../types';
 
@@ -100,4 +100,5 @@ export const StringColumnResolver: ColumnTypeResolver = {
         valueShape: 'multi',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+  getFormFieldRenderer: () => null,
 };
