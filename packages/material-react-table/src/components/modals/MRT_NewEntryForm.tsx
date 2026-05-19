@@ -2,7 +2,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
-import { resolveFormFields, sortByOrder } from './MRT_NewEntryFormBuilder';
+import {
+  groupFieldsBySection,
+  resolveFormFields,
+  sortByOrder,
+} from './MRT_NewEntryFormBuilder';
+import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
 import {
   type MRT_ColumnDef,
   type MRT_FormFieldConfig,
@@ -14,9 +19,6 @@ import {
 
 // Default MUI TextField size applied when no per-field size is specified.
 const DEFAULT_FIELD_SIZE = 'small' as const;
-
-// Gap (in MUI spacing units) between adjacent fields in the form body.
-const FORM_BODY_FIELD_GAP = 2;
 
 // Props for a single column-backed form field renderer.
 interface FormFieldControlProps<TData extends MRT_RowData> {
@@ -95,7 +97,10 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
 
   const {
     getState,
-    options: { formConfig },
+    options: {
+      formConfig,
+      icons: { ExpandMoreIcon },
+    },
   } = table;
 
   const { newEntryModal } = getState();
@@ -107,16 +112,50 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
   }
 
   // Collect all eligible form fields from the table's leaf columns sorted by order.
-  const sortedFormFields = sortByOrder(resolveFormFields(table));
+  const allFormFields = resolveFormFields(table);
   const additionalFields = formConfig?.additionalFields ?? [];
+
+  // Sections sorted by their order value — lower numbers appear first.
+  const sortedSections = sortByOrder(formConfig?.sections ?? []);
+
+  // Fields without a section assignment — rendered after all sections.
+  const unsectionedFields = sortByOrder(
+    allFormFields.filter(({ sectionId }) => sectionId === undefined),
+  );
+
+  // Map of sectionId → its fields, used when rendering each section block.
+  const fieldsBySection = groupFieldsBySection(allFormFields);
 
   // Additional fields sorted by order — rendered after all column fields.
   const sortedAdditionalFields = sortByOrder(additionalFields);
 
   return (
-    <Stack gap={FORM_BODY_FIELD_GAP}>
-      {/* Column-backed fields sorted by their order value */}
-      {sortedFormFields.map(({ columnId, columnDef, fieldConfig }) => (
+    <Stack gap={2} padding={2}>
+      {/* Defined sections — each section groups its assigned fields under a collapsible heading */}
+      {sortedSections.map((sectionConfig) => {
+        const sectionFields = sortByOrder(
+          fieldsBySection[sectionConfig.id] ?? [],
+        );
+        return (
+          <MRT_NewEntryFormSectionBlock
+            expandMoreIcon={ExpandMoreIcon}
+            key={sectionConfig.id}
+            sectionConfig={sectionConfig}
+          >
+            {sectionFields.map(({ columnId, columnDef, fieldConfig }) => (
+              <FormFieldControl
+                columnDef={columnDef}
+                columnId={columnId}
+                fieldConfig={fieldConfig}
+                key={columnId}
+              />
+            ))}
+          </MRT_NewEntryFormSectionBlock>
+        );
+      })}
+
+      {/* Fields with no section assignment — rendered flat below the sections */}
+      {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
         <FormFieldControl
           columnDef={columnDef}
           columnId={columnId}

@@ -433,4 +433,109 @@ describe('MRT_NewEntryForm', () => {
       expect(screen.getByTestId(ADDITIONAL_FIELD_TEST_ID)).toBeInTheDocument();
     });
   });
+
+  describe('section rendering', () => {
+    it('renders the section title when a section is defined', () => {
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: 'City',
+            type: 'string',
+            formField: { section: 'address' },
+          },
+        ],
+        formConfig: {
+          sections: [{ id: 'address', title: 'Address Information' }],
+        },
+      });
+
+      renderFormWithProvider(table);
+
+      expect(screen.getByText('Address Information')).toBeInTheDocument();
+    });
+
+    it('renders a field assigned to a section inside that section block', () => {
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: 'City',
+            type: 'string',
+            formField: { section: 'address' },
+          },
+        ],
+        formConfig: {
+          sections: [{ id: 'address', title: 'Address Information' }],
+        },
+      });
+
+      renderFormWithProvider(table);
+
+      // Both the section heading and the field inside it are visible.
+      expect(screen.getByText('Address Information')).toBeInTheDocument();
+      expect(screen.getByLabelText('City')).toBeInTheDocument();
+    });
+
+    it('renders unsectioned fields flat below the sections', () => {
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: 'City',
+            type: 'string',
+            formField: { section: 'address' },
+          },
+          // Notes has no section — must appear outside any Accordion.
+          { accessorKey: 'notes', header: 'Notes', type: 'string' },
+        ],
+        formConfig: {
+          sections: [{ id: 'address', title: 'Address Information' }],
+        },
+      });
+
+      renderFormWithProvider(table);
+
+      expect(screen.getByText('Address Information')).toBeInTheDocument();
+      expect(screen.getByLabelText('City')).toBeInTheDocument();
+      // Unsectioned field is rendered alongside the section, not inside it.
+      expect(screen.getByLabelText('Notes')).toBeInTheDocument();
+    });
+
+    it('collapses section content when a collapsible section header is clicked', async () => {
+      const SECTION_FIELD_LABEL = 'City';
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: SECTION_FIELD_LABEL,
+            type: 'string',
+            formField: { section: 'address' },
+          },
+        ],
+        formConfig: {
+          sections: [
+            { id: 'address', title: 'Address Information', collapsible: true },
+          ],
+        },
+      });
+
+      renderFormWithProvider(table);
+
+      // Section is expanded by default — the field is visible.
+      expect(screen.getByLabelText(SECTION_FIELD_LABEL)).toBeInTheDocument();
+
+      // Click the section header to collapse it.
+      await act(async () => {
+        fireEvent.click(screen.getByText('Address Information'));
+      });
+
+      // unmountOnExit removes collapsed children from the DOM.
+      await waitFor(() => {
+        expect(
+          screen.queryByLabelText(SECTION_FIELD_LABEL),
+        ).not.toBeInTheDocument();
+      });
+    });
+  });
 });
