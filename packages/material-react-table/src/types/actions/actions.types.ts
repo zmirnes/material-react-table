@@ -1,4 +1,7 @@
 import { type ReactNode } from 'react';
+import { type ButtonProps } from '@mui/material/Button';
+import { type IconButtonProps } from '@mui/material/IconButton';
+import { type SxProps, type Theme } from '@mui/material/styles';
 import { type MRT_Row, type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface ActionToolbarRenderContext<TData extends MRT_RowData> {
@@ -40,9 +43,19 @@ export interface DeleteActionToolbarRenderContext<TData extends MRT_RowData>
   onDelete: DeleteActionExecutor;
 }
 export interface DeleteConfirmationConfig {
+  title?: string;
   message?: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
+  dialogSx?: SxProps<Theme>;
+  contentContainerSx?: SxProps<Theme>;
+  headerSx?: SxProps<Theme>;
+  titleSx?: SxProps<Theme>;
+  bodySx?: SxProps<Theme>;
+  footerSx?: SxProps<Theme>;
+  closeButtonProps?: IconButtonProps;
+  cancelButtonProps?: Omit<ButtonProps, 'onClick'>;
+  confirmButtonProps?: Omit<ButtonProps, 'onClick'>;
 }
 export interface CreateDeleteActionOptions<TData extends MRT_RowData>
   extends Partial<Omit<Action<TData>, 'renderRow' | 'renderToolbar'>> {

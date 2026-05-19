@@ -139,9 +139,10 @@ export const MRT_Localization_DE: MRT_Localization = {
   exportPrintPdf: 'PDF drucken',
   exportDownload: 'Herunterladen',
   exportGrouped: 'Dateien gruppieren',
-  deleteConfirmation:
+  deleteConfirmationTitle: 'Zeile löschen',
+  deleteConfirmationMessage:
     'Möchten Sie die ausgewählte(n) Zeile(n) wirklich löschen?',
-  deleteConfirmYes: 'Ja',
-  deleteConfirmNo: 'Nein',
+  deleteConfirmYes: 'Löschen',
+  deleteConfirmNo: 'Abbrechen',
   deleteConfirmDeleting: 'Wird gelöscht...',
 };

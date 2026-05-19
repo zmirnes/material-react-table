@@ -1,10 +1,13 @@
-import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
-import { type Meta } from '@storybook/react-vite';
-import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
+import {
+  MaterialReactServerTable,
+  MaterialReactTable,
+  type MRT_ColumnDef,
+} from '../../src';
 import { type Date } from '../../src/column-types/date';
 import { type EnumValue } from '../../src/column-types/enum';
-import { MaterialReactServerTable } from '../../src/components/MaterialReactServerTable';
+import { faker } from '@faker-js/faker';
+import { type Meta } from '@storybook/react-vite';
 
 const meta: Meta = {
   title: 'Features/Server Table',
@@ -250,7 +253,6 @@ const columns: MRT_ColumnDef<Person>[] = [
 const simulateDelay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
-
 export const Basic = () => (
   <Box
     style={{

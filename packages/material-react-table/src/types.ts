@@ -308,8 +308,9 @@ export interface MRT_Localization {
   exportPrintPdf: string;
   exportDownload: string;
   exportGrouped: string;
-  // Delete row confirmation dialog message and button labels
-  deleteConfirmation: string;
+  // Delete row confirmation dialog title, message, and button labels
+  deleteConfirmationTitle: string;
+  deleteConfirmationMessage: string;
   deleteConfirmYes: string;
   deleteConfirmNo: string;
   deleteConfirmDeleting: string;

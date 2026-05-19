@@ -139,9 +139,9 @@ export const MRT_Localization_HR: MRT_Localization = {
   exportPrintPdf: 'Ispis PDF',
   exportDownload: 'Preuzmi',
   exportGrouped: 'Grupirati datoteke',
-  deleteConfirmation:
-    'Jeste li sigurni da želite obrisati odabrani redak/retke?',
-  deleteConfirmYes: 'Da',
-  deleteConfirmNo: 'Ne',
+  deleteConfirmationTitle: 'Brisanje reda',
+  deleteConfirmationMessage: 'Da li ste sigurni da želite izbrisati ovaj red?',
+  deleteConfirmYes: 'Izbriši',
+  deleteConfirmNo: 'Odustani',
   deleteConfirmDeleting: 'Brisanje...',
 };
