@@ -9,7 +9,7 @@ import type { MRT_RowData } from '../../types';
 export const createEditAction = <TData extends MRT_RowData>({
   onEdit,
   renderRow: customRenderRow,
-}: CreateEditActionOptions<TData>) => {
+}: CreateEditActionOptions<TData> = {}) => {
   const defaultOnEdit = async ({
     rowToEdit,
     table,

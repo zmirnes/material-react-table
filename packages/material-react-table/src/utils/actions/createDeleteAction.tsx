@@ -14,7 +14,7 @@ export const createDeleteAction = <TData extends MRT_RowData>({
   renderToolbar: customRenderToolbar,
   deleteConfirmation,
   ...rest
-}: CreateDeleteActionOptions<TData>): Action<TData> => {
+}: CreateDeleteActionOptions<TData> = {}): Action<TData> => {
   // Default delete behavior used when the consumer does not provide a custom onDelete.
   // Also exposed to custom onDelete through context.defaultOnDelete for composition.
   const defaultOnDelete = async ({
