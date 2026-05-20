@@ -17,22 +17,27 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 
@@ -58,24 +63,29 @@ export const DisableSortingForSpecificColumns = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         enableSorting: false,
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         enableSorting: false,
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}
@@ -101,22 +111,27 @@ export const SortRanking = () => (
         accessorKey: 'firstName',
         header: 'First Name',
         sortingFn: 'fuzzy',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}

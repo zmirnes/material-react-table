@@ -12,22 +12,27 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 

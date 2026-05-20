@@ -5,10 +5,10 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import {
-  type MRT_TableOptions,
-  MaterialReactTable,
   createRow,
+  MaterialReactTable,
   type MRT_Row,
+  type MRT_TableOptions,
 } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
@@ -79,23 +79,28 @@ export const CreateRowIndexTop = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -131,23 +136,28 @@ export const CreateRowIndexBottom = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -183,23 +193,28 @@ export const CreateRowIndexIndex = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -235,23 +250,28 @@ export const CreateRowIndexIndexVirtualized = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -280,19 +300,23 @@ export const CreateRowIndexIndexExpanding = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       createDisplayMode="row"
@@ -363,14 +387,17 @@ export const CreateWithCustomEditCell = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
         {
           accessorKey: 'state',
@@ -381,11 +408,13 @@ export const CreateWithCustomEditCell = () => {
               <MenuItem value="Alaska">Alaska</MenuItem>
             </Select>
           ),
+          type: 'string',
         },
         {
           accessorKey: 'phoneNumber',
           enableEditing: false,
           header: 'Phone Number',
+          type: 'string',
         },
       ]}
       state={{ creatingRow }}

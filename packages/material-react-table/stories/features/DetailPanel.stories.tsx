@@ -14,14 +14,17 @@ export const DetailPanelEnabledSemantic = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -50,14 +53,17 @@ export const DetailPanelEnabledGrid = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -87,14 +93,17 @@ export const DetailPanelEnabledGridNoGrow = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -124,14 +133,17 @@ export const CustomExpandRotation = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -167,18 +179,22 @@ export const DetailPanelEnabledConditional = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(10)].map(() => ({
@@ -210,18 +226,22 @@ export const DetailPanelEnabledConditionalHide = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(10)].map(() => ({
@@ -261,14 +281,17 @@ export const DetailPanelSingleExpand = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           accessorKey: 'address',
           header: 'Address',
+          type: 'string',
         },
       ]}
       data={[...Array(5)].map(() => ({
@@ -301,14 +324,17 @@ export const DetailPanelExpandColumnLast = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -348,14 +374,17 @@ export const DetailPanelExpandedByDefault = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -385,14 +414,17 @@ export const DetailPanelExpandAllDisabled = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -422,14 +454,17 @@ export const DetailPanelExpandAllDisabledGrid = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -460,14 +495,17 @@ export const DetailPanelExpandAllDisabledGridNoGrow = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({

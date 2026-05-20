@@ -1,7 +1,7 @@
 import Email from '@mui/icons-material/Email';
 import PersonOffOutlined from '@mui/icons-material/PersonOffOutlined';
 import Divider from '@mui/material/Divider';
-import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
+import { MaterialReactTable, type MRT_ColumnDef } from '../../src';
 import { MRT_ActionMenuItem } from '../../src/components/menus/MRT_ActionMenuItem';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
@@ -12,34 +12,39 @@ const meta: Meta = {
 
 export default meta;
 
-interface Row {
+type Row = {
   address: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
   state: string;
-}
+};
 
 const columns: MRT_ColumnDef<Row>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 

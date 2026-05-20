@@ -13,18 +13,22 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     header: 'Age',
+    type: 'number',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
 ];
 const data = [...Array(21)].map(() => ({
@@ -72,6 +76,7 @@ export const StyleTableHeadCellsIndividually = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
@@ -79,6 +84,7 @@ export const StyleTableHeadCellsIndividually = () => (
         muiTableHeadCellProps: {
           sx: (theme) => ({ color: theme.palette.primary.main }),
         },
+        type: 'string',
       },
       {
         accessorKey: 'age',
@@ -88,10 +94,12 @@ export const StyleTableHeadCellsIndividually = () => (
             color: 'red',
           },
         },
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -105,11 +113,13 @@ export const CustomHeadCellRenders = () => (
         Header: <em>First Name</em>,
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         Header: () => <em>Last Name</em>,
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         Header: ({ column }) => (
@@ -117,10 +127,12 @@ export const CustomHeadCellRenders = () => (
         ),
         accessorKey: 'age',
         header: 'Current Age',
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address of Residence (Permanent)',
+        type: 'string',
       },
     ]}
     data={data}

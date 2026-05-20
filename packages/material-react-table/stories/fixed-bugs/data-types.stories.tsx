@@ -22,27 +22,33 @@ const columns: MRT_ColumnDef<Person>[] = [
     accessorKey: 'firstName',
     enableGlobalFilter: true,
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'city',
     header: 'City',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     Cell: ({ cell }) => cell.getValue<string[]>().join(', '),
     accessorKey: 'states',
     header: 'States',
+    type: 'string',
   },
 ];
 

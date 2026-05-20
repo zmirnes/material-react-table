@@ -13,31 +13,37 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
     accessorKey: 'firstName',
     footer: 'First Name',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     footer: 'Last Name',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     footer: 'Age',
     header: 'Age',
+    type: 'number',
   },
   {
     accessorKey: 'address',
     footer: 'Address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     footer: 'State',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     footer: 'Phone Number',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 
@@ -196,10 +202,12 @@ export const RightAlignNumberColumn = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
@@ -210,18 +218,22 @@ export const RightAlignNumberColumn = () => (
         muiTableHeadCellProps: {
           align: 'right',
         },
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}

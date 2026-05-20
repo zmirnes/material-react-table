@@ -4,9 +4,9 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import {
+  MaterialReactTable,
   type MRT_ColumnDef,
   type MRT_ColumnFiltersState,
-  MaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
@@ -23,19 +23,23 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
     accessorKey: 'isActive',
     header: 'Is Active',
     size: 110,
+    type: 'boolean',
   },
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     filterVariant: 'range',
     header: 'Age',
+    type: 'number',
   },
   {
     Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
@@ -44,14 +48,17 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
     filterVariant: 'date',
     header: 'Birth Date',
     id: 'birthDate',
+    type: 'date',
   },
   {
     accessorKey: 'gender',
     header: 'Gender',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
@@ -66,6 +73,7 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
     ],
     filterVariant: 'multi-select',
     header: 'State',
+    type: 'string',
   },
 ];
 
@@ -134,21 +142,25 @@ export const FilterFnAndFilterVariants = () => (
         header: 'Is Active',
         id: 'isActive',
         size: 200,
+        type: 'boolean',
       },
       {
         accessorKey: 'firstName',
         filterFn: 'fuzzy', // default
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         filterFn: 'contains',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         filterVariant: 'range',
         header: 'Age',
+        type: 'number',
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
@@ -157,6 +169,7 @@ export const FilterFnAndFilterVariants = () => (
         filterVariant: 'date',
         header: 'Birth Date',
         id: 'birthDate',
+        type: 'date',
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
@@ -164,6 +177,7 @@ export const FilterFnAndFilterVariants = () => (
         filterVariant: 'date-range',
         header: 'Hire Date',
         id: 'hireDate',
+        type: 'date',
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
@@ -171,6 +185,7 @@ export const FilterFnAndFilterVariants = () => (
         filterVariant: 'datetime-range',
         header: 'Arrival time',
         id: 'arrivalTime',
+        type: 'dateTime',
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
@@ -178,17 +193,20 @@ export const FilterFnAndFilterVariants = () => (
         filterVariant: 'time-range',
         header: 'Departure Time',
         id: 'departureTime',
+        type: 'dateTime',
       },
       {
         accessorKey: 'gender',
         filterSelectOptions: ['Male', 'Female', 'Other'],
         filterVariant: 'select',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         filterFn: 'includesStringSensitive',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
@@ -203,6 +221,7 @@ export const FilterFnAndFilterVariants = () => (
         ],
         filterVariant: 'multi-select',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -221,26 +240,31 @@ export const FilterFnAndFilterVariantsFaceted = () => (
         })), //hard coded
         filterVariant: 'autocomplete',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         filterVariant: 'autocomplete', //faceted auto generated select options
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         filterVariant: 'range-slider',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         filterVariant: 'select',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         filterVariant: 'multi-select',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -255,15 +279,18 @@ export const FilteringChangeModeEnabled = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         filterFn: 'between',
         header: 'Age',
+        type: 'number',
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
@@ -271,19 +298,23 @@ export const FilteringChangeModeEnabled = () => (
         filterVariant: 'date',
         header: 'Birth Date',
         id: 'birthDate',
+        type: 'date',
       },
       {
         accessorKey: 'gender',
         filterSelectOptions: ['Male', 'Female', 'Other'],
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -299,26 +330,31 @@ export const FilteringChangeModeEnabledFaceted = () => (
         accessorKey: 'firstName',
         filterFn: 'fuzzy', // default
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         filterVariant: 'autocomplete',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         filterVariant: 'range-slider',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         filterVariant: 'select',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         filterVariant: 'multi-select',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -334,28 +370,34 @@ export const FilteringChangeModeEnabledHidden = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         filterFn: 'between',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         filterSelectOptions: ['Male', 'Female', 'Other'],
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -369,6 +411,7 @@ export const DisableSomeFilterTypesForCertainColumns = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
@@ -380,24 +423,29 @@ export const DisableSomeFilterTypesForCertainColumns = () => (
         ],
         filterFn: 'startsWith',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         columnFilterModeOptions: ['equals', 'notEquals'],
         filterFn: 'equals',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -412,28 +460,34 @@ export const FilteringDisabledForCertainColumns = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         enableColumnFilter: false,
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         enableColumnFilter: false,
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -447,14 +501,17 @@ export const CustomFilterFunctionPerColumn = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
@@ -464,10 +521,12 @@ export const CustomFilterFunctionPerColumn = () => (
             .toLowerCase()
             .startsWith(filterValue.toLowerCase()),
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
@@ -477,6 +536,7 @@ export const CustomFilterFunctionPerColumn = () => (
             .toLowerCase()
             .startsWith(filterValue.toLowerCase()),
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -490,28 +550,34 @@ export const CustomFilterFns = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         filterFn: 'customFn',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         filterFn: 'customFn',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -534,14 +600,17 @@ export const CustomFilterComponent = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         Filter: ({ header }) => (
@@ -568,14 +637,17 @@ export const CustomFilterComponent = () => (
           row.getValue<string>('gender').toLowerCase() ===
           filterValue.toLowerCase(),
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -589,28 +661,34 @@ export const CustomizeFilterTextFields = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         filterSelectOptions: ['Male', 'Female', 'Other'],
         filterVariant: 'select',
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}
@@ -697,28 +775,34 @@ export const InitialFilters = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         filterFn: 'between',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'gender',
         filterSelectOptions: ['Male', 'Female', 'Other'],
         header: 'Gender',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ]}
     data={data}

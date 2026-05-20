@@ -23,25 +23,30 @@ export const CustomWidthsSemantic = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 50,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 300,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 100,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 50,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -55,25 +60,30 @@ export const CustomWidthsGrid = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 50,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 300,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 100,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 50,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -88,25 +98,30 @@ export const CustomWidthsGridNoGrow = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 50,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 300,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 100,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 50,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -121,26 +136,31 @@ export const CustomWidthsGridNoGrowIndividualGrow = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 50,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 300,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 100,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 50,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         grow: true,
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -156,25 +176,30 @@ export const CustomWidthsGridIndividualShrink = () => (
         grow: false,
         header: 'ID',
         size: 50,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 300,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 100,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 50,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -189,26 +214,31 @@ export const SmallWidthsSemantic = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 10,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
         size: 10,
+        type: 'string',
       },
     ]}
     data={data}
@@ -222,26 +252,31 @@ export const SmallWidthsGrid = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 10,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
         size: 10,
+        type: 'string',
       },
     ]}
     data={data}
@@ -256,26 +291,31 @@ export const SmallWidthsGridNoGrow = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 10,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
         size: 10,
+        type: 'string',
       },
     ]}
     data={data}
@@ -290,28 +330,33 @@ export const SmallWidthsGridNoGrowIndividualGrow = () => (
         accessorKey: 'id',
         header: 'ID',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         grow: 1,
         header: 'First Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         grow: 1,
         header: 'Last Name',
         size: 10,
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
         size: 80,
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
         size: 200,
+        type: 'string',
       },
     ]}
     data={data}
