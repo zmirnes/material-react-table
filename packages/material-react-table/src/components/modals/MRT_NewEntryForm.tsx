@@ -1,14 +1,6 @@
+import { Controller, useFormContext } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { Controller, useFormContext } from 'react-hook-form';
-import { columnTypeResolvers } from '../../column-types/registy';
-import {
-  type ColumnType,
-  type MRT_ColumnDef,
-  type MRT_FormFieldConfig,
-  type MRT_RowData,
-  type MRT_TableInstance,
-} from '../../types';
 import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
 import {
   groupFieldsBySection,
@@ -16,8 +8,6 @@ import {
   sortByOrder,
 } from './MRT_NewEntryFormBuilder';
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
-<<<<<<< HEAD
-=======
 import { columnTypeResolvers } from '../../column-types/registy';
 import {
   type ColumnType,
@@ -26,7 +16,6 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
->>>>>>> cfcb0d64d (Korekcije za input tip komponentu)
 
 // Default MUI TextField size applied when no per-field size is specified.
 const DEFAULT_FIELD_SIZE = 'small';
