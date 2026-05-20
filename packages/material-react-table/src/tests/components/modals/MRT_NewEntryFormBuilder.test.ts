@@ -115,24 +115,6 @@ describe('resolveFormFields', () => {
     expect(secretField?.fieldConfig?.disabled).toBe(true);
   });
 
-  it('sets fieldConfig to null when formField is a render function', () => {
-    const { result } = renderHook(() =>
-      useMaterialReactTable<Record<string, unknown>>({
-        columns: [
-          {
-            accessorKey: 'name',
-            header: 'Name',
-            type: 'string',
-            formField: () => null,
-          },
-        ],
-        data: [],
-      }),
-    );
-    const fields = resolveFormFields(result.current);
-    expect(fields[0].fieldConfig).toBeNull();
-  });
-
   it('populates fieldConfig when formField is a config object', () => {
     const { result } = renderHook(() =>
       useMaterialReactTable<Record<string, unknown>>({

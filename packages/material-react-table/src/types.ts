@@ -762,10 +762,8 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
       }) => TableCellProps)
     | TableCellProps;
   // Form field configuration — controls how this column appears and behaves in the create/edit form.
-  // Use a config object for static settings, or a render function for full custom control.
-  formField?:
-    | MRT_FormFieldConfig<TData, TValue>
-    | ((props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode);
+  // Use render inside MRT_FormFieldConfig for full custom control of the input component.
+  formField?: MRT_FormFieldConfig<TData, TValue>;
   PlaceholderCell?: (props: {
     cell: MRT_Cell<TData, TValue>;
     column: MRT_Column<TData, TValue>;
@@ -1742,7 +1740,9 @@ export interface ColumnTypeResolver {
   getFilterOperators: <TData extends MRT_RowData, TValue = unknown>(
     column: MRT_ColumnDef<TData, TValue>,
   ) => MRT_FilterOperatorDefinition<TData, TValue>[];
-  getFormFieldRenderer: <TData extends MRT_RowData>(
+  // Optional — not all column types need a custom form input yet.
+  // Resolvers that do not implement this fall back to the generic TextField in FormFieldControl.
+  getFormFieldRenderer?: <TData extends MRT_RowData>(
     column: MRT_ColumnDef<TData>,
     table: MRT_TableInstance<TData>,
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
@@ -1844,8 +1844,11 @@ export interface MRT_FormFieldConfig<
   // Custom render function — replaces the default input component for this field.
   render?: (props: MRT_FormFieldRenderProps<TData, TValue>) => ReactNode;
   // Intercepts RHF onChange — receives the new value and field name.
-  // Return a transformed value to override what RHF stores, or return void to keep the original value.
+  // Return a transformed value to override what RHF stores, or return void to keep the original.
+  // Use void return for side-effects only (logging, syncing) when no transformation is needed.
   onChange?: (value: TValue, fieldName: string) => TValue | void;
+  // Input size — defaults to 'small' when not specified.
+  size?: 'small' | 'medium';
 }
 
 // Props passed into form-level callbacks (onSave, onCancel) and custom action button handlers.
