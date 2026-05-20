@@ -12,26 +12,32 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'zipCode',
     header: 'Zip Code',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 
@@ -77,14 +83,17 @@ export const ColumnResizingDefaultOnChangeGridWithIndividualShrink = () => (
         grow: false,
         header: 'ID',
         size: 50,
+        type: 'string',
       },
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
     ]}
     data={data}
@@ -141,27 +150,33 @@ export const ColumnResizingDisabledSomeColumns = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'zipCode',
         enableResizing: false,
         header: 'Zip Code',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}
@@ -218,16 +233,19 @@ export const ColumnResizingWithHeaderGroups = () => (
             accessorKey: 'firstName',
             footer: 'First Name',
             header: 'First Name',
+            type: 'string',
           },
 
           {
             accessorKey: 'lastName',
             footer: 'Last Name',
             header: 'Last Name',
+            type: 'string',
           },
         ],
         footer: 'Name',
         header: 'Name',
+        type: 'string',
       },
       {
         columns: [
@@ -235,15 +253,18 @@ export const ColumnResizingWithHeaderGroups = () => (
             accessorKey: 'age',
             footer: 'Age',
             header: 'Age',
+            type: 'string',
           },
           {
             accessorKey: 'address',
             footer: 'Address',
             header: 'Address',
+            type: 'string',
           },
         ],
         footer: 'Info',
         header: 'Info',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({
@@ -265,16 +286,19 @@ export const ColumnResizingWithHeaderGroupsGridGrow = () => (
             accessorKey: 'firstName',
             footer: 'First Name',
             header: 'First Name',
+            type: 'string',
           },
 
           {
             accessorKey: 'lastName',
             footer: 'Last Name',
             header: 'Last Name',
+            type: 'string',
           },
         ],
         footer: 'Name',
         header: 'Name',
+        type: 'string',
       },
       {
         columns: [
@@ -282,15 +306,18 @@ export const ColumnResizingWithHeaderGroupsGridGrow = () => (
             accessorKey: 'age',
             footer: 'Age',
             header: 'Age',
+            type: 'string',
           },
           {
             accessorKey: 'address',
             footer: 'Address',
             header: 'Address',
+            type: 'string',
           },
         ],
         footer: 'Info',
         header: 'Info',
+        type: 'string',
       },
     ]}
     data={[...Array(5)].map(() => ({

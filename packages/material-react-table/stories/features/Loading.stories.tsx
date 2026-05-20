@@ -8,34 +8,39 @@ const meta: Meta = {
 
 export default meta;
 
-interface Person {
+type Person = {
   address: null | string;
   firstName: null | string;
   lastName: null | string;
   phoneNumber: null | string;
   state: null | string;
-}
+};
 
 const columns: MRT_ColumnDef<Person>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 

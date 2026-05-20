@@ -12,18 +12,22 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     header: 'Age',
+    type: 'number',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
 ];
 const data = [...Array(21)].map(() => ({
@@ -56,10 +60,12 @@ export const StyleMuiTableBodyCellConditionallyIn1Column = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
@@ -76,10 +82,12 @@ export const StyleMuiTableBodyCellConditionallyIn1Column = () => (
                 : '400',
           },
         }),
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}
@@ -95,6 +103,7 @@ export const CustomCellRender = () => (
         ),
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         Cell: ({ cell }) => (
@@ -102,6 +111,7 @@ export const CustomCellRender = () => (
         ),
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         Cell: ({ cell }) => (
@@ -120,10 +130,12 @@ export const CustomCellRender = () => (
         ),
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ]}
     data={data}

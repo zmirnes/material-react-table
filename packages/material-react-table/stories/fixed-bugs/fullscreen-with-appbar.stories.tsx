@@ -80,26 +80,31 @@ const columns: MRT_ColumnDef<Person>[] = [
     accessorKey: 'name.firstName', //access nested data with dot notation
     header: 'First Name',
     size: 150,
+    type: 'string',
   },
   {
     accessorKey: 'name.lastName',
     header: 'Last Name',
     size: 150,
+    type: 'string',
   },
   {
     accessorKey: 'address', //normal accessorKey
     header: 'Address',
     size: 200,
+    type: 'string',
   },
   {
     accessorKey: 'city',
     header: 'City',
     size: 150,
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
     size: 150,
+    type: 'string',
   },
 ];
 

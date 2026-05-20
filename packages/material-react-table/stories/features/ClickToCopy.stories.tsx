@@ -12,7 +12,7 @@ const meta: Meta = {
 
 export default meta;
 
-interface Person {
+type Person = {
   address: string;
   city: string;
   email: string;
@@ -21,32 +21,38 @@ interface Person {
     lastName: string;
   };
   state: string;
-}
+};
 
 const columns: MRT_ColumnDef<Person>[] = [
   {
     accessorKey: 'name.firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'name.lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'email',
     header: 'Email Address',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'city',
     header: 'City',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
 ];
 
@@ -87,27 +93,33 @@ export const ClickToCopyEnabledPerColumn = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'email',
         enableClickToCopy: true,
         header: 'Email Address',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ],
     data,
@@ -122,27 +134,33 @@ export const ClickToCopyDisabledPerColumn = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'email',
         enableClickToCopy: false,
         header: 'Email Address',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ],
     data,

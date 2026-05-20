@@ -17,22 +17,27 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 
@@ -78,26 +83,31 @@ const columnsWithFooters: MRT_ColumnDef<(typeof data)[0]>[] = [
     accessorKey: 'firstName',
     footer: 'First Name',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     footer: 'Last Name',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     footer: 'Address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     footer: 'State',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     footer: 'Phone Number',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 

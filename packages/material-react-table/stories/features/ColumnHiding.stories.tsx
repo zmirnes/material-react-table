@@ -1,4 +1,4 @@
-import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
+import { MaterialReactTable, type MRT_ColumnDef } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
 
@@ -12,30 +12,37 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    type: 'string',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
   {
     accessorKey: 'zip',
     header: 'Zip',
+    type: 'string',
   },
   {
     accessorKey: 'email',
     header: 'Email Address',
+    type: 'string',
   },
   {
     accessorKey: 'phoneNumber',
     header: 'Phone Number',
+    type: 'string',
   },
 ];
 
@@ -82,31 +89,38 @@ export const ColumnHidingDisabledPerColumn = () => (
         accessorKey: 'firstName',
         enableHiding: false,
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         enableHiding: false,
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'zip',
         header: 'Zip',
+        type: 'string',
       },
       {
         accessorKey: 'email',
         header: 'Email Address',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}
@@ -121,46 +135,56 @@ export const ColumnHidingWithHeaderGroups = () => (
           {
             accessorKey: 'firstName',
             header: 'First Name',
+            type: 'string',
           },
           {
             accessorKey: 'lastName',
             header: 'Last Name',
+            type: 'string',
           },
         ],
         header: 'Name',
         id: 'name',
+        type: 'string',
       },
       {
         columns: [
           {
             accessorKey: 'address',
             header: 'Address',
+            type: 'string',
           },
           {
             accessorKey: 'state',
             header: 'State',
+            type: 'string',
           },
           {
             accessorKey: 'zip',
             header: 'Zip',
+            type: 'string',
           },
         ],
         header: 'Mailing Info',
         id: 'mailingInfo',
+        type: 'string',
       },
       {
         columns: [
           {
             accessorKey: 'email',
             header: 'Email Address',
+            type: 'string',
           },
           {
             accessorKey: 'phoneNumber',
             header: 'Phone Number',
+            type: 'string',
           },
         ],
         header: 'Contact Info',
         id: 'contactInfo',
+        type: 'string',
       },
     ]}
     data={data}
@@ -173,31 +197,38 @@ export const ColumnHidingColumnsNotVisibleInShowHide = () => (
         accessorKey: 'firstName',
         header: 'First Name',
         visibleInShowHideMenu: false,
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
         visibleInShowHideMenu: false,
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'zip',
         header: 'Zip',
+        type: 'string',
       },
       {
         accessorKey: 'email',
         header: 'Email Address',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}
@@ -209,32 +240,39 @@ export const ColumnHidingWithColumnsHiddenAndNotVisibleInShowHide = () => (
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         enableHiding: false,
         header: 'Address',
         visibleInShowHideMenu: false,
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       {
         accessorKey: 'zip',
         header: 'Zip',
+        type: 'string',
       },
       {
         accessorKey: 'email',
         header: 'Email Address',
+        type: 'string',
       },
       {
         accessorKey: 'phoneNumber',
         header: 'Phone Number',
+        type: 'string',
       },
     ]}
     data={data}

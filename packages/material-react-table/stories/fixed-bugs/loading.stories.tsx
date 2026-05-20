@@ -25,22 +25,27 @@ export const NestedLoadingDataWithInitialExpanded = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       //end
     ],
@@ -66,22 +71,27 @@ export const NestedLoadingDataWithInitialFilter = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       //end
     ],
@@ -107,22 +117,27 @@ export const NestedLoadingDataWithInitialGroup = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       //end
     ],
@@ -148,22 +163,27 @@ export const NestedLoadingDataWithInitialPage = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       //end
     ],
@@ -189,22 +209,27 @@ export const NestedLoadingDataWithInitialSort = () => {
       {
         accessorKey: 'name.firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'name.lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
       //end
     ],
@@ -232,18 +257,22 @@ export const AccessorKeyWhileLoading = () => {
           `${row.name.firstName.toUpperCase()} ${row.name.lastName.toUpperCase()}`,
         header: 'Name',
         id: 'name',
+        type: 'string',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
       {
         accessorKey: 'state',
         header: 'State',
+        type: 'string',
       },
     ],
     [],

@@ -15,36 +15,44 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'email',
         header: 'Email',
+        type: 'string',
       },
     ],
     header: 'Employee',
     id: 'employee',
+    type: 'string',
   },
   {
     columns: [
       {
         accessorKey: 'jobTitle',
         header: 'Job Title',
+        type: 'string',
       },
       {
         accessorKey: 'salary',
         header: 'Salary',
+        type: 'number',
       },
       {
         accessorKey: 'startDate',
         header: 'Start Date',
+        type: 'date',
       },
     ],
     header: 'Job Info',
     id: 'jobInfo',
+    type: 'string',
   },
 ];
 

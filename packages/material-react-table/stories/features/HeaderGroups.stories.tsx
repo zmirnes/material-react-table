@@ -1,4 +1,4 @@
-import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
+import { MaterialReactTable, type MRT_ColumnDef } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
 
@@ -14,29 +14,35 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
 
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
     ],
     header: 'Name',
     id: 'name',
+    type: 'string',
   },
   {
     columns: [
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'address',
         header: 'Address',
+        type: 'string',
       },
     ],
     header: 'Info',
     id: 'info',
+    type: 'string',
   },
 ];
 
@@ -71,16 +77,19 @@ export const HeaderAndFooterGroups = () => (
             accessorKey: 'firstName',
             footer: 'First Name',
             header: 'First Name',
+            type: 'string',
           },
           {
             accessorKey: 'lastName',
             footer: 'Last Name',
             header: 'Last Name',
+            type: 'string',
           },
         ],
         footer: 'Name',
         header: 'Name',
         id: 'name',
+        type: 'string',
       },
       {
         columns: [
@@ -88,16 +97,19 @@ export const HeaderAndFooterGroups = () => (
             accessorKey: 'age',
             footer: 'Age',
             header: 'Age',
+            type: 'number',
           },
           {
             accessorKey: 'address',
             footer: 'Address',
             header: 'Address',
+            type: 'string',
           },
         ],
         footer: 'Info',
         header: 'Info',
         id: 'info',
+        type: 'string',
       },
     ]}
     data={data}
@@ -147,28 +159,34 @@ export const MixedHeaderGroups = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
         {
           columns: [
             {
               accessorKey: 'address',
               header: 'Address',
+              type: 'string',
             },
           ],
           header: 'Grouped',
           id: 'grouped',
+          type: 'string',
         },
         {
           accessorKey: 'city',
           header: 'City',
+          type: 'string',
         },
         {
           accessorKey: 'state',
           header: 'State',
+          type: 'string',
         },
       ]}
       data={data}
@@ -183,6 +201,7 @@ export const DeepMixedHeaderGroups = () => {
         {
           accessorKey: 'firstName',
           header: 'First Name',
+          type: 'string',
         },
         {
           columns: [
@@ -191,26 +210,32 @@ export const DeepMixedHeaderGroups = () => {
                 {
                   accessorKey: 'address',
                   header: 'Address',
+                  type: 'string',
                 },
                 {
                   accessorKey: 'city',
                   header: 'City',
+                  type: 'string',
                 },
                 {
                   accessorKey: 'state',
                   header: 'State',
+                  type: 'string',
                 },
               ],
               header: 'Location',
               id: 'location',
+              type: 'string',
             },
           ],
           header: 'Grouped',
           id: 'grouped',
+          type: 'string',
         },
         {
           accessorKey: 'lastName',
           header: 'Last Name',
+          type: 'string',
         },
       ]}
       data={data}

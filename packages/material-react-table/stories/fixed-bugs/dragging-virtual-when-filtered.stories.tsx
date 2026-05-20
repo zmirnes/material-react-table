@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import {
   MaterialReactTable,
-  useMaterialReactTable,
   type MRT_ColumnDef,
+  useMaterialReactTable,
 } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
+
 const meta: Meta = {
   title: 'Fixed Bugs/dragging virtual when filtered',
 };
@@ -28,26 +29,32 @@ const columns: MRT_ColumnDef<(typeof initData)[0]>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
+    type: 'string',
   },
   {
     accessorKey: 'firstName',
     header: 'First Name',
+    type: 'string',
   },
   {
     accessorKey: 'lastName',
     header: 'Last Name',
+    type: 'string',
   },
   {
     accessorKey: 'email',
     header: 'Email Address',
+    type: 'string',
   },
   {
     accessorKey: 'age',
     header: 'Age',
+    type: 'number',
   },
   {
     accessorKey: 'state',
     header: 'State',
+    type: 'string',
   },
 ];
 export const DraggingRowWhenFiltered = () => {
