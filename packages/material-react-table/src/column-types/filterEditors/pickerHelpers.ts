@@ -145,29 +145,29 @@ export const getPickerTextFieldProps = <TData extends MRT_RowData>(
 export const getDatePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ): DatePickerProps => ({
-  ...(parseFromValuesOrFunc(props.table.options.muiFilterDatePickerProps, {
+  ...parseFromValuesOrFunc(props.table.options.muiFilterDatePickerProps, {
     column: props.column,
     table: props.table,
-  }) as DatePickerProps),
-  ...(parseFromValuesOrFunc(props.column.columnDef.muiFilterDatePickerProps, {
+  }),
+  ...parseFromValuesOrFunc(props.column.columnDef.muiFilterDatePickerProps, {
     column: props.column,
     table: props.table,
-  }) as DatePickerProps),
+  }),
 });
 
 // Same as getDatePickerProps but for DateTimePicker.
 export const getDateTimePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
 ): DateTimePickerProps => ({
-  ...(parseFromValuesOrFunc(props.table.options.muiFilterDateTimePickerProps, {
+  ...parseFromValuesOrFunc(props.table.options.muiFilterDateTimePickerProps, {
     column: props.column,
     table: props.table,
-  }) as DateTimePickerProps),
-  ...(parseFromValuesOrFunc(
+  }),
+  ...parseFromValuesOrFunc(
     props.column.columnDef.muiFilterDateTimePickerProps,
     {
       column: props.column,
       table: props.table,
     },
-  ) as DateTimePickerProps),
+  ),
 });

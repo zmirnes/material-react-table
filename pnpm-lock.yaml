@@ -154,8 +154,8 @@ importers:
   packages/material-react-table:
     dependencies:
       '@dooherceg/mui-date-range-picker':
-        specifier: ^0.2.7
-        version: 0.2.7(l6heg7mqh5bx6ftabkc4btxvha)
+        specifier: ^0.2.8
+        version: 0.2.8(l6heg7mqh5bx6ftabkc4btxvha)
       '@tanstack/match-sorter-utils':
         specifier: 8.19.4
         version: 8.19.4
@@ -584,8 +584,8 @@ packages:
       search-insights:
         optional: true
 
-  '@dooherceg/mui-date-range-picker@0.2.7':
-    resolution: {integrity: sha512-kAYlmuiWjzYl1rT8h34rLAN3c46CmEy86EtotacO+ZH0x6J4buSXxLGGodNc++jm7OjptVbcdr+dvYaSLeDO5Q==}
+  '@dooherceg/mui-date-range-picker@0.2.8':
+    resolution: {integrity: sha512-Nuoq7ZhP0LoaPO84XBSDc7ywXDvHqv5a79XJh1cuaCqsnfZcf8x5NI7nIkA/dmwmiAr02h6PJadOxc50eFAxag==}
     peerDependencies:
       '@emotion/react': ^11.14.0
       '@emotion/styled': ^11.14.1
@@ -5030,7 +5030,7 @@ snapshots:
     transitivePeerDependencies:
       - '@algolia/client-search'
 
-  '@dooherceg/mui-date-range-picker@0.2.7(l6heg7mqh5bx6ftabkc4btxvha)':
+  '@dooherceg/mui-date-range-picker@0.2.8(l6heg7mqh5bx6ftabkc4btxvha)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.0.2)(react@19.0.0)
       '@emotion/styled': 11.14.0(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@types/react@19.0.2)(react@19.0.0)

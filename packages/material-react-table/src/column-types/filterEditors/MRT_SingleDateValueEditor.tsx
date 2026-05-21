@@ -12,6 +12,7 @@ import {
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../../types';
+import { parseFromValuesOrFunc } from '../../utils/utils';
 import { type Dayjs } from 'dayjs';
 
 export type MRT_SingleDateValueEditorProps<TData extends MRT_RowData> =
@@ -42,13 +43,10 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   // Convert the stored string/API value to a Dayjs instance for the picker
   const pickerValue = getPickerValue(props.rule.value);
 
-  const pickerTextFieldProps =
-    typeof props.table.options.muiFilterTextFieldProps === 'function'
-      ? props.table.options.muiFilterTextFieldProps({
-          column: props.column,
-          table: props.table,
-        })
-      : props.table.options.muiFilterTextFieldProps;
+  const pickerTextFieldProps = parseFromValuesOrFunc(
+    props.column.columnDef.muiFilterTextFieldProps,
+    props,
+  );
 
   return (
     <LocalizationProvider
@@ -72,6 +70,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
               ...pickerTextFieldProps,
               size: 'small',
               variant: 'outlined',
+              fullWidth: true,
             },
           }}
         />
@@ -91,6 +90,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
               ...pickerTextFieldProps,
               size: 'small',
               variant: 'outlined',
+              fullWidth: true,
             },
           }}
         />
