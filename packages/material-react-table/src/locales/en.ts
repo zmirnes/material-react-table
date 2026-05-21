@@ -145,4 +145,6 @@ export const MRT_Localization_EN: MRT_Localization = {
   deleteConfirmYes: 'Delete',
   deleteConfirmNo: 'Cancel',
   deleteConfirmDeleting: 'Deleting...',
+  resetState: 'Reset State',
+  tableOptions: 'Options',
 };

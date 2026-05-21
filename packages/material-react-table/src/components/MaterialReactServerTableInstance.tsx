@@ -8,6 +8,7 @@ import {
   type MRT_ActiveExportsState,
   type MRT_ExportFileResponse,
   type MRT_ExportParams,
+  type MRT_MenuOptions,
   type MRT_RowData,
   type MRT_SavedFilter,
   type MRT_SavedFilters,
@@ -50,6 +51,8 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
+  menuOptions?: MRT_MenuOptions;
+  resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -97,6 +100,8 @@ export const MaterialReactServerTableInstance = <
   actions,
   deleteRowsFn,
   editRowFn,
+  menuOptions,
+  resetState,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
@@ -167,6 +172,8 @@ export const MaterialReactServerTableInstance = <
       showSkeletons: isLoading,
       ...tableState,
     },
+    menuOptions,
+    resetState,
     enableRowActions: true,
     renderRowActions: RowActionsCell,
     positionActionsColumn: 'last',

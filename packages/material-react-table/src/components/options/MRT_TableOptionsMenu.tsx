@@ -1,0 +1,44 @@
+import Menu, { type MenuProps } from '@mui/material/Menu';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
+import { createTableOptionsMenuItems } from '../../utils/options/createTableOptionsMenuItems';
+
+interface MRT_TableOptionsMenuProps<TData extends MRT_RowData> {
+  anchorEl: HTMLElement | null;
+  menuProps?: Partial<Omit<MenuProps, 'anchorEl' | 'open' | 'onClose'>>;
+  onClose: () => void;
+  open: boolean;
+  table: MRT_TableInstance<TData>;
+}
+
+export function MRT_TableOptionsMenu<TData extends MRT_RowData>({
+  anchorEl,
+  menuProps,
+  onClose,
+  open,
+  table,
+}: MRT_TableOptionsMenuProps<TData>) {
+  const menuItems = createTableOptionsMenuItems({
+    table,
+    onCloseMenu: onClose,
+  });
+  return (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      disableScrollLock
+      onClick={(event) => event.stopPropagation()}
+      onClose={onClose}
+      open={open}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      {...menuProps}
+    >
+      {menuItems}
+    </Menu>
+  );
+}

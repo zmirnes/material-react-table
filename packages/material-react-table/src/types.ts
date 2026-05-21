@@ -106,6 +106,8 @@ export type DropdownOption =
     }
   | string;
 
+export type MRT_MenuOption = 'reset-state';
+export type MRT_MenuOptions = MRT_MenuOption[];
 export type MRT_DensityState = 'comfortable' | 'compact' | 'spacious';
 
 export type MRT_ColumnFilterFnsState = Record<string, MRT_FilterOption>;
@@ -299,6 +301,8 @@ export interface MRT_Localization {
   ungroupByColumn: string;
   unpin: string;
   unpinAll: string;
+  resetState: string;
+  tableOptions: string;
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
@@ -1532,6 +1536,8 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
+  menuOptions?: MRT_MenuOption[];
+  resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 }
 
 export interface MRT_ExportDefinition {
