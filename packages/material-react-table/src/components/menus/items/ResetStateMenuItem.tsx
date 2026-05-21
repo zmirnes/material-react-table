@@ -1,4 +1,6 @@
-import { MRT_ActionMenuItem } from '../MRT_ActionMenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
 import { type MRT_RowData, type MRT_TableInstance } from '../../../types';
 
 interface ResetStateMenuItemProps<TData extends MRT_RowData> {
@@ -43,11 +45,15 @@ export function ResetStateMenuItem<TData extends MRT_RowData>({
   const resetStateLabel = localization.resetState;
 
   return (
-    <MRT_ActionMenuItem
-      icon={<RestartAltIcon />}
-      label={resetStateLabel}
-      onClick={handleResetState}
-      table={table}
-    />
+    <MenuItem onClick={handleResetState} sx={{ justifyContent: 'flex-start' }}>
+      <ListItemIcon
+        sx={{
+          mr: '0.2rem',
+        }}
+      >
+        <RestartAltIcon />
+      </ListItemIcon>
+      <ListItemText>{resetStateLabel}</ListItemText>
+    </MenuItem>
   );
 }

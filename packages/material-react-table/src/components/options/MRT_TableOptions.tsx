@@ -54,8 +54,11 @@ export default function MRT_TableOptions<TData extends MRT_RowData>({
               '&:hover': {
                 opacity: 1,
               },
-              opacity: 0.5,
-              transition: 'opacity 150ms',
+              m: '-8px -4px',
+              opacity: 0.7,
+              transition: 'all 150ms',
+              width: '1.5rem',
+              height: '1.5rem',
             },
             ...(Array.isArray(tableOptionsSx)
               ? tableOptionsSx

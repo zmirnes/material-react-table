@@ -3,7 +3,6 @@ import { MaterialReactServerTableInstance } from './MaterialReactServerTableInst
 import {
   type MRT_ExportFileResponse,
   type MRT_ExportParams,
-  type MRT_MenuOptions,
   type MRT_RowData,
   type MRT_SavedFilter,
   type MRT_SavedFilters,
@@ -46,7 +45,7 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
-  menuOptions?: MRT_MenuOptions;
+  disableResetState?: boolean;
   resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 }
 
@@ -67,7 +66,7 @@ export const MaterialReactServerTable = <
   actions,
   deleteRowsFn,
   editRowFn,
-  menuOptions,
+  disableResetState,
   resetState,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
@@ -122,7 +121,7 @@ export const MaterialReactServerTable = <
       actions={actions}
       deleteRowsFn={deleteRowsFn}
       editRowFn={editRowFn}
-      menuOptions={menuOptions}
+      disableResetState={disableResetState}
       resetState={resetState}
     />
   );

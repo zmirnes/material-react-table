@@ -1,6 +1,7 @@
 import Menu, { type MenuProps } from '@mui/material/Menu';
+import MenuList from '@mui/material/MenuList';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { createTableOptionsMenuItems } from '../../utils/options/createTableOptionsMenuItems';
+import { ResetStateMenuItem } from '../menus/items/ResetStateMenuItem';
 
 interface MRT_TableOptionsMenuProps<TData extends MRT_RowData> {
   anchorEl: HTMLElement | null;
@@ -17,10 +18,9 @@ export function MRT_TableOptionsMenu<TData extends MRT_RowData>({
   open,
   table,
 }: MRT_TableOptionsMenuProps<TData>) {
-  const menuItems = createTableOptionsMenuItems({
-    table,
-    onCloseMenu: onClose,
-  });
+  const {
+    options: { disableResetState = true },
+  } = table;
   return (
     <Menu
       anchorEl={anchorEl}
@@ -38,7 +38,11 @@ export function MRT_TableOptionsMenu<TData extends MRT_RowData>({
       }}
       {...menuProps}
     >
-      {menuItems}
+      <MenuList sx={{ minWidth: '12rem' }}>
+        {disableResetState && (
+          <ResetStateMenuItem table={table} onCloseMenu={onClose} />
+        )}
+      </MenuList>
     </Menu>
   );
 }
