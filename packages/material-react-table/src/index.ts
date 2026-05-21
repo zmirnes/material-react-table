@@ -86,7 +86,7 @@ export * from './components/modals/MRT_NewEntryFormBuilder';
 export * from './components/modals/MRT_NewEntryFormProvider';
 export * from './components/modals/MRT_NewEntryModal';
 //RHF components
-export * from './components/rhf_form/RHF_Form_Provider';
+export * from './components/rhf-form/RHF_Form_Provider';
 //table components
 export * from './components/table/MRT_Table';
 export * from './components/table/MRT_TableContainer';

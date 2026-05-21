@@ -29,7 +29,6 @@ export const MRT_FormNumberInput = <TData extends MRT_RowData>({
       render={({ field, fieldState }) => (
         <TextField
           {...field}
-          // Fallback to empty string to keep the input controlled when value is null
           value={field.value ?? ''}
           error={!!fieldState.error}
           fullWidth
@@ -39,14 +38,6 @@ export const MRT_FormNumberInput = <TData extends MRT_RowData>({
           placeholder={fieldConfig?.placeholder}
           size={fieldConfig?.size ?? DEFAULT_FIELD_SIZE}
           type="number"
-          slotProps={{
-            inputLabel: {
-              shrink:
-                field.value !== undefined && field.value !== null
-                  ? true
-                  : undefined,
-            },
-          }}
           onChange={(e) => {
             const rawValue = (e.target as HTMLInputElement).valueAsNumber;
             // NaN means the field is empty — store null instead

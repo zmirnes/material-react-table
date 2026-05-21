@@ -28,6 +28,7 @@ export const MRT_FormStringInput = <TData extends MRT_RowData>({
       render={({ field, fieldState }) => (
         <TextField
           {...field}
+          value={field.value ?? ''}
           error={!!fieldState.error}
           fullWidth
           disabled={fieldConfig?.disabled}

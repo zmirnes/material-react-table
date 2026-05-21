@@ -604,6 +604,15 @@ export const WithNewEntryFormConfig = () => (
           section: 'basic',
           order: 2,
           rules: { min: { value: 18, message: 'Min 18' } },
+          label: 'Enter age',
+        },
+      },
+      {
+        accessorKey: 'datum',
+        header: 'Datum',
+        type: 'date',
+        formField: {
+          rules: { min: { value: 18, message: 'Min 18' } },
         },
       },
     ]}
