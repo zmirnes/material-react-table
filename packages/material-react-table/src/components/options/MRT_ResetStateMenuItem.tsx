@@ -1,17 +1,17 @@
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
-import { type MRT_RowData, type MRT_TableInstance } from '../../../types';
+import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
-interface ResetStateMenuItemProps<TData extends MRT_RowData> {
+interface MRT_ResetStateMenuItemProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
   onCloseMenu: () => void;
 }
 
-export function ResetStateMenuItem<TData extends MRT_RowData>({
+export function MRT_ResetStateMenuItem<TData extends MRT_RowData>({
   table,
   onCloseMenu,
-}: ResetStateMenuItemProps<TData>) {
+}: MRT_ResetStateMenuItemProps<TData>) {
   const {
     options: {
       icons: { RestartAltIcon },

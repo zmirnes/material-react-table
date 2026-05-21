@@ -1,7 +1,7 @@
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import MenuList from '@mui/material/MenuList';
+import { MRT_ResetStateMenuItem } from './MRT_ResetStateMenuItem';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { ResetStateMenuItem } from '../menus/items/ResetStateMenuItem';
 
 interface MRT_TableOptionsMenuProps<TData extends MRT_RowData> {
   anchorEl: HTMLElement | null;
@@ -40,7 +40,7 @@ export function MRT_TableOptionsMenu<TData extends MRT_RowData>({
     >
       <MenuList sx={{ minWidth: '12rem' }}>
         {enableResetState && (
-          <ResetStateMenuItem table={table} onCloseMenu={onClose} />
+          <MRT_ResetStateMenuItem table={table} onCloseMenu={onClose} />
         )}
       </MenuList>
     </Menu>
