@@ -1,6 +1,6 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {
   getPickerLocale,
@@ -13,27 +13,24 @@ import {
 } from '../../../types';
 import { type Dayjs } from 'dayjs';
 
-// Format used when serialising the selected date back to form state.
-const DATE_SERIALISE_FORMAT = 'YYYY-MM-DD';
+const DATETIME_SERIALISE_FORMAT = 'YYYY-MM-DDTHH:mm';
 const DEFAULT_FIELD_SIZE = 'small';
 
-export interface MRT_FormDateInputProps<TData extends MRT_RowData> {
+export interface MRT_FormDateTimeInputProps<TData extends MRT_RowData> {
   name: string;
   columnDef: MRT_ColumnDef<TData>;
   fieldConfig: MRT_FormFieldConfig<TData, string | null> | null;
-  // BCP-47 language tag from the table's localization — used to set the picker locale.
   locale: string;
 }
 
-export const MRT_FormDateInput = <TData extends MRT_RowData>({
+export const MRT_FormDateTimeInput = <TData extends MRT_RowData>({
   name,
   columnDef,
   fieldConfig,
   locale,
-}: MRT_FormDateInputProps<TData>) => {
+}: MRT_FormDateTimeInputProps<TData>) => {
   const { control } = useFormContext();
 
-  // Resolve dayjs locale from the table's active language setting
   const pickerLocale = getPickerLocale(locale);
 
   return (
@@ -42,16 +39,13 @@ export const MRT_FormDateInput = <TData extends MRT_RowData>({
       name={name}
       rules={fieldConfig?.rules}
       render={({ field, fieldState }) => {
-        // Convert the stored string/API value to a Dayjs instance for the picker
         const pickerValue = getPickerValue(field.value);
 
         const handleChange = (value: Dayjs | null) => {
-          // Serialise the selected date to YYYY-MM-DD; null when the field is cleared
           const serialised = value?.isValid()
-            ? value.format(DATE_SERIALISE_FORMAT)
+            ? value.format(DATETIME_SERIALISE_FORMAT)
             : null;
           const transformed = fieldConfig?.onChange?.(serialised, name);
-          // Use undefined check — null is a valid transformed value and must not be skipped
           field.onChange(transformed !== undefined ? transformed : serialised);
         };
 
@@ -60,7 +54,8 @@ export const MRT_FormDateInput = <TData extends MRT_RowData>({
             adapterLocale={pickerLocale}
             dateAdapter={AdapterDayjs}
           >
-            <DatePicker<Dayjs>
+            <DateTimePicker<Dayjs>
+              ampm={false}
               disabled={fieldConfig?.disabled}
               label={fieldConfig?.label ?? columnDef.header}
               onChange={handleChange}
@@ -69,7 +64,6 @@ export const MRT_FormDateInput = <TData extends MRT_RowData>({
                 field: {
                   clearable: true,
                 },
-                // MUI Modal has z-index 1300 — popper must render above it
                 popper: {
                   sx: { zIndex: 1400 },
                 },
@@ -78,7 +72,6 @@ export const MRT_FormDateInput = <TData extends MRT_RowData>({
                   fullWidth: true,
                   helperText:
                     fieldState.error?.message ?? fieldConfig?.helperText,
-                  // onBlur must be forwarded so RHF registers the touch and triggers validation
                   onBlur: field.onBlur,
                   placeholder: fieldConfig?.placeholder,
                   size: fieldConfig?.size ?? DEFAULT_FIELD_SIZE,

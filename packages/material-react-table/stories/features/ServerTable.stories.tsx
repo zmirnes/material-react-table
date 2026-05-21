@@ -610,9 +610,21 @@ export const WithNewEntryFormConfig = () => (
       {
         accessorKey: 'datum',
         header: 'Datum',
-        type: 'date',
+        type: 'dateTime',
         formField: {
-          rules: { min: { value: 18, message: 'Min 18' } },
+          section: 'basic',
+          order: 3,
+          label: 'Datum i vrijeme',
+          rules: {
+            required: 'Datum je obavezan',
+            validate: (value: unknown) => {
+              if (!value) return true;
+              // Datum ne smije biti u prošlosti
+              return new Date(value as string) >= new Date()
+                ? true
+                : 'Datum mora biti u budućnosti';
+            },
+          },
         },
       },
     ]}

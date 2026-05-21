@@ -1,3 +1,4 @@
+import { MRT_FormDateTimeInput } from '../components/modals/form-inputs/MRT_FormDateTimeInput';
 import { type Date } from './date';
 import {
   MRT_FilterRuleDateTimeEditor,
@@ -5,14 +6,19 @@ import {
   MRT_FilterRuleDisabledRangeDateTimeEditor,
   MRT_FilterRuleRangeDateTimeEditor,
 } from './filterEditors';
+import { getPickerLocale } from './filterEditors/pickerHelpers';
 import {
   computeRelativeDateRange,
   computeRelativeDateSingle,
 } from './filterEditors/relativeDateRanges';
 import {
-  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
+  type MRT_ColumnDef,
+  type MRT_FilterOperatorDefinition,
+  type MRT_FormFieldConfig,
+  type MRT_FormFieldRenderProps,
   type MRT_RowData,
+  type MRT_TableInstance,
 } from '../types';
 import { formatApiDateTime } from '../utils/date';
 
@@ -124,4 +130,23 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         valueShape: 'computed',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    table: MRT_TableInstance<TData>,
+  ) => {
+    // Cast TValue to string | null — this resolver is only called for datetime-typed columns.
+    const fieldConfig =
+      (column.formField as
+        | MRT_FormFieldConfig<TData, string | null>
+        | undefined) ?? null;
+    const locale = getPickerLocale(table.options.localization.language);
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormDateTimeInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        locale={locale}
+        name={name}
+      />
+    );
+  },
 };
