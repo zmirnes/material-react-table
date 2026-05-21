@@ -6,7 +6,6 @@ import {
   getDatePickerProps,
   getDateTimePickerProps,
   getPickerLocale,
-  getPickerTextFieldProps,
   getPickerValue,
 } from './pickerHelpers';
 import {
@@ -34,8 +33,6 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   const pickerLocale = getPickerLocale(
     props.table.options.localization.language,
   );
-  // TextField slot props shared between DatePicker and DateTimePicker
-  const pickerTextFieldProps = getPickerTextFieldProps(props);
 
   // Serialise the selected Dayjs value to a Unix ms timestamp for the filter rule
   const handleChange = (value: Dayjs | null) => {
@@ -45,13 +42,21 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   // Convert the stored string/API value to a Dayjs instance for the picker
   const pickerValue = getPickerValue(props.rule.value);
 
+  const pickerTextFieldProps =
+    typeof props.table.options.muiFilterTextFieldProps === 'function'
+      ? props.table.options.muiFilterTextFieldProps({
+          column: props.column,
+          table: props.table,
+        })
+      : props.table.options.muiFilterTextFieldProps;
+
   return (
     <LocalizationProvider
       adapterLocale={pickerLocale}
       dateAdapter={AdapterDayjs}
     >
       {pickerType === 'date' ? (
-        <DatePicker<Dayjs>
+        <DatePicker
           disabled={disabled}
           {...getDatePickerProps(props)}
           onChange={handleChange}
@@ -65,14 +70,13 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
             },
             textField: {
               ...pickerTextFieldProps,
-              ...getDatePickerProps(props)?.slotProps?.textField,
               size: 'small',
               variant: 'outlined',
             },
           }}
         />
       ) : (
-        <DateTimePicker<Dayjs>
+        <DateTimePicker
           disabled={disabled}
           {...getDateTimePickerProps(props)}
           onChange={handleChange}
@@ -85,7 +89,6 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
             },
             textField: {
               ...pickerTextFieldProps,
-              ...getDateTimePickerProps(props)?.slotProps?.textField,
               size: 'small',
               variant: 'outlined',
             },

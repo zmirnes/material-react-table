@@ -144,30 +144,30 @@ export const getPickerTextFieldProps = <TData extends MRT_RowData>(
 // with `never` as TDate — safe because we always work with Dayjs values.
 export const getDatePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
-): DatePickerProps<Dayjs> => ({
+): DatePickerProps => ({
   ...(parseFromValuesOrFunc(props.table.options.muiFilterDatePickerProps, {
     column: props.column,
     table: props.table,
-  }) as DatePickerProps<Dayjs>),
+  }) as DatePickerProps),
   ...(parseFromValuesOrFunc(props.column.columnDef.muiFilterDatePickerProps, {
     column: props.column,
     table: props.table,
-  }) as DatePickerProps<Dayjs>),
+  }) as DatePickerProps),
 });
 
 // Same as getDatePickerProps but for DateTimePicker.
 export const getDateTimePickerProps = <TData extends MRT_RowData>(
   props: MRT_FilterOperatorEditComponentProps<TData>,
-): DateTimePickerProps<Dayjs> => ({
+): DateTimePickerProps => ({
   ...(parseFromValuesOrFunc(props.table.options.muiFilterDateTimePickerProps, {
     column: props.column,
     table: props.table,
-  }) as DateTimePickerProps<Dayjs>),
+  }) as DateTimePickerProps),
   ...(parseFromValuesOrFunc(
     props.column.columnDef.muiFilterDateTimePickerProps,
     {
       column: props.column,
       table: props.table,
     },
-  ) as DateTimePickerProps<Dayjs>),
+  ) as DateTimePickerProps),
 });
