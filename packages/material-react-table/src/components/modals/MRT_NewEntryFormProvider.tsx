@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { MRT_NewEntryFormActionsContext } from './MRT_NewEntryFormActionsContext';
 import { buildDefaultValues } from './MRT_NewEntryFormBuilder';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
-import { RHF_FormProvider } from '../rhf_form/RHF_Form_Provider';
+import { RHF_FormProvider } from '../rhf-form/RHF_Form_Provider';
 
 // ─── Provider Component ────────────────────────────────────────────────────────
 

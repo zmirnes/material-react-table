@@ -1,11 +1,16 @@
+import { MRT_FormNumberInput } from '../components/modals/form-inputs/MRT_FormNumberInput';
 import {
   MRT_FilterRuleMultiNumberEditor,
   MRT_FilterRuleNumberEditor,
 } from './filterEditors';
 import {
-  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
+  type MRT_ColumnDef,
+  type MRT_FilterOperatorDefinition,
+  type MRT_FormFieldConfig,
+  type MRT_FormFieldRenderProps,
   type MRT_RowData,
+  type MRT_TableInstance,
 } from '../types';
 
 // Resolver for numeric column type.
@@ -99,4 +104,22 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         valueShape: 'multi',
       },
     ] as unknown as MRT_FilterOperatorDefinition<TData, TValue>[],
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    // table is part of the resolver interface — not needed for the number input
+    _table: MRT_TableInstance<TData>,
+  ) => {
+    // Cast TValue to number | null — this resolver is only called for number-typed columns.
+    const fieldConfig =
+      (column.formField as
+        | MRT_FormFieldConfig<TData, number | null>
+        | undefined) ?? null;
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormNumberInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        name={name}
+      />
+    );
+  },
 };

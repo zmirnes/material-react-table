@@ -604,6 +604,27 @@ export const WithNewEntryFormConfig = () => (
           section: 'basic',
           order: 2,
           rules: { min: { value: 18, message: 'Min 18' } },
+          label: 'Enter age',
+        },
+      },
+      {
+        accessorKey: 'datum',
+        header: 'Datum',
+        type: 'dateTime',
+        formField: {
+          section: 'basic',
+          order: 3,
+          label: 'Datum i vrijeme',
+          rules: {
+            required: 'Datum je obavezan',
+            validate: (value: unknown) => {
+              if (!value) return true;
+              // Datum ne smije biti u prošlosti
+              return new Date(value as string) >= new Date()
+                ? true
+                : 'Datum mora biti u budućnosti';
+            },
+          },
         },
       },
     ]}

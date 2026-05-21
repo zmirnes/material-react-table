@@ -1,17 +1,23 @@
+import { MRT_FormDateInput } from '../components/modals/form-inputs/MRT_FormDateInput';
 import {
   MRT_FilterRuleDateEditor,
   MRT_FilterRuleDisabledDateEditor,
   MRT_FilterRuleDisabledRangeDateEditor,
   MRT_FilterRuleRangeDateEditor,
 } from './filterEditors';
+import { getPickerLocale } from './filterEditors/pickerHelpers';
 import {
   computeRelativeDateRange,
   computeRelativeDateSingle,
 } from './filterEditors/relativeDateRanges';
 import {
-  type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
+  type MRT_ColumnDef,
+  type MRT_FilterOperatorDefinition,
+  type MRT_FormFieldConfig,
+  type MRT_FormFieldRenderProps,
   type MRT_RowData,
+  type MRT_TableInstance,
 } from '../types';
 import { formatApiDate } from '../utils/date';
 
@@ -130,4 +136,23 @@ export const DateColumnResolver: ColumnTypeResolver = {
         valueShape: 'computed',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    table: MRT_TableInstance<TData>,
+  ) => {
+    // Cast TValue to string | null — this resolver is only called for date-typed columns.
+    const fieldConfig =
+      (column.formField as
+        | MRT_FormFieldConfig<TData, string | null>
+        | undefined) ?? null;
+    const locale = getPickerLocale(table.options.localization.language);
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormDateInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        locale={locale}
+        name={name}
+      />
+    );
+  },
 };

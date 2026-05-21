@@ -5,19 +5,20 @@ import {
   type MRT_FormFieldConfig,
   type MRT_RowData,
 } from '../../../types';
+
 const DEFAULT_FIELD_SIZE = 'small';
 
-export interface MRT_FormStringInputProps<TData extends MRT_RowData> {
+export interface MRT_FormNumberInputProps<TData extends MRT_RowData> {
   name: string;
   columnDef: MRT_ColumnDef<TData>;
-  fieldConfig: MRT_FormFieldConfig<TData, string> | null;
+  fieldConfig: MRT_FormFieldConfig<TData, number | null> | null;
 }
 
-export const MRT_FormStringInput = <TData extends MRT_RowData>({
+export const MRT_FormNumberInput = <TData extends MRT_RowData>({
   name,
   columnDef,
   fieldConfig,
-}: MRT_FormStringInputProps<TData>) => {
+}: MRT_FormNumberInputProps<TData>) => {
   const { control } = useFormContext();
 
   return (
@@ -36,19 +37,13 @@ export const MRT_FormStringInput = <TData extends MRT_RowData>({
           label={fieldConfig?.label ?? columnDef.header}
           placeholder={fieldConfig?.placeholder}
           size={fieldConfig?.size ?? DEFAULT_FIELD_SIZE}
-          slotProps={{
-            inputLabel: {
-              shrink:
-                field.value !== undefined &&
-                field.value !== null &&
-                field.value !== ''
-                  ? true
-                  : undefined,
-            },
-          }}
+          type="number"
           onChange={(e) => {
-            const transformed = fieldConfig?.onChange?.(e.target.value, name);
-            field.onChange(transformed ?? e.target.value);
+            const rawValue = (e.target as HTMLInputElement).valueAsNumber;
+            // NaN means the field is empty — store null instead
+            const value = Number.isNaN(rawValue) ? null : rawValue;
+            const transformed = fieldConfig?.onChange?.(value, name);
+            field.onChange(transformed !== undefined ? transformed : value);
           }}
         />
       )}
