@@ -19,7 +19,7 @@ export function MRT_TableOptionsMenu<TData extends MRT_RowData>({
   table,
 }: MRT_TableOptionsMenuProps<TData>) {
   const {
-    options: { disableResetState = true },
+    options: { enableResetState = true },
   } = table;
   return (
     <Menu
@@ -39,7 +39,7 @@ export function MRT_TableOptionsMenu<TData extends MRT_RowData>({
       {...menuProps}
     >
       <MenuList sx={{ minWidth: '12rem' }}>
-        {disableResetState && (
+        {enableResetState && (
           <ResetStateMenuItem table={table} onCloseMenu={onClose} />
         )}
       </MenuList>

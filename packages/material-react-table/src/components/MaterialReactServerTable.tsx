@@ -45,7 +45,7 @@ export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
-  disableResetState?: boolean;
+  enableResetState?: boolean;
   resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 }
 
@@ -66,7 +66,7 @@ export const MaterialReactServerTable = <
   actions,
   deleteRowsFn,
   editRowFn,
-  disableResetState,
+  enableResetState,
   resetState,
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
@@ -121,7 +121,7 @@ export const MaterialReactServerTable = <
       actions={actions}
       deleteRowsFn={deleteRowsFn}
       editRowFn={editRowFn}
-      disableResetState={disableResetState}
+      enableResetState={enableResetState}
       resetState={resetState}
     />
   );

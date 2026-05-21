@@ -1534,7 +1534,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
-  disableResetState?: boolean;
+  enableResetState?: boolean;
   resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 }
 
