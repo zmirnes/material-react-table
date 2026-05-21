@@ -1,6 +1,5 @@
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import { getSharedTextFieldProps } from './pickerHelpers';
 import {
   type DropdownOption,
   type MRT_FilterOperatorEditComponentProps,
@@ -15,7 +14,7 @@ export type MRT_MultiValueEditorProps<TData extends MRT_RowData> =
     options: DropdownOption[];
   };
 
-// Multi-select filter editor — stores the selected values as string[].
+// Multi-select filter editor stores the selected values as string[].
 // Used for operators like 'inArray' where the user can pick multiple enum values.
 export const MRT_MultiValueEditor = <TData extends MRT_RowData>({
   column,
@@ -25,12 +24,10 @@ export const MRT_MultiValueEditor = <TData extends MRT_RowData>({
   table,
 }: MRT_MultiValueEditorProps<TData>) => {
   // Merge table-level and column-level TextField overrides
-  const textFieldProps = getSharedTextFieldProps({
-    column,
-    onChange,
-    rule,
-    table,
-  });
+  const textFieldProps = {
+    ...table.options.muiFilterTextFieldProps,
+    ...column.columnDef.muiFilterTextFieldProps,
+  };
 
   // Normalise stored value to a string array for the controlled input
   const selectedValues = Array.isArray(rule.value) ? rule.value : [];
@@ -41,7 +38,7 @@ export const MRT_MultiValueEditor = <TData extends MRT_RowData>({
       margin="none"
       onChange={(event) => {
         const rawValue = event.target.value;
-        // MUI returns string when only one chip is selected via keyboard — normalise to array
+        // MUI returns string when only one chip is selected via keyboard - normalise to array
         const nextValues =
           typeof rawValue === 'string' ? rawValue.split(',') : rawValue;
         onChange(nextValues as Parameters<typeof onChange>[0]);

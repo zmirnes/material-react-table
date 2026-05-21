@@ -1,6 +1,5 @@
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import { getSharedTextFieldProps } from './pickerHelpers';
 import {
   type DropdownOption,
   type MRT_FilterOperatorEditComponentProps,
@@ -34,12 +33,10 @@ export const MRT_SingleValueEditor = <TData extends MRT_RowData>({
   valueFormatter,
 }: MRT_SingleValueEditorProps<TData>) => {
   // Merge table-level and column-level TextField overrides
-  const textFieldProps = getSharedTextFieldProps({
-    column,
-    onChange,
-    rule,
-    table,
-  });
+  const textFieldProps = {
+    ...table.options.muiFilterTextFieldProps,
+    ...column.columnDef.muiFilterTextFieldProps,
+  };
 
   // Convert stored value to a string suitable for controlled input
   const displayValue = valueFormatter

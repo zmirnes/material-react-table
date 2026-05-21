@@ -27,12 +27,12 @@ describe('DeleteRowAction', () => {
       <DeleteRowAction onDeleteConfirm={mockOnDeleteConfirm} table={table} />,
     );
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
 
     // The only interactive element rendered initially is the delete icon button
     const deleteIconButton = screen.getByRole('button');
     await user.click(deleteIconButton);
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
   });
 });
