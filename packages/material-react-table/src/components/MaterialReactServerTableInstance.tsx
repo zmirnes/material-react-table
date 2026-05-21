@@ -50,6 +50,8 @@ type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
+  enableResetState?: boolean;
+  resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -97,6 +99,8 @@ export const MaterialReactServerTableInstance = <
   actions,
   deleteRowsFn,
   editRowFn,
+  enableResetState,
+  resetState,
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
@@ -167,6 +171,8 @@ export const MaterialReactServerTableInstance = <
       showSkeletons: isLoading,
       ...tableState,
     },
+    enableResetState,
+    resetState,
     enableRowActions: true,
     renderRowActions: RowActionsCell,
     positionActionsColumn: 'last',

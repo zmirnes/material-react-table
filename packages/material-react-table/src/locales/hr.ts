@@ -144,4 +144,6 @@ export const MRT_Localization_HR: MRT_Localization = {
   deleteConfirmYes: 'Izbriši',
   deleteConfirmNo: 'Odustani',
   deleteConfirmDeleting: 'Brisanje...',
+  resetState: 'Resetuj stanje',
+  tableOptions: 'Opcije',
 };

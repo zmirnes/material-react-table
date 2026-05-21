@@ -299,6 +299,8 @@ export interface MRT_Localization {
   ungroupByColumn: string;
   unpin: string;
   unpinAll: string;
+  resetState: string;
+  tableOptions: string;
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
@@ -1532,6 +1534,8 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     rowToEdit,
     table,
   }: OnEditActionContext<TData>) => Promise<void> | void;
+  enableResetState?: boolean;
+  resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
 }
 
 export interface MRT_ExportDefinition {
