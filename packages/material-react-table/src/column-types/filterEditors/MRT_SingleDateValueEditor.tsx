@@ -6,13 +6,13 @@ import {
   getDatePickerProps,
   getDateTimePickerProps,
   getPickerLocale,
+  getPickerTextFieldProps,
   getPickerValue,
 } from './pickerHelpers';
 import {
   type MRT_FilterOperatorEditComponentProps,
   type MRT_RowData,
 } from '../../types';
-import { parseFromValuesOrFunc } from '../../utils/utils';
 import { type Dayjs } from 'dayjs';
 
 export type MRT_SingleDateValueEditorProps<TData extends MRT_RowData> =
@@ -43,10 +43,7 @@ export const MRT_SingleDateValueEditor = <TData extends MRT_RowData>({
   // Convert the stored string/API value to a Dayjs instance for the picker
   const pickerValue = getPickerValue(props.rule.value);
 
-  const pickerTextFieldProps = parseFromValuesOrFunc(
-    props.column.columnDef.muiFilterTextFieldProps,
-    props,
-  );
+  const pickerTextFieldProps = getPickerTextFieldProps(props);
 
   return (
     <LocalizationProvider
