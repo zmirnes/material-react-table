@@ -29,14 +29,14 @@ const timestampToPickerDate = (
   return parsed.isValid() ? parsed : null;
 };
 
-// Converts the internal {from, to} shape to the library's {start, end} shape.
-const toLibraryValue = (value: DateRangeFilterValue): DateRangeValue => ({
+// Converts the internal {from, to} shape to the picker's {start, end} shape.
+const toPickerValue = (value: DateRangeFilterValue): DateRangeValue => ({
   start: timestampToPickerDate(value.from),
   end: timestampToPickerDate(value.to),
 });
 
-// Converts the library's {start, end} shape back to the internal {from, to} shape.
-const fromLibraryValue = (value: DateRangeValue): DateRangeFilterValue => ({
+// Converts the picker's {start, end} shape back to the internal {from, to} shape.
+const fromPickerValue = (value: DateRangeValue): DateRangeFilterValue => ({
   from: value.start ? dayjs(value.start).valueOf() : null,
   to: value.end ? dayjs(value.end).valueOf() : null,
 });
@@ -62,10 +62,10 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
       ? (rule.value as DateRangeFilterValue)
       : { from: null, to: null };
 
-  const libraryValue = toLibraryValue(currentRangeValue);
+  const pickerValue = toPickerValue(currentRangeValue);
 
   const handleChange = (value: DateRangeValue) => {
-    onChange(fromLibraryValue(value));
+    onChange(fromPickerValue(value));
   };
 
   // Pass MRT localization strings for the from/to labels;
@@ -85,7 +85,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
           disabled={disabled}
           onChange={handleChange}
           size="small"
-          value={libraryValue}
+          value={pickerValue}
           variant="outlined"
           sx={{
             width: '100%',
@@ -97,7 +97,7 @@ export const MRT_RangeDateValueEditor = <TData extends MRT_RowData>({
           onChange={handleChange}
           size="small"
           translations={dateTimeTranslations}
-          value={libraryValue}
+          value={pickerValue}
           variant="outlined"
         />
       )}
