@@ -357,6 +357,9 @@ export const Basic = () => (
           },
         };
       }}
+      getTotalRows={async () => {
+        return 2000;
+      }}
       loadData={async (state) => {
         await simulateDelay(600);
         const { pageIndex, pageSize } = state.pagination;

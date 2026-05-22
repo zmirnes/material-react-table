@@ -1,12 +1,13 @@
 import { MRT_TotalRowsCounter } from '../../../components/toolbar/MRT_TotalRowsCounter';
+import { MaterialReactServerTable } from '../../../components/MaterialReactServerTable';
 import { useMaterialReactTable } from '../../../hooks/useMaterialReactTable';
 import { MRT_Localization_EN } from '../../../locales/en';
-import { type MRT_TableInstance } from '../../../types';
+import { type MRT_RowData, type MRT_TableInstance } from '../../../types';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-type TestRow = { id: string };
+type TestRow = { id: string } & MRT_RowData;
 
 const COUNT_ROWS_LABEL = MRT_Localization_EN.countRows;
 
@@ -81,33 +82,33 @@ describe('MRT_TotalRowsCounter', () => {
   });
 
   it('should display value consistent with table.getRowCount()', async () => {
-    const tableRowCount = 5;
-    const mockGetTotalRows = vi.fn().mockResolvedValue(5);
+    const TOTAL_ROWS = 5;
+    const mockGetTotalRows = vi.fn().mockResolvedValue(TOTAL_ROWS);
 
-    const { result } = renderHook(() =>
-      useMaterialReactTable<TestRow>({
-        columns: [{ accessorKey: 'id', header: 'ID', type: 'string' }],
-        data: [{ id: 'row-1' }],
-        rowCount: tableRowCount,
-        getTotalRows: mockGetTotalRows,
-      }),
+    render(
+      <MaterialReactServerTable<TestRow>
+        loadConfig={async () => ({
+          columns: [
+            { accessorKey: 'firstName', header: 'First Name', type: 'string' },
+          ],
+        })}
+        loadData={async () => ({
+          data: [],
+          rowCount: 1,
+        })}
+        saveState={async () => {}}
+        getTotalRows={mockGetTotalRows}
+      />,
     );
-    const table = result.current;
 
-    const totalRowCount = table.getRowCount();
-
-    render(<MRT_TotalRowsCounter table={table} />);
-
-    const button = screen.getByRole('button', { name: COUNT_ROWS_LABEL });
+    const button = await screen.findByTestId('count-rows-button');
 
     await act(async () => {
       await user.click(button);
     });
 
-    // the displayed value must match table.getRowCount()
-    const expectedRowCountText = `${MRT_Localization_EN.rowCount}: ${totalRowCount.toLocaleString(MRT_Localization_EN.language)}`;
-    expect(
-      screen.getByRole('button', { name: expectedRowCountText }),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId('total-rows-count')).toHaveTextContent(
+      String(TOTAL_ROWS),
+    );
   });
 });

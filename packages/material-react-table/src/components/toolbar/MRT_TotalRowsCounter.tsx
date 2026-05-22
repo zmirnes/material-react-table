@@ -49,6 +49,7 @@ export const MRT_TotalRowsCounter = <TData extends MRT_RowData>({
           onClick={handleClick}
           variant="soft"
           sx={{ width: 136, height: 36 }}
+          data-testid="count-rows-button"
         >
           {isLoading ? (
             <CircularProgress size={16} color="inherit" />
