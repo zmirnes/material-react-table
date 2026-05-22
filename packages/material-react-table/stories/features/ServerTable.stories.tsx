@@ -680,13 +680,31 @@ export const WithNewEntryFormConfig = () => (
           rules: { required: 'Status je obavezan' },
         },
       },
+      {
+        accessorKey: 'enum',
+        header: 'Status',
+        type: 'enum',
+        meta: {
+          enumValues: [
+            { value: 'active', label: 'Aktivan' },
+            { value: 'pending', label: 'Na čekanju' },
+            { value: 'inactive', label: 'Neaktivan' },
+          ],
+        },
+        formField: {
+          section: 'basic',
+          order: 5,
+          label: 'Status naloga',
+          rules: { required: 'Status je obavezan' },
+        },
+      },
     ]}
     data={fakeDatabase.slice(0, 10)}
     enableNewEntryButton
-    // Hide the icon column from the table — MaterialReactTable does not apply column type
-    // resolvers (Cell renderers), so the raw icon object would cause a React render error.
-    // The column is still present in formConfig and appears in the New Entry form.
-    initialState={{ columnVisibility: { icon: false } }}
+    // Hide icon and enum columns from the table — MaterialReactTable does not apply column type
+    // resolvers (Cell renderers), so the raw objects would cause a React render error.
+    // Both columns are still present in formConfig and appear in the New Entry form.
+    initialState={{ columnVisibility: { icon: false, enum: false } }}
     localization={{
       close: 'Close',
       newEntry: 'New Entry',
