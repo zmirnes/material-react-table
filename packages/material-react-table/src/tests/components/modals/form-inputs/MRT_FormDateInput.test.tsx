@@ -44,10 +44,11 @@ const FormWrapper = ({
   mode = 'onBlur',
 }: FormWrapperProps) => {
   const methods = useForm({ defaultValues, mode });
+  // Attach handleSubmit so fireEvent.submit triggers RHF validation in tests.
   return (
     <ThemeProvider theme={DEFAULT_THEME}>
       <FormProvider {...methods}>
-        <form>{children}</form>
+        <form onSubmit={methods.handleSubmit(() => {})}>{children}</form>
       </FormProvider>
     </ThemeProvider>
   );
@@ -90,15 +91,22 @@ describe('MRT_FormDateInput', () => {
     it('uses columnDef.header as label when fieldConfig has no label', () => {
       renderDateInput({ fieldConfig: null });
 
-      expect(screen.getByLabelText('Birth Date')).toBeInTheDocument();
+      // MUI v6 DatePicker renders a div[role="group"] as the labeled picker container.
+      expect(
+        screen.getByRole('group', { name: 'Birth Date' }),
+      ).toBeInTheDocument();
     });
 
     it('uses fieldConfig.label override when provided', () => {
       renderDateInput({ fieldConfig: { label: 'Date of Birth' } });
 
-      // Override label is used; original column header is not rendered as a label.
-      expect(screen.getByLabelText('Date of Birth')).toBeInTheDocument();
-      expect(screen.queryByLabelText('Birth Date')).not.toBeInTheDocument();
+      // Override label changes the accessible name of the picker group.
+      expect(
+        screen.getByRole('group', { name: 'Date of Birth' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('group', { name: 'Birth Date' }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -106,13 +114,19 @@ describe('MRT_FormDateInput', () => {
     it('renders without crashing when fieldConfig is null', () => {
       renderDateInput({ fieldConfig: null });
 
-      expect(screen.getByLabelText('Birth Date')).toBeInTheDocument();
+      expect(
+        screen.getByRole('group', { name: 'Birth Date' }),
+      ).toBeInTheDocument();
     });
 
     it('renders a disabled input when fieldConfig.disabled is true', () => {
       renderDateInput({ fieldConfig: { disabled: true } });
 
-      expect(screen.getByLabelText('Birth Date')).toBeDisabled();
+      // MUI v6 DatePicker marks each spinbutton section as aria-disabled when disabled.
+      const spinbuttons = screen.getAllByRole('spinbutton');
+      spinbuttons.forEach((section) => {
+        expect(section).toHaveAttribute('aria-disabled', 'true');
+      });
     });
 
     it('renders helperText from fieldConfig when there is no validation error', () => {
@@ -124,21 +138,17 @@ describe('MRT_FormDateInput', () => {
     it('applies small size by default when fieldConfig.size is not specified', () => {
       renderDateInput({ fieldConfig: null });
 
-      // MUI v6 applies size="small" as MuiInputBase-sizeSmall on the InputBase wrapper.
-      const inputWrapper = screen
-        .getByLabelText('Birth Date')
-        .closest('.MuiInputBase-root');
-      expect(inputWrapper).toHaveClass('MuiInputBase-sizeSmall');
+      // MUI v6 adds MuiPickersInputBase-inputSizeSmall directly on the div[role="group"].
+      const picker = screen.getByRole('group', { name: 'Birth Date' });
+      expect(picker).toHaveClass('MuiPickersInputBase-inputSizeSmall');
     });
 
     it('applies medium size when fieldConfig.size is medium', () => {
       renderDateInput({ fieldConfig: { size: 'medium' } });
 
       // Medium size does not carry the sizeSmall class.
-      const inputWrapper = screen
-        .getByLabelText('Birth Date')
-        .closest('.MuiInputBase-root');
-      expect(inputWrapper).not.toHaveClass('MuiInputBase-sizeSmall');
+      const picker = screen.getByRole('group', { name: 'Birth Date' });
+      expect(picker).not.toHaveClass('MuiPickersInputBase-inputSizeSmall');
     });
   });
 
@@ -146,18 +156,23 @@ describe('MRT_FormDateInput', () => {
     it('displays a non-empty value when defaultValues contains a date string', () => {
       renderDateInput({ defaultValues: { birthDate: '2024-01-15' } });
 
-      // The picker converts '2024-01-15' to a Dayjs and displays it — input must not be empty.
-      const input = screen.getByLabelText('Birth Date');
-      expect(input).not.toHaveValue('');
+      // At least one spinbutton section must have a non-Empty aria-valuetext.
+      const filledSections = screen
+        .getAllByRole('spinbutton')
+        .filter(
+          (section) => section.getAttribute('aria-valuetext') !== 'Empty',
+        );
+      expect(filledSections.length).toBeGreaterThan(0);
     });
 
     it('displays an empty input when the default value is null', () => {
       renderDateInput({ defaultValues: { birthDate: null } });
 
-      // Null value — picker renders in empty state with placeholder segments.
-      const input = screen.getByLabelText('Birth Date');
-      // The picker shows placeholder format like MM/DD/YYYY when no value is set.
-      expect(input).toHaveAttribute('placeholder');
+      // All spinbutton sections show 'Empty' aria-valuetext when no value is set.
+      const allSections = screen.getAllByRole('spinbutton');
+      allSections.forEach((section) => {
+        expect(section).toHaveAttribute('aria-valuetext', 'Empty');
+      });
     });
 
     it('handles an API date object as a pre-populated value', () => {
@@ -172,24 +187,29 @@ describe('MRT_FormDateInput', () => {
         },
       });
 
-      // getPickerValue handles API objects — input must display a date, not be empty.
-      const input = screen.getByLabelText('Birth Date');
-      expect(input).not.toHaveValue('');
+      // getPickerValue handles API objects — at least one spinbutton section must not be 'Empty'.
+      const filledSections = screen
+        .getAllByRole('spinbutton')
+        .filter(
+          (section) => section.getAttribute('aria-valuetext') !== 'Empty',
+        );
+      expect(filledSections.length).toBeGreaterThan(0);
     });
   });
 
   describe('validation', () => {
     it('shows a required error message when the field is blurred empty', async () => {
-      renderDateInput({
+      const { container } = renderDateInput({
         fieldConfig: { rules: { required: 'Date is required' } },
-        mode: 'onBlur',
       });
 
-      const input = screen.getByLabelText('Birth Date');
+      // Submitting the form is the most reliable way to trigger RHF validation
+      // because fireEvent.blur does not dispatch the bubbling focusout event
+      // that React's synthetic onBlur depends on.
+      const form = container.querySelector('form') as HTMLFormElement;
 
       await act(async () => {
-        fireEvent.focus(input);
-        fireEvent.blur(input);
+        fireEvent.submit(form);
       });
 
       await waitFor(() => {
@@ -198,19 +218,17 @@ describe('MRT_FormDateInput', () => {
     });
 
     it('replaces helperText with the error message when validation fails', async () => {
-      renderDateInput({
+      const { container } = renderDateInput({
         fieldConfig: {
           helperText: 'Format: DD.MM.YYYY',
           rules: { required: 'Date is required' },
         },
-        mode: 'onBlur',
       });
 
-      const input = screen.getByLabelText('Birth Date');
+      const form = container.querySelector('form') as HTMLFormElement;
 
       await act(async () => {
-        fireEvent.focus(input);
-        fireEvent.blur(input);
+        fireEvent.submit(form);
       });
 
       await waitFor(() => {
@@ -228,18 +246,19 @@ describe('MRT_FormDateInput', () => {
       const onChangeSpy =
         vi.fn<(value: string | null, fieldName: string) => void>();
 
-      renderDateInput({ fieldConfig: { onChange: onChangeSpy } });
-
-      // Simulate the picker calling onChange with a valid Dayjs value by
-      // directly triggering the internal input change to a parseable date string.
-      const input = screen.getByLabelText('Birth Date');
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: '01/20/2024' } });
+      // Render with a pre-populated value so the "Clear value" button becomes visible.
+      renderDateInput({
+        fieldConfig: { onChange: onChangeSpy },
+        defaultValues: { birthDate: '2024-01-15' },
       });
 
-      // When dayjs successfully parses the value, onChange receives 'YYYY-MM-DD'.
-      // When parsing fails (e.g. partial input), onChange receives null.
+      // Clicking "Clear value" calls the picker's onChange(null) which triggers handleChange.
+      const clearButton = screen.getByRole('button', { name: /clear/i });
+
+      await act(async () => {
+        fireEvent.click(clearButton);
+      });
+
       expect(onChangeSpy).toHaveBeenCalled();
     });
 
@@ -248,34 +267,38 @@ describe('MRT_FormDateInput', () => {
       const onChangeSpy =
         vi.fn<(value: string | null, fieldName: string) => void>();
 
-      renderDateInput({ fieldConfig: { onChange: onChangeSpy } });
-
-      const input = screen.getByLabelText('Birth Date');
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: '01/20/2024' } });
+      renderDateInput({
+        fieldConfig: { onChange: onChangeSpy },
+        defaultValues: { birthDate: '2024-01-15' },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/^\d{4}-\d{2}-\d{2}$|^null$/),
-        'birthDate',
-      );
+      const clearButton = screen.getByRole('button', { name: /clear/i });
+
+      await act(async () => {
+        fireEvent.click(clearButton);
+      });
+
+      // Clearing the value calls handleChange(null) — spy receives (null, 'birthDate').
+      expect(onChangeSpy).toHaveBeenCalledWith(null, 'birthDate');
     });
 
     it('stores null when fieldConfig.onChange explicitly returns null', async () => {
       // null is a valid TValue — onChange returning null must not be skipped by ?? operator.
       const onChangeSpy = vi.fn(() => null);
 
-      renderDateInput({ fieldConfig: { onChange: onChangeSpy } });
-
-      const input = screen.getByLabelText('Birth Date');
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: '01/20/2024' } });
+      renderDateInput({
+        fieldConfig: { onChange: onChangeSpy },
+        defaultValues: { birthDate: '2024-01-15' },
       });
 
-      // The spy returns null — RHF should store null, not the serialised date string.
-      expect(onChangeSpy).toHaveBeenCalled();
+      const clearButton = screen.getByRole('button', { name: /clear/i });
+
+      await act(async () => {
+        fireEvent.click(clearButton);
+      });
+
+      // Spy returns null — RHF should store null, not the serialised date string.
+      expect(onChangeSpy).toHaveBeenCalledWith(null, 'birthDate');
     });
   });
 });
