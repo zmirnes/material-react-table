@@ -635,9 +635,58 @@ export const WithNewEntryFormConfig = () => (
           },
         },
       },
+      {
+        accessorKey: 'icon',
+        header: 'Status',
+        type: 'icon',
+        // Maps iconCode → Iconify icon name + colour used for cell rendering
+        iconsList: ICONS_LIST,
+        meta: {
+          // Available options shown in the Select dropdown inside the form
+          availableIcons: [
+            {
+              iconType: {
+                iconCode: '1',
+                color: '#00b894',
+                description: 'Aktivan',
+              },
+              tooltip: 'Aktivan',
+              value: '1',
+            },
+            {
+              iconType: {
+                iconCode: '3',
+                color: '#f39c12',
+                description: 'Na čekanju',
+              },
+              tooltip: 'Na čekanju',
+              value: '3',
+            },
+            {
+              iconType: {
+                iconCode: '6',
+                color: '#d63031',
+                description: 'Neaktivan',
+              },
+              tooltip: 'Neaktivan',
+              value: '6',
+            },
+          ],
+        },
+        formField: {
+          section: 'basic',
+          order: 4,
+          label: 'Status',
+          rules: { required: 'Status je obavezan' },
+        },
+      },
     ]}
     data={fakeDatabase.slice(0, 10)}
     enableNewEntryButton
+    // Hide the icon column from the table — MaterialReactTable does not apply column type
+    // resolvers (Cell renderers), so the raw icon object would cause a React render error.
+    // The column is still present in formConfig and appears in the New Entry form.
+    initialState={{ columnVisibility: { icon: false } }}
     localization={{
       close: 'Close',
       newEntry: 'New Entry',

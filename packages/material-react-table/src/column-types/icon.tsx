@@ -2,12 +2,15 @@ import { type MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { MRT_FormIconInput } from '../components/modals/form-inputs/MRT_FormIconInput';
 import IconActiveFilterItem from './activeFiltersRenderers/IconActiveFilterItem';
 import { MRT_IconMultiValueEditor } from './filterEditors/MRT_IconMultiValueEditor';
 import { MRT_IconSingleValueEditor } from './filterEditors/MRT_IconSingleValueEditor';
 import Iconify from '../components/iconify';
 import { type IIconColTypeValue } from '../tanstack-table';
 import {
+  type MRT_FormFieldConfig,
+  type MRT_FormFieldRenderProps,
   type ColumnTypeResolver,
   type MRT_ColumnDef,
   type MRT_FilterOperatorDefinition,
@@ -144,4 +147,20 @@ export const IconColumnResolver: ColumnTypeResolver = {
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },
   activeFilterRenderer: IconActiveFilterItem,
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+  ) => {
+    // Cast TValue to string | null — icon fields store the selected iconCode string
+    const fieldConfig =
+      (column.formField as
+        | MRT_FormFieldConfig<TData, string | null>
+        | undefined) ?? null;
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormIconInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        name={name}
+      />
+    );
+  },
 };
