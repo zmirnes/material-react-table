@@ -9,7 +9,13 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['dist/**', 'locales/**', 'node_modules/**', '.yalc/**'],
+    ignores: [
+      'dist/**',
+      'locales/**',
+      'node_modules/**',
+      '.yalc/**',
+      'storybook-static/**',
+    ],
   },
   js.configs.recommended,
   ...storybookPlugin.configs['flat/recommended'],

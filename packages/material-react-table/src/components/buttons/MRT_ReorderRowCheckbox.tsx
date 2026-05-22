@@ -1,8 +1,9 @@
-import { Checkbox } from '@mui/material';
+import { type ChangeEvent } from 'react';
+import Checkbox from '@mui/material/Checkbox';
 import { type Theme } from '@mui/material/styles';
 
 interface MRT_ReorderRowCheckboxProps {
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   isSelected: boolean;
 }
 

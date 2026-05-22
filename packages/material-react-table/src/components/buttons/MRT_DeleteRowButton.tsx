@@ -1,6 +1,6 @@
-import { IconButton } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { SxProps } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import { type SxProps } from '@mui/material/styles';
 
 interface MRT_DeleteRowButtonProps {
   onClick: () => void;

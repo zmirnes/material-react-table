@@ -1,5 +1,9 @@
 import { MRT_FormStringInput } from '../components/modals/form-inputs/MRT_FormStringInput';
 import {
+  MRT_FilterRuleMultiTextEditor,
+  MRT_FilterRuleTextEditor,
+} from './filterEditors';
+import {
   type ColumnTypeResolver,
   type MRT_ColumnDef,
   type MRT_FilterOperatorDefinition,
@@ -8,10 +12,6 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../types';
-import {
-  MRT_FilterRuleMultiTextEditor,
-  MRT_FilterRuleTextEditor,
-} from './filterEditors';
 
 // Resolver for plain string column type.
 // Supports text-based operators plus empty/not-empty checks.
