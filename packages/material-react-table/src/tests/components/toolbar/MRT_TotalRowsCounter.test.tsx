@@ -79,4 +79,35 @@ describe('MRT_TotalRowsCounter', () => {
       screen.getByRole('button', { name: expectedRowCountText }),
     ).toBeInTheDocument();
   });
+
+  it('should display value consistent with table.getRowCount()', async () => {
+    const tableRowCount = 5;
+    const mockGetTotalRows = vi.fn().mockResolvedValue(5);
+
+    const { result } = renderHook(() =>
+      useMaterialReactTable<TestRow>({
+        columns: [{ accessorKey: 'id', header: 'ID', type: 'string' }],
+        data: [{ id: 'row-1' }],
+        rowCount: tableRowCount,
+        getTotalRows: mockGetTotalRows,
+      }),
+    );
+    const table = result.current;
+
+    const totalRowCount = table.getRowCount();
+
+    render(<MRT_TotalRowsCounter table={table} />);
+
+    const button = screen.getByRole('button', { name: COUNT_ROWS_LABEL });
+
+    await act(async () => {
+      await user.click(button);
+    });
+
+    // the displayed value must match table.getRowCount()
+    const expectedRowCountText = `${MRT_Localization_EN.rowCount}: ${totalRowCount.toLocaleString(MRT_Localization_EN.language)}`;
+    expect(
+      screen.getByRole('button', { name: expectedRowCountText }),
+    ).toBeInTheDocument();
+  });
 });
