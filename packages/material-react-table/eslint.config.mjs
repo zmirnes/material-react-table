@@ -1,10 +1,11 @@
 import js from '@eslint/js';
-import globals from 'globals';
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsEslintParser from '@typescript-eslint/parser';
 import muiPathImportsPlugin from 'eslint-plugin-mui-path-imports';
 import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import storybookPlugin from 'eslint-plugin-storybook';
+import unusedImportsPlugin from 'eslint-plugin-unused-imports';
+import globals from 'globals';
 
 export default [
   {
@@ -30,6 +31,7 @@ export default [
       '@typescript-eslint': tsEslintPlugin,
       'mui-path-imports': muiPathImportsPlugin,
       perfectionist: perfectionistPlugin,
+      'unused-imports': unusedImportsPlugin,
     },
     rules: {
       'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
@@ -37,13 +39,17 @@ export default [
       '@typescript-eslint/ban-types': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      '@typescript-eslint/no-unused-vars': 'off',
+
+      'unused-imports/no-unused-imports': 'error',
+
+      'unused-imports/no-unused-vars': [
+        'warn',
         {
-          args: 'all',
-          argsIgnorePattern: '^_',
+          vars: 'all',
           varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
         },
       ],
       '@typescript-eslint/consistent-type-imports': [
