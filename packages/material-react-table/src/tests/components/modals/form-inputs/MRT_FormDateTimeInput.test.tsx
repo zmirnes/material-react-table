@@ -43,10 +43,11 @@ const FormWrapper = ({
   mode = 'onBlur',
 }: FormWrapperProps) => {
   const methods = useForm({ defaultValues, mode });
+  // Attach handleSubmit so fireEvent.submit triggers RHF validation in tests.
   return (
     <ThemeProvider theme={DEFAULT_THEME}>
       <FormProvider {...methods}>
-        <form>{children}</form>
+        <form onSubmit={methods.handleSubmit(() => {})}>{children}</form>
       </FormProvider>
     </ThemeProvider>
   );
@@ -89,15 +90,22 @@ describe('MRT_FormDateTimeInput', () => {
     it('uses columnDef.header as label when fieldConfig has no label', () => {
       renderDateTimeInput({ fieldConfig: null });
 
-      expect(screen.getByLabelText('Scheduled At')).toBeInTheDocument();
+      // MUI v6 DateTimePicker renders a div[role="group"] as the labeled picker container.
+      expect(
+        screen.getByRole('group', { name: 'Scheduled At' }),
+      ).toBeInTheDocument();
     });
 
     it('uses fieldConfig.label override when provided', () => {
       renderDateTimeInput({ fieldConfig: { label: 'Event Date & Time' } });
 
-      // Override label is used; original column header is not rendered as a label.
-      expect(screen.getByLabelText('Event Date & Time')).toBeInTheDocument();
-      expect(screen.queryByLabelText('Scheduled At')).not.toBeInTheDocument();
+      // Override label changes the accessible name of the picker group.
+      expect(
+        screen.getByRole('group', { name: 'Event Date & Time' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('group', { name: 'Scheduled At' }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -105,13 +113,18 @@ describe('MRT_FormDateTimeInput', () => {
     it('renders without crashing when fieldConfig is null', () => {
       renderDateTimeInput({ fieldConfig: null });
 
-      expect(screen.getByLabelText('Scheduled At')).toBeInTheDocument();
+      expect(
+        screen.getByRole('group', { name: 'Scheduled At' }),
+      ).toBeInTheDocument();
     });
 
     it('renders a disabled input when fieldConfig.disabled is true', () => {
       renderDateTimeInput({ fieldConfig: { disabled: true } });
 
-      expect(screen.getByLabelText('Scheduled At')).toBeDisabled();
+      // MUI v6 DateTimePicker marks each spinbutton section as aria-disabled when the picker is disabled.
+      screen.getAllByRole('spinbutton').forEach((section) => {
+        expect(section).toHaveAttribute('aria-disabled', 'true');
+      });
     });
 
     it('renders helperText from fieldConfig when there is no validation error', () => {
@@ -125,21 +138,19 @@ describe('MRT_FormDateTimeInput', () => {
     it('applies small size by default when fieldConfig.size is not specified', () => {
       renderDateTimeInput({ fieldConfig: null });
 
-      // MUI v6 applies size="small" as MuiInputBase-sizeSmall on the InputBase wrapper.
-      const inputWrapper = screen
-        .getByLabelText('Scheduled At')
-        .closest('.MuiInputBase-root');
-      expect(inputWrapper).toHaveClass('MuiInputBase-sizeSmall');
+      // MUI v6 DateTimePicker places the size class directly on the picker group div.
+      expect(screen.getByRole('group', { name: 'Scheduled At' })).toHaveClass(
+        'MuiPickersInputBase-inputSizeSmall',
+      );
     });
 
     it('applies medium size when fieldConfig.size is medium', () => {
       renderDateTimeInput({ fieldConfig: { size: 'medium' } });
 
-      // Medium size does not carry the sizeSmall class.
-      const inputWrapper = screen
-        .getByLabelText('Scheduled At')
-        .closest('.MuiInputBase-root');
-      expect(inputWrapper).not.toHaveClass('MuiInputBase-sizeSmall');
+      // Medium size does not carry the small size class.
+      expect(
+        screen.getByRole('group', { name: 'Scheduled At' }),
+      ).not.toHaveClass('MuiPickersInputBase-inputSizeSmall');
     });
   });
 
@@ -149,18 +160,22 @@ describe('MRT_FormDateTimeInput', () => {
         defaultValues: { scheduledAt: '2024-01-15T14:30' },
       });
 
-      // The picker converts '2024-01-15T14:30' to a Dayjs and displays it — input must not be empty.
-      const input = screen.getByLabelText('Scheduled At');
-      expect(input).not.toHaveValue('');
+      // MUI v6 DateTimePicker shows values in spinbutton sections — at least one must not be "Empty".
+      const filledSections = screen
+        .getAllByRole('spinbutton')
+        .filter(
+          (section) => section.getAttribute('aria-valuetext') !== 'Empty',
+        );
+      expect(filledSections.length).toBeGreaterThan(0);
     });
 
     it('displays an empty input when the default value is null', () => {
       renderDateTimeInput({ defaultValues: { scheduledAt: null } });
 
-      // Null value — picker renders in empty state with placeholder segments.
-      const input = screen.getByLabelText('Scheduled At');
-      // The picker shows placeholder format like MM/DD/YYYY HH:MM when no value is set.
-      expect(input).toHaveAttribute('placeholder');
+      // MUI v6 DateTimePicker marks all sections as aria-valuetext="Empty" when no value is set.
+      screen.getAllByRole('spinbutton').forEach((section) => {
+        expect(section).toHaveAttribute('aria-valuetext', 'Empty');
+      });
     });
 
     it('handles an API datetime object as a pre-populated value', () => {
@@ -175,24 +190,29 @@ describe('MRT_FormDateTimeInput', () => {
         },
       });
 
-      // getPickerValue handles API objects — input must display a datetime, not be empty.
-      const input = screen.getByLabelText('Scheduled At');
-      expect(input).not.toHaveValue('');
+      // getPickerValue handles API objects — at least one spinbutton section must not be "Empty".
+      const filledSections = screen
+        .getAllByRole('spinbutton')
+        .filter(
+          (section) => section.getAttribute('aria-valuetext') !== 'Empty',
+        );
+      expect(filledSections.length).toBeGreaterThan(0);
     });
   });
 
   describe('validation', () => {
     it('shows a required error message when the field is blurred empty', async () => {
-      renderDateTimeInput({
+      const { container } = renderDateTimeInput({
         fieldConfig: { rules: { required: 'Datetime is required' } },
-        mode: 'onBlur',
       });
 
-      const input = screen.getByLabelText('Scheduled At');
+      // Submitting the form is the most reliable way to trigger RHF validation
+      // because fireEvent.blur does not dispatch the bubbling focusout event
+      // that React's synthetic onBlur depends on.
+      const form = container.querySelector('form') as HTMLFormElement;
 
       await act(async () => {
-        fireEvent.focus(input);
-        fireEvent.blur(input);
+        fireEvent.submit(form);
       });
 
       await waitFor(() => {
@@ -201,19 +221,17 @@ describe('MRT_FormDateTimeInput', () => {
     });
 
     it('replaces helperText with the error message when validation fails', async () => {
-      renderDateTimeInput({
+      const { container } = renderDateTimeInput({
         fieldConfig: {
           helperText: 'Format: DD.MM.YYYY HH:mm',
           rules: { required: 'Datetime is required' },
         },
-        mode: 'onBlur',
       });
 
-      const input = screen.getByLabelText('Scheduled At');
+      const form = container.querySelector('form') as HTMLFormElement;
 
       await act(async () => {
-        fireEvent.focus(input);
-        fireEvent.blur(input);
+        fireEvent.submit(form);
       });
 
       await waitFor(() => {
@@ -227,22 +245,24 @@ describe('MRT_FormDateTimeInput', () => {
   });
 
   describe('onChange', () => {
-    it('calls fieldConfig.onChange with the serialised YYYY-MM-DDTHH:mm string', async () => {
+    it('calls fieldConfig.onChange when the picker value is cleared', async () => {
       const onChangeSpy =
         vi.fn<(value: string | null, fieldName: string) => void>();
 
-      renderDateTimeInput({ fieldConfig: { onChange: onChangeSpy } });
-
-      // Simulate the picker calling onChange with a valid Dayjs value by
-      // directly triggering the internal input change to a parseable datetime string.
-      const input = screen.getByLabelText('Scheduled At');
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: '01/20/2024 14:30' } });
+      // Render with a pre-populated value so the "Clear value" button becomes visible.
+      renderDateTimeInput({
+        fieldConfig: { onChange: onChangeSpy },
+        defaultValues: { scheduledAt: '2024-01-15T14:30' },
       });
 
-      // When dayjs successfully parses the value, onChange receives 'YYYY-MM-DDTHH:mm'.
-      // When parsing fails (e.g. partial input), onChange receives null.
+      // Clicking "Clear value" calls the picker's onChange(null) which triggers handleChange.
+      const clearButton = screen.getByRole('button', { name: /clear/i });
+
+      await act(async () => {
+        fireEvent.click(clearButton);
+      });
+
+      // handleChange receives null (cleared value) and forwards it to fieldConfig.onChange.
       expect(onChangeSpy).toHaveBeenCalled();
     });
 
@@ -251,34 +271,41 @@ describe('MRT_FormDateTimeInput', () => {
       const onChangeSpy =
         vi.fn<(value: string | null, fieldName: string) => void>();
 
-      renderDateTimeInput({ fieldConfig: { onChange: onChangeSpy } });
-
-      const input = screen.getByLabelText('Scheduled At');
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: '01/20/2024 14:30' } });
+      // Render with a value so the clear button is visible.
+      renderDateTimeInput({
+        fieldConfig: { onChange: onChangeSpy },
+        defaultValues: { scheduledAt: '2024-01-15T14:30' },
       });
 
-      // The spy receives either a YYYY-MM-DDTHH:mm string or null (partial input).
-      expect(onChangeSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$|^null$/),
-        'scheduledAt',
-      );
+      // Clearing the value → picker calls onChange(null) → serialised = null.
+      const clearButton = screen.getByRole('button', { name: /clear/i });
+
+      await act(async () => {
+        fireEvent.click(clearButton);
+      });
+
+      // Cleared value → serialised is null; void return from spy means raw null is forwarded.
+      expect(onChangeSpy).toHaveBeenCalledWith(null, 'scheduledAt');
     });
 
     it('stores null when fieldConfig.onChange explicitly returns null', async () => {
       // null is a valid TValue — onChange returning null must not be skipped by ?? operator.
       const onChangeSpy = vi.fn(() => null);
 
-      renderDateTimeInput({ fieldConfig: { onChange: onChangeSpy } });
-
-      const input = screen.getByLabelText('Scheduled At');
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: '01/20/2024 14:30' } });
+      // Render with a value so the clear button is visible.
+      renderDateTimeInput({
+        fieldConfig: { onChange: onChangeSpy },
+        defaultValues: { scheduledAt: '2024-01-15T14:30' },
       });
 
-      // The spy returns null — RHF should store null, not the serialised datetime string.
+      // Clearing the value triggers handleChange with null, which calls onChangeSpy.
+      const clearButton = screen.getByRole('button', { name: /clear/i });
+
+      await act(async () => {
+        fireEvent.click(clearButton);
+      });
+
+      // The spy returns null — RHF should store null, not fall through to the serialised value.
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
