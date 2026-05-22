@@ -1,0 +1,21 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+
+  "files.eol": "\n",
+
+  "editor.rulers": [80, 120],
+
+  "eslint.validate": ["typescript", "typescriptreact"],
+
+  "editor.formatOnPaste": false,
+
+  "js/ts.preferences.importModuleSpecifier": "relative"
+}
