@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { type ChangeEvent, useCallback, useState } from 'react';
 import {
   buildSelectedRowsArray,
   canInsertSelectedRowsWithoutExceedingMaxDepth,
@@ -28,9 +28,7 @@ export interface TreeRowReorderingCellLogic {
   shouldShowInsertHereAction: boolean;
   handleRowHoverEnter: () => void;
   handleRowHoverLeave: () => void;
-  handleReorderCheckboxChange: (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
+  handleReorderCheckboxChange: (event: ChangeEvent<HTMLInputElement>) => void;
   handleInsertHereActionClick: () => void;
   isReorderCheckboxSelected: boolean;
 }
@@ -86,7 +84,7 @@ export const useTreeRowReorderingCell = <TData extends MRT_RowData>({
     });
 
   const handleReorderCheckboxChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const checked = event.target.checked;
       table.setRowReorderingSelection((prev) => ({
         ...prev,

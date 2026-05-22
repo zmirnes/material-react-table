@@ -1,7 +1,7 @@
+import { type MouseEvent } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
-import { type MouseEvent } from 'react';
 import {
   type MRT_Row,
   type MRT_RowData,

@@ -1,5 +1,5 @@
 import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
-import { IconButton } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 
 const MOVE_TO_TOP_TOOLTIP = 'Move to top level';
