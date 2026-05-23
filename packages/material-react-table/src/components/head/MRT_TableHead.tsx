@@ -24,14 +24,13 @@ export const MRT_TableHead = <TData extends MRT_RowData>({
     options: { enableStickyHeader, layoutMode, muiTableHeadProps },
     refs: { tableHeadRef },
   } = table;
-  const { isFullScreen } = getState();
 
   const tableHeadProps = {
     ...parseFromValuesOrFunc(muiTableHeadProps, { table }),
     ...rest,
   };
 
-  const stickyHeader = enableStickyHeader || isFullScreen;
+  const stickyHeader = enableStickyHeader;
 
   return (
     <TableHead

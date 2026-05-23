@@ -79,7 +79,6 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
     editingCell,
     editingRow,
     hoveredRow,
-    isFullScreen,
     rowPinning,
   } = getState();
 
@@ -117,9 +116,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
   }, [pinnedRowIds, rowPinning]);
 
   const tableHeadHeight =
-    ((enableStickyHeader || isFullScreen) &&
-      tableHeadRef.current?.clientHeight) ||
-    0;
+    (enableStickyHeader && tableHeadRef.current?.clientHeight) || 0;
   const tableFooterHeight =
     (enableStickyFooter && tableFooterRef.current?.clientHeight) || 0;
 
@@ -220,7 +217,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
             : topPinnedIndex !== undefined && isRowPinned
               ? `${
                   topPinnedIndex * rowHeight +
-                  (enableStickyHeader || isFullScreen ? tableHeadHeight - 1 : 0)
+                  (enableStickyHeader ? tableHeadHeight - 1 : 0)
                 }px`
               : undefined,
           transition: virtualRow ? 'none' : 'all 150ms ease-in-out',

@@ -30,7 +30,6 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
     },
     refs: { bottomToolbarRef },
   } = table;
-  const { isFullScreen } = getState();
 
   const toolbarProps = {
     ...parseFromValuesOrFunc(muiBottomToolbarProps, { table }),
@@ -51,13 +50,13 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
       }}
       sx={(theme) => ({
         ...getCommonToolbarStyles({ table, theme }),
-        bottom: isFullScreen ? '0' : 'unset',
+        bottom: 'unset',
         boxShadow: `0 1px 2px -1px ${alpha(
           theme.palette.grey[700],
           0.5,
         )} inset`,
         left: 0,
-        position: isFullScreen ? 'fixed' : 'relative',
+        position: 'relative',
         right: 0,
         ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as Record<
           string,

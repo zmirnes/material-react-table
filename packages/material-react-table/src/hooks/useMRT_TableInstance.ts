@@ -172,9 +172,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [hoveredRow, setHoveredRow] = useState<Partial<MRT_Row<TData>> | null>(
     initialState.hoveredRow ?? null,
   );
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(
-    initialState?.isFullScreen ?? false,
-  );
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>(
     initialState?.pagination ?? { pageIndex: 0, pageSize: 10 },
   );
@@ -234,7 +231,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     grouping,
     hoveredColumn,
     hoveredRow,
-    isFullScreen,
     pagination,
     rowReorderingSelection,
     savedFilters,
@@ -387,8 +383,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     statefulTableOptions.onHoveredColumnChange ?? setHoveredColumn;
   table.setHoveredRow =
     statefulTableOptions.onHoveredRowChange ?? setHoveredRow;
-  table.setIsFullScreen =
-    statefulTableOptions.onIsFullScreenChange ?? setIsFullScreen;
   table.setSavedFilters = setSavedFilters;
   table.setShowAlertBanner =
     statefulTableOptions.onShowAlertBannerChange ?? setShowAlertBanner;

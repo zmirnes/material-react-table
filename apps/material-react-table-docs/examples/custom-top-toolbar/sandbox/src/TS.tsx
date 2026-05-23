@@ -3,7 +3,6 @@ import {
   MaterialReactTable,
   type MRT_ColumnDef,
   MRT_ToggleDensePaddingButton,
-  MRT_ToggleFullScreenButton,
   useMaterialReactTable,
 } from 'material-react-table';
 import { Box, Button, IconButton } from '@mui/material';
@@ -17,18 +16,22 @@ const Example = () => {
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        type: 'number',
       },
       {
         accessorKey: 'salary',
         header: 'Salary',
+        type: 'number',
       },
     ],
     [],
@@ -77,7 +80,6 @@ const Example = () => {
         </IconButton>
         {/* along-side built-in buttons in whatever order you want them */}
         <MRT_ToggleDensePaddingButton table={table} />
-        <MRT_ToggleFullScreenButton table={table} />
       </Box>
     ),
   });

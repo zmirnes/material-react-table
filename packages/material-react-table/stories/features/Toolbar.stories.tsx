@@ -5,11 +5,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import {
-  type MRT_ColumnDef,
-  MRT_ToggleFullScreenButton,
-  MaterialReactTable,
-} from '../../src';
+import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
 
@@ -93,22 +89,6 @@ export const HideToolbarInternalActions = () => (
     data={data}
     enableRowSelection
     enableToolbarInternalActions={false}
-  />
-);
-
-export const CustomToolbarInternalActions = () => (
-  <MaterialReactTable
-    columns={columns}
-    data={data}
-    enableGrouping
-    enableRowSelection
-    renderToolbarInternalActions={({ table }) => {
-      return (
-        <>
-          <MRT_ToggleFullScreenButton table={table} />
-        </>
-      );
-    }}
   />
 );
 

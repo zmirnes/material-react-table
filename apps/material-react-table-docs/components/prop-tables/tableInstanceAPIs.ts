@@ -843,13 +843,6 @@ export const tableInstanceAPIs: TableInstanceAPI[] = [
     linkText: '',
   },
   {
-    tableInstanceAPI: 'setIsFullScreen',
-    type: '',
-    description: '',
-    link: '',
-    linkText: '',
-  },
-  {
     tableInstanceAPI: 'setOptions',
     type: '',
     description: '',

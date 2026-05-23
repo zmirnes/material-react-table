@@ -43,7 +43,7 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
     },
     refs: { tableFooterRef, tableHeadRef, tablePaperRef },
   } = table;
-  const { columnFilters, globalFilter, isFullScreen, rowPinning } = getState();
+  const { columnFilters, globalFilter, rowPinning } = getState();
 
   const tableBodyProps = {
     ...parseFromValuesOrFunc(muiTableBodyProps, { table }),
@@ -51,9 +51,7 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
   };
 
   const tableHeadHeight =
-    ((enableStickyHeader || isFullScreen) &&
-      tableHeadRef.current?.clientHeight) ||
-    0;
+    (enableStickyHeader && tableHeadRef.current?.clientHeight) || 0;
   const tableFooterHeight =
     (enableStickyFooter && tableFooterRef.current?.clientHeight) || 0;
 

@@ -44,7 +44,6 @@ export * from './components/buttons/MRT_RowPinButton';
 export * from './components/buttons/MRT_ShowHideColumnsButton';
 export * from './components/buttons/MRT_ToggleDensePaddingButton';
 export * from './components/buttons/MRT_ToggleFiltersButton';
-export * from './components/buttons/MRT_ToggleFullScreenButton';
 export * from './components/buttons/MRT_ToggleGlobalFilterButton';
 export * from './components/buttons/MRT_ToggleRowActionMenuButton';
 //footer components

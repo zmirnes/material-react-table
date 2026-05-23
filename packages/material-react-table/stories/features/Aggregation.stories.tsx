@@ -187,7 +187,6 @@ export const AggregationGroupedAndExpandedDefault = () => (
     initialState={{
       expanded: true,
       grouping: ['state', 'gender'],
-      isFullScreen: true,
       pagination: { pageIndex: 0, pageSize: 20 },
     }}
   />
@@ -317,7 +316,6 @@ export const MultiAggregationPerColumn = () => (
     initialState={{
       expanded: true,
       grouping: ['state', 'gender'],
-      isFullScreen: true,
       pagination: { pageIndex: 0, pageSize: 20 },
     }}
   />

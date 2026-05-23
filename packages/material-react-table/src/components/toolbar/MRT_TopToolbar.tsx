@@ -33,8 +33,6 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
     refs: { topToolbarRef },
   } = table;
 
-  const { isFullScreen } = getState();
-
   const isTablet = useMediaQuery('(max-width:1024px)');
 
   const toolbarProps = parseFromValuesOrFunc(muiTopToolbarProps, { table });
@@ -60,8 +58,8 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
       }}
       sx={(theme) => ({
         ...getCommonToolbarStyles({ table, theme }),
-        position: isFullScreen ? 'sticky' : 'relative',
-        top: isFullScreen ? '0' : 'unset',
+        position: 'relative',
+        top: 'unset',
         backgroundColor: theme.palette.background.default,
         borderBottom: `1px solid ${theme.palette.divider}`,
         ...(parseFromValuesOrFunc(toolbarProps?.sx, theme) as Record<

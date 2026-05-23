@@ -16,14 +16,17 @@ const Example = () => {
       {
         accessorKey: 'firstName',
         header: 'First Name',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         header: 'Last Name',
+        type: 'string',
       },
       {
         accessorKey: 'city',
         header: 'City',
+        type: 'string',
       },
     ],
     [],
@@ -41,7 +44,6 @@ const Example = () => {
   } = {
     columns,
     enableRowDragging: true,
-    enableFullScreenToggle: false,
     muiTableContainerProps: {
       sx: {
         minHeight: '320px',
