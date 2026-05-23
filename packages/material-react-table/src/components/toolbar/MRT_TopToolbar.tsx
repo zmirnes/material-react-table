@@ -19,7 +19,6 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
   table,
 }: MRT_TopToolbarProps<TData>) => {
   const {
-    getState,
     options: {
       enableGlobalFilter,
       enablePagination,

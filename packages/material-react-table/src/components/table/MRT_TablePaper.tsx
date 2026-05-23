@@ -1,5 +1,4 @@
 import Paper, { type PaperProps } from '@mui/material/Paper';
-import { useTheme } from '@mui/material/styles';
 import { MRT_BottomToolbar } from '../toolbar/MRT_BottomToolbar';
 import { MRT_QuickFiltersBar } from '../toolbar/MRT_QuickFiltersBar';
 import { MRT_TopToolbar } from '../toolbar/MRT_TopToolbar';
@@ -17,7 +16,6 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
   ...rest
 }: MRT_TablePaperProps<TData>) => {
   const {
-    getState,
     options: {
       enableBottomToolbar,
       enableTopToolbar,
@@ -32,8 +30,6 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
     ...parseFromValuesOrFunc(muiTablePaperProps, { table }),
     ...rest,
   };
-
-  const theme = useTheme();
 
   return (
     <Paper

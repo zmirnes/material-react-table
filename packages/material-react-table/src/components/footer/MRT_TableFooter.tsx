@@ -20,7 +20,6 @@ export const MRT_TableFooter = <TData extends MRT_RowData>({
   ...rest
 }: MRT_TableFooterProps<TData>) => {
   const {
-    getState,
     options: { enableStickyFooter = true, layoutMode, muiTableFooterProps },
     refs: { tableFooterRef },
   } = table;

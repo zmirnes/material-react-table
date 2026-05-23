@@ -19,7 +19,6 @@ export const MRT_BottomToolbar = <TData extends MRT_RowData>({
   ...rest
 }: MRT_BottomToolbarProps<TData>) => {
   const {
-    getState,
     options: {
       enablePagination,
       enableRowSelection,
