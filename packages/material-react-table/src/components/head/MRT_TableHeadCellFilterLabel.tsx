@@ -1,10 +1,8 @@
-import { type MouseEvent, useState } from 'react';
+import { type MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
-import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
-import { MRT_TableHeadCellFilterContainer } from './MRT_TableHeadCellFilterContainer';
 import {
   type MRT_Header,
   type MRT_RowData,
@@ -40,8 +38,6 @@ export const MRT_TableHeadCellFilterLabel = <TData extends MRT_RowData = {}>({
   const { columnDef } = column;
 
   const filterValue = column.getFilterValue() as [string, string] | string;
-
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const {
     currentFilterOption,
@@ -117,11 +113,7 @@ export const MRT_TableHeadCellFilterLabel = <TData extends MRT_RowData = {}>({
             <IconButton
               disableRipple
               onClick={(event: MouseEvent<HTMLButtonElement>) => {
-                if (columnFilterDisplayMode === 'popover') {
-                  setAnchorEl(event.currentTarget);
-                } else {
-                  setShowColumnFilters(true);
-                }
+                setShowColumnFilters(true);
                 queueMicrotask(() => {
                   filterInputRefs.current?.[`${column.id}-0`]?.focus?.();
                   filterInputRefs.current?.[`${column.id}-0`]?.select?.();
@@ -149,33 +141,6 @@ export const MRT_TableHeadCellFilterLabel = <TData extends MRT_RowData = {}>({
           </Tooltip>
         </Box>
       </Grow>
-      {columnFilterDisplayMode === 'popover' && (
-        <Popover
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            horizontal: 'center',
-            vertical: 'top',
-          }}
-          disableScrollLock
-          onClick={(event) => event.stopPropagation()}
-          onClose={(event) => {
-            //@ts-expect-error
-            event.stopPropagation();
-            setAnchorEl(null);
-          }}
-          onKeyDown={(event) => event.key === 'Enter' && setAnchorEl(null)}
-          open={!!anchorEl}
-          slotProps={{ paper: { sx: { overflow: 'visible' } } }}
-          transformOrigin={{
-            horizontal: 'center',
-            vertical: 'bottom',
-          }}
-        >
-          <Box sx={{ p: '1rem' }}>
-            <MRT_TableHeadCellFilterContainer header={header} table={table} />
-          </Box>
-        </Popover>
-      )}
     </>
   );
 };

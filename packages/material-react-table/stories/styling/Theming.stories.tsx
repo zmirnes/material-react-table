@@ -51,9 +51,13 @@ export const CustomLightTheme = () => {
       },
       primary: {
         main: '#ff9800',
+        darker: '#ff6f00',
+        lighter: '#ffb74d',
       },
       secondary: {
         main: '#00bcd4',
+        darker: '#008ba3',
+        lighter: '#62efff',
       },
     },
   });
@@ -70,9 +74,13 @@ export const CustomDarkTheme = () => {
       mode: 'dark',
       primary: {
         main: '#81980f',
+        darker: '#5a650a',
+        lighter: '#b4c95a',
       },
       secondary: {
         main: '#00bcd4',
+        darker: '#008ba3',
+        lighter: '#62efff',
       },
     },
   });

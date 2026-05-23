@@ -4,7 +4,7 @@ import { type MRT_ColumnDef, type MRT_RowData } from '../../types';
 export function createColumnDef<TData extends MRT_RowData>(
   column: MRT_ColumnDef<TData>,
 ): MRT_ColumnDef<TData> {
-  if (column.type === 'object') {
+  if (column.type === 'object' || column.type === 'actions') {
     return column;
   }
   const resolver = columnTypeResolvers[column.type];

@@ -199,13 +199,13 @@ export const MultiAggregationPerColumn = () => (
         accessorKey: 'firstName',
         enableGrouping: false,
         header: 'First Name',
-        type: 'text',
+        type: 'string',
       },
       {
         accessorKey: 'lastName',
         enableGrouping: false,
         header: 'Last Name',
-        type: 'text',
+        type: 'string',
       },
       {
         AggregatedCell: ({ cell, table }) => (

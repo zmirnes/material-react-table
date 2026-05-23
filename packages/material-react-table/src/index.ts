@@ -54,7 +54,6 @@ export * from './components/footer/MRT_TableFooterRow';
 export * from './components/head/MRT_TableHead';
 export * from './components/head/MRT_TableHeadCell';
 export * from './components/head/MRT_TableHeadCellColumnActionsButton';
-export * from './components/head/MRT_TableHeadCellFilterContainer';
 export * from './components/head/MRT_TableHeadCellFilterLabel';
 export * from './components/head/MRT_TableHeadCellGrabHandle';
 export * from './components/head/MRT_TableHeadCellResizeHandle';
@@ -62,11 +61,6 @@ export * from './components/head/MRT_TableHeadCellSortLabel';
 export * from './components/head/MRT_TableHeadRow';
 //input components
 export * from './components/inputs/MRT_EditCellTextField';
-export * from './components/inputs/MRT_FilterCheckbox';
-export * from './components/inputs/MRT_FilterRangeFields';
-export * from './components/inputs/MRT_FilterRangeSlider';
-export * from './components/inputs/MRT_FilterTextField';
-export * from './components/inputs/MRT_GlobalFilterTextField';
 export * from './components/inputs/MRT_SelectAllMenu';
 export * from './components/inputs/MRT_SelectCheckbox';
 //menu components
