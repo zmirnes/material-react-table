@@ -4,7 +4,6 @@ import { type Theme, useTheme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
 import Tooltip from '@mui/material/Tooltip';
 import { MRT_TableHeadCellColumnActionsButton } from './MRT_TableHeadCellColumnActionsButton';
-import { MRT_TableHeadCellFilterContainer } from './MRT_TableHeadCellFilterContainer';
 import { MRT_TableHeadCellFilterLabel } from './MRT_TableHeadCellFilterLabel';
 import { MRT_TableHeadCellGrabHandle } from './MRT_TableHeadCellGrabHandle';
 import { MRT_TableHeadCellResizeHandle } from './MRT_TableHeadCellResizeHandle';
@@ -41,7 +40,6 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
   const {
     getState,
     options: {
-      columnFilterDisplayMode,
       columnResizeDirection,
       columnResizeMode,
       enableKeyboardShortcuts,
@@ -374,9 +372,6 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
               )}
             </Box>
           ))}
-      {columnFilterDisplayMode === 'subheader' && column.getCanFilter() && (
-        <MRT_TableHeadCellFilterContainer header={header} table={table} />
-      )}
     </TableCell>
   );
 };

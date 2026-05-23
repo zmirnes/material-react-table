@@ -96,7 +96,6 @@ The `renderToolbarInternalActions` table option allows you to redefine the built
 import {
   MaterialReactTable,
   MRT_ShowHideColumnsButton,
-  MRT_ToggleFullScreenButton,
 } from 'material-react-table';
 
 const table = useMaterialReactTable({
@@ -110,7 +109,6 @@ const table = useMaterialReactTable({
       </IconButton>
       {/* built-in buttons (must pass in table prop for them to work!) */}
       <MRT_ShowHideColumnsButton table={table} />
-      <MRT_ToggleFullScreenButton table={table} />
     </>
   ),
 });

@@ -1,6 +1,4 @@
-import { type KeyboardEvent } from 'react';
 import Paper, { type PaperProps } from '@mui/material/Paper';
-import { useTheme } from '@mui/material/styles';
 import { MRT_BottomToolbar } from '../toolbar/MRT_BottomToolbar';
 import { MRT_QuickFiltersBar } from '../toolbar/MRT_QuickFiltersBar';
 import { MRT_TopToolbar } from '../toolbar/MRT_TopToolbar';
@@ -18,7 +16,6 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
   ...rest
 }: MRT_TablePaperProps<TData>) => {
   const {
-    getState,
     options: {
       enableBottomToolbar,
       enableTopToolbar,
@@ -28,21 +25,15 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
     },
     refs: { tablePaperRef },
   } = table;
-  const { isFullScreen } = getState();
 
   const paperProps = {
     ...parseFromValuesOrFunc(muiTablePaperProps, { table }),
     ...rest,
   };
 
-  const theme = useTheme();
-
   return (
     <Paper
       elevation={2}
-      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) =>
-        e.key === 'Escape' && table.setIsFullScreen(false)
-      }
       {...paperProps}
       ref={(ref: HTMLDivElement) => {
         tablePaperRef.current = ref;
@@ -52,22 +43,6 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
         }
       }}
       style={{
-        ...(isFullScreen
-          ? {
-              bottom: 0,
-              height: '100dvh',
-              left: 0,
-              margin: 0,
-              maxHeight: '100dvh',
-              maxWidth: '100dvw',
-              padding: 0,
-              position: 'fixed',
-              right: 0,
-              top: 0,
-              width: '100dvw',
-              zIndex: theme.zIndex.modal,
-            }
-          : {}),
         ...paperProps?.style,
       }}
       sx={(theme) => ({

@@ -401,17 +401,6 @@ export const tableOptions: TableOption[] = [
     type: 'boolean',
   },
   {
-    tableOption: 'enableFullScreenToggle',
-    defaultValue: 'true',
-    description:
-      'Enable or disable the full screen toggle feature. Disabling will also hide the full screen toggle button.',
-    link: '/docs/guides/full-screen-toggle',
-    linkText: 'MRT Full Screen Toggle Docs',
-    required: false,
-    source: 'MRT',
-    type: 'boolean',
-  },
-  {
     tableOption: 'enableGlobalFilter',
     defaultValue: 'true',
     description: '',
@@ -1694,16 +1683,6 @@ export const tableOptions: TableOption[] = [
     required: false,
     source: 'MRT',
     type: 'OnChangeFn<MRT_DensityState>',
-  },
-  {
-    tableOption: 'onIsFullScreenChange',
-    defaultValue: '',
-    description: '',
-    link: '/docs/guides/full-screen-toggle',
-    linkText: 'MRT Full Screen Toggle Docs',
-    required: false,
-    source: 'MRT',
-    type: 'OnChangeFn<boolean>',
   },
   {
     tableOption: 'onEditingRowSave',

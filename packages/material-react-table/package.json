@@ -54,6 +54,7 @@
     "lib:build-lib": "node -e \"require('fs').rmSync('dist', {recursive:true,force:true})\" && rollup -c rollup.config.mjs && size-limit",
     "lib:dev": "rollup -c rollup.config.mjs --watch",
     "lint": "eslint . --config eslint.config.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "size": "size-limit",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",

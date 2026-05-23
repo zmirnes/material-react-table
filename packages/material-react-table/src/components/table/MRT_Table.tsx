@@ -30,8 +30,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
       renderCaption,
     },
   } = table;
-  const { columnSizing, columnSizingInfo, columnVisibility, isFullScreen } =
-    getState();
+  const { columnSizing, columnSizingInfo, columnVisibility } = getState();
 
   const tableProps = {
     ...parseFromValuesOrFunc(muiTableProps, { table }),
@@ -61,7 +60,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
 
   return (
     <Table
-      stickyHeader={enableStickyHeader || isFullScreen}
+      stickyHeader={enableStickyHeader}
       {...tableProps}
       style={{ ...columnSizeVars, ...tableProps?.style }}
       sx={(theme) => ({

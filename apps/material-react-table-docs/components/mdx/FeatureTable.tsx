@@ -5,10 +5,12 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
     id: 'feature',
     accessorKey: 'feature',
     header: 'Feature',
+    type: 'string',
   },
   {
     accessorKey: 'mrt',
     header: 'Material React Table',
+    type: 'boolean',
     muiTableHeadCellProps: {
       align: 'center',
       sx: (theme) => ({
@@ -24,6 +26,7 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'mt',
     header: 'Material Table',
+    type: 'boolean',
     muiTableHeadCellProps: {
       align: 'center',
     },
@@ -36,6 +39,7 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
     accessorKey: 'muix',
     header: 'Material UI X',
+    type: 'boolean',
     muiTableHeadCellProps: {
       align: 'center',
     },
@@ -149,12 +153,6 @@ const data = [
     mrt: true,
     mt: false,
     muix: true,
-  },
-  {
-    feature: 'Fullscreen Mode',
-    mrt: true,
-    mt: false,
-    muix: false,
   },
   {
     feature: 'Global Filtering Search',

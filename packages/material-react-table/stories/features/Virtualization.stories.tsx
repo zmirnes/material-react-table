@@ -368,15 +368,19 @@ export const RowAndColumnVirtualizationWithFeatures = () => (
   />
 );
 
-const fakeColumns = [...Array(500)].map((_, i) => {
-  return {
-    accessorKey: i.toString(),
-    header: 'Column ' + i.toString(),
-    type: 'string',
-  };
-});
+type VirtualizedPersonRow = Record<string, string>;
 
-const fakeData = [...Array(500)].map(() => ({
+const fakeColumns: MRT_ColumnDef<VirtualizedPersonRow>[] = [...Array(500)].map(
+  (_, i) => {
+    return {
+      accessorKey: i.toString(),
+      header: 'Column ' + i.toString(),
+      type: 'string',
+    };
+  },
+);
+
+const fakeData: VirtualizedPersonRow[] = [...Array(500)].map(() => ({
   ...Object.fromEntries(
     fakeColumns.map((col) => [col.accessorKey, faker.person.firstName()]),
   ),

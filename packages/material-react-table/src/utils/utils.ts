@@ -7,15 +7,16 @@ export const parseFromValuesOrFunc = <T, U>(
 
 export const getValueAndLabel = (
   option?: DropdownOption | null,
-): { label: string; value: string } => {
+): { label: string; value: unknown } => {
   let label: string = '';
-  let value: string = '';
+  let value: unknown = '';
   if (option) {
     if (typeof option !== 'object') {
       label = option;
       value = option;
     } else {
-      label = option.label ?? option.value;
+      label =
+        option.label ?? (typeof option.value === 'string' ? option.value : '');
       value = option.value ?? label;
     }
   }

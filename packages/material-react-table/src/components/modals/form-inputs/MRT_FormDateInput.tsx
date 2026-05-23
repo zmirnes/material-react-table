@@ -60,7 +60,7 @@ export const MRT_FormDateInput = <TData extends MRT_RowData>({
             adapterLocale={pickerLocale}
             dateAdapter={AdapterDayjs}
           >
-            <DatePicker<Dayjs>
+            <DatePicker
               disabled={fieldConfig?.disabled}
               label={fieldConfig?.label ?? columnDef.header}
               onChange={handleChange}

@@ -20,7 +20,6 @@ export const useMRT_Effects = <TData extends MRT_RowData>(
     columnOrder,
     density,
     globalFilter,
-    isFullScreen,
     isLoading,
     pagination,
     showSkeletons,
@@ -32,31 +31,12 @@ export const useMRT_Effects = <TData extends MRT_RowData>(
 
   const rerender = useReducer(() => ({}), {})[1];
   const initialBodyHeight = useRef<string>(null);
-  const previousTop = useRef<number>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       initialBodyHeight.current = document.body.style.height;
     }
   }, []);
-
-  //hide scrollbars when table is in full screen mode, preserve body scroll position after full screen exit
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (isFullScreen) {
-        previousTop.current = document.body.getBoundingClientRect().top; //save scroll position
-        document.body.style.height = '100dvh'; //hide page scrollbars when table is in full screen mode
-      } else {
-        document.body.style.height = initialBodyHeight.current as string;
-        if (!previousTop.current) return;
-        //restore scroll position
-        window.scrollTo({
-          behavior: 'instant',
-          top: -1 * (previousTop.current as number),
-        });
-      }
-    }
-  }, [isFullScreen]);
 
   //recalculate column order when columns change or features are toggled on/off
   useEffect(() => {

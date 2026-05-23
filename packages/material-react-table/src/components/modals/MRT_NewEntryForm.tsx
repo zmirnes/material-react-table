@@ -10,7 +10,6 @@ import {
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
 import { columnTypeResolvers } from '../../column-types/registy';
 import {
-  type ColumnType,
   type MRT_ColumnDef,
   type MRT_FormFieldConfig,
   type MRT_RowData,
@@ -46,10 +45,11 @@ const FormFieldControl = <TData extends MRT_RowData>({
     return <>{fieldConfig.render({ columnDef, name: columnId })}</>;
   }
 
-  // Delegate to the column type resolver to get the type-specific form input renderer.
-  // Double optional chaining guards against resolvers that have not yet implemented getFormFieldRenderer.
-  const resolver =
-    columnTypeResolvers[columnDef.type as Exclude<ColumnType, 'object'>];
+  if (columnDef.type === 'actions' || columnDef.type === 'object') {
+    return null;
+  }
+
+  const resolver = columnTypeResolvers[columnDef.type];
   const typeRenderer = resolver?.getFormFieldRenderer?.(columnDef, table);
   if (typeRenderer) {
     return <>{typeRenderer({ columnDef, name: columnId })}</>;

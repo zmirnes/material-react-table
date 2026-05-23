@@ -292,7 +292,6 @@ export interface MRT_Localization {
   sortedByColumnDesc: string;
   thenBy: string;
   toggleDensity: string;
-  toggleFullScreen: string;
   toggleSelectAll: string;
   toggleSelectRow: string;
   toggleVisibility: string;
@@ -415,7 +414,6 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setGlobalFilterFn: Dispatch<SetStateAction<MRT_FilterOption>>;
   setHoveredColumn: Dispatch<SetStateAction<Partial<MRT_Column<TData>> | null>>;
   setHoveredRow: Dispatch<SetStateAction<Partial<MRT_Row<TData>> | null>>;
-  setIsFullScreen: Dispatch<SetStateAction<boolean>>;
   setSavedFilters: Dispatch<SetStateAction<MRT_SavedFilters>>;
   setShowAlertBanner: Dispatch<SetStateAction<boolean>>;
   setShowColumnFilters: Dispatch<SetStateAction<boolean>>;
@@ -461,7 +459,6 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
       | 'grouping'
       | 'hoveredColumn'
       | 'hoveredRow'
-      | 'isFullScreen'
       | 'pagination'
       | 'showAlertBanner'
       | 'showAdvancedFilters'
@@ -486,7 +483,6 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   globalFilterFn: MRT_FilterOption;
   hoveredColumn: Partial<MRT_Column<TData>> | null;
   hoveredRow: Partial<MRT_Row<TData>> | null;
-  isFullScreen: boolean;
   isLoading: boolean;
   isSaving: boolean;
   savedFilters: MRT_SavedFilters;
@@ -827,7 +823,7 @@ export type MRT_NonIconColumnDef<
 > = MRT_ColumnDefBase<TData, TValue> & {
   onClickIconTypeColumn?: never;
   iconsList?: never;
-  type: LiteralUnion<Exclude<ColumnType, 'icon'>>;
+  type: Exclude<ColumnType, 'icon'>;
 };
 
 export type MRT_ColumnDef<TData extends MRT_RowData, TValue = unknown> =
@@ -1049,7 +1045,6 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableFacetedValues?: boolean;
   enableAdvancedFilters?: boolean;
   enableFilterMatchHighlighting?: boolean;
-  enableFullScreenToggle?: boolean;
   enableGlobalFilterModes?: boolean;
   enableGlobalFilterRankedResults?: boolean;
   enableKeyboardShortcuts?: boolean;
@@ -1410,7 +1405,6 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   initialSavedFilters?: MRT_SavedFilters;
   onHoveredColumnChange?: OnChangeFn<Partial<MRT_Column<TData>> | null>;
   onHoveredRowChange?: OnChangeFn<Partial<MRT_Row<TData>> | null>;
-  onIsFullScreenChange?: OnChangeFn<boolean>;
   onShowAlertBannerChange?: OnChangeFn<boolean>;
   onShowAdvancedFiltersChange?: OnChangeFn<boolean>;
   onShowColumnFiltersChange?: OnChangeFn<boolean>;

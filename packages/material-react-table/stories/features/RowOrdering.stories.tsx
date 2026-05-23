@@ -61,6 +61,8 @@ const columns: MRT_ColumnDef<Person>[] = [
   },
 ];
 
+type VirtualizedPersonRow = Record<string, string>;
+
 const initData = [...Array(100)].map((_, i) => ({
   address: faker.location.streetAddress(),
   city: faker.location.city(),
@@ -240,15 +242,17 @@ export const RowOrderingWithRowVirtualization = () => {
   );
 };
 
-const fakeColumns = [...Array(500)].map((_, i) => {
-  return {
-    accessorKey: i.toString(),
-    header: 'Column ' + i.toString(),
-    type: 'string',
-  };
-});
+const fakeColumns: MRT_ColumnDef<VirtualizedPersonRow>[] = [...Array(500)].map(
+  (_, i) => {
+    return {
+      accessorKey: i.toString(),
+      header: 'Column ' + i.toString(),
+      type: 'string',
+    };
+  },
+);
 
-const fakeData = [...Array(500)].map(() => ({
+const fakeData: VirtualizedPersonRow[] = [...Array(500)].map(() => ({
   ...Object.fromEntries(
     fakeColumns.map((col) => [col.accessorKey, faker.person.firstName()]),
   ),

@@ -53,8 +53,9 @@ export const MRT_MultiValueEditor = <TData extends MRT_RowData>({
     >
       {options.map((option) => {
         const { label, value } = getValueAndLabel(option);
+        const stringValue = String(value);
         return (
-          <MenuItem key={value} value={value}>
+          <MenuItem key={stringValue || label} value={stringValue}>
             {label}
           </MenuItem>
         );

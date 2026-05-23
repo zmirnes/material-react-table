@@ -173,16 +173,17 @@ export const MRT_EditCellTextField = <TData extends MRT_RowData>({
       {textFieldProps.children ??
         selectOptions?.map((option) => {
           const { label, value } = getValueAndLabel(option);
+          const stringValue = String(value);
           return (
             <MenuItem
-              key={value}
+              key={stringValue || label}
               sx={{
                 alignItems: 'center',
                 display: 'flex',
                 gap: '0.5rem',
                 m: 0,
               }}
-              value={value}
+              value={stringValue || label}
             >
               {label}
             </MenuItem>

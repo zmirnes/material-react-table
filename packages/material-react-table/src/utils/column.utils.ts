@@ -92,6 +92,8 @@ export const prepareColumns = <TData extends MRT_RowData>({
       columnDef = {
         ...(defaultDisplayColumn as MRT_ColumnDef<TData>),
         ...columnDef,
+        onClickIconTypeColumn: undefined,
+        iconsList: undefined,
       };
     }
     return columnDef;
