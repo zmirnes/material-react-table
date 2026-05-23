@@ -9,11 +9,10 @@ import { StringColumnResolver } from './string';
 import { type ColumnType, type ColumnTypeResolver } from '../types';
 
 export const columnTypeResolvers: Record<
-  Exclude<ColumnType, 'object'>,
+  Exclude<ColumnType, 'object' | 'actions'>,
   ColumnTypeResolver
 > = {
   string: StringColumnResolver,
-  actions: NumberColumnResolver,
   boolean: BooleanColumnResolver,
   date: DateColumnResolver,
   dateTime: DateTimeColumnResolver,

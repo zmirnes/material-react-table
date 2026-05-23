@@ -1,4 +1,3 @@
-import { type CSSProperties } from 'react';
 import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import IconButton from '@mui/material/IconButton';
@@ -20,10 +19,7 @@ export type DimensionFilterValue = Record<string, number | undefined> & {
 
 // Computes MUI outline border styles for a "grouped" (connected) input sequence.
 // Removes shared inner borders and rounds only the outer-most corners.
-const getGroupedInputBorderStyle = (
-  index: number,
-  total: number,
-): CSSProperties => {
+const getGroupedInputBorderStyle = (index: number, total: number) => {
   // Single input — no adjustments needed
   if (total === 1) return {};
 
