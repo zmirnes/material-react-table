@@ -7,37 +7,37 @@ import {
 } from '../../types';
 import dayjs from 'dayjs';
 
-type DateRangeValue = {
+type DateTimeRangeValue = {
   from: number | null;
   to: number | null;
 };
 
-const DATE_FORMAT = 'DD.MM.YYYY';
+const DATE_TIME_FORMAT = 'DD.MM.YYYY HH:mm';
 
-const formatDateValue = (value: number | null): string => {
+const formatDateTimeValue = (value: number | null): string => {
   if (typeof value !== 'number') return '-';
   const parsed = dayjs(value);
-  return parsed.isValid() ? parsed.format(DATE_FORMAT) : '-';
+  return parsed.isValid() ? parsed.format(DATE_TIME_FORMAT) : '-';
 };
 
-const isDateRangeValue = (value: unknown): value is DateRangeValue => {
+const isDateTimeRangeValue = (value: unknown): value is DateTimeRangeValue => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   return 'from' in value && 'to' in value;
 };
 
-const DateActiveFilterItem = <TData extends MRT_RowData>(
+const DateTimeActiveFilterItem = <TData extends MRT_RowData>(
   table: MRT_TableInstance<TData>,
   rule: MRT_FilterRule,
 ) => {
-  if (typeof rule.value !== 'number' && !isDateRangeValue(rule.value)) {
+  if (typeof rule.value !== 'number' && !isDateTimeRangeValue(rule.value)) {
     return null;
   }
 
-  if (isDateRangeValue(rule.value)) {
+  if (isDateTimeRangeValue(rule.value)) {
     return (
       <MRT_ActiveFilterItemContainer table={table} rule={rule}>
         <Typography variant="body2">
-          {`${formatDateValue(rule.value.from)} - ${formatDateValue(rule.value.to)}`}
+          {`${formatDateTimeValue(rule.value.from)} - ${formatDateTimeValue(rule.value.to)}`}
         </Typography>
       </MRT_ActiveFilterItemContainer>
     );
@@ -45,9 +45,9 @@ const DateActiveFilterItem = <TData extends MRT_RowData>(
 
   return (
     <MRT_ActiveFilterItemContainer table={table} rule={rule}>
-      <Typography variant="body2">{formatDateValue(rule.value)}</Typography>
+      <Typography variant="body2">{formatDateTimeValue(rule.value)}</Typography>
     </MRT_ActiveFilterItemContainer>
   );
 };
 
-export default DateActiveFilterItem;
+export default DateTimeActiveFilterItem;

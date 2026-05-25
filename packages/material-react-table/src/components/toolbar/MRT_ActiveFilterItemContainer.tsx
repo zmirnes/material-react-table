@@ -7,6 +7,7 @@ import {
   type MRT_TableInstance,
   type MRT_RowData,
   type MRT_FilterRule,
+  type MRT_FilterOperator,
 } from '../..';
 import { getFilterColumn } from '../advanced-filters/utils';
 
@@ -15,6 +16,29 @@ interface MRT_ActiveFilterItemContainerProps<TData extends MRT_RowData>
   table: MRT_TableInstance<TData>;
   rule: MRT_FilterRule;
 }
+
+export const convertDateTimeOperatorToPascalCase = (
+  operator: MRT_FilterOperator,
+) => {
+  switch (operator) {
+    case 'current-month':
+      return 'CurrentMonth';
+    case 'current-week':
+      return 'CurrentWeek';
+    case 'from-today':
+      return 'FromToday';
+    case 'to-today':
+      return 'ToToday';
+    case 'last-7-days':
+      return 'Last7Days';
+    case 'last-week':
+      return 'LastWeek';
+    case 'last-month':
+      return 'LastMonth';
+    default:
+      return operator;
+  }
+};
 
 const MRT_ActiveFilterItemContainer = <TData extends MRT_RowData>({
   children,
@@ -41,7 +65,9 @@ const MRT_ActiveFilterItemContainer = <TData extends MRT_RowData>({
 
   const { operator } = rule;
 
-  const localizationKey = `filter${operator.charAt(0).toUpperCase()}${operator.slice(1)}`;
+  const pascalCaseOperator = convertDateTimeOperatorToPascalCase(operator);
+
+  const localizationKey = `filter${pascalCaseOperator.charAt(0).toUpperCase()}${pascalCaseOperator.slice(1)}`;
 
   const localizedOperator = localization[localizationKey];
 
