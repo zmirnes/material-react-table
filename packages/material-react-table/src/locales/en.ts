@@ -43,6 +43,7 @@ export const MRT_Localization_EN: MRT_Localization = {
   filterGreaterThan: 'Greater Than',
   filterGreaterThanOrEqualTo: 'Greater Than Or Equal To',
   filterInArray: 'Is any of',
+  filterIsAnyOf: 'Is any of',
   filterInNumberRange: 'Between',
   filterIncludesString: 'Contains',
   filterIncludesStringSensitive: 'Contains',

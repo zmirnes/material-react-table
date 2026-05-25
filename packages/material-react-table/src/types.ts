@@ -209,6 +209,7 @@ export interface MRT_Localization {
   filterGreaterThan: string;
   filterGreaterThanOrEqualTo: string;
   filterInArray: string;
+  filterIsAnyOf: string;
   filterIncludesString: string;
   filterIncludesStringSensitive: string;
   filteringByColumn: string;
