@@ -2,6 +2,7 @@ import { type MouseEvent } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import IconActiveFilterItem from './activeFiltersRenderers/IconActiveFilterItem';
 import { MRT_IconMultiValueEditor } from './filterEditors/MRT_IconMultiValueEditor';
 import { MRT_IconSingleValueEditor } from './filterEditors/MRT_IconSingleValueEditor';
 import Iconify from '../components/iconify';
@@ -142,4 +143,5 @@ export const IconColumnResolver: ColumnTypeResolver = {
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },
+  activeFilterRenderer: IconActiveFilterItem,
 };
