@@ -206,10 +206,12 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         </TextField>
 
         {/* Value editor — rendered by the operator's own editComponent */}
-        {/* onKeyDown bubbles from any text input inside the editor: Enter triggers apply */}
+        {/* onKeyDown bubbles from value inputs inside the editor: Enter triggers apply for non-multi operators */}
         <Box
           onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
-            if (event.key === 'Enter' && onApply) {
+            const shouldApplyOnEnter = selectedOperator.valueShape !== 'multi';
+
+            if (event.key === 'Enter' && onApply && shouldApplyOnEnter) {
               // Prevent the Enter from bubbling to MUI Drawer/Modal infrastructure
               // which could trigger a "click" on the last focused button
               event.preventDefault();
