@@ -135,6 +135,13 @@ export const MRT_Localization_NL: MRT_Localization = {
   unpinAll: 'Alles losmaken',
   dimensionRotationEnabled: 'Rotatie ingeschakeld',
   dimensionRotationDisabled: 'Rotatie uitgeschakeld',
+  dimensionFieldLabels: {
+    length: 'Lengte',
+    width: 'Breedte',
+    height: 'Hoogte',
+    depth: 'Diepte',
+    tolerance: 'Tolerantie',
+  },
   exportButton: 'Exporteren',
   exportSelectRowsTooltip: 'Selecteer rijen om te exporteren',
   exportPrintPdf: 'PDF afdrukken',

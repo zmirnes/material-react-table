@@ -1,4 +1,8 @@
 import Typography from '@mui/material/Typography';
+import {
+  MRT_FormDimensionInput,
+  type DimensionFormValue,
+} from '../components/modals/form-inputs/MRT_FormDimensionInput';
 import DimensionActiveFilterItem from './activeFiltersRenderers/DimensionActiveFilterItem';
 import {
   type DimensionFilterValue,
@@ -8,6 +12,10 @@ import {
   type MRT_FilterOperatorDefinition,
   type ColumnTypeResolver,
   type MRT_RowData,
+  type MRT_FormFieldRenderProps,
+  type MRT_FormFieldConfig,
+  type MRT_TableInstance,
+  type MRT_ColumnDef,
 } from '../types';
 
 // Resolver for dimension column type (e.g. "100 m²").
@@ -45,5 +53,25 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
         valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+    table: MRT_TableInstance<TData>,
+  ) => {
+    // Cast TValue to DimensionFormValue — this resolver is only called for dimension-typed columns.
+    const fieldConfig =
+      (column.formField as
+        | MRT_FormFieldConfig<TData, DimensionFormValue>
+        | undefined) ?? null;
+    // Resolve localized field labels from the table localization config
+    const fieldLabels = table.options.localization.dimensionFieldLabels;
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormDimensionInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        fieldLabels={fieldLabels}
+        name={name}
+      />
+    );
+  },
   activeFilterRenderer: DimensionActiveFilterItem,
 };

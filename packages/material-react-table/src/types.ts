@@ -304,6 +304,10 @@ export interface MRT_Localization {
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
+  // Dimension field name → localized label mapping.
+  // Used in the form input to translate raw field keys (e.g. 'width') into human-readable labels.
+  // Apps can extend this map with custom field names specific to their domain.
+  dimensionFieldLabels: Record<string, string>;
   // Export toolbar
   exportButton: string;
   exportSelectRowsTooltip: string;
@@ -317,8 +321,8 @@ export interface MRT_Localization {
   deleteConfirmNo: string;
   deleteConfirmDeleting: string;
 
-  // Allow for any additional keys for custom localization
-  [key: string]: string;
+  // Allow for any additional keys for custom localization — string for text keys, Record for label maps
+  [key: string]: string | Record<string, string>;
 }
 
 export interface MRT_Theme {

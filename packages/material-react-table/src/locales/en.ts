@@ -135,6 +135,13 @@ export const MRT_Localization_EN: MRT_Localization = {
   unpinAll: 'Unpin all',
   dimensionRotationEnabled: 'Rotation enabled',
   dimensionRotationDisabled: 'Rotation disabled',
+  dimensionFieldLabels: {
+    length: 'Length',
+    width: 'Width',
+    height: 'Height',
+    depth: 'Depth',
+    tolerance: 'Tolerance',
+  },
   exportButton: 'Export',
   exportSelectRowsTooltip: 'Select rows to export',
   exportPrintPdf: 'Print PDF',
