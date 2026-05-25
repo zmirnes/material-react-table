@@ -1650,7 +1650,7 @@ export type MRT_FilterOperator =
   | 'fuzzy'
   | 'greaterThan'
   | 'greaterThanOrEqualTo'
-  | 'inArray'
+  | 'isAnyOf'
   | 'isEmpty'
   | 'isNotEmpty'
   | 'last-7-days'
@@ -1699,7 +1699,7 @@ export interface MRT_FilterOperatorEditComponentProps<
 // Describes the structural shape of a filter operator's value.
 // Used to decide whether the existing value can be preserved when switching operators.
 // 'single'   — scalar: string, number, boolean, or a single-select option
-// 'multi'    — array of scalars (inArray operators)
+// 'multi'    — array of scalars (isAnyOf operators)
 // 'range'    — object with {from, to} fields (date/dateTime 'between')
 // 'none'     — no user input needed (isEmpty / isNotEmpty)
 // 'computed' — value is always auto-calculated by getInitialValue() (relative date operators)

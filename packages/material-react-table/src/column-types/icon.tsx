@@ -133,7 +133,7 @@ export const IconColumnResolver: ColumnTypeResolver = {
         // 'Je bilo koje od' — cell value must be one of the selected iconCodes
         editComponent: createMultiSelectEditor,
         getInitialValue: () => [] as unknown as TValue,
-        id: 'inArray',
+        id: 'isAnyOf',
         // Empty when no iconCodes are selected
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,

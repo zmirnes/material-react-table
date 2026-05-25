@@ -97,7 +97,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         // Mirrors MUI isAnyOf — cell value must match one of the user-supplied numbers
         editComponent: MRT_FilterRuleMultiNumberEditor,
         getInitialValue: () => [],
-        id: 'inArray',
+        id: 'isAnyOf',
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
         label: 'Is Any Of',

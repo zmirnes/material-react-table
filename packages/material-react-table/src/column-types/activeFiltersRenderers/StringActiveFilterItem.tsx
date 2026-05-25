@@ -12,7 +12,7 @@ const StringActiveFilterItem = <TData extends MRT_RowData>(
 ) => {
   if (typeof rule.value !== 'string' && !Array.isArray(rule.value)) return null;
 
-  if (rule.operator === 'inArray' && Array.isArray(rule.value)) {
+  if (rule.operator === 'isAnyOf' && Array.isArray(rule.value)) {
     return (
       <MRT_ActiveFilterItemContainer table={table} rule={rule}>
         <Typography variant="body2">{rule.value.join(', ')}</Typography>

@@ -80,7 +80,7 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         // 'Je bilo koje od' — value must be one of the selected options
         editComponent: createMultiSelectEditor,
         getInitialValue: () => [] as unknown as TValue,
-        id: 'inArray',
+        id: 'isAnyOf',
         // Empty when no options are selected
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
