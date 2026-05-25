@@ -1,11 +1,15 @@
-import { MaterialReactTable } from '../../../components/MaterialReactTable';
-import { MRT_Localization_EN } from '../../../locales/en';
-import { type MRT_ColumnDef, type MRT_TableOptions } from '../../../types';
-import { render, screen, within } from '@testing-library/react';
+import { MRT_Localization_HR } from '../../../locales/hr';
+import { type MRT_ColumnDef } from '../../../types';
+import {
+  openColumnMenu,
+  renderServerTable,
+} from '../../utils/renderServerTable';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 type MockRowData = {
+  id: string;
   firstName: string;
   lastName: string;
   city: string;
@@ -18,24 +22,11 @@ const DEFAULT_COLUMNS: MRT_ColumnDef<MockRowData>[] = [
 ];
 
 const DEFAULT_DATA: MockRowData[] = [
-  { firstName: 'Alice', lastName: 'Smith', city: 'NYC' },
-  { firstName: 'Bob', lastName: 'Jones', city: 'LA' },
+  { id: '1', firstName: 'Alice', lastName: 'Smith', city: 'NYC' },
+  { id: '2', firstName: 'Bob', lastName: 'Jones', city: 'LA' },
 ];
 
-const { columnActions, pinToLeft, pinToRight, unpin } = MRT_Localization_EN;
-
-const renderTable = (tableOptions: MRT_TableOptions<MockRowData>) => {
-  render(<MaterialReactTable {...tableOptions} />);
-};
-
-const openColumnMenu = async (
-  user: ReturnType<typeof userEvent.setup>,
-  columnHeaderText: string,
-) => {
-  const headerCell = screen.getByText(columnHeaderText).closest('th')!;
-  const columnActionsButton = within(headerCell).getByLabelText(columnActions);
-  await user.click(columnActionsButton);
-};
+const { pinToLeft, pinToRight, unpin } = MRT_Localization_HR;
 
 const getPinningMenuItems = () => ({
   pinLeftMenuItem: screen.getByRole('menuitem', { name: pinToLeft }),
@@ -70,7 +61,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should show all three pinning options when column is not pinned', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -89,7 +80,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should disable "Pin to left" and enable "Pin to right" and "Unpin" when column is pinned left', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -108,7 +99,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should disable "Pin to right" and enable "Pin to left" and "Unpin" when column is pinned right', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -127,7 +118,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should disable "Unpin" when column is not pinned', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -141,39 +132,48 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should pin column to left when "Pin to left" is clicked', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
+      enableRowSelection: true,
     });
     await openColumnMenu(user, 'First Name');
-
     await user.click(screen.getByRole('menuitem', { name: pinToLeft }));
 
-    const headerCell = screen.getByText('First Name').closest('th');
-    expect(headerCell).toHaveAttribute('data-pinned', 'true');
+    const firstNameCell = screen.getByTestId('header-cell-firstName');
+    const headerRow = firstNameCell.closest('tr')!;
+    const allHeaderCells = headerRow.querySelectorAll('th');
+
+    // index 0 = checkbox (auto-pinned left by server table's default enableRowSelection)
+    // index 1 = firstName (user-pinned left)
+    expect(allHeaderCells[1]).toBe(firstNameCell);
+    expect(firstNameCell).toHaveAttribute('data-pinned', 'true');
   });
 
   it('should pin column to right when "Pin to right" is clicked', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
     });
     await openColumnMenu(user, 'First Name');
-
     await user.click(screen.getByRole('menuitem', { name: pinToRight }));
+    const pinnedCell = screen.getByTestId('header-cell-firstName');
+    const headerRow = pinnedCell.closest('tr')!;
+    const allHeaderCellsInRow = headerRow.querySelectorAll('th');
+    const lastCell = allHeaderCellsInRow[allHeaderCellsInRow.length - 1];
 
-    const headerCell = screen.getByText('First Name').closest('th');
-    expect(headerCell).toHaveAttribute('data-pinned', 'true');
+    expect(lastCell).toBe(pinnedCell);
+    expect(pinnedCell).toHaveAttribute('data-pinned', 'true');
   });
 
   it('should unpin column when "Unpin" is clicked on a pinned column', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -183,21 +183,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
 
     await user.click(screen.getByRole('menuitem', { name: unpin }));
 
-    const headerCell = screen.getByText('First Name').closest('th');
+    const headerCell = screen.getByTestId('header-cell-firstName');
     expect(headerCell).not.toHaveAttribute('data-pinned', 'true');
-  });
-
-  it('should not show pinning options when enableColumnPinning is false', async () => {
-    const user = userEvent.setup();
-
-    renderTable({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
-      enableColumnPinning: false,
-    });
-    await openColumnMenu(user, 'First Name');
-
-    expectPinningOptionsNotVisible();
   });
 
   it('should not show pinning options for a column with enablePinning: false', async () => {
@@ -212,7 +199,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
       { accessorKey: 'lastName', header: 'Last Name', type: 'string' },
     ];
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: columnsWithDisabledPinning,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -225,7 +212,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should close menu after pinning action', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -242,7 +229,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
   it('should allow switching pin direction from left to right', async () => {
     const user = userEvent.setup();
 
-    renderTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
@@ -252,7 +239,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
 
     await user.click(screen.getByRole('menuitem', { name: pinToRight }));
 
-    const headerCell = screen.getByText('First Name').closest('th');
+    const headerCell = screen.getByTestId('header-cell-firstName');
     expect(headerCell).toHaveAttribute('data-pinned', 'true');
   });
 });

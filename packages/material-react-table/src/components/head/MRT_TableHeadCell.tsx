@@ -207,6 +207,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
       data-can-sort={column.getCanSort() || undefined}
       data-index={staticColumnIndex}
       data-pinned={!!isColumnPinned || undefined}
+      data-testid={`header-cell-${column.id}`}
       data-sort={column.getIsSorted() || undefined}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}

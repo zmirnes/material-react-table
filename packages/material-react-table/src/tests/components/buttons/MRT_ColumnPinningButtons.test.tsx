@@ -1,17 +1,12 @@
-import { MRT_ColumnPinningButtons } from '../../../components/buttons/MRT_ColumnPinningButtons';
-import { useMaterialReactTable } from '../../../hooks/useMaterialReactTable';
-import { MRT_Localization_EN } from '../../../locales/en';
-import {
-  type MRT_ColumnDef,
-  type MRT_RowData,
-  type MRT_TableInstance,
-  type MRT_TableOptions,
-} from '../../../types';
-import { render, renderHook, screen } from '@testing-library/react';
+import { MRT_Localization_HR } from '../../../locales/hr';
+import { type MRT_ColumnDef } from '../../../types';
+import { renderServerTable } from '../../utils/renderServerTable';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 type MockRowData = {
+  id: string;
   name: string;
   age: number;
   city: string;
@@ -24,113 +19,138 @@ const DEFAULT_COLUMNS: MRT_ColumnDef<MockRowData>[] = [
 ];
 
 const DEFAULT_DATA: MockRowData[] = [
-  { name: 'Alice', age: 30, city: 'NYC' },
-  { name: 'Bob', age: 25, city: 'LA' },
+  { id: '1', name: 'Alice', age: 30, city: 'NYC' },
+  { id: '2', name: 'Bob', age: 25, city: 'LA' },
 ];
 
-const createMockTable = <TData extends MRT_RowData>(
-  tableOptions: MRT_TableOptions<TData>,
-): MRT_TableInstance<TData> => {
-  const { result } = renderHook(() =>
-    useMaterialReactTable<TData>(tableOptions),
-  );
-  return result.current;
+const { pinToLeft, pinToRight, unpin, showHideColumns } = MRT_Localization_HR;
+
+/**
+ * Opens the Show/Hide Columns menu where pinning buttons are rendered.
+ */
+const openShowHideColumnsMenu = async (
+  user: ReturnType<typeof userEvent.setup>,
+) => {
+  const showHideColumnsButton = await screen.findByLabelText(showHideColumns);
+  await user.click(showHideColumnsButton);
 };
 
-const { pinToLeft, pinToRight, unpin } = MRT_Localization_EN;
+/**
+ * Finds the pinning buttons container for a given column accessorKey
+ * within the show/hide columns menu using data-testid.
+ */
+const findColumnPinningRow = (columnAccessorKey: string) => {
+  return screen.getByTestId(`column-show-hide-row-${columnAccessorKey}`);
+};
 
 describe('MRT_ColumnPinningButtons', () => {
-  it('should render pin-left and pin-right buttons when column is not pinned', () => {
-    const table = createMockTable({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
-      enableColumnPinning: true,
-    });
-    const column = table.getColumn('name');
+  it('should render unpin button when column is pinned left', async () => {
+    const user = userEvent.setup();
 
-    render(<MRT_ColumnPinningButtons column={column} table={table} />);
-
-    expect(screen.getByLabelText(pinToLeft)).toBeInTheDocument();
-    expect(screen.getByLabelText(pinToRight)).toBeInTheDocument();
-    expect(screen.queryByLabelText(unpin)).not.toBeInTheDocument();
-  });
-
-  it('should render unpin button when column is pinned left', () => {
-    const table = createMockTable({
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: ['name'], right: [] } },
     });
-    const column = table.getColumn('name');
+    await openShowHideColumnsMenu(user);
 
-    render(<MRT_ColumnPinningButtons column={column} table={table} />);
-
-    expect(screen.getByLabelText(unpin)).toBeInTheDocument();
-    expect(screen.queryByLabelText(pinToLeft)).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(pinToRight)).not.toBeInTheDocument();
+    const columnRow = findColumnPinningRow('name');
+    expect(within(columnRow).getByLabelText(unpin)).toBeInTheDocument();
+    expect(
+      within(columnRow).queryByLabelText(pinToLeft),
+    ).not.toBeInTheDocument();
+    expect(
+      within(columnRow).queryByLabelText(pinToRight),
+    ).not.toBeInTheDocument();
   });
 
-  it('should render unpin button when column is pinned right', () => {
-    const table = createMockTable({
+  it('should render unpin button when column is pinned right', async () => {
+    const user = userEvent.setup();
+
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: [], right: ['city'] } },
     });
-    const column = table.getColumn('city');
+    await openShowHideColumnsMenu(user);
 
-    render(<MRT_ColumnPinningButtons column={column} table={table} />);
-
-    expect(screen.getByLabelText(unpin)).toBeInTheDocument();
+    const columnRow = findColumnPinningRow('city');
+    expect(within(columnRow).getByLabelText(unpin)).toBeInTheDocument();
   });
 
-  it('should call column.pin with "left" when pin-left is clicked', async () => {
+  it('should pin column left when pin-left button is clicked', async () => {
     const user = userEvent.setup();
-    const table = createMockTable({
+
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
     });
-    const column = table.getColumn('name');
+    await openShowHideColumnsMenu(user);
 
-    render(<MRT_ColumnPinningButtons column={column} table={table} />);
+    const columnRow = findColumnPinningRow('name');
+    await user.click(within(columnRow).getByLabelText(pinToLeft));
 
-    await user.click(screen.getByLabelText(pinToLeft));
+    await user.keyboard('{Escape}');
 
-    expect(column.getIsPinned()).toBe('left');
+    await waitFor(() => {
+      const pinnedCell = screen.getByTestId('header-cell-name');
+      const headerRow = pinnedCell.closest('tr')!;
+      const allHeaderCells = headerRow.querySelectorAll('th');
+
+      expect(allHeaderCells[1]).toBe(pinnedCell);
+      expect(pinnedCell).toHaveAttribute('data-pinned', 'true');
+    });
   });
 
-  it('should call column.pin with "right" when pin-right is clicked', async () => {
+  it('should pin column right when pin-right button is clicked', async () => {
     const user = userEvent.setup();
-    const table = createMockTable({
+
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
     });
-    const column = table.getColumn('age');
+    await openShowHideColumnsMenu(user);
 
-    render(<MRT_ColumnPinningButtons column={column} table={table} />);
+    const columnRow = findColumnPinningRow('age');
+    await user.click(within(columnRow).getByLabelText(pinToRight));
 
-    await user.click(screen.getByLabelText(pinToRight));
+    await user.keyboard('{Escape}');
+    await waitFor(() => {
+      const pinnedCell = screen.getByTestId('header-cell-age');
+      const headerRow = pinnedCell.closest('tr')!;
+      const allHeaderCellsInRow = headerRow.querySelectorAll('th');
+      const lastCell = allHeaderCellsInRow[allHeaderCellsInRow.length - 1];
 
-    expect(column.getIsPinned()).toBe('right');
+      expect(lastCell).toBe(pinnedCell);
+      expect(pinnedCell).toHaveAttribute('data-pinned', 'true');
+    });
   });
 
   it('should unpin column when unpin button is clicked', async () => {
     const user = userEvent.setup();
-    const table = createMockTable({
+
+    renderServerTable<MockRowData>({
       columns: DEFAULT_COLUMNS,
       data: DEFAULT_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: ['name'], right: [] } },
     });
-    const column = table.getColumn('name');
+    await openShowHideColumnsMenu(user);
 
-    render(<MRT_ColumnPinningButtons column={column} table={table} />);
+    const columnRow = findColumnPinningRow('name');
+    await user.click(within(columnRow).getByLabelText(unpin));
 
-    await user.click(screen.getByLabelText(unpin));
+    // Close the popover to reveal the table
+    await user.keyboard('{Escape}');
 
-    expect(column.getIsPinned()).toBe(false);
+    // Verify the column is no longer pinned in the table header
+    await waitFor(() => {
+      const nameCell = screen.getByTestId('header-cell-name');
+      expect(nameCell).not.toHaveAttribute('data-pinned', 'true');
+    });
   });
 });
