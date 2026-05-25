@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import DimensionActiveFilterItem from './activeFiltersRenderers/DimensionActiveFilterItem';
 import {
   type DimensionFilterValue,
   MRT_DimensionFilterEditor,
@@ -44,4 +45,5 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
         valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+  activeFilterRenderer: DimensionActiveFilterItem,
 };
