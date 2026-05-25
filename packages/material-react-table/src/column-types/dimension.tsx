@@ -64,9 +64,12 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
         | undefined) ?? null;
     // Resolve localized field labels from the table localization config
     const fieldLabels = table.options.localization.dimensionFieldLabels;
+    // Read the internal grid column count from dimension meta — falls back to vertical stack.
+    const dimensionColumns = column.meta?.dimensions?.columns;
     return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
       <MRT_FormDimensionInput
         columnDef={columnDef}
+        columns={dimensionColumns}
         fieldConfig={fieldConfig}
         fieldLabels={fieldLabels}
         name={name}

@@ -33,19 +33,6 @@ const DEFAULT_COLUMN_DEF: MRT_ColumnDef<Record<string, unknown>> = {
   },
 };
 
-// Column definition that includes a tolerance range.
-const COLUMN_DEF_WITH_TOLERANCE: MRT_ColumnDef<Record<string, unknown>> = {
-  accessorKey: 'dimension',
-  header: 'Dimension',
-  type: 'dimension',
-  meta: {
-    dimensions: {
-      fields: ['length', 'width'],
-      tolerance: { min: 0.01, max: 100 },
-    },
-  },
-};
-
 // Column definition with no configured dimension fields — triggers null render.
 const COLUMN_DEF_EMPTY_FIELDS: MRT_ColumnDef<Record<string, unknown>> = {
   accessorKey: 'dimension',
@@ -123,13 +110,6 @@ describe('MRT_FormDimensionInput', () => {
       expect(screen.getAllByRole('spinbutton')).toHaveLength(3);
     });
 
-    it('renders an additional tolerance input when tolerance is configured', () => {
-      renderDimensionInput({ columnDef: COLUMN_DEF_WITH_TOLERANCE });
-
-      // Two dimension fields + one tolerance field
-      expect(screen.getAllByRole('spinbutton')).toHaveLength(3);
-    });
-
     it('renders nothing when dimensions.fields is empty', () => {
       renderDimensionInput({
         columnDef: COLUMN_DEF_EMPTY_FIELDS,
@@ -186,15 +166,6 @@ describe('MRT_FormDimensionInput', () => {
       expect(screen.getByLabelText('Dužina')).toBeInTheDocument();
       expect(screen.getByLabelText('width')).toBeInTheDocument();
       expect(screen.getByLabelText('height')).toBeInTheDocument();
-    });
-
-    it('renders the tolerance field with translated label when fieldLabels provides it', () => {
-      renderDimensionInput({
-        columnDef: COLUMN_DEF_WITH_TOLERANCE,
-        fieldLabels: { tolerance: 'Tolerancija' },
-      });
-
-      expect(screen.getByLabelText('Tolerancija')).toBeInTheDocument();
     });
   });
 
@@ -267,35 +238,6 @@ describe('MRT_FormDimensionInput', () => {
 
       // The transform doubles the input: 50 → 100
       expect(screen.getByDisplayValue('100')).toBeInTheDocument();
-    });
-
-    it('ignores tolerance input that exceeds the configured max', async () => {
-      renderDimensionInput({
-        columnDef: COLUMN_DEF_WITH_TOLERANCE,
-        defaultValues: { dimension: { tolerance: 10 } },
-      });
-
-      await act(async () => {
-        // 101 exceeds the configured max of 100 — should be discarded
-        fireEvent.change(screen.getByLabelText('tolerance'), {
-          target: { value: '101' },
-        });
-      });
-
-      // Value must remain at 10 (the original default), not change to 101
-      expect(screen.getByDisplayValue('10')).toBeInTheDocument();
-    });
-
-    it('accepts a tolerance value within the allowed range', async () => {
-      renderDimensionInput({ columnDef: COLUMN_DEF_WITH_TOLERANCE });
-
-      await act(async () => {
-        fireEvent.change(screen.getByLabelText('tolerance'), {
-          target: { value: '50' },
-        });
-      });
-
-      expect(screen.getByDisplayValue('50')).toBeInTheDocument();
     });
   });
 

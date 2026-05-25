@@ -1856,6 +1856,10 @@ export interface MRT_FormFieldConfig<
   onChange?: (value: TValue, fieldName: string) => TValue | void;
   // Input size — defaults to 'small' when not specified.
   size?: 'small' | 'medium';
+  // How many grid columns this field spans inside a grid container.
+  // Only takes effect when the parent section or form defines a 'columns' value.
+  // Defaults to 1 (single column width).
+  colSpan?: number;
 }
 
 // Props passed into form-level callbacks (onSave, onCancel) and custom action button handlers.
@@ -1922,6 +1926,10 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   // Unlike renderForm, there is no RHF context — the consumer owns the full overlay lifecycle.
   // To close the modal, call table.setCreatingRow(null) from within the rendered component.
   renderModal?: (props: { table: MRT_TableInstance<TData> }) => ReactNode;
+  // Number of equal-width columns for fields that have no section.
+  // When set, unsectioned fields are arranged in a CSS Grid instead of a vertical Stack.
+  // Per-field width is controlled via MRT_FormFieldConfig.colSpan.
+  columns?: number;
 }
 
 // Section definition — referenced by form field config via MRT_FormFieldConfig.section.
@@ -1936,4 +1944,8 @@ export interface MRT_FormSectionConfig {
   collapsible?: boolean;
   // Initial collapsed state when the form opens.
   defaultCollapsed?: boolean;
+  // Number of equal-width columns in this section’s field grid.
+  // When set, fields inside this section are laid out in a CSS Grid instead of a vertical Stack.
+  // Per-field width is controlled via MRT_FormFieldConfig.colSpan.
+  columns?: number;
 }

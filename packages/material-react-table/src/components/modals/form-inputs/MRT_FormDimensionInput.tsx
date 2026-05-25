@@ -1,4 +1,5 @@
 import { Controller, useFormContext } from 'react-hook-form';
+import Box from '@mui/material/Box';
 import FormHelperText from '@mui/material/FormHelperText';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -19,54 +20,27 @@ export interface MRT_FormDimensionInputProps<TData extends MRT_RowData> {
   fieldConfig: MRT_FormFieldConfig<TData, DimensionFormValue> | null;
   // Localized labels for dimension field keys — falls back to the raw field key when a key is not present.
   fieldLabels?: Record<string, string>;
+  // Number of columns in the internal sub-field grid.
+  // When set, sub-fields are arranged in a CSS Grid instead of a vertical Stack.
+  columns?: number;
 }
 
-// Computes MUI outline border styles for a "grouped" (connected) input sequence.
-// Removes shared inner borders and rounds only the outer-most corners.
-const getGroupedInputBorderStyle = (index: number, total: number) => {
-  // Single input — no adjustments needed
-  if (total === 1) return {};
-
-  if (index === 0) {
-    // First input: remove right-side rounding so it connects flush to the next input
-    return { borderTopRightRadius: 0, borderBottomRightRadius: 0 };
-  }
-
-  if (index === total - 1) {
-    // Last input: remove left-side rounding and shared border to avoid double border
-    return {
-      borderBottomLeftRadius: 0,
-      borderLeft: 'none',
-      borderTopLeftRadius: 0,
-    };
-  }
-
-  // Middle inputs: fully square corners, no left border
-  return { borderLeft: 'none', borderRadius: 0 };
-};
-
-// Dimension form input — renders a row of grouped number inputs, one per dimension field.
-// The whole object is stored under a single RHF field name as Record<string, number | null>.
+// Dimension form input — renders each dimension field as a separate, independent-looking TextField.
+// All values are stored together under a single RHF field name as Record<string, number | null>.
 export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
   name,
   columnDef,
   fieldConfig,
   fieldLabels,
+  columns,
 }: MRT_FormDimensionInputProps<TData>) => {
   const { control } = useFormContext();
 
   // Dimension field names come from column metadata (e.g. ['width', 'height', 'depth'])
-  const dimensionFields = columnDef.meta?.dimensions?.fields ?? [];
+  const dimensionFields: string[] = columnDef.meta?.dimensions?.fields ?? [];
 
   // Without fields config the input cannot render anything meaningful
   if (!dimensionFields.length) return null;
-
-  const toleranceDef = columnDef.meta?.dimensions?.tolerance;
-
-  // All fields rendered by this component: dimension fields + optional tolerance field
-  const allFieldKeys: string[] = toleranceDef
-    ? [...dimensionFields, 'tolerance']
-    : dimensionFields;
 
   return (
     <Controller
@@ -78,17 +52,8 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
         const currentValue: DimensionFormValue =
           field.value && typeof field.value === 'object' ? field.value : {};
 
-        // Updates a single dimension key inside the stored object
+        // Updates a single dimension key inside the stored object and notifies RHF
         const handleFieldChange = (fieldKey: string, rawInput: string) => {
-          // Enforce tolerance upper bound — discard input that exceeds the configured max
-          if (
-            fieldKey === 'tolerance' &&
-            toleranceDef &&
-            Number(rawInput) > toleranceDef.max
-          ) {
-            return;
-          }
-
           const parsed = rawInput === '' ? null : Number(rawInput);
 
           const updatedValue: DimensionFormValue = {
@@ -103,48 +68,50 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
         };
 
         return (
-          <Stack gap={0.5}>
-            <Stack direction="row" onBlur={field.onBlur}>
-              {allFieldKeys.map((fieldKey, index) => (
+          <Stack gap={1.5} onBlur={field.onBlur}>
+            {columns !== undefined ? (
+              // Grid layout — sub-fields are arranged side-by-side
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 2,
+                  gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                }}
+              >
+                {dimensionFields.map((fieldKey) => (
+                  <TextField
+                    key={fieldKey}
+                    disabled={fieldConfig?.disabled}
+                    error={!!fieldState.error}
+                    fullWidth
+                    label={fieldLabels?.[fieldKey] ?? fieldKey}
+                    onChange={(e) =>
+                      handleFieldChange(fieldKey, e.target.value)
+                    }
+                    size={fieldConfig?.size ?? DEFAULT_FIELD_SIZE}
+                    type="number"
+                    value={currentValue[fieldKey] ?? ''}
+                  />
+                ))}
+              </Box>
+            ) : (
+              // Default vertical stack — one field per row
+              dimensionFields.map((fieldKey) => (
                 <TextField
                   key={fieldKey}
                   disabled={fieldConfig?.disabled}
                   error={!!fieldState.error}
                   fullWidth
-                  // Use localized label when available — fall back to the raw field key
                   label={fieldLabels?.[fieldKey] ?? fieldKey}
                   onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
                   size={fieldConfig?.size ?? DEFAULT_FIELD_SIZE}
-                  // Apply tolerance numeric limits when rendering the tolerance field
-                  slotProps={
-                    fieldKey === 'tolerance' && toleranceDef
-                      ? {
-                          htmlInput: {
-                            max: toleranceDef.max,
-                            min: toleranceDef.min,
-                          },
-                        }
-                      : undefined
-                  }
-                  sx={{
-                    '& .MuiOutlinedInput-notchedOutline':
-                      getGroupedInputBorderStyle(index, allFieldKeys.length),
-                    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'rgba(145, 158, 171, 0.8)',
-                      borderWidth: '1px',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'rgba(145, 158, 171, 0.8)',
-                      borderWidth: '1px',
-                    },
-                  }}
                   type="number"
                   value={currentValue[fieldKey] ?? ''}
                 />
-              ))}
-            </Stack>
+              ))
+            )}
 
-            {/* Render helper text or validation error below the grouped input row */}
+            {/* Render helper text or validation error below the last input */}
             {(fieldState.error?.message || fieldConfig?.helperText) && (
               <FormHelperText error={!!fieldState.error}>
                 {fieldState.error?.message ?? fieldConfig?.helperText}

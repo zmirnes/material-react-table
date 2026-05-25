@@ -601,7 +601,6 @@ export const WithNewEntryFormConfig = () => (
         header: 'First Name',
         type: 'string',
         formField: {
-          section: 'basic',
           order: 1,
           rules: { required: 'Required' },
         },
@@ -611,7 +610,6 @@ export const WithNewEntryFormConfig = () => (
         header: 'Age',
         type: 'number',
         formField: {
-          section: 'basic',
           order: 2,
           rules: { min: { value: 18, message: 'Min 18' } },
           label: 'Enter age',
@@ -622,7 +620,6 @@ export const WithNewEntryFormConfig = () => (
         header: 'Datum',
         type: 'dateTime',
         formField: {
-          section: 'basic',
           order: 3,
           label: 'Datum i vrijeme',
           rules: {
@@ -676,7 +673,6 @@ export const WithNewEntryFormConfig = () => (
           ],
         },
         formField: {
-          section: 'basic',
           order: 4,
           label: 'Status',
           rules: { required: 'Status je obavezan' },
@@ -694,7 +690,6 @@ export const WithNewEntryFormConfig = () => (
           ],
         },
         formField: {
-          section: 'basic',
           order: 5,
           label: 'Status naloga',
           rules: { required: 'Status je obavezan' },
@@ -707,12 +702,11 @@ export const WithNewEntryFormConfig = () => (
         meta: {
           dimensions: {
             fields: ['length', 'width', 'height'],
-            tolerance: { min: 0.01, max: 1000 },
+            columns: 2,
           },
         },
         formField: {
-          section: 'basic',
-          order: 6,
+          order: 10,
           label: 'Dimenzije',
         },
       },
@@ -721,7 +715,7 @@ export const WithNewEntryFormConfig = () => (
         header: 'Active',
         type: 'boolean',
         formField: {
-          section: 'basic',
+          section: 'dimension',
           order: 7,
           label: 'Aktivan',
           rules: { required: 'Polje je obavezno' },
@@ -749,7 +743,9 @@ export const WithNewEntryFormConfig = () => (
       cancel: 'Cancel',
     }}
     formConfig={{
-      sections: [{ id: 'basic', title: 'Basic Info', order: 1 }],
+      sections: [
+        { id: 'dimension', title: 'Basic Info', order: 1, columns: 3 },
+      ],
       onSave: ({ form, mode }) => {
         alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
       },

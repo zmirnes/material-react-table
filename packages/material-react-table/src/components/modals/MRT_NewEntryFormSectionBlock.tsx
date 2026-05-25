@@ -2,6 +2,7 @@ import type React from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { type MRT_FormSectionConfig } from '../../types';
@@ -13,11 +14,35 @@ export interface MRT_NewEntryFormSectionBlockProps {
   children: React.ReactNode;
 }
 
+// Switches between a CSS Grid container (when columns is set) and a vertical Stack (default).
+const SectionFieldContainer = ({
+  columns,
+  children,
+}: {
+  columns: number | undefined;
+  children: React.ReactNode;
+}) => {
+  if (columns !== undefined) {
+    return (
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        }}
+      >
+        {children}
+      </Box>
+    );
+  }
+
+  return <Stack gap={2}>{children}</Stack>;
+};
+
 // Renders a collapsible or static section using MUI Accordion.
 // When collapsible is false the Accordion is permanently expanded and the expand icon is hidden.
 export const MRT_NewEntryFormSectionBlock = ({
   expandMoreIcon: ExpandIcon,
-
   sectionConfig,
   children,
 }: MRT_NewEntryFormSectionBlockProps) => (
@@ -44,7 +69,9 @@ export const MRT_NewEntryFormSectionBlock = ({
       </Typography>
     </AccordionSummary>
     <AccordionDetails sx={{ px: 0 }}>
-      <Stack gap={2}>{children}</Stack>
+      <SectionFieldContainer columns={sectionConfig.columns}>
+        {children}
+      </SectionFieldContainer>
     </AccordionDetails>
   </Accordion>
 );

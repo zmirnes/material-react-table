@@ -1,4 +1,5 @@
 import { Controller, useFormContext } from 'react-hook-form';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
@@ -144,28 +145,59 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
             sectionConfig={sectionConfig}
           >
             {sectionFields.map(({ columnId, columnDef, fieldConfig }) => (
-              <FormFieldControl
-                columnDef={columnDef}
-                columnId={columnId}
-                fieldConfig={fieldConfig}
+              // Box wrapper applies gridColumn when the section uses a grid layout.
+              <Box
                 key={columnId}
-                table={table}
-              />
+                sx={
+                  sectionConfig.columns && fieldConfig?.colSpan
+                    ? { gridColumn: `span ${fieldConfig.colSpan}` }
+                    : undefined
+                }
+              >
+                <FormFieldControl
+                  columnDef={columnDef}
+                  columnId={columnId}
+                  fieldConfig={fieldConfig}
+                  table={table}
+                />
+              </Box>
             ))}
           </MRT_NewEntryFormSectionBlock>
         );
       })}
 
-      {/* Fields with no section assignment — rendered flat below the sections */}
-      {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
-        <FormFieldControl
-          columnDef={columnDef}
-          columnId={columnId}
-          fieldConfig={fieldConfig}
-          key={columnId}
-          table={table}
-        />
-      ))}
+      {/* Fields with no section assignment — grid when formConfig.columns is set, Stack otherwise */}
+      {unsectionedFields.length > 0 && (
+        <Box
+          sx={
+            formConfig?.columns
+              ? {
+                  display: 'grid',
+                  gap: 2,
+                  gridTemplateColumns: `repeat(${formConfig.columns}, 1fr)`,
+                }
+              : { display: 'flex', flexDirection: 'column', gap: 2 }
+          }
+        >
+          {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
+            <Box
+              key={columnId}
+              sx={
+                formConfig?.columns && fieldConfig?.colSpan
+                  ? { gridColumn: `span ${fieldConfig.colSpan}` }
+                  : undefined
+              }
+            >
+              <FormFieldControl
+                columnDef={columnDef}
+                columnId={columnId}
+                fieldConfig={fieldConfig}
+                table={table}
+              />
+            </Box>
+          ))}
+        </Box>
+      )}
 
       {/* Additional non-column fields rendered after all column fields */}
       {sortedAdditionalFields.map((additionalField) => (
