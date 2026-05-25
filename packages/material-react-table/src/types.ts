@@ -209,6 +209,7 @@ export interface MRT_Localization {
   filterGreaterThan: string;
   filterGreaterThanOrEqualTo: string;
   filterInArray: string;
+  filterIsAnyOf: string;
   filterIncludesString: string;
   filterIncludesStringSensitive: string;
   filteringByColumn: string;
@@ -1650,7 +1651,7 @@ export type MRT_FilterOperator =
   | 'fuzzy'
   | 'greaterThan'
   | 'greaterThanOrEqualTo'
-  | 'inArray'
+  | 'isAnyOf'
   | 'isEmpty'
   | 'isNotEmpty'
   | 'last-7-days'
@@ -1699,7 +1700,7 @@ export interface MRT_FilterOperatorEditComponentProps<
 // Describes the structural shape of a filter operator's value.
 // Used to decide whether the existing value can be preserved when switching operators.
 // 'single'   — scalar: string, number, boolean, or a single-select option
-// 'multi'    — array of scalars (inArray operators)
+// 'multi'    — array of scalars (isAnyOf operators)
 // 'range'    — object with {from, to} fields (date/dateTime 'between')
 // 'none'     — no user input needed (isEmpty / isNotEmpty)
 // 'computed' — value is always auto-calculated by getInitialValue() (relative date operators)
@@ -1744,6 +1745,10 @@ export interface ColumnTypeResolver {
     column: MRT_ColumnDef<TData>,
     table: MRT_TableInstance<TData>,
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
+  activeFilterRenderer: <TData extends MRT_RowData>(
+    table: MRT_TableInstance<TData>,
+    rule: MRT_FilterRule,
+  ) => ReactNode | null;
 }
 
 // Controls the position of MRT_NewEntryModal on the screen.

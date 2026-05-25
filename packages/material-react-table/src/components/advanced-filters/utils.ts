@@ -51,7 +51,7 @@ const OPERATOR_LOCALIZATION_KEYS: Partial<
   'from-today': 'filterFromToday',
   greaterThan: 'filterGreaterThan',
   greaterThanOrEqualTo: 'filterGreaterThanOrEqualTo',
-  inArray: 'filterInArray',
+  isAnyOf: 'filterIsAnyOf',
   isEmpty: 'filterEmpty',
   isNotEmpty: 'filterNotEmpty',
   'last-7-days': 'filterLast7Days',

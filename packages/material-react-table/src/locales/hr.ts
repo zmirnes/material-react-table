@@ -43,6 +43,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   filterGreaterThan: 'Veće od',
   filterGreaterThanOrEqualTo: 'Veće od ili jednako',
   filterInArray: 'Je jedno od',
+  filterIsAnyOf: 'Je jedno od',
   filterInNumberRange: 'Između',
   filterIncludesString: 'Sadrži',
   filterIncludesStringSensitive: 'Sadrži',

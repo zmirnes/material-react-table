@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import EnumActiveFilterItem from './activeFiltersRenderers/EnumActiveFilterItem';
 import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
 import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 import {
@@ -80,7 +81,7 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         // 'Je bilo koje od' — value must be one of the selected options
         editComponent: createMultiSelectEditor,
         getInitialValue: () => [] as unknown as TValue,
-        id: 'inArray',
+        id: 'isAnyOf',
         // Empty when no options are selected
         isValueEmpty: (value: unknown) =>
           !Array.isArray(value) || value.length === 0,
@@ -89,4 +90,5 @@ export const EnumColumnResolver: ColumnTypeResolver = {
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },
+  activeFilterRenderer: EnumActiveFilterItem,
 };

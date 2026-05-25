@@ -1,4 +1,5 @@
 import Paper, { type PaperProps } from '@mui/material/Paper';
+import { MRT_ActiveFilters } from '../toolbar/MRT_ActiveFilters';
 import { MRT_BottomToolbar } from '../toolbar/MRT_BottomToolbar';
 import { MRT_QuickFiltersBar } from '../toolbar/MRT_QuickFiltersBar';
 import { MRT_TopToolbar } from '../toolbar/MRT_TopToolbar';
@@ -59,11 +60,12 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
         >),
       })}
     >
+      <MRT_QuickFiltersBar table={table} />
+      <MRT_ActiveFilters table={table} />
       {enableTopToolbar &&
         (parseFromValuesOrFunc(renderTopToolbar, { table }) ?? (
           <MRT_TopToolbar table={table} />
         ))}
-      <MRT_QuickFiltersBar table={table} />
       <MRT_TableContainer table={table} />
       {enableBottomToolbar &&
         (parseFromValuesOrFunc(renderBottomToolbar, { table }) ?? (

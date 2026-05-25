@@ -1,3 +1,4 @@
+import BooleanActiveFilterItem from './activeFiltersRenderers/BooleanActiveFilterItem';
 import { MRT_FilterRuleBooleanEditor } from './filterEditors';
 import {
   type MRT_FilterOperatorDefinition,
@@ -25,4 +26,5 @@ export const BooleanColumnResolver: ColumnTypeResolver = {
         valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
+  activeFilterRenderer: BooleanActiveFilterItem,
 };

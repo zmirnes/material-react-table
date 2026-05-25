@@ -1,4 +1,5 @@
 import { MRT_FormDateInput } from '../components/modals/form-inputs/MRT_FormDateInput';
+import DateActiveFilterItem from './activeFiltersRenderers/DateActiveFilterItem';
 import {
   MRT_FilterRuleDateEditor,
   MRT_FilterRuleDisabledDateEditor,
@@ -155,4 +156,5 @@ export const DateColumnResolver: ColumnTypeResolver = {
       />
     );
   },
+  activeFilterRenderer: DateActiveFilterItem,
 };

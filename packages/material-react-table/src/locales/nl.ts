@@ -43,6 +43,7 @@ export const MRT_Localization_NL: MRT_Localization = {
   filterGreaterThan: 'Groter dan',
   filterGreaterThanOrEqualTo: 'Groter dan of gelijk aan',
   filterInArray: 'Is een van',
+  filterIsAnyOf: 'Is een van',
   filterInNumberRange: 'Tussen',
   filterIncludesString: 'Omvat',
   filterIncludesStringSensitive: 'Omvat',

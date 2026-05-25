@@ -43,6 +43,7 @@ export const MRT_Localization_DE: MRT_Localization = {
   filterGreaterThan: 'Größer als',
   filterGreaterThanOrEqualTo: 'Größer als oder gleich',
   filterInArray: 'Ist eines von',
+  filterIsAnyOf: 'Ist eines von',
   filterInNumberRange: 'Zwischen',
   filterIncludesString: 'Enthält',
   filterIncludesStringSensitive: 'Enthält',
