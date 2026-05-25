@@ -128,7 +128,12 @@ const fakeDatabase: Person[] = [...Array(100)].map(() => ({
 }));
 
 const columns: MRT_ColumnDef<Person>[] = [
-  { accessorKey: 'firstName', header: 'First Name', type: 'string' },
+  {
+    accessorKey: 'firstName',
+    header: 'First Name',
+    type: 'string',
+    enablePinning: false,
+  },
   { accessorKey: 'age', header: 'Age', type: 'number' },
   { accessorKey: 'date', header: 'Date', type: 'date' },
   { accessorKey: 'dateTime', header: 'Date Time', type: 'dateTime' },

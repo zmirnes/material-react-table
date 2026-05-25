@@ -1744,6 +1744,10 @@ export interface ColumnTypeResolver {
     column: MRT_ColumnDef<TData>,
     table: MRT_TableInstance<TData>,
   ) => ((props: MRT_FormFieldRenderProps<TData>) => ReactNode) | null;
+  activeFilterRenderer?: <TData extends MRT_RowData>(
+    table: MRT_TableInstance<TData>,
+    rule: MRT_FilterRule,
+  ) => ReactNode | null;
 }
 
 // Controls the position of MRT_NewEntryModal on the screen.

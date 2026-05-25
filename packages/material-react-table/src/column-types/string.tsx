@@ -1,4 +1,5 @@
 import { MRT_FormStringInput } from '../components/modals/form-inputs/MRT_FormStringInput';
+import StringActiveFilterItem from './activeFiltersRenderers/StringActiveFilterItem';
 import {
   MRT_FilterRuleMultiTextEditor,
   MRT_FilterRuleTextEditor,
@@ -122,4 +123,5 @@ export const StringColumnResolver: ColumnTypeResolver = {
       />
     );
   },
+  activeFilterRenderer: StringActiveFilterItem,
 };

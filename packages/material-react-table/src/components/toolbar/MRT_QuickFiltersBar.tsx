@@ -230,7 +230,6 @@ export const MRT_QuickFiltersBar = <TData extends MRT_RowData>({
     <Box
       sx={{
         alignItems: 'flex-start',
-        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
         display: 'flex',
         flexWrap: 'wrap',
         gap: 1,
