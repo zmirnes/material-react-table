@@ -682,6 +682,7 @@ export const WithNewEntryFormConfig = () => (
         accessorKey: 'enum',
         header: 'Status',
         type: 'enum',
+
         meta: {
           enumValues: [
             { value: 'active', label: 'Aktivan' },
@@ -702,11 +703,12 @@ export const WithNewEntryFormConfig = () => (
         meta: {
           dimensions: {
             fields: ['length', 'width', 'height'],
-            columns: 2,
+            columns: 3,
           },
         },
         formField: {
-          order: 10,
+          section: 'dimension',
+          order: 6,
           label: 'Dimenzije',
         },
       },
@@ -715,7 +717,6 @@ export const WithNewEntryFormConfig = () => (
         header: 'Active',
         type: 'boolean',
         formField: {
-          section: 'dimension',
           order: 7,
           label: 'Aktivan',
           rules: { required: 'Polje je obavezno' },
@@ -743,9 +744,7 @@ export const WithNewEntryFormConfig = () => (
       cancel: 'Cancel',
     }}
     formConfig={{
-      sections: [
-        { id: 'dimension', title: 'Basic Info', order: 1, columns: 3 },
-      ],
+      sections: [{ id: 'dimension', title: 'Dimension' }],
       onSave: ({ form, mode }) => {
         alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
       },

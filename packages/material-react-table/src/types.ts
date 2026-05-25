@@ -1856,10 +1856,6 @@ export interface MRT_FormFieldConfig<
   onChange?: (value: TValue, fieldName: string) => TValue | void;
   // Input size — defaults to 'small' when not specified.
   size?: 'small' | 'medium';
-  // How many grid columns this field spans inside a grid container.
-  // Only takes effect when the parent section or form defines a 'columns' value.
-  // Defaults to 1 (single column width).
-  colSpan?: number;
 }
 
 // Props passed into form-level callbacks (onSave, onCancel) and custom action button handlers.

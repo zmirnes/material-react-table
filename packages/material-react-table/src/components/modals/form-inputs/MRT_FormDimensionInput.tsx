@@ -1,7 +1,6 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import FormHelperText from '@mui/material/FormHelperText';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import {
   type MRT_ColumnDef,
@@ -68,35 +67,15 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
         };
 
         return (
-          <Stack gap={1.5} onBlur={field.onBlur}>
-            {columns !== undefined ? (
-              // Grid layout — sub-fields are arranged side-by-side
-              <Box
-                sx={{
-                  display: 'grid',
-                  gap: 2,
-                  gridTemplateColumns: `repeat(${columns}, 1fr)`,
-                }}
-              >
-                {dimensionFields.map((fieldKey) => (
-                  <TextField
-                    key={fieldKey}
-                    disabled={fieldConfig?.disabled}
-                    error={!!fieldState.error}
-                    fullWidth
-                    label={fieldLabels?.[fieldKey] ?? fieldKey}
-                    onChange={(e) =>
-                      handleFieldChange(fieldKey, e.target.value)
-                    }
-                    size={fieldConfig?.size ?? DEFAULT_FIELD_SIZE}
-                    type="number"
-                    value={currentValue[fieldKey] ?? ''}
-                  />
-                ))}
-              </Box>
-            ) : (
-              // Default vertical stack — one field per row
-              dimensionFields.map((fieldKey) => (
+          <Box onBlur={field.onBlur}>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: `repeat(${columns ?? 1}, 1fr)`,
+              }}
+            >
+              {dimensionFields.map((fieldKey) => (
                 <TextField
                   key={fieldKey}
                   disabled={fieldConfig?.disabled}
@@ -108,8 +87,8 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
                   type="number"
                   value={currentValue[fieldKey] ?? ''}
                 />
-              ))
-            )}
+              ))}
+            </Box>
 
             {/* Render helper text or validation error below the last input */}
             {(fieldState.error?.message || fieldConfig?.helperText) && (
@@ -117,7 +96,7 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
                 {fieldState.error?.message ?? fieldConfig?.helperText}
               </FormHelperText>
             )}
-          </Stack>
+          </Box>
         );
       }}
     />
