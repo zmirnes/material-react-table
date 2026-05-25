@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import EnumActiveFilterItem from './activeFiltersRenderers/EnumActiveFilterItem';
 import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
 import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 import {
@@ -89,4 +90,5 @@ export const EnumColumnResolver: ColumnTypeResolver = {
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
   },
+  activeFilterRenderer: EnumActiveFilterItem,
 };
