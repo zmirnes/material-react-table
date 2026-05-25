@@ -41,10 +41,11 @@ const MRT_ActiveFilterItemContainer = <TData extends MRT_RowData>({
 
   const { operator } = rule;
 
-  const filterOperatorFormatted =
-    localization[
-      `filter${operator.charAt(0).toUpperCase()}${operator.slice(1).toLowerCase()}`
-    ].toLowerCase();
+  const localizationKey = `filter${operator.charAt(0).toUpperCase()}${operator.slice(1).toLowerCase()}`;
+
+  const localizedOperator = localization[localizationKey];
+
+  const filterOperatorFormatted = localizedOperator?.toLowerCase() || operator;
 
   return (
     <Box

@@ -1,4 +1,5 @@
 import { MRT_FormNumberInput } from '../components/modals/form-inputs/MRT_FormNumberInput';
+import NumberActiveFilterItem from './activeFiltersRenderers/NumberActiveFilterItem';
 import {
   MRT_FilterRuleMultiNumberEditor,
   MRT_FilterRuleNumberEditor,
@@ -122,4 +123,5 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       />
     );
   },
+  activeFilterRenderer: NumberActiveFilterItem,
 };
