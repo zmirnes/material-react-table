@@ -8,6 +8,7 @@ import {
   type MRT_RowData,
   type MRT_FilterRule,
 } from '../..';
+import { getFilterColumn } from '../advanced-filters/utils';
 
 interface MRT_ActiveFilterItemContainerProps<TData extends MRT_RowData>
   extends PropsWithChildren {
@@ -21,7 +22,6 @@ const MRT_ActiveFilterItemContainer = <TData extends MRT_RowData>({
   rule,
 }: MRT_ActiveFilterItemContainerProps<TData>) => {
   const {
-    getColumn,
     options: {
       icons: { CloseIcon },
       localization,
@@ -37,7 +37,7 @@ const MRT_ActiveFilterItemContainer = <TData extends MRT_RowData>({
     }));
   };
 
-  const column = getColumn(rule.columnId);
+  const column = getFilterColumn(table, rule.columnId);
 
   const { operator } = rule;
 

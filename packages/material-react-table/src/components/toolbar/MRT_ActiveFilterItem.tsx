@@ -5,6 +5,7 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
+import { getFilterColumn } from '../advanced-filters/utils';
 
 interface MRT_ActiveFilterItemProps<TData extends MRT_RowData> {
   table: MRT_TableInstance<TData>;
@@ -15,7 +16,7 @@ export const MRT_ActiveFilterItem = <TData extends MRT_RowData>({
   table,
   rule,
 }: MRT_ActiveFilterItemProps<TData>) => {
-  const column = table.getColumn(rule.columnId);
+  const column = getFilterColumn(table, rule.columnId);
 
   if (
     !column ||
