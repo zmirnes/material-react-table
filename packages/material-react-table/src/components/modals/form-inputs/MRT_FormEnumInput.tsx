@@ -73,7 +73,11 @@ export const MRT_FormEnumInput = <TData extends MRT_RowData>({
             </InputLabel>
             <Select
               label={label}
-              MenuProps={{ sx: { zIndex: 1400 } }}
+              MenuProps={{
+                anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                transformOrigin: { vertical: 'top', horizontal: 'left' },
+                sx: { zIndex: 1400 },
+              }}
               onBlur={field.onBlur}
               onChange={(e) => handleChange(e.target.value as string)}
               renderValue={renderSelectedValue}

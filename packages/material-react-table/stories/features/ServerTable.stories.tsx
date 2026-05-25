@@ -23,6 +23,7 @@ type Person = {
   dateTime: Date;
   enum: EnumValue;
   dimension: string;
+  active: boolean;
   icon: {
     iconCode: string;
     description: string;
@@ -125,6 +126,7 @@ const fakeDatabase: Person[] = [...Array(100)].map(() => ({
     ],
   },
   dimension: '100.000x200.000x300.000',
+  active: faker.datatype.boolean(),
 }));
 
 const columns: MRT_ColumnDef<Person>[] = [
@@ -714,6 +716,17 @@ export const WithNewEntryFormConfig = () => (
           label: 'Dimenzije',
         },
       },
+      {
+        accessorKey: 'active',
+        header: 'Active',
+        type: 'boolean',
+        formField: {
+          section: 'basic',
+          order: 7,
+          label: 'Aktivan',
+          rules: { required: 'Polje je obavezno' },
+        },
+      },
     ]}
     data={fakeDatabase.slice(0, 10)}
     enableNewEntryButton
@@ -721,7 +734,12 @@ export const WithNewEntryFormConfig = () => (
     // resolvers (Cell renderers), so the raw objects would cause a React render error.
     // Both columns are still present in formConfig and appear in the New Entry form.
     initialState={{
-      columnVisibility: { icon: false, enum: false, dimension: false },
+      columnVisibility: {
+        icon: false,
+        enum: false,
+        dimension: false,
+        active: false,
+      },
     }}
     localization={{
       close: 'Close',
