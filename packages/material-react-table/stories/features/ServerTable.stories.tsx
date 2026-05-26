@@ -23,6 +23,7 @@ type Person = {
   dateTime: Date;
   enum: EnumValue;
   dimension: string;
+  active: boolean;
   icon: {
     iconCode: string;
     description: string;
@@ -125,6 +126,7 @@ const fakeDatabase: Person[] = [...Array(100)].map(() => ({
     ],
   },
   dimension: '100.000x200.000x300.000',
+  active: faker.datatype.boolean(),
 }));
 
 const columns: MRT_ColumnDef<Person>[] = [
@@ -599,7 +601,6 @@ export const WithNewEntryFormConfig = () => (
         header: 'First Name',
         type: 'string',
         formField: {
-          section: 'basic',
           order: 1,
           rules: { required: 'Required' },
         },
@@ -609,7 +610,7 @@ export const WithNewEntryFormConfig = () => (
         header: 'Age',
         type: 'number',
         formField: {
-          section: 'basic',
+          section: 'dimension',
           order: 2,
           rules: { min: { value: 18, message: 'Min 18' } },
           label: 'Enter age',
@@ -620,7 +621,7 @@ export const WithNewEntryFormConfig = () => (
         header: 'Datum',
         type: 'dateTime',
         formField: {
-          section: 'basic',
+          section: 'dimension',
           order: 3,
           label: 'Datum i vrijeme',
           rules: {
@@ -635,9 +636,110 @@ export const WithNewEntryFormConfig = () => (
           },
         },
       },
+      {
+        accessorKey: 'icon',
+        header: 'Status',
+        type: 'icon',
+        // Maps iconCode → Iconify icon name + colour used for cell rendering
+        iconsList: ICONS_LIST,
+        meta: {
+          // Available options shown in the Select dropdown inside the form
+          availableIcons: [
+            {
+              iconType: {
+                iconCode: '1',
+                color: '#00b894',
+                description: 'Aktivan',
+              },
+              tooltip: 'Aktivan',
+              value: '1',
+            },
+            {
+              iconType: {
+                iconCode: '3',
+                color: '#f39c12',
+                description: 'Na čekanju',
+              },
+              tooltip: 'Na čekanju',
+              value: '3',
+            },
+            {
+              iconType: {
+                iconCode: '6',
+                color: '#d63031',
+                description: 'Neaktivan',
+              },
+              tooltip: 'Neaktivan',
+              value: '6',
+            },
+          ],
+        },
+        formField: {
+          section: 'dimension',
+          order: 4,
+          label: 'Status',
+          rules: { required: 'Status je obavezan' },
+        },
+      },
+      {
+        accessorKey: 'enum',
+        header: 'Status',
+        type: 'enum',
+
+        meta: {
+          enumValues: [
+            { value: 'active', label: 'Aktivan' },
+            { value: 'pending', label: 'Na čekanju' },
+            { value: 'inactive', label: 'Neaktivan' },
+          ],
+        },
+        formField: {
+          section: 'dimension',
+          order: 5,
+          label: 'Status naloga',
+          rules: { required: 'Status je obavezan' },
+        },
+      },
+      {
+        accessorKey: 'dimension',
+        header: 'Dimension',
+        type: 'dimension',
+        meta: {
+          dimensions: {
+            fields: ['length', 'width', 'height'],
+          },
+        },
+        formField: {
+          section: 'dimension',
+          order: 6,
+          label: 'Dimenzije',
+        },
+      },
+      {
+        accessorKey: 'active',
+        header: 'Active',
+        type: 'boolean',
+        formField: {
+          section: 'dimension',
+          order: 7,
+          label: 'Aktivan',
+          rules: { required: 'Polje je obavezno' },
+        },
+      },
     ]}
     data={fakeDatabase.slice(0, 10)}
     enableNewEntryButton
+    // Hide icon and enum columns from the table — MaterialReactTable does not apply column type
+    // resolvers (Cell renderers), so the raw objects would cause a React render error.
+    // Both columns are still present in formConfig and appear in the New Entry form.
+    initialState={{
+      columnVisibility: {
+        icon: false,
+        enum: false,
+        dimension: false,
+        active: false,
+      },
+    }}
     localization={{
       close: 'Close',
       newEntry: 'New Entry',
@@ -646,7 +748,7 @@ export const WithNewEntryFormConfig = () => (
       cancel: 'Cancel',
     }}
     formConfig={{
-      sections: [{ id: 'basic', title: 'Basic Info', order: 1 }],
+      sections: [{ id: 'dimension', title: 'Dimension', columns: 2 }],
       onSave: ({ form, mode }) => {
         alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
       },

@@ -304,6 +304,10 @@ export interface MRT_Localization {
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
+  // Dimension field name → localized label mapping.
+  // Used in the form input to translate raw field keys (e.g. 'width') into human-readable labels.
+  // Apps can extend this map with custom field names specific to their domain.
+  dimensionFieldLabels: Record<string, string>;
   // Export toolbar
   exportButton: string;
   exportSelectRowsTooltip: string;
@@ -317,8 +321,8 @@ export interface MRT_Localization {
   deleteConfirmNo: string;
   deleteConfirmDeleting: string;
 
-  // Allow for any additional keys for custom localization
-  [key: string]: string;
+  // Allow for any additional keys for custom localization — string for text keys, Record for label maps
+  [key: string]: string | Record<string, string>;
 }
 
 export interface MRT_Theme {
@@ -1918,6 +1922,10 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   // Unlike renderForm, there is no RHF context — the consumer owns the full overlay lifecycle.
   // To close the modal, call table.setCreatingRow(null) from within the rendered component.
   renderModal?: (props: { table: MRT_TableInstance<TData> }) => ReactNode;
+  // Number of equal-width columns for fields that have no section.
+  // When set, unsectioned fields are arranged in a CSS Grid instead of a vertical Stack.
+  // Per-field width is controlled via MRT_FormFieldConfig.colSpan.
+  columns?: number;
 }
 
 // Section definition — referenced by form field config via MRT_FormFieldConfig.section.
@@ -1932,4 +1940,8 @@ export interface MRT_FormSectionConfig {
   collapsible?: boolean;
   // Initial collapsed state when the form opens.
   defaultCollapsed?: boolean;
+  // Number of equal-width columns in this section’s field grid.
+  // When set, fields inside this section are laid out in a CSS Grid instead of a vertical Stack.
+  // Per-field width is controlled via MRT_FormFieldConfig.colSpan.
+  columns?: number;
 }

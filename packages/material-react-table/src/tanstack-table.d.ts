@@ -20,6 +20,7 @@ export type MRT_AvailableIconOption = {
 export interface MRT_DimensionsDef {
   fields: string[];
   tolerance?: { min: number; max: number };
+  fieldsPerRow?: number;
 }
 
 declare module '@tanstack/react-table' {

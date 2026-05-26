@@ -156,16 +156,30 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
         );
       })}
 
-      {/* Fields with no section assignment — rendered flat below the sections */}
-      {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
-        <FormFieldControl
-          columnDef={columnDef}
-          columnId={columnId}
-          fieldConfig={fieldConfig}
-          key={columnId}
-          table={table}
-        />
-      ))}
+      {/* Fields with no section assignment — grid when formConfig.columns is set, Stack otherwise */}
+      {unsectionedFields.length > 0 && (
+        <Stack
+          gap={2}
+          sx={
+            formConfig?.columns
+              ? {
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${formConfig.columns}, 1fr)`,
+                }
+              : undefined
+          }
+        >
+          {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
+            <FormFieldControl
+              columnDef={columnDef}
+              columnId={columnId}
+              fieldConfig={fieldConfig}
+              key={columnId}
+              table={table}
+            />
+          ))}
+        </Stack>
+      )}
 
       {/* Additional non-column fields rendered after all column fields */}
       {sortedAdditionalFields.map((additionalField) => (

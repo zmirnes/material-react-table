@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import EnumActiveFilterItem from './activeFiltersRenderers/EnumActiveFilterItem';
+import { MRT_FormEnumInput } from '../components/modals/form-inputs/MRT_FormEnumInput';
 import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
 import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 import {
@@ -7,6 +8,8 @@ import {
   type ColumnTypeResolver,
   type MRT_ColumnDef,
   type MRT_FilterOperatorEditComponentProps,
+  type MRT_FormFieldConfig,
+  type MRT_FormFieldRenderProps,
   type MRT_RowData,
 } from '../types';
 
@@ -89,6 +92,22 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         valueShape: 'multi',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[];
+  },
+  getFormFieldRenderer: <TData extends MRT_RowData>(
+    column: MRT_ColumnDef<TData>,
+  ) => {
+    // Cast TValue to string | null — enum fields store the selected value string.
+    const fieldConfig =
+      (column.formField as
+        | MRT_FormFieldConfig<TData, string | null>
+        | undefined) ?? null;
+    return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
+      <MRT_FormEnumInput
+        columnDef={columnDef}
+        fieldConfig={fieldConfig}
+        name={name}
+      />
+    );
   },
   activeFilterRenderer: EnumActiveFilterItem,
 };
