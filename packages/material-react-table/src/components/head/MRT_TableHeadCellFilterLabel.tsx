@@ -72,12 +72,12 @@ export const MRT_TableHeadCellFilterLabel = <TData extends MRT_RowData = {}>({
           .replace(
             '{filterType}',
             currentFilterOption
-              ? (localization[
+              ? localization[
                   `filter${
                     currentFilterOption.charAt(0).toUpperCase() +
                     currentFilterOption.slice(1)
                   }` as keyof typeof localization
-                ] as string)
+                ]
               : '',
           )
           .replace(

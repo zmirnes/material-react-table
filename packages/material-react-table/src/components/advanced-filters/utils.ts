@@ -74,7 +74,7 @@ export const getLocalizedFilterOperatorLabel = (
 ): string => {
   // Look up the translation key for this operator
   const key = OPERATOR_LOCALIZATION_KEYS[operatorId];
-  return key ? (localization[key] as string) : fallbackLabel;
+  return key ? localization[key] : fallbackLabel;
 };
 
 // Returns leaf columns that the user may add as filter rules.

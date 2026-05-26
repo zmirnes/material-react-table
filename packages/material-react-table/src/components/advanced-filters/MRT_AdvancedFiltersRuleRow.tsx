@@ -177,9 +177,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         >
           {filterableColumns.map((column) => (
             <MenuItem key={column.id} value={column.id}>
-              {column.columnDef.header ||
-                (localization?.[column.id] as string | undefined) ||
-                column.id}
+              {column.columnDef.header || localization[column.id] || column.id}
             </MenuItem>
           ))}
         </TextField>
