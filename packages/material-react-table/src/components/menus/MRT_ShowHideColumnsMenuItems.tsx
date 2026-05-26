@@ -137,6 +137,7 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
         })}
       >
         <Box
+          data-testid={`column-show-hide-row-${column.id}`}
           sx={{
             display: 'flex',
             flexWrap: 'nowrap',
