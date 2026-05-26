@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -59,7 +60,9 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
       )}
       {/* Consumer-defined custom action buttons rendered before the default Save/Cancel pair */}
       {formConfig?.customActions?.map((customAction) => (
-        <span key={customAction.key}>{customAction.render(callbackProps)}</span>
+        <Fragment key={customAction.key}>
+          {customAction.render(callbackProps)}
+        </Fragment>
       ))}
     </Stack>
   );
