@@ -14,7 +14,7 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
   table,
 }: MRT_NewEntryFormActionsProps<TData>) => {
   const methods = useFormContext();
-  const { handleCancel } = useMRT_NewEntryFormActions();
+  const { handleCancel, handleSave } = useMRT_NewEntryFormActions();
 
   const {
     getState,
@@ -27,6 +27,8 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
   const resolvedModalProps = muiNewEntryModalProps ?? {};
   const { footerProps, footerSx } = resolvedModalProps;
 
+  const callbackProps = { form: methods, mode, table };
+
   return (
     <Stack
       direction="row"
@@ -34,18 +36,31 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
       {...footerProps}
       sx={{ gap: 1, pt: 1, px: 2, ...footerSx }}
     >
+      {formConfig?.renderSaveButton ? (
+        formConfig.renderSaveButton({
+          ...callbackProps,
+          handleAction: handleSave,
+        })
+      ) : formConfig?.onSave ? (
+        <Button type="submit" variant="contained">
+          {localization.save}
+        </Button>
+      ) : null}
+
+      {formConfig?.renderCancelButton ? (
+        formConfig.renderCancelButton({
+          ...callbackProps,
+          handleAction: handleCancel,
+        })
+      ) : (
+        <Button onClick={handleCancel} variant="outlined">
+          {localization.cancel}
+        </Button>
+      )}
       {/* Consumer-defined custom action buttons rendered before the default Save/Cancel pair */}
       {formConfig?.customActions?.map((customAction) => (
-        <span key={customAction.key}>
-          {customAction.render({ form: methods, mode, table })}
-        </span>
+        <span key={customAction.key}>{customAction.render(callbackProps)}</span>
       ))}
-      <Button onClick={handleCancel} variant="outlined">
-        {localization.cancel}
-      </Button>
-      <Button type="submit" variant="contained">
-        {localization.save}
-      </Button>
     </Stack>
   );
 };

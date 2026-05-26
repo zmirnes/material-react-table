@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import {
   MaterialReactServerTable,
   MaterialReactTable,
@@ -741,6 +742,69 @@ export const WithNewEntryFormConfig = () => (
       onSave: ({ form, mode }) => {
         alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
       },
+    }}
+  />
+);
+
+// Story za testiranje renderSaveButton i renderCancelButton.
+// Save i Cancel su zamijenjeni custom dugmadima; customActions dodaje treće dugme "Nacrt".
+export const WithCustomModalActions = () => (
+  <MaterialReactTable<Person>
+    columns={[
+      { accessorKey: 'firstName', header: 'First Name', type: 'string' },
+      { accessorKey: 'age', header: 'Age', type: 'number' },
+    ]}
+    data={fakeDatabase.slice(0, 10)}
+    enableNewEntryButton
+    localization={{
+      close: 'Close',
+      newEntry: 'New Entry',
+      edit: 'Edit',
+      save: 'Save',
+      cancel: 'Cancel',
+    }}
+    formConfig={{
+      columns: 2,
+      fields: {
+        firstName: { order: 1, rules: { required: 'Required' } },
+        age: { order: 2 },
+      },
+      onSave: ({ form, mode }) => {
+        alert(
+          `[CUSTOM SAVE][${mode}] ${JSON.stringify(form.getValues(), null, 2)}`,
+        );
+      },
+      onCancel: () => {
+        alert('[CUSTOM CANCEL] Modal zatvoren');
+      },
+      // Zamjenjuje default Save dugme
+      renderSaveButton: ({ handleAction, mode }) => (
+        <Button color="success" variant="contained" onClick={handleAction}>
+          {mode === 'create' ? 'Kreiraj' : 'Ažuriraj'}
+        </Button>
+      ),
+      // Zamjenjuje default Cancel dugme
+      renderCancelButton: ({ handleAction }) => (
+        <Button color="error" variant="outlined" onClick={handleAction}>
+          Odustani
+        </Button>
+      ),
+      // Dodaje treće dugme pored Save/Cancel
+      customActions: [
+        {
+          key: 'draft',
+          render: ({ form }) => (
+            <Button
+              variant="text"
+              onClick={() =>
+                alert(`[NACRT] ${JSON.stringify(form.getValues(), null, 2)}`)
+              }
+            >
+              Sačuvaj nacrt
+            </Button>
+          ),
+        },
+      ],
     }}
   />
 );
