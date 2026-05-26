@@ -69,7 +69,7 @@ const MRT_ActiveFilterItemContainer = <TData extends MRT_RowData>({
 
   const localizationKey = `filter${pascalCaseOperator.charAt(0).toUpperCase()}${pascalCaseOperator.slice(1)}`;
 
-  const localizedOperator = localization[localizationKey];
+  const localizedOperator = localization[localizationKey] as string | undefined;
 
   const filterOperatorFormatted = localizedOperator?.toLowerCase() || operator;
 

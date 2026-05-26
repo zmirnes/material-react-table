@@ -173,6 +173,7 @@ export interface MRT_Localization {
   actions: string;
   and: string;
   cancel: string;
+  close: string;
   changeFilterMode: string;
   changeSearchMode: string;
   clearFilter: string;
@@ -1926,6 +1927,10 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   // When set, unsectioned fields are arranged in a CSS Grid instead of a vertical Stack.
   // Per-field width is controlled via MRT_FormFieldConfig.colSpan.
   columns?: number;
+  // Per-column form field overrides keyed by column accessorKey / id.
+  // Merged on top of the column's own formField config — values here take priority.
+  // Use this to configure form behaviour centrally when column definitions come from the backend.
+  fields?: Record<string, MRT_FormFieldConfig<TData>>;
 }
 
 // Section definition — referenced by form field config via MRT_FormFieldConfig.section.

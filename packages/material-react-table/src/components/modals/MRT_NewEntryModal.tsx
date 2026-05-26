@@ -1,3 +1,4 @@
+import React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
@@ -155,7 +156,7 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
               aria-label={localization.close}
               color="error"
               {...closeButtonProps}
-              onClick={async (e) => {
+              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 // Run consumer's onClick first.
                 // Consumer can call e.preventDefault() to prevent the modal from closing.
                 await Promise.resolve(closeButtonProps?.onClick?.(e));

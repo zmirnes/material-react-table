@@ -7,6 +7,7 @@ export const MRT_Localization_HR: MRT_Localization = {
   booleanFalse: 'Ne',
   booleanTrue: 'Da',
   cancel: 'Odustani',
+  close: 'Zatvori',
   changeFilterMode: 'Promijeni način filtriranja',
   changeSearchMode: 'Promijeni način pretraživanja',
   clearFilter: 'Očisti filtriranje',

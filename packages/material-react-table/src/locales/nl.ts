@@ -7,6 +7,7 @@ export const MRT_Localization_NL: MRT_Localization = {
   booleanFalse: 'Nee',
   booleanTrue: 'Ja',
   cancel: 'Annuleren',
+  close: 'Sluiten',
   changeFilterMode: 'Filtermodus wijzigen',
   changeSearchMode: 'Zoekmodus wijzigen',
   clearFilter: 'Filter wissen',

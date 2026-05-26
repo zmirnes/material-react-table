@@ -7,6 +7,7 @@ export const MRT_Localization_EN: MRT_Localization = {
   booleanFalse: 'False',
   booleanTrue: 'True',
   cancel: 'Cancel',
+  close: 'Close',
   changeFilterMode: 'Change filter mode',
   changeSearchMode: 'Change search mode',
   clearFilter: 'Clear filter',

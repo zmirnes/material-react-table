@@ -51,7 +51,13 @@ export const resolveFormFields = <TData extends MRT_RowData>(
       return true;
     })
     .map((column) => {
-      const fieldConfig = column.columnDef.formField ?? null;
+      const columnFormField = column.columnDef.formField ?? null;
+      // formConfig.fields overrides the column-level formField — allows central configuration
+      // when column definitions arrive from the backend without embedded formField config.
+      const formConfigField = formConfig?.fields?.[column.id] ?? null;
+      const fieldConfig = formConfigField
+        ? { ...columnFormField, ...formConfigField }
+        : columnFormField;
 
       return {
         columnId: column.id,
