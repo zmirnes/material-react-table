@@ -610,6 +610,7 @@ export const WithNewEntryFormConfig = () => (
         header: 'Age',
         type: 'number',
         formField: {
+          section: 'dimension',
           order: 2,
           rules: { min: { value: 18, message: 'Min 18' } },
           label: 'Enter age',
@@ -620,6 +621,7 @@ export const WithNewEntryFormConfig = () => (
         header: 'Datum',
         type: 'dateTime',
         formField: {
+          section: 'dimension',
           order: 3,
           label: 'Datum i vrijeme',
           rules: {
@@ -673,6 +675,7 @@ export const WithNewEntryFormConfig = () => (
           ],
         },
         formField: {
+          section: 'dimension',
           order: 4,
           label: 'Status',
           rules: { required: 'Status je obavezan' },
@@ -691,6 +694,7 @@ export const WithNewEntryFormConfig = () => (
           ],
         },
         formField: {
+          section: 'dimension',
           order: 5,
           label: 'Status naloga',
           rules: { required: 'Status je obavezan' },
@@ -703,7 +707,6 @@ export const WithNewEntryFormConfig = () => (
         meta: {
           dimensions: {
             fields: ['length', 'width', 'height'],
-            columns: 3,
           },
         },
         formField: {
@@ -717,6 +720,7 @@ export const WithNewEntryFormConfig = () => (
         header: 'Active',
         type: 'boolean',
         formField: {
+          section: 'dimension',
           order: 7,
           label: 'Aktivan',
           rules: { required: 'Polje je obavezno' },
@@ -744,7 +748,7 @@ export const WithNewEntryFormConfig = () => (
       cancel: 'Cancel',
     }}
     formConfig={{
-      sections: [{ id: 'dimension', title: 'Dimension' }],
+      sections: [{ id: 'dimension', title: 'Dimension', columns: 2 }],
       onSave: ({ form, mode }) => {
         alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
       },

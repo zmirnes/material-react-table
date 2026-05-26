@@ -1,6 +1,5 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import FormHelperText from '@mui/material/FormHelperText';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import {
   type MRT_ColumnDef,
@@ -19,9 +18,6 @@ export interface MRT_FormDimensionInputProps<TData extends MRT_RowData> {
   fieldConfig: MRT_FormFieldConfig<TData, DimensionFormValue> | null;
   // Localized labels for dimension field keys — falls back to the raw field key when a key is not present.
   fieldLabels?: Record<string, string>;
-  // Number of columns in the internal sub-field grid.
-  // When set, sub-fields are arranged in a CSS Grid instead of a vertical Stack.
-  columns?: number;
 }
 
 // Dimension form input — renders each dimension field as a separate, independent-looking TextField.
@@ -31,7 +27,6 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
   columnDef,
   fieldConfig,
   fieldLabels,
-  columns,
 }: MRT_FormDimensionInputProps<TData>) => {
   const { control } = useFormContext();
 
@@ -67,14 +62,7 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
         };
 
         return (
-          <Stack
-            gap={2}
-            onBlur={field.onBlur}
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${columns ?? 1}, 1fr)`,
-            }}
-          >
+          <>
             {dimensionFields.map((fieldKey) => (
               <TextField
                 key={fieldKey}
@@ -82,6 +70,7 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
                 error={!!fieldState.error}
                 fullWidth
                 label={fieldLabels?.[fieldKey] ?? fieldKey}
+                onBlur={field.onBlur}
                 onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
                 size={fieldConfig?.size ?? DEFAULT_FIELD_SIZE}
                 type="number"
@@ -89,16 +78,13 @@ export const MRT_FormDimensionInput = <TData extends MRT_RowData>({
               />
             ))}
 
-            {/* Render helper text or validation error below the last input */}
+            {/* Render helper text or validation error below all inputs */}
             {(fieldState.error?.message || fieldConfig?.helperText) && (
-              <FormHelperText
-                error={!!fieldState.error}
-                sx={{ gridColumn: '1 / -1' }}
-              >
+              <FormHelperText error={!!fieldState.error}>
                 {fieldState.error?.message ?? fieldConfig?.helperText}
               </FormHelperText>
             )}
-          </Stack>
+          </>
         );
       }}
     />
