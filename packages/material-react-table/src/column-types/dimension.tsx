@@ -62,8 +62,15 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
       (column.formField as
         | MRT_FormFieldConfig<TData, DimensionFormValue>
         | undefined) ?? null;
-    // Resolve localized field labels from the table localization config
-    const fieldLabels = table.options.localization.dimensionFieldLabels;
+    // Build label map from flat localization keys for the five standard dimension field names
+    const { localization } = table.options;
+    const fieldLabels: Record<string, string> = {
+      length: localization.length,
+      width: localization.width,
+      height: localization.height,
+      depth: localization.depth,
+      tolerance: localization.tolerance,
+    };
     return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
       <MRT_FormDimensionInput
         columnDef={columnDef}

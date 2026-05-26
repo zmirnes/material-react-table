@@ -600,41 +600,16 @@ export const WithNewEntryFormConfig = () => (
         accessorKey: 'firstName',
         header: 'First Name',
         type: 'string',
-        formField: {
-          order: 1,
-          rules: { required: 'Required' },
-        },
       },
       {
         accessorKey: 'age',
         header: 'Age',
         type: 'number',
-        formField: {
-          section: 'dimension',
-          order: 2,
-          rules: { min: { value: 18, message: 'Min 18' } },
-          label: 'Enter age',
-        },
       },
       {
         accessorKey: 'datum',
         header: 'Datum',
         type: 'dateTime',
-        formField: {
-          section: 'dimension',
-          order: 3,
-          label: 'Datum i vrijeme',
-          rules: {
-            required: 'Datum je obavezan',
-            validate: (value: unknown) => {
-              if (!value) return true;
-              // Datum ne smije biti u prošlosti
-              return new Date(value as string) >= new Date()
-                ? true
-                : 'Datum mora biti u budućnosti';
-            },
-          },
-        },
       },
       {
         accessorKey: 'icon',
@@ -674,30 +649,17 @@ export const WithNewEntryFormConfig = () => (
             },
           ],
         },
-        formField: {
-          section: 'dimension',
-          order: 4,
-          label: 'Status',
-          rules: { required: 'Status je obavezan' },
-        },
       },
       {
         accessorKey: 'enum',
         header: 'Status',
         type: 'enum',
-
         meta: {
           enumValues: [
             { value: 'active', label: 'Aktivan' },
             { value: 'pending', label: 'Na čekanju' },
             { value: 'inactive', label: 'Neaktivan' },
           ],
-        },
-        formField: {
-          section: 'dimension',
-          order: 5,
-          label: 'Status naloga',
-          rules: { required: 'Status je obavezan' },
         },
       },
       {
@@ -709,22 +671,11 @@ export const WithNewEntryFormConfig = () => (
             fields: ['length', 'width', 'height'],
           },
         },
-        formField: {
-          section: 'dimension',
-          order: 6,
-          label: 'Dimenzije',
-        },
       },
       {
         accessorKey: 'active',
         header: 'Active',
         type: 'boolean',
-        formField: {
-          section: 'dimension',
-          order: 7,
-          label: 'Aktivan',
-          rules: { required: 'Polje je obavezno' },
-        },
       },
     ]}
     data={fakeDatabase.slice(0, 10)}
@@ -748,7 +699,45 @@ export const WithNewEntryFormConfig = () => (
       cancel: 'Cancel',
     }}
     formConfig={{
-      sections: [{ id: 'dimension', title: 'Dimension', columns: 2 }],
+      columns: 3,
+      fields: {
+        firstName: { order: 1, rules: { required: 'Required' } },
+        age: {
+          order: 2,
+          label: 'Enter age',
+          rules: { min: { value: 18, message: 'Min 18' } },
+        },
+        datum: {
+          order: 3,
+          label: 'Datum i vrijeme',
+          rules: {
+            required: 'Datum je obavezan',
+            validate: (value: unknown) => {
+              if (!value) return true;
+              // Datum ne smije biti u prošlosti
+              return new Date(value as string) >= new Date()
+                ? true
+                : 'Datum mora biti u budućnosti';
+            },
+          },
+        },
+        icon: {
+          order: 4,
+          label: 'Status',
+          rules: { required: 'Status je obavezan' },
+        },
+        enum: {
+          order: 5,
+          label: 'Status naloga',
+          rules: { required: 'Status je obavezan' },
+        },
+        dimension: { order: 6, label: 'Dimenzije' },
+        active: {
+          order: 7,
+          label: 'Aktivan',
+          rules: { required: 'Polje je obavezno' },
+        },
+      },
       onSave: ({ form, mode }) => {
         alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
       },

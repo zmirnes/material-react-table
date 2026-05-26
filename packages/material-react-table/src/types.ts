@@ -173,6 +173,7 @@ export interface MRT_Localization {
   actions: string;
   and: string;
   cancel: string;
+  close: string;
   changeFilterMode: string;
   changeSearchMode: string;
   clearFilter: string;
@@ -304,10 +305,12 @@ export interface MRT_Localization {
   // Dimension filter editor — rotation toggle tooltips
   dimensionRotationEnabled: string;
   dimensionRotationDisabled: string;
-  // Dimension field name → localized label mapping.
-  // Used in the form input to translate raw field keys (e.g. 'width') into human-readable labels.
-  // Apps can extend this map with custom field names specific to their domain.
-  dimensionFieldLabels: Record<string, string>;
+  // Localized labels for standard dimension field keys used in the form input.
+  length: string;
+  width: string;
+  height: string;
+  depth: string;
+  tolerance: string;
   // Export toolbar
   exportButton: string;
   exportSelectRowsTooltip: string;
@@ -321,8 +324,8 @@ export interface MRT_Localization {
   deleteConfirmNo: string;
   deleteConfirmDeleting: string;
 
-  // Allow for any additional keys for custom localization — string for text keys, Record for label maps
-  [key: string]: string | Record<string, string>;
+  // Allow for any additional string keys for custom localization
+  [key: string]: string;
 }
 
 export interface MRT_Theme {
@@ -1926,6 +1929,10 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   // When set, unsectioned fields are arranged in a CSS Grid instead of a vertical Stack.
   // Per-field width is controlled via MRT_FormFieldConfig.colSpan.
   columns?: number;
+  // Per-column form field overrides keyed by column accessorKey / id.
+  // Merged on top of the column's own formField config — values here take priority.
+  // Use this to configure form behaviour centrally when column definitions come from the backend.
+  fields?: Record<string, MRT_FormFieldConfig<TData>>;
 }
 
 // Section definition — referenced by form field config via MRT_FormFieldConfig.section.
