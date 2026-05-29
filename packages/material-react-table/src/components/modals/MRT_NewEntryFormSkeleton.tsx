@@ -45,7 +45,7 @@ export const MRT_NewEntryFormSkeleton = <TData extends MRT_RowData>({
             sectionConfig={section}
           >
             {fieldCells.map((_, index) => (
-              <Skeleton key={index} variant="rounded" />
+              <Skeleton key={index} height={'40px'} variant="rounded" />
             ))}
           </MRT_NewEntryFormSectionBlock>
         );
@@ -65,7 +65,7 @@ export const MRT_NewEntryFormSkeleton = <TData extends MRT_RowData>({
           }
         >
           {unsectionedCells.map((_, index) => (
-            <Skeleton key={index} variant="rounded" />
+            <Skeleton key={index} height={'40px'} variant="rounded" />
           ))}
         </Stack>
       )}
