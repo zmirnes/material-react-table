@@ -332,10 +332,17 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
               <MRT_TableBodyCellValue {...cellValueProps} />
             </MRT_CopyButton>
           ) : (
-            <MRT_TableBodyCellValue {...cellValueProps} />
+            <span
+              data-testid={cell.getIsGrouped() ? 'group-cell-value' : undefined}
+            >
+              <MRT_TableBodyCellValue {...cellValueProps} />
+            </span>
           )}
           {cell.getIsGrouped() && !columnDef.GroupedCell && (
-            <> ({row.subRows?.length})</>
+            <>
+              (<span data-testid="group-cell-count">{row.subRows?.length}</span>
+              )
+            </>
           )}
         </>
       )}

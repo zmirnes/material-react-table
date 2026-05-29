@@ -164,6 +164,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
         data-index={renderDetailPanel ? staticRowIndex * 2 : staticRowIndex}
         data-pinned={!!isRowPinned || undefined}
         data-selected={isRowSelected || undefined}
+        data-testid={`body-row-${staticRowIndex}`}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         ref={(node: HTMLTableRowElement) => {

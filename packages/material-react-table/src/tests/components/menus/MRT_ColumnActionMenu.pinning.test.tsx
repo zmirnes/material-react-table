@@ -1,30 +1,17 @@
 import { MRT_Localization_HR } from '../../../locales/hr';
 import { type MRT_ColumnDef } from '../../../types';
 import {
+  DEFAULT_TEST_COLUMNS,
+  DEFAULT_TEST_DATA,
+  type MockRowData,
+} from '../../data/mock-data';
+import {
   openColumnMenu,
   renderServerTable,
 } from '../../utils/renderServerTable';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-
-type MockRowData = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  city: string;
-} & Record<string, unknown>;
-
-const DEFAULT_COLUMNS: MRT_ColumnDef<MockRowData>[] = [
-  { accessorKey: 'firstName', header: 'First Name', type: 'string' },
-  { accessorKey: 'lastName', header: 'Last Name', type: 'string' },
-  { accessorKey: 'city', header: 'City', type: 'string' },
-];
-
-const DEFAULT_DATA: MockRowData[] = [
-  { id: '1', firstName: 'Alice', lastName: 'Smith', city: 'NYC' },
-  { id: '2', firstName: 'Bob', lastName: 'Jones', city: 'LA' },
-];
 
 const { pinToLeft, pinToRight, unpin } = MRT_Localization_HR;
 
@@ -62,8 +49,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
     });
     await openColumnMenu(user, 'First Name');
@@ -81,8 +68,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: ['firstName'], right: [] } },
     });
@@ -100,8 +87,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: [], right: ['firstName'] } },
     });
@@ -119,8 +106,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
     });
     await openColumnMenu(user, 'First Name');
@@ -133,8 +120,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
       enableRowSelection: true,
     });
@@ -155,8 +142,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
     });
     await openColumnMenu(user, 'First Name');
@@ -174,8 +161,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: ['firstName'], right: [] } },
     });
@@ -201,7 +188,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
 
     renderServerTable<MockRowData>({
       columns: columnsWithDisabledPinning,
-      data: DEFAULT_DATA,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
     });
     await openColumnMenu(user, 'First Name');
@@ -213,8 +200,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
     });
     await openColumnMenu(user, 'First Name');
@@ -230,8 +217,8 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
     const user = userEvent.setup();
 
     renderServerTable<MockRowData>({
-      columns: DEFAULT_COLUMNS,
-      data: DEFAULT_DATA,
+      columns: DEFAULT_TEST_COLUMNS,
+      data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
       initialState: { columnPinning: { left: ['firstName'], right: [] } },
     });
