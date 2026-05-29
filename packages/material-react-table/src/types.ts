@@ -1812,6 +1812,9 @@ export interface MRT_NewEntryModalState {
   open: boolean;
   // Whether the modal is in create or edit mode. Defaults to 'create' when not provided.
   mode?: 'create' | 'edit';
+  // When true, the form body renders skeleton placeholders instead of real fields.
+  // Set to true when opening the modal before backend data arrives, then set to false once data is ready.
+  isLoading?: boolean;
   // Initial values to pre-populate the form fields.
   // For edit mode: pass row.original. For create mode: pass field defaults or leave undefined.
   initialValues?: Record<string, unknown>;
