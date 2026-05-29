@@ -524,4 +524,92 @@ describe('MRT_NewEntryForm', () => {
       });
     });
   });
+
+  describe('skeleton loading state', () => {
+    it('renders skeleton cells instead of real fields when isLoading is true', () => {
+      const table = buildTable({
+        columns: [
+          { accessorKey: 'name', header: 'Name', type: 'string' },
+          { accessorKey: 'age', header: 'Age', type: 'string' },
+        ],
+        initialNewEntryModal: { open: true, isLoading: true },
+      });
+
+      const { container } = renderFormWithProvider(table);
+
+      // MUI Skeleton renders with class MuiSkeleton-root — one per field placeholder.
+      const skeletonCells = container.querySelectorAll('.MuiSkeleton-root');
+      expect(skeletonCells.length).toBeGreaterThan(0);
+      // Real form inputs must not appear while loading.
+      expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Age')).not.toBeInTheDocument();
+    });
+
+    it('renders exactly one skeleton cell per resolved column field', () => {
+      const columns: MRT_ColumnDef<Record<string, unknown>>[] = [
+        { accessorKey: 'name', header: 'Name', type: 'string' },
+        { accessorKey: 'age', header: 'Age', type: 'string' },
+        { accessorKey: 'email', header: 'Email', type: 'string' },
+      ];
+      const table = buildTable({
+        columns,
+        initialNewEntryModal: { open: true, isLoading: true },
+      });
+
+      const { container } = renderFormWithProvider(table);
+
+      const skeletonCells = container.querySelectorAll('.MuiSkeleton-root');
+      // One skeleton cell per data column — derived from resolveFormFields at render time.
+      expect(skeletonCells.length).toBe(columns.length);
+    });
+
+    it('renders skeleton cells inside section blocks and keeps section titles visible', async () => {
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: 'City',
+            type: 'string',
+            formField: { section: 'address' },
+          },
+          {
+            accessorKey: 'zip',
+            header: 'ZIP',
+            type: 'string',
+            formField: { section: 'address' },
+          },
+        ],
+        formConfig: {
+          sections: [{ id: 'address', title: 'Address Information' }],
+        },
+        initialNewEntryModal: { open: true, isLoading: true },
+      });
+
+      const { container } = renderFormWithProvider(table);
+
+      // Section title is rendered by MRT_NewEntryFormSectionBlock regardless of loading state.
+      expect(screen.getByText('Address Information')).toBeInTheDocument();
+      // Real inputs are absent during loading.
+      expect(screen.queryByLabelText('City')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('ZIP')).not.toBeInTheDocument();
+      // Accordion transition in jsdom is asynchronous — wait for the Details children to mount.
+      await waitFor(() => {
+        const skeletonCells = container.querySelectorAll('.MuiSkeleton-root');
+        expect(skeletonCells.length).toBe(2);
+      });
+    });
+
+    it('does not render skeleton cells when isLoading is false', () => {
+      const table = buildTable({
+        initialNewEntryModal: { open: true, isLoading: false },
+      });
+
+      const { container } = renderFormWithProvider(table);
+
+      const skeletonCells = container.querySelectorAll('.MuiSkeleton-root');
+      expect(skeletonCells.length).toBe(0);
+      // Real fields are rendered normally.
+      expect(screen.getByLabelText('Name')).toBeInTheDocument();
+    });
+  });
 });
