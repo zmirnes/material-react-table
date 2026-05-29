@@ -205,6 +205,8 @@ describe('MRT_NewEntryForm', () => {
             formField: { rules: { required: 'Email is required' } },
           },
         ],
+        // onSave must be defined — Save button is only rendered when a save handler is provided.
+        formConfig: { onSave: vi.fn() },
       });
 
       // includeActions = true so the Save (type="submit") button is present.
@@ -291,7 +293,8 @@ describe('MRT_NewEntryForm', () => {
 
   describe('MRT_NewEntryFormActions — footer buttons', () => {
     it('renders Save and Cancel buttons', () => {
-      const table = buildTable();
+      // onSave must be defined — Save button is only rendered when a save handler is provided.
+      const table = buildTable({ formConfig: { onSave: vi.fn() } });
       renderFormWithProvider(table, true);
 
       expect(
@@ -359,7 +362,10 @@ describe('MRT_NewEntryForm', () => {
           ),
         },
       ];
-      const table = buildTable({ formConfig: { customActions } });
+      // onSave must be defined — Save button is only rendered when a save handler is provided.
+      const table = buildTable({
+        formConfig: { customActions, onSave: vi.fn() },
+      });
 
       renderFormWithProvider(table, true);
 

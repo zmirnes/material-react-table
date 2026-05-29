@@ -1903,6 +1903,15 @@ export interface MRT_FormAdditionalField<
   render: (props: MRT_FormAdditionalFieldRenderProps<TData>) => ReactNode;
 }
 
+// Props passed into renderSaveButton / renderCancelButton render overrides.
+// Includes the standard form callback props plus the default action handler
+// so the consumer can call it (or skip it) from within the custom render.
+export interface MRT_FormActionButtonRenderProps<TData extends MRT_RowData>
+  extends MRT_FormCallbackProps<TData> {
+  // Triggers the default action — submit for save, close for cancel.
+  handleAction: () => void;
+}
+
 // Table-level form configuration for create/edit modals.
 export interface MRT_FormConfig<TData extends MRT_RowData> {
   // Section definitions — fields reference a section by id via MRT_FormFieldConfig.section.
@@ -1918,6 +1927,16 @@ export interface MRT_FormConfig<TData extends MRT_RowData> {
   additionalFields?: MRT_FormAdditionalField<TData>[];
   // Additional buttons rendered in the modal footer alongside the default Save/Cancel buttons.
   customActions?: MRT_FormCustomAction<TData>[];
+  // Replaces the default Save button — receives form context and handleAction (triggers submit).
+  // When provided, the default Save button is not rendered.
+  renderSaveButton?: (
+    props: MRT_FormActionButtonRenderProps<TData>,
+  ) => ReactNode;
+  // Replaces the default Cancel button — receives form context and handleAction (triggers cancel).
+  // When provided, the default Cancel button is not rendered.
+  renderCancelButton?: (
+    props: MRT_FormActionButtonRenderProps<TData>,
+  ) => ReactNode;
   // Replaces the entire form component — when provided, no fields or sections are rendered by default.
   renderForm?: (props: MRT_FormCallbackProps<TData>) => ReactNode;
   // Replaces the entire MUI Dialog — when provided, the default modal wrapper is not rendered at all.
