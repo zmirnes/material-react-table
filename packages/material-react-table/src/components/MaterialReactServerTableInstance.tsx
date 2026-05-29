@@ -164,7 +164,6 @@ export const MaterialReactServerTableInstance = <
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
-    manualGrouping: true,
     enableRowPinning: false,
     getRowId: (originalRow) => originalRow.id,
     state: {
