@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event/dist/cjs/index.js';
 import { describe, expect, it } from 'vitest';
 
 describe('MRT_ExpandAllButton', () => {
-  it('displays first group row label with correct count after grouping by First Name and expanding all', async () => {
+  it('displays first group row label with correct count after grouping by First Name', async () => {
     const user = userEvent.setup();
     renderServerTable<MockRowData>({
       columns: DEFAULT_TEST_COLUMNS,
