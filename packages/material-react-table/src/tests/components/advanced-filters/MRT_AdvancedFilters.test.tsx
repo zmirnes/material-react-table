@@ -5,6 +5,7 @@ import {
   DEFAULT_TEST_DATA,
   type MockRowData,
 } from '../../data/mock-data';
+import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
 import { renderServerTable } from '../../utils/renderServerTable';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -25,18 +26,12 @@ describe('MRT_AdvancedFilters', () => {
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
     });
-    const filtersButton = await screen.findByRole('button', {
-      name: showAdvancedFilters,
-    });
-    expect(filtersButton).toBeInTheDocument();
 
-    await user.click(filtersButton);
-
-    const drawer = await screen.findByRole('dialog');
-    expect(drawer).toBeInTheDocument();
-
-    addFilterButton = await screen.findByRole('button', { name: add });
-    expect(addFilterButton).toBeInTheDocument();
+    // Opens the drawer and resolves the add-rule button in one reusable step
+    ({ addFilterButton } = await openAdvancedFiltersDrawer(user, {
+      showAdvancedFilters,
+      add,
+    }));
   });
   it('should render filter rule row after clicking the add filter button', async () => {
     await user.click(addFilterButton);
