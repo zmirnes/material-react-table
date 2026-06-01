@@ -54,6 +54,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     <TableContainer
       aria-busy={loading}
       aria-describedby={loading ? 'mrt-progress' : undefined}
+      data-testid="mrt-table-container"
       {...tableContainerProps}
       ref={(node: HTMLDivElement) => {
         if (node) {
