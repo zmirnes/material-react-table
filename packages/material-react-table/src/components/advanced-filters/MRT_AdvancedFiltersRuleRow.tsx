@@ -34,7 +34,6 @@ export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   onUpdate: (nextRule: MRT_FilterRule) => void;
   onUpdateLogicOperator: (op: 'and' | 'or') => void;
   rule: MRT_FilterRule;
-  testId: string;
   table: MRT_TableInstance<TData>;
 }
 
@@ -52,7 +51,6 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
   onUpdate,
   onUpdateLogicOperator,
   rule,
-  testId,
   table,
 }: MRT_AdvancedFiltersRuleRowProps<TData>) => {
   const {
@@ -135,7 +133,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
 
   return (
     <Box
-      data-testid={testId}
+      data-testid="mrt-filter-rule-row"
       sx={{
         backgroundColor: 'transparent',
         borderRadius: 1.5,

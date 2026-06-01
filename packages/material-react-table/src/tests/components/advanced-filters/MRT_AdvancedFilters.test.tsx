@@ -13,7 +13,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 const { add, columns, filterOperator } = MRT_Localization_HR;
 
-const FILTER_RULE_ROW_BASE_TEST_ID = 'mrt-filter-rule-row';
+const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
 
 describe('MRT_AdvancedFilters', async () => {
   const user = userEvent.setup();
@@ -21,6 +21,11 @@ describe('MRT_AdvancedFilters', async () => {
     const addFilterButton = await screen.findByRole('button', { name: add });
     expect(addFilterButton).toBeInTheDocument();
     await user.click(addFilterButton);
+  };
+
+  const findFirstFilterRuleRow = async () => {
+    const allRuleRows = await screen.findAllByTestId(FILTER_RULE_ROW_TEST_ID);
+    return allRuleRows[0];
   };
 
   beforeEach(async () => {
@@ -34,17 +39,13 @@ describe('MRT_AdvancedFilters', async () => {
   it('should render filter rule row after clicking the add filter button', async () => {
     await findAndClickAddFilterButton();
 
-    const filterRuleRow = await screen.findByTestId(
-      `${FILTER_RULE_ROW_BASE_TEST_ID}-0`,
-    );
+    const filterRuleRow = await findFirstFilterRuleRow();
     expect(filterRuleRow).toBeInTheDocument();
   });
   it('should render column, operator and value fields after clicking the add filter button', async () => {
     await findAndClickAddFilterButton();
 
-    const filterRuleRow = await screen.findByTestId(
-      `${FILTER_RULE_ROW_BASE_TEST_ID}-0`,
-    );
+    const filterRuleRow = await findFirstFilterRuleRow();
 
     const columnField = await within(filterRuleRow).findByRole('combobox', {
       name: columns,

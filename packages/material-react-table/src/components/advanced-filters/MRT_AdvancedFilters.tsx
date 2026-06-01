@@ -152,7 +152,6 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
               onUpdate={(nextRule) => updateRule(rule.id, nextRule)}
               onUpdateLogicOperator={updateLogicOperator}
               rule={rule}
-              testId={`mrt-filter-rule-row-${index}`}
               table={table}
             />
           ))}
