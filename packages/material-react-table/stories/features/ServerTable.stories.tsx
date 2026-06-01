@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import {
   MaterialReactServerTable,
   MaterialReactTable,
+  useMaterialReactTable,
   type MRT_ColumnDef,
 } from '../../src';
 import { type Date } from '../../src/column-types/date';
@@ -808,3 +809,58 @@ export const WithCustomModalActions = () => (
     }}
   />
 );
+
+// Story za testiranje skeleton loading stanja forme.
+// Simulira edit mod gdje se podaci fetchuju s backenda — skeleton se prikazuje 2 sekunde,
+// zatim se zamjenjuje pravim poljima s podacima.
+export const WithFormSkeleton = () => {
+  const skeletonColumns: MRT_ColumnDef<Person>[] = [
+    { accessorKey: 'firstName', header: 'First Name', type: 'string' },
+    { accessorKey: 'age', header: 'Age', type: 'number' },
+  ];
+
+  const table = useMaterialReactTable<Person>({
+    columns: skeletonColumns,
+    data: fakeDatabase.slice(0, 5),
+    localization: {
+      close: 'Close',
+      newEntry: 'Uredi',
+      edit: 'Uredi',
+      save: 'Spremi',
+      cancel: 'Odustani',
+    },
+    formConfig: {
+      columns: 2,
+      fields: {
+        firstName: { order: 1, label: 'Ime', rules: { required: 'Obavezno' } },
+        age: { order: 2, label: 'Godine' },
+      },
+      onSave: ({ form }) => {
+        alert(JSON.stringify(form.getValues(), null, 2));
+      },
+    },
+  });
+
+  const handleEditClick = () => {
+    // Otvori modal odmah s isLoading: true — skeleton se prikazuje dok "stižu podaci".
+    table.setNewEntryModal({ open: true, mode: 'edit', isLoading: true });
+
+    // Simulira 2-sekundni backend fetch, zatim popunjava prava polja.
+    setTimeout(() => {
+      table.setNewEntryModal({
+        open: true,
+        mode: 'edit',
+        isLoading: false,
+      });
+    }, 2000);
+  };
+
+  return (
+    <Box>
+      <Button onClick={handleEditClick} sx={{ mb: 2 }} variant="contained">
+        Otvori edit (simulira 2s fetch)
+      </Button>
+      <MaterialReactTable table={table} />
+    </Box>
+  );
+};

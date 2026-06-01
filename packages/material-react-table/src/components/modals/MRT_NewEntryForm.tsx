@@ -8,6 +8,7 @@ import {
   sortByOrder,
 } from './MRT_NewEntryFormBuilder';
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
+import { MRT_NewEntryFormSkeleton } from './MRT_NewEntryFormSkeleton';
 import { columnTypeResolvers } from '../../column-types/registy';
 import {
   type MRT_ColumnDef,
@@ -110,6 +111,11 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
   // Consumer controls the entire form body — skip all field calculations.
   if (formConfig?.renderForm) {
     return <>{formConfig.renderForm({ form: methods, mode, table })}</>;
+  }
+
+  // Data is still loading from the backend — show skeleton placeholders.
+  if (newEntryModal.isLoading) {
+    return <MRT_NewEntryFormSkeleton table={table} />;
   }
 
   // Collect all eligible form fields from the table's leaf columns sorted by order.
