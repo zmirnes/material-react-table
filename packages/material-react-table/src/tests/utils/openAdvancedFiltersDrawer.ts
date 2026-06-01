@@ -1,21 +1,14 @@
+import { MRT_Localization_HR } from '../../locales/hr';
 import { screen } from '@testing-library/react';
-import type userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { expect } from 'vitest';
 
-interface AdvancedFiltersDrawerLabels {
-  showAdvancedFilters: string;
-  add: string;
-}
-interface OpenAdvancedFiltersDrawerResult {
-  addFilterButton: HTMLElement;
-}
+const { showAdvancedFilters } = MRT_Localization_HR;
+export const openAdvancedFiltersDrawer = async () => {
+  const user = userEvent.setup();
 
-export const openAdvancedFiltersDrawer = async (
-  user: ReturnType<typeof userEvent.setup>,
-  labels: AdvancedFiltersDrawerLabels,
-): Promise<OpenAdvancedFiltersDrawerResult> => {
   const filtersButton = await screen.findByRole('button', {
-    name: labels.showAdvancedFilters,
+    name: showAdvancedFilters,
   });
   expect(filtersButton).toBeInTheDocument();
 
@@ -23,11 +16,4 @@ export const openAdvancedFiltersDrawer = async (
 
   const drawer = await screen.findByRole('dialog');
   expect(drawer).toBeInTheDocument();
-
-  const addFilterButton = await screen.findByRole('button', {
-    name: labels.add,
-  });
-  expect(addFilterButton).toBeInTheDocument();
-
-  return { addFilterButton };
 };

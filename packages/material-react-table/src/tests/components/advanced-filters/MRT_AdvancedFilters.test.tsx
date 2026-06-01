@@ -11,30 +11,28 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-const { showAdvancedFilters, add, columns, filterOperator } =
-  MRT_Localization_HR;
+const { add, columns, filterOperator } = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_BASE_TEST_ID = 'mrt-filter-rule-row';
 
-describe('MRT_AdvancedFilters', () => {
-  let user: ReturnType<typeof userEvent.setup>;
-  let addFilterButton: HTMLElement;
+describe('MRT_AdvancedFilters', async () => {
+  const user = userEvent.setup();
+  const findAndClickAddFilterButton = async () => {
+    const addFilterButton = await screen.findByRole('button', { name: add });
+    expect(addFilterButton).toBeInTheDocument();
+    await user.click(addFilterButton);
+  };
 
   beforeEach(async () => {
-    user = userEvent.setup();
     renderServerTable<MockRowData>({
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
     });
 
-    // Opens the drawer and resolves the add-rule button in one reusable step
-    ({ addFilterButton } = await openAdvancedFiltersDrawer(user, {
-      showAdvancedFilters,
-      add,
-    }));
+    await openAdvancedFiltersDrawer();
   });
   it('should render filter rule row after clicking the add filter button', async () => {
-    await user.click(addFilterButton);
+    await findAndClickAddFilterButton();
 
     const filterRuleRow = await screen.findByTestId(
       `${FILTER_RULE_ROW_BASE_TEST_ID}-0`,
@@ -42,7 +40,7 @@ describe('MRT_AdvancedFilters', () => {
     expect(filterRuleRow).toBeInTheDocument();
   });
   it('should render column, operator and value fields after clicking the add filter button', async () => {
-    await user.click(addFilterButton);
+    await findAndClickAddFilterButton();
 
     const filterRuleRow = await screen.findByTestId(
       `${FILTER_RULE_ROW_BASE_TEST_ID}-0`,
