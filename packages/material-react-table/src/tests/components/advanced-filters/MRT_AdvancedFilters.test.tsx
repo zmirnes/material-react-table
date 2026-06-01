@@ -7,11 +7,15 @@ import {
 } from '../../data/mock-data';
 import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
 import { renderServerTable } from '../../utils/renderServerTable';
-import { screen, within } from '@testing-library/react';
+import {
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-const { add, columns, filterOperator } = MRT_Localization_HR;
+const { add, columns, filterOperator, advancedFilters } = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_BASE_TEST_ID = 'mrt-filter-rule-row';
 
@@ -59,5 +63,14 @@ describe('MRT_AdvancedFilters', async () => {
     expect(columnField).toBeInTheDocument();
     expect(operatorField).toBeInTheDocument();
     expect(valueInput).toBeInTheDocument();
+  });
+  it('should close drawer after clicking the close drawer button', async () => {
+    const closeDrawerButton = screen.getByRole('button', {
+      name: advancedFilters,
+    });
+    const drawer = await screen.findByRole('dialog');
+    await user.click(closeDrawerButton);
+    await waitForElementToBeRemoved(drawer);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
