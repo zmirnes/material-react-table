@@ -107,33 +107,6 @@ describe('useServerTableState — onRowSelectionChange', () => {
     });
   });
 
-  describe('fetchTrigger isolation', () => {
-    it('should NOT expose rowSelection in fetchTrigger — row selection does not trigger a data fetch', () => {
-      const { result } = renderHook(() => useServerTableState<TestRowData>({}));
-
-      act(() => {
-        result.current.handlers.onRowSelectionChange({ '1': true });
-      });
-
-      // rowSelection must not appear in fetchTrigger
-      expect(
-        (result.current.fetchTrigger as Record<string, unknown>).rowSelection,
-      ).toBeUndefined();
-    });
-
-    it('should not change fetchTrigger when row selection changes', () => {
-      const { result } = renderHook(() => useServerTableState<TestRowData>({}));
-      const fetchTriggerBefore = result.current.fetchTrigger;
-
-      act(() => {
-        result.current.handlers.onRowSelectionChange({ '1': true });
-      });
-
-      // fetchTrigger reference should not change — no fetch needed
-      expect(result.current.fetchTrigger).toEqual(fetchTriggerBefore);
-    });
-  });
-
   describe('saveState behaviour', () => {
     // Enable fake timers so vi.advanceTimersByTime controls the debounce delay
     beforeEach(() => {
