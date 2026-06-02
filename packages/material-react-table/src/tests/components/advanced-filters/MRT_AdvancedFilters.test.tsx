@@ -145,5 +145,8 @@ describe('MRT_AdvancedFilters', async () => {
     // Clear removes all rule rows and closes the drawer
     await waitForElementToBeRemoved(drawerBeforeClear);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await openAdvancedFiltersDrawer();
+    expect(screen.queryAllByTestId(FILTER_RULE_ROW_TEST_ID)).toHaveLength(0);
   });
 });
