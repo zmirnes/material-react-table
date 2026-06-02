@@ -60,10 +60,8 @@ describe('MRT_ActiveFilters', () => {
     expect(activeFiltersContainer).not.toBeInTheDocument();
   });
 
-  it('should render active filters container above the table container', async () => {
-    const tableContainer = await screen.findByTestId('mrt-table-container');
-    expect(isDomElementBefore(activeFiltersContainer, tableContainer)).toBe(
-      true,
-    );
+  it('should render active filters container above the table container', () => {
+    const table = screen.getByRole('table');
+    expect(isDomElementBefore(activeFiltersContainer, table)).toBe(true);
   });
 });
