@@ -5,7 +5,10 @@ import {
   DEFAULT_TEST_DATA,
   type MockRowData,
 } from '../../data/mock-data';
-import { renderServerTable } from '../../utils/renderServerTable';
+import {
+  isDomElementBefore,
+  renderServerTable,
+} from '../../utils/renderServerTable';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -26,34 +29,41 @@ const INITIAL_FILTERS_WITH_ONE_RULE: MRT_FiltersState = {
 
 describe('MRT_ActiveFilters', () => {
   const user = userEvent.setup();
-  beforeEach(() => {
+  let activeFiltersContainer: HTMLElement;
+  beforeEach(async () => {
     renderServerTable<MockRowData>({
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
       initialState: { filters: INITIAL_FILTERS_WITH_ONE_RULE },
     });
-  });
-  it('should render active filters for currently active filters', async () => {
-    const activeFiltersContainer = await screen.findByTestId(
+    activeFiltersContainer = await screen.findByTestId(
       'active-filters-container',
     );
+  });
+
+  it('should render active filters for currently active filters', () => {
     expect(activeFiltersContainer).toBeInTheDocument();
   });
+
   it('should remove active filters container when clear active filter button is clicked', async () => {
-    const activeFiltersContainer = await screen.findByTestId(
-      'active-filters-container',
-    );
     // Verify the container holds exactly one filter item before clearing
     const activeFilterItems = within(activeFiltersContainer).getAllByTestId(
       'active-filter-item',
     );
     expect(activeFilterItems).toHaveLength(1);
+
     const clearActiveFilterButton = await within(
       activeFiltersContainer,
-    ).findByRole('button', {
-      name: clear,
-    });
+    ).findByRole('button', { name: clear });
+
     await user.click(clearActiveFilterButton);
     expect(activeFiltersContainer).not.toBeInTheDocument();
+  });
+
+  it('should render active filters container above the table container', async () => {
+    const tableContainer = await screen.findByTestId('mrt-table-container');
+    expect(isDomElementBefore(activeFiltersContainer, tableContainer)).toBe(
+      true,
+    );
   });
 });
