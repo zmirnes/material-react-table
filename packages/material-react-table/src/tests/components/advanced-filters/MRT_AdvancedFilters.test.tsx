@@ -20,11 +20,11 @@ const { add, clear, columns, filterOperator, advancedFilters, clearFilter } =
   MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
-const DUMMY_FILTER_VALUE = 'filter value';
+const DUMMY_FILTER_VALUE = 'a';
 const THREE_ROWS = 3;
 
 describe('MRT_AdvancedFilters', async () => {
-  const user = userEvent.setup({ delay: null });
+  let user: ReturnType<typeof userEvent.setup>;
 
   const findAndClickAddFilterButton = async () => {
     const addFilterButton = await screen.findByRole('button', { name: add });
@@ -61,6 +61,7 @@ describe('MRT_AdvancedFilters', async () => {
   };
 
   beforeEach(async () => {
+    user = userEvent.setup({ delay: null });
     renderServerTable<MockRowData>({
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
@@ -138,8 +139,11 @@ describe('MRT_AdvancedFilters', async () => {
     expect(allRuleRowsBeforeClear).toHaveLength(THREE_ROWS);
 
     const clearAllButton = screen.getByRole('button', { name: clear });
+    const drawerBeforeClear = screen.getByRole('dialog');
     await user.click(clearAllButton);
 
-    expect(screen.queryAllByTestId(FILTER_RULE_ROW_TEST_ID)).toHaveLength(0);
+    // Clear removes all rule rows and closes the drawer
+    await waitForElementToBeRemoved(drawerBeforeClear);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
