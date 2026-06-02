@@ -17,6 +17,8 @@ import {
   type MRT_TableInstance,
 } from '../../types';
 
+export const FILTER_RULE_VALUE_TEST_ID = 'mrt-filter-rule-value';
+
 export interface MRT_AdvancedFiltersRuleRowProps<TData extends MRT_RowData> {
   filterableColumns: MRT_Column<TData>[];
   // When true this is the first rule — the AND/OR selector is disabled
@@ -131,6 +133,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
 
   return (
     <Box
+      data-testid="mrt-filter-rule-row"
       sx={{
         backgroundColor: 'transparent',
         borderRadius: 1.5,
@@ -206,6 +209,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
         {/* Value editor — rendered by the operator's own editComponent */}
         {/* onKeyDown bubbles from value inputs inside the editor: Enter triggers apply for non-multi operators */}
         <Box
+          data-testid={FILTER_RULE_VALUE_TEST_ID}
           onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
             const shouldApplyOnEnter = selectedOperator.valueShape !== 'multi';
 
