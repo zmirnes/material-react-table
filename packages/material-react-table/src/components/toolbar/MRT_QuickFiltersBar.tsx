@@ -228,6 +228,7 @@ export const MRT_QuickFiltersBar = <TData extends MRT_RowData>({
 
   return (
     <Box
+      data-testid={'quick-filters-bar'}
       sx={{
         alignItems: 'flex-start',
         display: 'flex',

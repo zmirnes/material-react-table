@@ -19,8 +19,16 @@ import {
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { add, clear, columns, filterOperator, advancedFilters, clearFilter } =
-  MRT_Localization_HR;
+const {
+  add,
+  clear,
+  pin,
+  unpin,
+  columns,
+  filterOperator,
+  advancedFilters,
+  clearFilter,
+} = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
 const DUMMY_FILTER_VALUE = 'some_value';
@@ -75,6 +83,18 @@ describe('MRT_AdvancedFilters', async () => {
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+  };
+
+  // Pins the first rule row and asserts the quick filter bar appears — returns the row element
+  const pinFirstRuleRow = async () => {
+    const firstRuleRow = await findFirstFilterRuleRow();
+    const pinButton = within(firstRuleRow).getByRole('button', { name: pin });
+    await user.click(pinButton);
+
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    expect(quickFilterBar).toBeInTheDocument();
+
+    return firstRuleRow;
   };
 
   beforeEach(async () => {
@@ -211,5 +231,23 @@ describe('MRT_AdvancedFilters', async () => {
     const filtersFromLastMockCall = mockCalls[mockCalls.length - 1][0].filters;
     const loadDataFilterRulesValue = filtersFromLastMockCall.rules[0].value;
     expect(loadDataFilterRulesValue).toEqual(DUMMY_FILTER_VALUE);
+  });
+  it('should render QuickFilterBar after pin filter', async () => {
+    expect(screen.queryByTestId('quick-filters-bar')).not.toBeInTheDocument();
+
+    await addFilterRuleRowWithValue(DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+  });
+
+  it('should hide QuickFilterBar after unpin filter', async () => {
+    await addFilterRuleRowWithValue(DUMMY_FILTER_VALUE);
+    const firstRuleRow = await pinFirstRuleRow();
+
+    const unpinButton = within(firstRuleRow).getByRole('button', {
+      name: unpin,
+    });
+    await user.click(unpinButton);
+
+    expect(screen.queryByTestId('quick-filters-bar')).not.toBeInTheDocument();
   });
 });
