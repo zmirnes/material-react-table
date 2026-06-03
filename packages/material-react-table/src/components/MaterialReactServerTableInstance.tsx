@@ -5,6 +5,7 @@ import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
 import {
+  type MRT_TableOptions,
   type MRT_ActiveExportsState,
   type MRT_ExportFileResponse,
   type MRT_ExportParams,
@@ -23,36 +24,39 @@ import {
 } from '../types/actions/actions.types';
 import { createColumnDefs } from '../utils/columns/createColumnDef';
 
-type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> = {
-  config: MRT_TableConfig<TData>;
-  loadData: (
-    currentState: MRT_TableState<TData>,
-  ) => Promise<MRT_TableData<TData>>;
-  saveState: (state: MRT_TableState<TData>) => void;
-  getAllSelectableRowIds?: (props: {
-    table: MRT_TableInstance<TData>;
-  }) => Promise<string[]>;
-  getTotalRows?: (props: {
-    table: MRT_TableInstance<TData>;
-  }) => Promise<number>;
-  onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
-  onDeleteSavedFilter?: (filterName: string) => Promise<void>;
-  initialSavedFilters?: MRT_SavedFilters;
-  loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
-  exportPermissions?: Record<string, string[]>;
-  enableNewEntryButton?: boolean;
-  actions?: Action<TData>[];
-  deleteRowsFn?: ({
-    rowsToDelete,
-    table,
-  }: OnDeleteActionContext<TData>) => Promise<void> | void;
-  editRowFn?: ({
-    rowToEdit,
-    table,
-  }: OnEditActionContext<TData>) => Promise<void> | void;
-  enableResetState?: boolean;
-  resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
-};
+export type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> =
+  Partial<MRT_TableOptions<TData>> & {
+    config: MRT_TableConfig<TData>;
+    loadData: (
+      currentState: MRT_TableState<TData>,
+    ) => Promise<MRT_TableData<TData>>;
+    saveState: (state: MRT_TableState<TData>) => void;
+    getAllSelectableRowIds?: (props: {
+      table: MRT_TableInstance<TData>;
+    }) => Promise<string[]>;
+    getTotalRows?: (props: {
+      table: MRT_TableInstance<TData>;
+    }) => Promise<number>;
+    onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
+    onDeleteSavedFilter?: (filterName: string) => Promise<void>;
+    initialSavedFilters?: MRT_SavedFilters;
+    loadExport?: (
+      params: MRT_ExportParams,
+    ) => Promise<MRT_ExportFileResponse[]>;
+    exportPermissions?: Record<string, string[]>;
+    enableNewEntryButton?: boolean;
+    actions?: Action<TData>[];
+    deleteRowsFn?: ({
+      rowsToDelete,
+      table,
+    }: OnDeleteActionContext<TData>) => Promise<void> | void;
+    editRowFn?: ({
+      rowToEdit,
+      table,
+    }: OnEditActionContext<TData>) => Promise<void> | void;
+    enableResetState?: boolean;
+    resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
+  };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
  *  If only one format exists across all export definitions, auto-selects
@@ -101,6 +105,8 @@ export const MaterialReactServerTableInstance = <
   editRowFn,
   enableResetState,
   resetState,
+  // Extra MRT_TableOptions props (e.g. formConfig) passed directly through to useMaterialReactTable
+  ...tableOptionsOverrides
 }: MaterialReactServerTableInstanceProps<TData>) => {
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
@@ -186,6 +192,7 @@ export const MaterialReactServerTableInstance = <
     availableExports: hasAvailableExports ? allowedExports : undefined,
     loadExport: hasAvailableExports ? loadExport : undefined,
     enableNewEntryButton,
+    ...tableOptionsOverrides,
     ...handlers,
   });
 

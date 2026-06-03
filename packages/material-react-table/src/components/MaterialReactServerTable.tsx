@@ -1,73 +1,31 @@
 import { useEffect, useState } from 'react';
-import { MaterialReactServerTableInstance } from './MaterialReactServerTableInstance';
 import {
-  type MRT_ExportFileResponse,
-  type MRT_ExportParams,
+  MaterialReactServerTableInstance,
+  type MaterialReactServerTableInstanceProps,
+} from './MaterialReactServerTableInstance';
+import {
   type MRT_RowData,
-  type MRT_SavedFilter,
-  type MRT_SavedFilters,
   type MRT_TableConfig,
-  type MRT_TableData,
-  type MRT_TableInstance,
   type MRT_TableState,
 } from '../types';
-import {
-  type Action,
-  type OnDeleteActionContext,
-  type OnEditActionContext,
-} from '../types/actions/actions.types';
 
-export interface MaterialReactServerTableProps<TData extends MRT_RowData> {
+// Extends all Instance props — adds async loadConfig (replaces sync config)
+// and overrides saveState to be async (Instance uses sync internally).
+// All other props (formConfig, actions, loadExport, etc.) are inherited automatically.
+export type MaterialReactServerTableProps<TData extends MRT_RowData> = Omit<
+  MaterialReactServerTableInstanceProps<TData>,
+  'config' | 'saveState'
+> & {
   loadConfig: () => Promise<MRT_TableConfig<TData>>;
-  loadData: (
-    currentState: MRT_TableState<TData>,
-  ) => Promise<MRT_TableData<TData>>;
   saveState: (state: MRT_TableState<TData>) => Promise<void>;
-  getAllSelectableRowIds?: (props: {
-    table: MRT_TableInstance<TData>;
-  }) => Promise<string[]>;
-  getTotalRows?: (props: {
-    table: MRT_TableInstance<TData>;
-  }) => Promise<number>;
-  onSaveFilters?: (savedFilter: MRT_SavedFilter) => Promise<void>;
-  onDeleteSavedFilter?: (filterName: string) => Promise<void>;
-  initialSavedFilters?: MRT_SavedFilters;
-  loadExport?: (params: MRT_ExportParams) => Promise<MRT_ExportFileResponse[]>;
-  exportPermissions?: Record<string, string[]>;
-  // When true, renders a built-in "Add" button in the top toolbar that opens the new entry modal.
-  enableNewEntryButton?: boolean;
-  actions?: Action<TData>[];
-  deleteRowsFn?: ({
-    rowsToDelete,
-    table,
-  }: OnDeleteActionContext<TData>) => Promise<void> | void;
-  editRowFn?: ({
-    rowToEdit,
-    table,
-  }: OnEditActionContext<TData>) => Promise<void> | void;
-  enableResetState?: boolean;
-  resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
-}
+};
 
 export const MaterialReactServerTable = <
   TData extends MRT_RowData & { id: string },
 >({
   loadConfig,
-  loadData,
   saveState,
-  getAllSelectableRowIds,
-  getTotalRows,
-  onSaveFilters,
-  onDeleteSavedFilter,
-  initialSavedFilters,
-  loadExport,
-  exportPermissions,
-  enableNewEntryButton,
-  actions,
-  deleteRowsFn,
-  editRowFn,
-  enableResetState,
-  resetState,
+  ...instanceProps
 }: MaterialReactServerTableProps<TData>) => {
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -108,21 +66,8 @@ export const MaterialReactServerTable = <
   return (
     <MaterialReactServerTableInstance<TData>
       config={config}
-      loadData={loadData}
       saveState={saveState}
-      getAllSelectableRowIds={getAllSelectableRowIds}
-      getTotalRows={getTotalRows}
-      onSaveFilters={onSaveFilters}
-      onDeleteSavedFilter={onDeleteSavedFilter}
-      initialSavedFilters={initialSavedFilters}
-      loadExport={loadExport}
-      exportPermissions={exportPermissions}
-      enableNewEntryButton={enableNewEntryButton}
-      actions={actions}
-      deleteRowsFn={deleteRowsFn}
-      editRowFn={editRowFn}
-      enableResetState={enableResetState}
-      resetState={resetState}
+      {...instanceProps}
     />
   );
 };
