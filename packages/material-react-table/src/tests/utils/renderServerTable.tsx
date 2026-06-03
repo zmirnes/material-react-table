@@ -63,18 +63,3 @@ export const groupTableByColumn = async (
   });
   await user.click(groupByMenuItem);
 };
-
-/**
- * Returns true if `firstElement` appears before `secondElement` in the DOM tree.
- * Uses Node.compareDocumentPosition — no external dependencies required.
- */
-export const isDomElementBefore = (
-  firstElement: Element,
-  secondElement: Element,
-): boolean => {
-  // Check where secondElement is positioned in the DOM relative to firstElement
-  const secondElementDomPosition =
-    firstElement.compareDocumentPosition(secondElement);
-  // DOCUMENT_POSITION_FOLLOWING (4) means secondElement comes after firstElement in the DOM
-  return (secondElementDomPosition & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
-};
