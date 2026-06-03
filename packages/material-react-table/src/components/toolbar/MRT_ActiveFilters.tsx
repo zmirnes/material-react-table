@@ -18,6 +18,7 @@ export const MRT_ActiveFilters = <TData extends MRT_RowData>({
 
   return (
     <Stack
+      data-testid="active-filters-container"
       gap={1}
       direction="row"
       p={1}
