@@ -168,7 +168,7 @@ describe('MRT_AdvancedFilters', async () => {
   });
 
   it('should remove all filter rule rows after clicking the clear button', async () => {
-    const mockCallBeforeClear = mockLoadData.mock.calls[0][0];
+    const mockCallStateBeforeClear = mockLoadData.mock.calls[0][0];
     await addThreeFilterRuleRowsWithValues();
     const allRuleRowsBeforeDelete = await screen.findAllByTestId(
       FILTER_RULE_ROW_TEST_ID,
@@ -181,13 +181,13 @@ describe('MRT_AdvancedFilters', async () => {
       FILTER_RULE_ROW_TEST_ID,
     );
     expect(allRuleRowsAfterClear).toHaveLength(0);
-    const mockCallAfterClear =
+    const mockCallStateAfterClear =
       mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0];
 
     // The state passed to loadData after clearing filters should have an empty advancedFilters array
     // The state passed to the last loadData call must equal the state from the very first call —
     // clicking the clear button resets draft filters without triggering a new loadData fetch
-    expect(mockCallAfterClear).toEqual(mockCallBeforeClear);
+    expect(mockCallStateAfterClear).toEqual(mockCallStateBeforeClear);
   });
   it('should call loadData with the applied filter rules after clicking the apply button', async () => {
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
