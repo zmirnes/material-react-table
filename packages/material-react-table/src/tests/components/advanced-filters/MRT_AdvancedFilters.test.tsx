@@ -170,10 +170,17 @@ describe('MRT_AdvancedFilters', async () => {
   it('should remove all filter rule rows after clicking the clear button', async () => {
     const mockCallBeforeClear = mockLoadData.mock.calls[0][0];
     await addThreeFilterRuleRowsWithValues();
+    const allRuleRowsBeforeDelete = await screen.findAllByTestId(
+      FILTER_RULE_ROW_TEST_ID,
+    );
+    expect(allRuleRowsBeforeDelete).toHaveLength(THREE_ROWS);
 
     const clearAllButton = screen.getByRole('button', { name: clear });
     await user.click(clearAllButton);
-
+    const allRuleRowsAfterClear = screen.queryAllByTestId(
+      FILTER_RULE_ROW_TEST_ID,
+    );
+    expect(allRuleRowsAfterClear).toHaveLength(0);
     const mockCallAfterClear =
       mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0];
 
