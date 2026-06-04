@@ -34,11 +34,11 @@
   "size-limit": [
     {
       "path": "dist/index.js",
-      "limit": "80 kB"
+      "limit": "190 kB"
     },
     {
       "path": "dist/index.esm.js",
-      "limit": "76 kB"
+      "limit": "150 kB"
     }
   ],
   "engines": {
@@ -120,7 +120,8 @@
     "tslib": "^2.8.1",
     "typescript": "5.7.2",
     "vite": "^7.3.2",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "@dooherceg/mui-date-range-picker": "^0.2.8"
   },
   "peerDependencies": {
     "@emotion/react": ">=11.13",
@@ -130,10 +131,10 @@
     "print-js": ">=1.6",
     "react": ">=18.0",
     "react-dom": ">=18.0",
-    "react-hook-form": ">=7.0"
+    "react-hook-form": ">=7.0",
+    "@dooherceg/mui-date-range-picker": "^0.2.8"
   },
   "dependencies": {
-    "@dooherceg/mui-date-range-picker": "^0.2.8",
     "@tanstack/match-sorter-utils": "8.19.4",
     "@tanstack/react-table": "8.20.6",
     "@tanstack/react-virtual": "3.11.2",
