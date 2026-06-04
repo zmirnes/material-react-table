@@ -131,7 +131,8 @@
     "print-js": ">=1.6",
     "react": ">=18.0",
     "react-dom": ">=18.0",
-    "react-hook-form": ">=7.0"
+    "react-hook-form": ">=7.0",
+    "@dooherceg/mui-date-range-picker": "^0.2.8"
   },
   "dependencies": {
     "@tanstack/match-sorter-utils": "8.19.4",
