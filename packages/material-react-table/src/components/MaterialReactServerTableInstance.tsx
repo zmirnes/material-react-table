@@ -30,7 +30,7 @@ export type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> =
     loadData: (
       currentState: MRT_TableState<TData>,
     ) => Promise<MRT_TableData<TData>>;
-    saveState: (state: MRT_TableState<TData>) => void;
+    saveState: (state: MRT_TableState<TData>) => Promise<void>;
     getAllSelectableRowIds?: (props: {
       table: MRT_TableInstance<TData>;
     }) => Promise<string[]>;

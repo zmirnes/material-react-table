@@ -130,8 +130,7 @@
     "print-js": ">=1.6",
     "react": ">=18.0",
     "react-dom": ">=18.0",
-    "react-hook-form": ">=7.0",
-    "@dooherceg/mui-date-range-picker": "^0.2.8"
+    "react-hook-form": ">=7.0"
   },
   "dependencies": {
     "@tanstack/match-sorter-utils": "8.19.4",
@@ -139,6 +138,7 @@
     "@tanstack/react-virtual": "3.11.2",
     "dayjs": "^1.11.13",
     "highlight-words": "2.0.0",
-    "use-debounce": "^10.1.1"
+    "use-debounce": "^10.1.1",
+    "@dooherceg/mui-date-range-picker": "^0.2.8"
   }
 }

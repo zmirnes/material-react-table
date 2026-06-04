@@ -3,21 +3,16 @@ import {
   MaterialReactServerTableInstance,
   type MaterialReactServerTableInstanceProps,
 } from './MaterialReactServerTableInstance';
-import {
-  type MRT_RowData,
-  type MRT_TableConfig,
-  type MRT_TableState,
-} from '../types';
+import { type MRT_RowData, type MRT_TableConfig } from '../types';
 
 // Extends all Instance props — adds async loadConfig (replaces sync config)
 // and overrides saveState to be async (Instance uses sync internally).
 // All other props (formConfig, actions, loadExport, etc.) are inherited automatically.
 export type MaterialReactServerTableProps<TData extends MRT_RowData> = Omit<
   MaterialReactServerTableInstanceProps<TData>,
-  'config' | 'saveState'
+  'config'
 > & {
   loadConfig: () => Promise<MRT_TableConfig<TData>>;
-  saveState: (state: MRT_TableState<TData>) => Promise<void>;
 };
 
 export const MaterialReactServerTable = <
