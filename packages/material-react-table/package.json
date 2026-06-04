@@ -139,7 +139,6 @@
     "@tanstack/react-virtual": "3.11.2",
     "dayjs": "^1.11.13",
     "highlight-words": "2.0.0",
-    "use-debounce": "^10.1.1",
-    "@dooherceg/mui-date-range-picker": "^0.2.8"
+    "use-debounce": "^10.1.1"
   }
 }
