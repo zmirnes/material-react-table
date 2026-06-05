@@ -31,6 +31,7 @@ export const MRT_ActiveFilterItem = <TData extends MRT_RowData>({
 
   return (
     <Box
+      data-testid="active-filter-item"
       sx={{
         display: 'flex',
         gap: 1,
