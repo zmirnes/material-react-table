@@ -1,23 +1,27 @@
+import { FILTER_RULE_VALUE_TEST_ID } from '../../../components/advanced-filters/MRT_AdvancedFiltersRuleRow';
 import { MaterialReactServerTable } from '../../../components/MaterialReactServerTable';
 import { MRT_Localization_HR } from '../../../locales/hr';
-import { type MRT_FiltersState } from '../../../types';
+import { type MRT_FilterRule, type MRT_FiltersState } from '../../../types';
 import {
   DEFAULT_TEST_COLUMNS,
   DEFAULT_TEST_DATA,
   type MockRowData,
 } from '../../data/mock-data';
+import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
 import { renderServerTable } from '../../utils/renderServerTable';
 import {
   cleanup,
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { clear } = MRT_Localization_HR;
+const { clear, advancedFilters } = MRT_Localization_HR;
+const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
 const INITIAL_FILTERS_WITH_TWO_RULES: MRT_FiltersState = {
   logicOperator: 'and',
   pinnedFilters: [],
@@ -130,7 +134,7 @@ describe('MRT_ActiveFilters — loadData is triggered by filter changes', () => 
   const user = userEvent.setup();
   afterEach(cleanup);
 
-  it('should call loadData after clear button click and pass filters that differ from the filters passed before the active filter was removed', async () => {
+  it('should call loadData without the cleared filter rule after clear button is clicked', async () => {
     const mockLoadData = vi.fn().mockResolvedValue({
       data: DEFAULT_TEST_DATA,
       rowCount: DEFAULT_TEST_DATA.length,
@@ -151,67 +155,41 @@ describe('MRT_ActiveFilters — loadData is triggered by filter changes', () => 
     const activeFiltersContainer = screen.getByTestId(
       'active-filters-container',
     );
-    const mockCalls = mockLoadData.mock.calls;
-    const callCountBeforeClear = mockCalls.length;
-    const lastCallBeforeClear = mockCalls[callCountBeforeClear - 1][0];
-    const loadDataFiltersBeforeClear: MRT_FiltersState =
-      lastCallBeforeClear.filters;
 
+    // Capture the only rule from initial state — this is the item that will be cleared
+    const clearedFilterRule: MRT_FilterRule =
+      INITIAL_FILTERS_WITH_ONE_RULE.rules[0];
+
+    // Verify the filter rule is present in the last loadData call before clearing
+    const lastCallBeforeClear =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0];
+    const filterRulesBeforeClear: MRT_FilterRule[] =
+      lastCallBeforeClear.filters.rules;
+    expect(
+      filterRulesBeforeClear.some((rule) => rule.id === clearedFilterRule.id),
+    ).toBe(true);
     const clearButton = within(activeFiltersContainer).getByRole('button', {
       name: clear,
     });
-    await user.click(clearButton);
 
-    await waitFor(() => {
-      expect(mockCalls.length).toBeGreaterThan(callCountBeforeClear);
-    });
-
-    const callCountAfterClear = mockCalls.length;
-    const lastCallAfterClear = mockCalls[callCountAfterClear - 1][0];
-    const loadDataFiltersAfterClear: MRT_FiltersState =
-      lastCallAfterClear.filters;
-
-    expect(loadDataFiltersAfterClear).not.toEqual(loadDataFiltersBeforeClear);
-  });
-  it('should call loadData with empty filter rules after all filters are cleared', async () => {
-    const mockLoadData = vi.fn().mockResolvedValue({
-      data: DEFAULT_TEST_DATA,
-      rowCount: DEFAULT_TEST_DATA.length,
-    });
-
-    render(
-      <MaterialReactServerTable<MockRowData>
-        loadConfig={async () => ({
-          columns: DEFAULT_TEST_COLUMNS,
-          initialState: { filters: INITIAL_FILTERS_WITH_ONE_RULE },
-        })}
-        loadData={mockLoadData}
-        saveState={async () => {}}
-      />,
-    );
-
-    await screen.findByTestId('active-filters-container');
-
-    const activeFiltersContainer = screen.getByTestId(
-      'active-filters-container',
-    );
-    const clearButton = within(activeFiltersContainer).getByRole('button', {
-      name: clear,
-    });
-    // Reset the spy so only post-clear calls are counted
+    // Reset the spy so only post-clear calls are tracked
     mockLoadData.mockClear();
 
     await user.click(clearButton);
 
-    // Wait for loadData to be invoked after the filter state update
     await waitFor(() => {
       expect(mockLoadData).toHaveBeenCalled();
     });
 
-    const lastCallTableState =
+    const lastCallAfterClear =
       mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0];
+    const filterRulesAfterClear: MRT_FilterRule[] =
+      lastCallAfterClear.filters.rules;
 
-    expect(lastCallTableState.filters.rules).toHaveLength(0);
+    // Verify the cleared rule is no longer present among the active filter rules
+    expect(
+      filterRulesAfterClear.some((rule) => rule.id === clearedFilterRule.id),
+    ).toBe(false);
   });
 
   it('should call loadData again after one of multiple active filters is removed', async () => {
@@ -236,12 +214,51 @@ describe('MRT_ActiveFilters — loadData is triggered by filter changes', () => 
     const activeFiltersContainer = screen.getByTestId(
       'active-filters-container',
     );
-    const allFilterItems = within(activeFiltersContainer).getAllByTestId(
+
+    // Capture the first rule from initial state — this is the item that will be removed
+    const removedFilterRule: MRT_FilterRule =
+      INITIAL_FILTERS_WITH_TWO_RULES.rules[0];
+
+    // Verify the first filter rule is present in the last loadData call before removal
+    const lastCallBeforeRemoval =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0];
+    const filterRulesBeforeRemoval: MRT_FilterRule[] =
+      lastCallBeforeRemoval.filters.rules;
+    expect(
+      filterRulesBeforeRemoval.some((rule) => rule.id === removedFilterRule.id),
+    ).toBe(true);
+
+    // Open the drawer and verify the removed rule's value is present among the rule rows
+    await openAdvancedFiltersDrawer();
+    const allRuleRowsBeforeRemoval = await screen.findAllByTestId(
+      FILTER_RULE_ROW_TEST_ID,
+    );
+    const ruleRowValuesBeforeRemoval: string[] = await Promise.all(
+      allRuleRowsBeforeRemoval.map(async (ruleRow) => {
+        const valueEditorBox = await within(ruleRow).findByTestId(
+          FILTER_RULE_VALUE_TEST_ID,
+        );
+        const textInput: HTMLInputElement =
+          within(valueEditorBox).getByRole('textbox');
+        return textInput.value;
+      }),
+    );
+    expect(ruleRowValuesBeforeRemoval).toContain(removedFilterRule.value);
+
+    // Close the drawer so the active filter items are interactable again
+    const closeDrawerButton = screen.getByRole('button', {
+      name: advancedFilters,
+    });
+    await user.click(closeDrawerButton);
+    await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
+
+    // Re-query filter items after the drawer is closed to avoid stale element references
+    const allActiveFilterItems = within(activeFiltersContainer).getAllByTestId(
       'active-filter-item',
     );
 
     // Pick the clear button that belongs only to the first filter item
-    const clearButtonOfFirstItem = within(allFilterItems[0]).getByRole(
+    const clearButtonOfFirstItem = within(allActiveFilterItems[0]).getByRole(
       'button',
       { name: clear },
     );
@@ -257,7 +274,31 @@ describe('MRT_ActiveFilters — loadData is triggered by filter changes', () => 
 
     const lastCallTableState =
       mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0];
+    const filterRulesAfterRemoval: MRT_FilterRule[] =
+      lastCallTableState.filters.rules;
 
-    expect(lastCallTableState.filters.rules).toHaveLength(1);
+    // Verify the removed rule is no longer present among the active filter rules
+    expect(
+      filterRulesAfterRemoval.some((rule) => rule.id === removedFilterRule.id),
+    ).toBe(false);
+    expect(filterRulesAfterRemoval).toHaveLength(1);
+
+    // Open the drawer and verify the removed rule's value is absent from all rule rows
+    await openAdvancedFiltersDrawer();
+    const allRuleRowsAfterRemoval = await screen.findAllByTestId(
+      FILTER_RULE_ROW_TEST_ID,
+    );
+    const ruleRowValuesAfterRemoval: string[] = await Promise.all(
+      allRuleRowsAfterRemoval.map(async (ruleRow) => {
+        const valueEditorBox = await within(ruleRow).findByTestId(
+          FILTER_RULE_VALUE_TEST_ID,
+        );
+        const textInput: HTMLInputElement =
+          within(valueEditorBox).getByRole('textbox');
+        return textInput.value;
+      }),
+    );
+    // Verify the removed rule's value is no longer present in any drawer rule row
+    expect(ruleRowValuesAfterRemoval).not.toContain(removedFilterRule.value);
   });
 });
