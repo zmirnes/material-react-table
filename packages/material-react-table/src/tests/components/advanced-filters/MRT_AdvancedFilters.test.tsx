@@ -8,11 +8,14 @@ import {
   type MockRowData,
 } from '../../data/mock-data';
 import { applyAdvancedFilter } from '../../utils/applyAdvancedFilter';
+import { getRuleRowValuesFromDrawer } from '../../utils/getRuleRowValuesFromDrawer';
 import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react';
@@ -221,7 +224,6 @@ describe('MRT_AdvancedFilters', async () => {
     expect(enteredTextInput.value).toBe(DUMMY_FILTER_VALUE);
 
     await applyAdvancedFilter();
-    await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(
       await screen.findByTestId('active-filters-container'),
@@ -235,12 +237,12 @@ describe('MRT_AdvancedFilters', async () => {
   it('should render QuickFilterBar after pin filter', async () => {
     expect(screen.queryByTestId('quick-filters-bar')).not.toBeInTheDocument();
 
-    await addFilterRuleRowWithValue(DUMMY_FILTER_VALUE);
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
     await pinFirstRuleRow();
   });
 
   it('should hide QuickFilterBar after unpin filter', async () => {
-    await addFilterRuleRowWithValue(DUMMY_FILTER_VALUE);
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
     const firstRuleRow = await pinFirstRuleRow();
 
     const unpinButton = within(firstRuleRow).getByRole('button', {
@@ -249,5 +251,70 @@ describe('MRT_AdvancedFilters', async () => {
     await user.click(unpinButton);
 
     expect(screen.queryByTestId('quick-filters-bar')).not.toBeInTheDocument();
+  });
+  it('should show same input value in both the drawer and the quick filter bar after pinning a rule row and apply advanced filters', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    const firstRuleRow = await pinFirstRuleRow();
+
+    // Extract the value from the text input inside the first rule row's value editor box
+    const valueEditorBox = await within(firstRuleRow).findByTestId(
+      FILTER_RULE_VALUE_TEST_ID,
+    );
+    const drawerRuleTextInput: HTMLInputElement =
+      within(valueEditorBox).getByRole('textbox');
+    const drawerRuleInputValue = drawerRuleTextInput.value;
+    // Apply the filter and close the drawer
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    // Verify the quick filter bar is still visible after the drawer closes
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    expect(quickFilterBar).toBeInTheDocument();
+
+    // Collect the values of all text inputs rendered inside the quick filter bar
+    const allQuickFilterTextInputs: HTMLInputElement[] =
+      within(quickFilterBar).getAllByRole('textbox');
+    const allQuickFilterInputValues = allQuickFilterTextInputs.map(
+      (input) => input.value,
+    );
+    expect(allQuickFilterInputValues).toContain(drawerRuleInputValue);
+  });
+  it('should hide quick filter bar after unpinning a quick filter but keep the rule row present in the drawer', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+
+    // Apply the filter and close the drawer
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    const quickFilter = await screen.findByTestId('quick-filter');
+
+    expect(quickFilterBar).toBeInTheDocument();
+    expect(quickFilter).toBeInTheDocument();
+
+    // Read the quick filter input value before unpinning so we can assert it is preserved in the drawer
+    const quickFilterTextInput: HTMLInputElement =
+      within(quickFilterBar).getByRole('textbox');
+    const quickFilterInputValueBeforeUnpin = quickFilterTextInput.value;
+
+    // Hover over the quick filter label row to reveal the unpin button
+    fireEvent.mouseEnter(quickFilter);
+
+    const unpinButton = await within(quickFilter).findByRole('button');
+    expect(unpinButton).toBeInTheDocument();
+    await user.click(unpinButton);
+    await waitFor(() => {
+      expect(quickFilterBar).not.toBeInTheDocument();
+      expect(quickFilter).not.toBeInTheDocument();
+    });
+
+    await openAdvancedFiltersDrawer();
+    const ruleRowValuesAfterRemoval = await getRuleRowValuesFromDrawer();
+
+    // Verify the rule row value is still present in the drawer after unpinning the quick filter
+    expect(ruleRowValuesAfterRemoval).toContain(
+      quickFilterInputValueBeforeUnpin,
+    );
   });
 });

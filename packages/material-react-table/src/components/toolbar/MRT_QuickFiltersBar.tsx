@@ -153,7 +153,10 @@ const MRT_QuickFilterItem = <TData extends MRT_RowData>({
       }}
     >
       {/* Label row: column name + hover unpin button */}
-      <Box sx={{ alignItems: 'center', display: 'flex' }}>
+      <Box
+        data-testid={`quick-filter`}
+        sx={{ alignItems: 'center', display: 'flex' }}
+      >
         <Box
           component="span"
           sx={{
@@ -199,7 +202,6 @@ const MRT_QuickFilterItem = <TData extends MRT_RowData>({
           </Tooltip>
         )}
       </Box>
-
       {/* Value editor rendered by the operator's own editComponent */}
       <Box>
         {operator.editComponent({

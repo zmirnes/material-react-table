@@ -1,4 +1,3 @@
-import { FILTER_RULE_VALUE_TEST_ID } from '../../../components/advanced-filters/MRT_AdvancedFiltersRuleRow';
 import { MaterialReactServerTable } from '../../../components/MaterialReactServerTable';
 import { MRT_Localization_HR } from '../../../locales/hr';
 import { type MRT_FilterRule, type MRT_FiltersState } from '../../../types';
@@ -7,6 +6,7 @@ import {
   DEFAULT_TEST_DATA,
   type MockRowData,
 } from '../../data/mock-data';
+import { getRuleRowValuesFromDrawer } from '../../utils/getRuleRowValuesFromDrawer';
 import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
 import { renderServerTable } from '../../utils/renderServerTable';
 import {
@@ -21,7 +21,6 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { clear, advancedFilters } = MRT_Localization_HR;
-const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
 const INITIAL_FILTERS_WITH_TWO_RULES: MRT_FiltersState = {
   logicOperator: 'and',
   pinnedFilters: [],
@@ -230,19 +229,7 @@ describe('MRT_ActiveFilters — loadData is triggered by filter changes', () => 
 
     // Open the drawer and verify the removed rule's value is present among the rule rows
     await openAdvancedFiltersDrawer();
-    const allRuleRowsBeforeRemoval = await screen.findAllByTestId(
-      FILTER_RULE_ROW_TEST_ID,
-    );
-    const ruleRowValuesBeforeRemoval: string[] = await Promise.all(
-      allRuleRowsBeforeRemoval.map(async (ruleRow) => {
-        const valueEditorBox = await within(ruleRow).findByTestId(
-          FILTER_RULE_VALUE_TEST_ID,
-        );
-        const textInput: HTMLInputElement =
-          within(valueEditorBox).getByRole('textbox');
-        return textInput.value;
-      }),
-    );
+    const ruleRowValuesBeforeRemoval = await getRuleRowValuesFromDrawer();
     expect(ruleRowValuesBeforeRemoval).toContain(removedFilterRule.value);
 
     // Close the drawer so the active filter items are interactable again
@@ -285,19 +272,7 @@ describe('MRT_ActiveFilters — loadData is triggered by filter changes', () => 
 
     // Open the drawer and verify the removed rule's value is absent from all rule rows
     await openAdvancedFiltersDrawer();
-    const allRuleRowsAfterRemoval = await screen.findAllByTestId(
-      FILTER_RULE_ROW_TEST_ID,
-    );
-    const ruleRowValuesAfterRemoval: string[] = await Promise.all(
-      allRuleRowsAfterRemoval.map(async (ruleRow) => {
-        const valueEditorBox = await within(ruleRow).findByTestId(
-          FILTER_RULE_VALUE_TEST_ID,
-        );
-        const textInput: HTMLInputElement =
-          within(valueEditorBox).getByRole('textbox');
-        return textInput.value;
-      }),
-    );
+    const ruleRowValuesAfterRemoval = await getRuleRowValuesFromDrawer();
     // Verify the removed rule's value is no longer present in any drawer rule row
     expect(ruleRowValuesAfterRemoval).not.toContain(removedFilterRule.value);
   });
