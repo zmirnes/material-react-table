@@ -8,22 +8,38 @@ import {
   type MockRowData,
 } from '../../data/mock-data';
 import { applyAdvancedFilter } from '../../utils/applyAdvancedFilter';
+import { getRuleRowValuesFromDrawer } from '../../utils/getRuleRowValuesFromDrawer';
 import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { add, clear, columns, filterOperator, advancedFilters, clearFilter } =
-  MRT_Localization_HR;
+const {
+  add,
+  clear,
+  pin,
+  unpin,
+  columns,
+  filterOperator,
+  advancedFilters,
+  clearFilter,
+  discardChanges,
+} = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
 const DUMMY_FILTER_VALUE = 'some_value';
+// Value used exclusively to verify that the quick filter bar syncs back to the drawer rule row
+const UPDATED_QUICK_FILTER_VALUE = 'updated_quick_filter_value';
+// Value used exclusively to verify that the drawer rule row syncs forward to the quick filter bar
+const UPDATED_DRAWER_RULE_INPUT_VALUE = 'updated_drawer_rule_value';
 const THREE_ROWS = 3;
 
 type MockLoadDataFn = (
@@ -55,6 +71,72 @@ const addFilterRuleRowWithValue = async (user: UserEvent, value: string) => {
   await typeValueIntoLastRuleRow(user, value);
 };
 
+type QuickFilterBarValues = {
+  quickFilterInputValue: string;
+  quickFilterLabel: string;
+};
+
+type DrawerRuleRowSubmitResult = {
+  drawerRuleInputValue: string;
+  drawerRuleTextInput: HTMLInputElement;
+};
+
+// Clears the first rule row input, types the given value, submits via Enter, and waits for the drawer to close
+const updateFirstDrawerRuleRowValueAndSubmit = async (
+  user: UserEvent,
+  newValue: string,
+): Promise<DrawerRuleRowSubmitResult> => {
+  const firstRuleRow = await findFirstFilterRuleRow();
+  const valueEditorBox = await within(firstRuleRow).findByTestId(
+    FILTER_RULE_VALUE_TEST_ID,
+  );
+  const drawerRuleTextInput: HTMLInputElement =
+    within(valueEditorBox).getByRole('textbox');
+
+  // Replace the existing rule row value with a new one
+  await user.clear(drawerRuleTextInput);
+  await user.type(drawerRuleTextInput, newValue);
+  const drawerRuleInputValue = drawerRuleTextInput.value;
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  // Pressing Enter commits the new value and closes the drawer
+  await user.keyboard('{Enter}');
+  await waitFor(() => {
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  return { drawerRuleInputValue, drawerRuleTextInput };
+};
+
+const replaceQuickFilterInputValue = async (
+  user: UserEvent,
+  newValue: string,
+): Promise<QuickFilterBarValues> => {
+  const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+  expect(quickFilterBar).toBeInTheDocument();
+
+  // Find the quick filter item and extract the two label spans directly via DOM query —
+  // the quick-filter div contains exactly two <span> elements: column label and operator label
+  const quickFilter = await within(quickFilterBar).findByTestId('quick-filter');
+  const [columnLabelSpan, operatorLabelSpan] =
+    quickFilter.querySelectorAll('span');
+
+  // Replace the existing quick filter value with the new one
+  const quickFilterTextInput: HTMLInputElement =
+    within(quickFilterBar).getByRole('textbox');
+  await user.clear(quickFilterTextInput);
+  await user.type(quickFilterTextInput, newValue);
+
+  return {
+    quickFilterInputValue: quickFilterTextInput.value,
+    // Combine column label and operator label into a single display label (e.g. "Name contains").
+    // Replace non-breaking spaces (\u00a0 from &nbsp;) with regular spaces so string comparisons work correctly.
+    quickFilterLabel:
+      `${columnLabelSpan?.textContent ?? ''}${operatorLabelSpan?.textContent ?? ''}`
+        .replace(/\u00a0/g, ' ')
+        .trim(),
+  };
+};
+
 const renderTableWithMockLoadData = (mockLoadData: MockLoadDataFn) => {
   render(
     <MaterialReactServerTable<MockRowData>
@@ -75,6 +157,18 @@ describe('MRT_AdvancedFilters', async () => {
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+  };
+
+  // Pins the first rule row and asserts the quick filter bar appears — returns the row element
+  const pinFirstRuleRow = async () => {
+    const firstRuleRow = await findFirstFilterRuleRow();
+    const pinButton = within(firstRuleRow).getByRole('button', { name: pin });
+    await user.click(pinButton);
+
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    expect(quickFilterBar).toBeInTheDocument();
+
+    return firstRuleRow;
   };
 
   beforeEach(async () => {
@@ -201,7 +295,6 @@ describe('MRT_AdvancedFilters', async () => {
     expect(enteredTextInput.value).toBe(DUMMY_FILTER_VALUE);
 
     await applyAdvancedFilter();
-    await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(
       await screen.findByTestId('active-filters-container'),
@@ -211,5 +304,208 @@ describe('MRT_AdvancedFilters', async () => {
     const filtersFromLastMockCall = mockCalls[mockCalls.length - 1][0].filters;
     const loadDataFilterRulesValue = filtersFromLastMockCall.rules[0].value;
     expect(loadDataFilterRulesValue).toEqual(DUMMY_FILTER_VALUE);
+  });
+  it('should render QuickFilterBar after pin filter', async () => {
+    expect(screen.queryByTestId('quick-filters-bar')).not.toBeInTheDocument();
+
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+  });
+
+  it('should hide QuickFilterBar after unpin filter', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    const firstRuleRow = await pinFirstRuleRow();
+
+    const unpinButton = within(firstRuleRow).getByRole('button', {
+      name: unpin,
+    });
+    await user.click(unpinButton);
+
+    expect(screen.queryByTestId('quick-filters-bar')).not.toBeInTheDocument();
+  });
+  it('should show same input value in both the drawer and the quick filter bar after pinning a rule row and apply advanced filters', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    const firstRuleRow = await pinFirstRuleRow();
+
+    // Extract the value from the text input inside the first rule row's value editor box
+    const valueEditorBox = await within(firstRuleRow).findByTestId(
+      FILTER_RULE_VALUE_TEST_ID,
+    );
+    const drawerRuleTextInput: HTMLInputElement =
+      within(valueEditorBox).getByRole('textbox');
+    const drawerRuleInputValue = drawerRuleTextInput.value;
+    // Apply the filter and close the drawer
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    // Verify the quick filter bar is still visible after the drawer closes
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    expect(quickFilterBar).toBeInTheDocument();
+
+    // Collect the values of all text inputs rendered inside the quick filter bar
+    const allQuickFilterTextInputs: HTMLInputElement[] =
+      within(quickFilterBar).getAllByRole('textbox');
+    const allQuickFilterInputValues = allQuickFilterTextInputs.map(
+      (input) => input.value,
+    );
+    expect(allQuickFilterInputValues).toContain(drawerRuleInputValue);
+  });
+  it('should hide quick filter bar after unpinning a quick filter but keep the rule row present in the drawer', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+
+    // Apply the filter and close the drawer
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    const quickFilter = await screen.findByTestId('quick-filter');
+
+    expect(quickFilterBar).toBeInTheDocument();
+    expect(quickFilter).toBeInTheDocument();
+
+    // Read the quick filter input value before unpinning so we can assert it is preserved in the drawer
+    const quickFilterTextInput: HTMLInputElement =
+      within(quickFilterBar).getByRole('textbox');
+    const quickFilterInputValueBeforeUnpin = quickFilterTextInput.value;
+
+    // Hover over the quick filter label row to reveal the unpin button
+    fireEvent.mouseEnter(quickFilter);
+
+    const unpinButton = await within(quickFilter).findByRole('button');
+    expect(unpinButton).toBeInTheDocument();
+    await user.click(unpinButton);
+    await waitFor(() => {
+      expect(quickFilterBar).not.toBeInTheDocument();
+      expect(quickFilter).not.toBeInTheDocument();
+    });
+
+    await openAdvancedFiltersDrawer();
+    const ruleRowValuesAfterRemoval = await getRuleRowValuesFromDrawer();
+
+    // Verify the rule row value is still present in the drawer after unpinning the quick filter
+    expect(ruleRowValuesAfterRemoval).toContain(
+      quickFilterInputValueBeforeUnpin,
+    );
+  });
+  it('should reflect drawer rule row input value in quick filter input after typing new value in rule row and submit', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+
+    // Replace the existing rule row value and submit — the drawer closes on Enter
+    const { drawerRuleInputValue } =
+      await updateFirstDrawerRuleRowValueAndSubmit(
+        user,
+        UPDATED_DRAWER_RULE_INPUT_VALUE,
+      );
+    // Verify the quick filter bar input now reflects the value that was typed in the drawer rule row
+    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
+    const allQuickFilterTextInputs: HTMLInputElement[] =
+      within(quickFilterBar).getAllByRole('textbox');
+    const allQuickFilterInputValues = allQuickFilterTextInputs.map(
+      (input) => input.value,
+    );
+    expect(allQuickFilterInputValues).toContain(drawerRuleInputValue);
+  });
+  it('should reflect quick filter input value in drawer rule row input after typing in the quick filter and submit', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+
+    // Apply the filter and close the drawer so the quick filter bar becomes the active control
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    // Type a new value into the quick filter bar to simulate user editing
+    const { quickFilterInputValue } = await replaceQuickFilterInputValue(
+      user,
+      UPDATED_QUICK_FILTER_VALUE,
+    );
+    await user.keyboard('{Enter}');
+
+    // Re-open the drawer to inspect whether the rule row reflects the updated quick filter value
+    await openAdvancedFiltersDrawer();
+
+    const firstRuleRowAfterUpdate = await findFirstFilterRuleRow();
+    const valueEditorBoxAfterUpdate = await within(
+      firstRuleRowAfterUpdate,
+    ).findByTestId(FILTER_RULE_VALUE_TEST_ID);
+    const drawerRuleTextInputAfterUpdate: HTMLInputElement = within(
+      valueEditorBoxAfterUpdate,
+    ).getByRole('textbox');
+
+    // The drawer rule row input must now contain the value that was typed in the quick filter bar
+    expect(drawerRuleTextInputAfterUpdate.value).toBe(quickFilterInputValue);
+  });
+  it('should call loadData with the applied filter rules after submit on quick filter input', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    await pinFirstRuleRow();
+
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    // Type a new value into the quick filter bar to simulate user editing
+    const { quickFilterLabel, quickFilterInputValue } =
+      await replaceQuickFilterInputValue(user, UPDATED_QUICK_FILTER_VALUE);
+    // Clear mock calls accumulated during apply and typing — only the Enter submit should be counted
+    mockLoadData.mockClear();
+    // Submit the quick filter input so the new value is committed and synced to the drawer rule row
+    await user.keyboard('{Enter}');
+    expect(mockLoadData).toHaveBeenCalledTimes(1);
+    const activeFilterContainer = await screen.findByTestId(
+      'active-filters-container',
+    );
+    expect(activeFilterContainer).toBeInTheDocument();
+    const activeFilterItems =
+      await screen.findAllByTestId('active-filter-item');
+    expect(activeFilterItems.length).toBeGreaterThan(0);
+    const activeFilterItemValues = activeFilterItems.map(
+      (item) => item.textContent,
+    );
+    const mockDataFilterRuleValue =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0].filters
+        .rules[0].value;
+
+    expect(
+      activeFilterItemValues.some(
+        (itemValue) =>
+          itemValue?.includes(quickFilterLabel) &&
+          itemValue?.includes(quickFilterInputValue),
+      ),
+    ).toBe(true);
+
+    expect(mockDataFilterRuleValue).toBe(quickFilterInputValue);
+  });
+  it('should discard changes in filters drawer after click on discard changes button', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+
+    // Replace the existing rule row value and submit — the drawer closes on Enter
+    const { drawerRuleInputValue, drawerRuleTextInput } =
+      await updateFirstDrawerRuleRowValueAndSubmit(
+        user,
+        UPDATED_DRAWER_RULE_INPUT_VALUE,
+      );
+
+    await openAdvancedFiltersDrawer();
+
+    await addFilterRuleRowWithValue(user, 'test-input-1');
+    await addFilterRuleRowWithValue(user, 'last-input-2');
+    const ruleRowValuesFromDrawer = await getRuleRowValuesFromDrawer();
+
+    const discardChangesButton = await screen.findByRole('button', {
+      name: discardChanges,
+    });
+
+    await user.click(discardChangesButton);
+
+    const drawerRuleInputValueAfterDiscardChanges = drawerRuleTextInput.value;
+    const ruleRowValueFromDrawerAfterDiscardChanges =
+      await getRuleRowValuesFromDrawer();
+
+    expect(drawerRuleInputValue).toBe(drawerRuleInputValueAfterDiscardChanges);
+    expect(ruleRowValuesFromDrawer).toContain(drawerRuleInputValue);
+    expect(ruleRowValueFromDrawerAfterDiscardChanges).toContain(
+      drawerRuleInputValue,
+    );
+    expect(ruleRowValueFromDrawerAfterDiscardChanges.length).toBeLessThan(
+      ruleRowValuesFromDrawer.length,
+    );
   });
 });
