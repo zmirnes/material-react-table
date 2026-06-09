@@ -1,7 +1,7 @@
-import { type MRT_FiltersState } from '../../../types';
 import {
   DEFAULT_TEST_COLUMNS,
   DEFAULT_TEST_DATA,
+  DEFAULT_PINNED_FILTER_STATE,
   type MockRowData,
 } from '../../data/mock-data';
 import { updateFirstDrawerRuleRowValueAndSubmit } from '../../utils/advanced-filters/updateFirstDrawerRuleRowValueAndSubmit';
@@ -15,31 +15,6 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 // Value used exclusively to verify that the quick filter bar syncs forward from the drawer rule row
 const UPDATED_DRAWER_RULE_INPUT_VALUE = 'b';
 
-// The first DEFAULT_TEST_COLUMNS column is 'firstName' — used as the preset rule's target column
-const PRESET_RULE_ID = 'preset-rule-1';
-const PRESET_RULE_COLUMN_ID = 'firstName';
-
-// Pre-populated filter state: one rule with a single-character value, pinned to the quick filter bar.
-// This replaces the addFilterRuleRowWithValue + pinFirstRuleRow UI steps, making the test faster.
-const PINNED_FILTER_INITIAL_STATE: MRT_FiltersState = {
-  logicOperator: 'and',
-  rules: [
-    {
-      id: PRESET_RULE_ID,
-      columnId: PRESET_RULE_COLUMN_ID,
-      operator: 'contains',
-      value: 'a',
-    },
-  ],
-  pinnedFilters: [
-    {
-      id: PRESET_RULE_ID,
-      columnId: PRESET_RULE_COLUMN_ID,
-      operator: 'contains',
-    },
-  ],
-};
-
 describe('MRT_SyncDrawerRuleToQuickFilter', () => {
   let user: UserEvent;
 
@@ -49,7 +24,7 @@ describe('MRT_SyncDrawerRuleToQuickFilter', () => {
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
       // initialState pre-populates the pinned rule — no UI clicks needed to set up
-      initialState: { filters: PINNED_FILTER_INITIAL_STATE },
+      initialState: { filters: DEFAULT_PINNED_FILTER_STATE },
     });
     await openAdvancedFiltersDrawer(user);
   });

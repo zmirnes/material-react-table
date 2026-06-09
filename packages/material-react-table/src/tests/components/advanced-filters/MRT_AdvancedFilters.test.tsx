@@ -8,6 +8,7 @@ import {
   type MockRowData,
 } from '../../data/mock-data';
 import { addFilterRuleRowWithValue } from '../../utils/advanced-filters/addFilterRuleRowWithValue';
+import { replaceQuickFilterInputValue } from '../../utils/advanced-filters/replaceQuickFilterInputValue';
 import { applyAdvancedFilter } from '../../utils/applyAdvancedFilter';
 import { getRuleRowValuesFromDrawer } from '../../utils/getRuleRowValuesFromDrawer';
 import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
@@ -51,41 +52,6 @@ const clickAddFilterButton = async (user: UserEvent) => {
 const findFirstFilterRuleRow = async () => {
   const allRuleRows = await screen.findAllByTestId(FILTER_RULE_ROW_TEST_ID);
   return allRuleRows[0];
-};
-
-type QuickFilterBarValues = {
-  quickFilterInputValue: string;
-  quickFilterLabel: string;
-};
-
-const replaceQuickFilterInputValue = async (
-  user: UserEvent,
-  newValue: string,
-): Promise<QuickFilterBarValues> => {
-  const quickFilterBar = await screen.findByTestId('quick-filters-bar');
-  expect(quickFilterBar).toBeInTheDocument();
-
-  // Find the quick filter item and extract the two label spans directly via DOM query —
-  // the quick-filter div contains exactly two <span> elements: column label and operator label
-  const quickFilter = await within(quickFilterBar).findByTestId('quick-filter');
-  const [columnLabelSpan, operatorLabelSpan] =
-    quickFilter.querySelectorAll('span');
-
-  // Replace the existing quick filter value with the new one
-  const quickFilterTextInput: HTMLInputElement =
-    within(quickFilterBar).getByRole('textbox');
-  await user.clear(quickFilterTextInput);
-  await user.type(quickFilterTextInput, newValue);
-
-  return {
-    quickFilterInputValue: quickFilterTextInput.value,
-    // Combine column label and operator label into a single display label (e.g. "Name contains").
-    // Replace non-breaking spaces (\u00a0 from &nbsp;) with regular spaces so string comparisons work correctly.
-    quickFilterLabel:
-      `${columnLabelSpan?.textContent ?? ''}${operatorLabelSpan?.textContent ?? ''}`
-        .replace(/\u00a0/g, ' ')
-        .trim(),
-  };
 };
 
 const renderTableWithMockLoadData = (mockLoadData: MockLoadDataFn) => {
@@ -338,34 +304,6 @@ describe('MRT_AdvancedFilters', async () => {
     expect(ruleRowValuesAfterRemoval).toContain(
       quickFilterInputValueBeforeUnpin,
     );
-  });
-  it('should reflect quick filter input value in drawer rule row input after typing in the quick filter and submit', async () => {
-    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
-    await pinFirstRuleRow();
-
-    // Apply the filter and close the drawer so the quick filter bar becomes the active control
-    await applyAdvancedFilter();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    // Type a new value into the quick filter bar to simulate user editing
-    const { quickFilterInputValue } = await replaceQuickFilterInputValue(
-      user,
-      UPDATED_QUICK_FILTER_VALUE,
-    );
-    await user.keyboard('{Enter}');
-
-    // Re-open the drawer to inspect whether the rule row reflects the updated quick filter value
-    await openAdvancedFiltersDrawer(user);
-
-    const firstRuleRowAfterUpdate = await findFirstFilterRuleRow();
-    const valueEditorBoxAfterUpdate = await within(
-      firstRuleRowAfterUpdate,
-    ).findByTestId(FILTER_RULE_VALUE_TEST_ID);
-    const drawerRuleTextInputAfterUpdate: HTMLInputElement = within(
-      valueEditorBoxAfterUpdate,
-    ).getByRole('textbox');
-
-    // The drawer rule row input must now contain the value that was typed in the quick filter bar
-    expect(drawerRuleTextInputAfterUpdate.value).toBe(quickFilterInputValue);
   });
   it('should call loadData with the applied filter rules after submit on quick filter input', async () => {
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);

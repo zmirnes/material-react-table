@@ -1,4 +1,26 @@
-import { type MRT_ColumnDef } from '../../types';
+import { type MRT_ColumnDef, type MRT_FiltersState } from '../../types';
+
+const DEFAULT_PINNED_RULE_ID = 'preset-rule-1';
+const DEFAULT_PINNED_RULE_COLUMN_ID = 'firstName';
+
+export const DEFAULT_PINNED_FILTER_STATE: MRT_FiltersState = {
+  logicOperator: 'and',
+  rules: [
+    {
+      id: DEFAULT_PINNED_RULE_ID,
+      columnId: DEFAULT_PINNED_RULE_COLUMN_ID,
+      operator: 'contains',
+      value: 'a',
+    },
+  ],
+  pinnedFilters: [
+    {
+      id: DEFAULT_PINNED_RULE_ID,
+      columnId: DEFAULT_PINNED_RULE_COLUMN_ID,
+      operator: 'contains',
+    },
+  ],
+};
 
 export type MockRowData = {
   id: string;
