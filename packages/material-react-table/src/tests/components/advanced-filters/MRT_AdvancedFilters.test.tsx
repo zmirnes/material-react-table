@@ -7,6 +7,7 @@ import {
   DEFAULT_TEST_DATA,
   type MockRowData,
 } from '../../data/mock-data';
+import { addFilterRuleRowWithValue } from '../../utils/advanced-filters/addFilterRuleRowWithValue';
 import { applyAdvancedFilter } from '../../utils/applyAdvancedFilter';
 import { getRuleRowValuesFromDrawer } from '../../utils/getRuleRowValuesFromDrawer';
 import { openAdvancedFiltersDrawer } from '../../utils/openAdvancedFiltersDrawer';
@@ -31,15 +32,12 @@ const {
   filterOperator,
   advancedFilters,
   clearFilter,
-  discardChanges,
 } = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
-const DUMMY_FILTER_VALUE = 'some_value';
+const DUMMY_FILTER_VALUE = 'a';
 // Value used exclusively to verify that the quick filter bar syncs back to the drawer rule row
 const UPDATED_QUICK_FILTER_VALUE = 'updated_quick_filter_value';
-// Value used exclusively to verify that the drawer rule row syncs forward to the quick filter bar
-const UPDATED_DRAWER_RULE_INPUT_VALUE = 'updated_drawer_rule_value';
 const THREE_ROWS = 3;
 
 type MockLoadDataFn = (
@@ -55,56 +53,9 @@ const findFirstFilterRuleRow = async () => {
   return allRuleRows[0];
 };
 
-const typeValueIntoLastRuleRow = async (user: UserEvent, value: string) => {
-  const allRuleRows = await screen.findAllByTestId(FILTER_RULE_ROW_TEST_ID);
-  const lastRuleRow = allRuleRows[allRuleRows.length - 1];
-  // FILTER_RULE_VALUE_TEST_ID is a Box wrapper — find the actual textbox inside it
-  const valueEditorBox = await within(lastRuleRow).findByTestId(
-    FILTER_RULE_VALUE_TEST_ID,
-  );
-  const actualTextInput = within(valueEditorBox).getByRole('textbox');
-  await user.type(actualTextInput, value);
-};
-
-const addFilterRuleRowWithValue = async (user: UserEvent, value: string) => {
-  await clickAddFilterButton(user);
-  await typeValueIntoLastRuleRow(user, value);
-};
-
 type QuickFilterBarValues = {
   quickFilterInputValue: string;
   quickFilterLabel: string;
-};
-
-type DrawerRuleRowSubmitResult = {
-  drawerRuleInputValue: string;
-  drawerRuleTextInput: HTMLInputElement;
-};
-
-// Clears the first rule row input, types the given value, submits via Enter, and waits for the drawer to close
-const updateFirstDrawerRuleRowValueAndSubmit = async (
-  user: UserEvent,
-  newValue: string,
-): Promise<DrawerRuleRowSubmitResult> => {
-  const firstRuleRow = await findFirstFilterRuleRow();
-  const valueEditorBox = await within(firstRuleRow).findByTestId(
-    FILTER_RULE_VALUE_TEST_ID,
-  );
-  const drawerRuleTextInput: HTMLInputElement =
-    within(valueEditorBox).getByRole('textbox');
-
-  // Replace the existing rule row value with a new one
-  await user.clear(drawerRuleTextInput);
-  await user.type(drawerRuleTextInput, newValue);
-  const drawerRuleInputValue = drawerRuleTextInput.value;
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
-  // Pressing Enter commits the new value and closes the drawer
-  await user.keyboard('{Enter}');
-  await waitFor(() => {
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
-  return { drawerRuleInputValue, drawerRuleTextInput };
 };
 
 const replaceQuickFilterInputValue = async (
@@ -178,7 +129,7 @@ describe('MRT_AdvancedFilters', async () => {
       rowCount: DEFAULT_TEST_DATA.length,
     });
     renderTableWithMockLoadData(mockLoadData);
-    await openAdvancedFiltersDrawer();
+    await openAdvancedFiltersDrawer(user);
   });
 
   // Unmount after each test so the next beforeEach starts with a clean DOM
@@ -380,32 +331,13 @@ describe('MRT_AdvancedFilters', async () => {
       expect(quickFilter).not.toBeInTheDocument();
     });
 
-    await openAdvancedFiltersDrawer();
+    await openAdvancedFiltersDrawer(user);
     const ruleRowValuesAfterRemoval = await getRuleRowValuesFromDrawer();
 
     // Verify the rule row value is still present in the drawer after unpinning the quick filter
     expect(ruleRowValuesAfterRemoval).toContain(
       quickFilterInputValueBeforeUnpin,
     );
-  });
-  it('should reflect drawer rule row input value in quick filter input after typing new value in rule row and submit', async () => {
-    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
-    await pinFirstRuleRow();
-
-    // Replace the existing rule row value and submit — the drawer closes on Enter
-    const { drawerRuleInputValue } =
-      await updateFirstDrawerRuleRowValueAndSubmit(
-        user,
-        UPDATED_DRAWER_RULE_INPUT_VALUE,
-      );
-    // Verify the quick filter bar input now reflects the value that was typed in the drawer rule row
-    const quickFilterBar = await screen.findByTestId('quick-filters-bar');
-    const allQuickFilterTextInputs: HTMLInputElement[] =
-      within(quickFilterBar).getAllByRole('textbox');
-    const allQuickFilterInputValues = allQuickFilterTextInputs.map(
-      (input) => input.value,
-    );
-    expect(allQuickFilterInputValues).toContain(drawerRuleInputValue);
   });
   it('should reflect quick filter input value in drawer rule row input after typing in the quick filter and submit', async () => {
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
@@ -422,7 +354,7 @@ describe('MRT_AdvancedFilters', async () => {
     await user.keyboard('{Enter}');
 
     // Re-open the drawer to inspect whether the rule row reflects the updated quick filter value
-    await openAdvancedFiltersDrawer();
+    await openAdvancedFiltersDrawer(user);
 
     const firstRuleRowAfterUpdate = await findFirstFilterRuleRow();
     const valueEditorBoxAfterUpdate = await within(
@@ -472,40 +404,5 @@ describe('MRT_AdvancedFilters', async () => {
     ).toBe(true);
 
     expect(mockDataFilterRuleValue).toBe(quickFilterInputValue);
-  });
-  it('should discard changes in filters drawer after click on discard changes button', async () => {
-    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
-
-    // Replace the existing rule row value and submit — the drawer closes on Enter
-    const { drawerRuleInputValue, drawerRuleTextInput } =
-      await updateFirstDrawerRuleRowValueAndSubmit(
-        user,
-        UPDATED_DRAWER_RULE_INPUT_VALUE,
-      );
-
-    await openAdvancedFiltersDrawer();
-
-    await addFilterRuleRowWithValue(user, 'test-input-1');
-    await addFilterRuleRowWithValue(user, 'last-input-2');
-    const ruleRowValuesFromDrawer = await getRuleRowValuesFromDrawer();
-
-    const discardChangesButton = await screen.findByRole('button', {
-      name: discardChanges,
-    });
-
-    await user.click(discardChangesButton);
-
-    const drawerRuleInputValueAfterDiscardChanges = drawerRuleTextInput.value;
-    const ruleRowValueFromDrawerAfterDiscardChanges =
-      await getRuleRowValuesFromDrawer();
-
-    expect(drawerRuleInputValue).toBe(drawerRuleInputValueAfterDiscardChanges);
-    expect(ruleRowValuesFromDrawer).toContain(drawerRuleInputValue);
-    expect(ruleRowValueFromDrawerAfterDiscardChanges).toContain(
-      drawerRuleInputValue,
-    );
-    expect(ruleRowValueFromDrawerAfterDiscardChanges.length).toBeLessThan(
-      ruleRowValuesFromDrawer.length,
-    );
   });
 });

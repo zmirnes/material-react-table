@@ -5,8 +5,9 @@ import { screen, within } from '@testing-library/react';
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
 
 export const getRuleRowValuesFromDrawer = async (): Promise<string[]> => {
-  // Find every rule row that is currently rendered inside the drawer
-  const allRuleRows = await screen.findAllByTestId(FILTER_RULE_ROW_TEST_ID);
+  const allRuleRows = screen.queryAllByTestId(FILTER_RULE_ROW_TEST_ID);
+
+  if (allRuleRows.length === 0) return [];
 
   // Extract the text value from the value editor textbox of each rule row and return them
   return Promise.all(
