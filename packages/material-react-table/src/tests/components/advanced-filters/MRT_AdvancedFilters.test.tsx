@@ -1,7 +1,11 @@
 import { FILTER_RULE_VALUE_TEST_ID } from '../../../components/advanced-filters/MRT_AdvancedFiltersRuleRow';
 import { MaterialReactServerTable } from '../../../components/MaterialReactServerTable';
 import { MRT_Localization_HR } from '../../../locales/hr';
-import { type MRT_TableData, type MRT_TableState } from '../../../types';
+import {
+  type MRT_SavedFilter,
+  type MRT_TableData,
+  type MRT_TableState,
+} from '../../../types';
 import {
   DEFAULT_TEST_COLUMNS,
   DEFAULT_TEST_DATA,
@@ -32,6 +36,9 @@ const {
   advancedFilters,
   clearFilter,
   discardChanges,
+  saveFilters,
+  filterName,
+  savedFilters,
 } = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
@@ -45,6 +52,12 @@ const THREE_ROWS = 3;
 type MockLoadDataFn = (
   state: MRT_TableState<MockRowData>,
 ) => Promise<MRT_TableData<MockRowData>>;
+
+type MockSaveFiltersFn = (savedFilter: MRT_SavedFilter) => Promise<void>;
+
+type RenderTableOptions = {
+  onSaveFilters?: MockSaveFiltersFn;
+};
 
 const clickAddFilterButton = async (user: UserEvent) => {
   await user.click(await screen.findByRole('button', { name: add }));
@@ -98,12 +111,12 @@ const updateFirstDrawerRuleRowValueAndSubmit = async (
   await user.type(drawerRuleTextInput, newValue);
   const drawerRuleInputValue = drawerRuleTextInput.value;
   expect(screen.getByRole('dialog')).toBeInTheDocument();
+  const dialog = screen.queryByRole('dialog');
   // Pressing Enter commits the new value and closes the drawer
   await user.keyboard('{Enter}');
-  await waitFor(() => {
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
+  if (dialog) {
+    await waitForElementToBeRemoved(dialog);
+  }
   return { drawerRuleInputValue, drawerRuleTextInput };
 };
 
@@ -137,13 +150,17 @@ const replaceQuickFilterInputValue = async (
   };
 };
 
-const renderTableWithMockLoadData = (mockLoadData: MockLoadDataFn) => {
+const renderTableWithMockLoadData = (
+  mockLoadData: MockLoadDataFn,
+  options?: RenderTableOptions,
+) => {
   render(
     <MaterialReactServerTable<MockRowData>
       loadConfig={async () => ({
         columns: DEFAULT_TEST_COLUMNS,
       })}
       loadData={mockLoadData}
+      onSaveFilters={options?.onSaveFilters}
       saveState={async () => {}}
     />,
   );
@@ -152,6 +169,7 @@ const renderTableWithMockLoadData = (mockLoadData: MockLoadDataFn) => {
 describe('MRT_AdvancedFilters', async () => {
   let user: UserEvent;
   let mockLoadData: ReturnType<typeof vi.fn<MockLoadDataFn>>;
+  let mockSaveFilters: ReturnType<typeof vi.fn<MockSaveFiltersFn>>;
 
   const addThreeFilterRuleRowsWithValues = async () => {
     await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
@@ -172,12 +190,15 @@ describe('MRT_AdvancedFilters', async () => {
   };
 
   beforeEach(async () => {
-    user = userEvent.setup({ delay: null });
+    user = userEvent.setup();
     mockLoadData = vi.fn<MockLoadDataFn>().mockResolvedValue({
       data: DEFAULT_TEST_DATA,
       rowCount: DEFAULT_TEST_DATA.length,
     });
-    renderTableWithMockLoadData(mockLoadData);
+    mockSaveFilters = vi.fn<MockSaveFiltersFn>().mockResolvedValue(undefined);
+    renderTableWithMockLoadData(mockLoadData, {
+      onSaveFilters: mockSaveFilters,
+    });
     await openAdvancedFiltersDrawer();
   });
 
@@ -225,9 +246,11 @@ describe('MRT_AdvancedFilters', async () => {
     const closeDrawerButton = screen.getByRole('button', {
       name: advancedFilters,
     });
-    const drawer = await screen.findByRole('dialog');
+    const dialog = screen.queryByRole('dialog');
     await user.click(closeDrawerButton);
-    await waitForElementToBeRemoved(drawer);
+    if (dialog) {
+      await waitForElementToBeRemoved(dialog);
+    }
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -507,5 +530,59 @@ describe('MRT_AdvancedFilters', async () => {
     expect(ruleRowValueFromDrawerAfterDiscardChanges.length).toBeLessThan(
       ruleRowValuesFromDrawer.length,
     );
+  });
+  it('should save filter', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+    const saveFiltersButton = screen.getByRole('button', {
+      name: saveFilters,
+    });
+    await user.click(saveFiltersButton);
+
+    const filterNameInput = await screen.findByPlaceholderText(filterName);
+    expect(filterNameInput).toBeInTheDocument();
+    const savedFiltersName = 'Default filters';
+    await user.type(filterNameInput, savedFiltersName);
+    const saveInputWrapper = filterNameInput.parentElement!;
+    const [confirmSaveButton, cancelSaveButton] =
+      within(saveInputWrapper).getAllByRole('button');
+
+    expect(confirmSaveButton).toBeInTheDocument();
+    expect(cancelSaveButton).toBeInTheDocument();
+
+    await user.click(confirmSaveButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: saveFilters }),
+      ).toBeInTheDocument();
+    });
+
+    const closeDrawerButton = screen.getByRole('button', {
+      name: advancedFilters,
+    });
+
+    await user.click(closeDrawerButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    const savedFiltersButton = await screen.findByRole('button', {
+      name: savedFilters,
+    });
+    expect(savedFiltersButton).toBeInTheDocument();
+
+    await user.click(savedFiltersButton);
+
+    const savedFiltersMenu = await screen.findByRole('menu');
+    expect(savedFiltersMenu).toBeInTheDocument();
+
+    const savedFilterItem = screen.getByTestId('saved-filter-item');
+    const savedFilterItemTextContent = savedFilterItem.textContent;
+    expect(savedFilterItemTextContent).toBe(savedFiltersName);
+
+    await user.click(savedFilterItem);
+
+    expect(screen.getByTestId('active-filter-item')).toBeInTheDocument();
   });
 });
