@@ -2,7 +2,6 @@ import { type ReactNode, type JSX } from 'react';
 import {
   createRow as _createRow,
   flexRender as _flexRender,
-  type AccessorFn,
   type DeepKeys,
   type Renderable,
 } from '@tanstack/react-table';
@@ -26,13 +25,9 @@ export function createMRTColumnHelper<
 >(): MRT_ColumnHelper<TData> {
   return {
     accessor: (
-      accessor: AccessorFn<TData> | DeepKeys<TData>,
+      accessor: DeepKeys<TData>,
       column: MRT_DisplayColumnDef<TData>,
-    ) => {
-      return typeof accessor === 'function'
-        ? { ...column, accessorFn: accessor }
-        : { ...column, accessorKey: accessor };
-    },
+    ) => ({ ...column, accessorKey: accessor }),
     display: (column: MRT_DisplayColumnDef<TData>) =>
       column as MRT_DisplayColumnDef<TData>,
     group: (column: MRT_GroupColumnDef<TData>) =>

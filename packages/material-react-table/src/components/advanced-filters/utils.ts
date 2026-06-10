@@ -9,6 +9,7 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
+import { getColumnId } from '../../utils/column.utils';
 
 // Returns the initial (empty) filter state — one AND group with no rules
 export const getDefaultFiltersState = (): MRT_FiltersState => ({
@@ -101,7 +102,7 @@ export const getFilterableColumns = <TData extends MRT_RowData>(
       (extraColumnDef): MRT_Column<TData> =>
         ({
           // accessorKey is the primary identifier; id as fallback
-          id: String(extraColumnDef.accessorKey ?? extraColumnDef.field),
+          id: getColumnId(extraColumnDef),
           columnDef: {
             ...extraColumnDef,
             columnDefType: 'data' as const,

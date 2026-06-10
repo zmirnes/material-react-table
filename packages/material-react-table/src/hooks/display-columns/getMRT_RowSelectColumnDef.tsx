@@ -10,7 +10,7 @@ import { defaultDisplayColumnProps } from '../../utils/displayColumn.utils';
 
 export const getMRT_RowSelectColumnDef = <TData extends MRT_RowData>(
   tableOptions: MRT_StatefulTableOptions<TData>,
-): MRT_ColumnDef<TData> => {
+): Partial<MRT_ColumnDef<TData>> => {
   const { enableMultiRowSelection, enableSelectAll } = tableOptions;
 
   return {

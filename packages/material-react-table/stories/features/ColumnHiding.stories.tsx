@@ -131,6 +131,7 @@ export const ColumnHidingWithHeaderGroups = () => (
   <MaterialReactTable
     columns={[
       {
+        accessorKey: 'generalInfo',
         columns: [
           {
             accessorKey: 'firstName',
@@ -148,6 +149,7 @@ export const ColumnHidingWithHeaderGroups = () => (
         type: 'string',
       },
       {
+        accessorKey: 'mailingInfo',
         columns: [
           {
             accessorKey: 'address',
@@ -170,6 +172,7 @@ export const ColumnHidingWithHeaderGroups = () => (
         type: 'string',
       },
       {
+        accessorKey: 'contactInfo',
         columns: [
           {
             accessorKey: 'email',

@@ -523,20 +523,13 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
   > {
   /**
    * Either an `accessorKey` or a combination of an `accessorFn` and `id` are required for a data column definition.
-   * Specify a function here to point to the correct property in the data object.
-   *
-   * @example accessorFn: (row) => row.username
-   */
-  accessorFn?: (originalRow: TData) => TValue;
-  /**
-   * Either an `accessorKey` or a combination of an `accessorFn` and `id` are required for a data column definition.
    * Specify which key in the row this column should use to access the correct data.
    * Also supports Deep Key Dot Notation.
    *
    * @example accessorKey: 'username' //simple
    * @example accessorKey: 'name.firstName' //deep key dot notation
    */
-  accessorKey?: DeepKeys<TData> | (string & {});
+  accessorKey: DeepKeys<TData> | (string & {});
   AggregatedCell?: (props: {
     cell: MRT_Cell<TData, TValue>;
     column: MRT_Column<TData, TValue>;

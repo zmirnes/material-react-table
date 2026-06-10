@@ -20,7 +20,7 @@ const TREE_REORDER_ICON_SPACING = '0.25rem';
 
 export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
   tableOptions: MRT_StatefulTableOptions<TData>,
-): MRT_ColumnDef<TData> => {
+): Partial<MRT_ColumnDef<TData>> => {
   const {
     defaultColumn,
     enableRowReordering,

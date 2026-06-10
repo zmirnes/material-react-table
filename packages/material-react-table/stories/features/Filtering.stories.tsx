@@ -43,7 +43,7 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   },
   {
     Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
-    accessorFn: (row) => new Date(row.birthDate), //transform data before processing so sorting works
+    accessorKey: 'birthDate',
     filterFn: 'lessThan',
     filterVariant: 'date',
     header: 'Birth Date',
@@ -136,8 +136,8 @@ export const FilterFnAndFilterVariants = () => (
   <MaterialReactTable
     columns={[
       {
-        Cell: ({ cell }) => (cell.getValue() === 'true' ? 'Yes' : 'No'),
-        accessorFn: (originalRow) => (originalRow.isActive ? 'true' : 'false'),
+        Cell: ({ cell }) => (cell.getValue<boolean>() ? 'Yes' : 'No'),
+        accessorKey: 'isActive',
         filterVariant: 'checkbox',
         header: 'Is Active',
         id: 'isActive',
@@ -164,7 +164,7 @@ export const FilterFnAndFilterVariants = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.birthDate), //transform data before processing so sorting works
+        accessorKey: 'birthDate',
         filterFn: 'lessThan',
         filterVariant: 'date',
         header: 'Birth Date',
@@ -173,7 +173,7 @@ export const FilterFnAndFilterVariants = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.hireDate), //transform data before processing so sorting works
+        accessorKey: 'hireDate',
         filterVariant: 'date-range',
         header: 'Hire Date',
         id: 'hireDate',
@@ -181,7 +181,7 @@ export const FilterFnAndFilterVariants = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.arrivalTime), //transform data before processing so sorting works
+        accessorKey: 'arrivalTime',
         filterVariant: 'datetime-range',
         header: 'Arrival time',
         id: 'arrivalTime',
@@ -189,7 +189,7 @@ export const FilterFnAndFilterVariants = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.departureTime), //transform data before processing so sorting works
+        accessorKey: 'departureTime',
         filterVariant: 'time-range',
         header: 'Departure Time',
         id: 'departureTime',
@@ -294,7 +294,7 @@ export const FilteringChangeModeEnabled = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.birthDate), //transform data before processing so sorting works
+        accessorKey: 'birthDate',
         filterVariant: 'date',
         header: 'Birth Date',
         id: 'birthDate',

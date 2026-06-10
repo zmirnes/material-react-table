@@ -10,6 +10,7 @@ export default meta;
 
 const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
   {
+    accessorKey: 'name',
     columns: [
       {
         accessorKey: 'firstName',
@@ -28,6 +29,7 @@ const columns: MRT_ColumnDef<(typeof data)[0]>[] = [
     type: 'string',
   },
   {
+    accessorKey: 'info',
     columns: [
       {
         accessorKey: 'age',
@@ -72,6 +74,7 @@ export const HeaderAndFooterGroups = () => (
   <MaterialReactTable
     columns={[
       {
+        accessorKey: 'name',
         columns: [
           {
             accessorKey: 'firstName',
@@ -92,6 +95,7 @@ export const HeaderAndFooterGroups = () => (
         type: 'string',
       },
       {
+        accessorKey: 'info',
         columns: [
           {
             accessorKey: 'age',
@@ -167,6 +171,7 @@ export const MixedHeaderGroups = () => {
           type: 'string',
         },
         {
+          accessorKey: 'age',
           columns: [
             {
               accessorKey: 'address',
@@ -204,8 +209,10 @@ export const DeepMixedHeaderGroups = () => {
           type: 'string',
         },
         {
+          accessorKey: 'address',
           columns: [
             {
+              accessorKey: 'city',
               columns: [
                 {
                   accessorKey: 'address',

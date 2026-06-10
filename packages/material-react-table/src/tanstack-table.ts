@@ -1,11 +1,11 @@
-import type { MRT_ColumnDef } from './types';
-import '@tanstack/react-table';
+import { type RowData } from '@tanstack/react-table';
+import { type MRT_ColumnDef, type MRT_RowData } from './types';
 
 export interface IIconColTypeValue {
   color: string;
   description: string;
-  // String key — matches iconsList Record<string, ...> and cell value shape
-  iconCode: string;
+  // String key - matches iconsList Record<string, ...> and cell value shape
+  iconCode: number;
   additional?: Record<string, Omit<IIconColTypeValue, 'additional'>>;
 }
 
@@ -24,10 +24,12 @@ export interface MRT_DimensionsDef {
 }
 
 declare module '@tanstack/react-table' {
-  interface ColumnMeta {
+  interface ColumnMeta<TData extends RowData, TValue> {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;
-    extraFieldFilters?: MRT_ColumnDef[];
+    extraFieldFilters?: TData extends MRT_RowData
+      ? MRT_ColumnDef<TData>[]
+      : MRT_ColumnDef<MRT_RowData>[];
   }
 }
