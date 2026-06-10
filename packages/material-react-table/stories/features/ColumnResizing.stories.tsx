@@ -228,6 +228,7 @@ export const ColumnResizingWithHeaderGroups = () => (
   <MaterialReactTable
     columns={[
       {
+        accessorKey: 'generalInfo',
         columns: [
           {
             accessorKey: 'firstName',
@@ -248,6 +249,7 @@ export const ColumnResizingWithHeaderGroups = () => (
         type: 'string',
       },
       {
+        accessorKey: 'mailingInfo',
         columns: [
           {
             accessorKey: 'age',
@@ -281,6 +283,7 @@ export const ColumnResizingWithHeaderGroupsGridGrow = () => (
   <MaterialReactTable
     columns={[
       {
+        accessorKey: 'generalInfo',
         columns: [
           {
             accessorKey: 'firstName',
@@ -301,6 +304,7 @@ export const ColumnResizingWithHeaderGroupsGridGrow = () => (
         type: 'string',
       },
       {
+        accessorKey: 'mailingInfo',
         columns: [
           {
             accessorKey: 'age',

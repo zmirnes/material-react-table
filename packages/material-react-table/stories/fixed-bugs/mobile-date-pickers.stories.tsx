@@ -22,7 +22,7 @@ export const MobileDateTimePickers = () => (
     columns={[
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.birthDate), //transform data before processing so sorting works
+        accessorKey: 'birthDate',
         filterFn: 'lessThan',
         filterVariant: 'date',
         header: 'Birth Date',
@@ -31,7 +31,7 @@ export const MobileDateTimePickers = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleDateString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.hireDate), //transform data before processing so sorting works
+        accessorKey: 'hireDate',
         filterVariant: 'date-range',
         header: 'Hire Date',
         id: 'hireDate',
@@ -39,7 +39,7 @@ export const MobileDateTimePickers = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.departureTime), //transform data before processing so sorting works
+        accessorKey: 'departureTime',
         filterVariant: 'datetime',
         header: 'Departure',
         id: 'departureTime',
@@ -47,7 +47,7 @@ export const MobileDateTimePickers = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.arrivalTime), //transform data before processing so sorting works
+        accessorKey: 'arrivalTime',
         filterVariant: 'datetime-range',
         header: 'Arrival time',
         id: 'arrivalTime',
@@ -55,7 +55,7 @@ export const MobileDateTimePickers = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.startTime), //transform data before processing so sorting works
+        accessorKey: 'startTime',
         filterVariant: 'time',
         header: 'Start Time',
         id: 'startTime',
@@ -63,7 +63,7 @@ export const MobileDateTimePickers = () => (
       },
       {
         Cell: ({ cell }) => cell.getValue<Date>().toLocaleString(), //transform data to readable format for cell render
-        accessorFn: (row) => new Date(row.deliverySlot), //transform data before processing so sorting works
+        accessorKey: 'deliverySlot',
         filterVariant: 'time-range',
         header: 'Delivery Slot',
         id: 'deliverySlot',

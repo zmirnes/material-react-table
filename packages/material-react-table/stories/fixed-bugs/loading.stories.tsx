@@ -253,8 +253,9 @@ export const AccessorKeyWhileLoading = () => {
     //column definitions...
     () => [
       {
-        accessorFn: (row) =>
-          `${row.name.firstName.toUpperCase()} ${row.name.lastName.toUpperCase()}`,
+        Cell: ({ row }) =>
+          `${row.original.name.firstName.toUpperCase()} ${row.original.name.lastName.toUpperCase()}`,
+        accessorKey: 'name',
         header: 'Name',
         id: 'name',
         type: 'string',
