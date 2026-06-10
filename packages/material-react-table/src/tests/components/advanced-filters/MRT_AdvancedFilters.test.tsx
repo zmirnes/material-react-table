@@ -582,4 +582,36 @@ describe('MRT_AdvancedFilters', async () => {
     expect(activeFilterItem).toBeInTheDocument();
     expect(activeFilterItem.textContent).toContain(DUMMY_FILTER_VALUE);
   });
+  it('should open listbox and switch logic operator between "i" (AND) and "ili" (OR)', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+
+    const logicOperatorWrapper = await screen.findByTestId('logic-operator');
+    const logicOperatorCombobox =
+      within(logicOperatorWrapper).getByRole('combobox');
+    expect(logicOperatorCombobox).toBeInTheDocument();
+
+    await user.click(logicOperatorCombobox);
+    const listbox = await screen.findByRole('listbox');
+    expect(listbox).toBeInTheDocument();
+
+    const andOption = within(listbox).getByText(MRT_Localization_HR.and);
+    const orOption = within(listbox).getByText(MRT_Localization_HR.or);
+    expect(andOption).toBeInTheDocument();
+    expect(orOption).toBeInTheDocument();
+
+    await user.click(orOption);
+    await waitFor(() => {
+      expect(logicOperatorCombobox).toHaveTextContent(MRT_Localization_HR.or);
+    });
+
+    await user.click(logicOperatorCombobox);
+    const listboxAfterOrSelected = await screen.findByRole('listbox');
+    const andOptionAgain = within(listboxAfterOrSelected).getByText(
+      MRT_Localization_HR.and,
+    );
+    await user.click(andOptionAgain);
+    await waitFor(() => {
+      expect(logicOperatorCombobox).toHaveTextContent(MRT_Localization_HR.and);
+    });
+  });
 });
