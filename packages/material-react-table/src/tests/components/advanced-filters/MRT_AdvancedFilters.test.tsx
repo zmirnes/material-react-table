@@ -595,23 +595,39 @@ describe('MRT_AdvancedFilters', async () => {
     await user.click(logicOperatorCombobox);
     const listbox = await screen.findByRole('listbox');
     expect(listbox).toBeInTheDocument();
+    expect(within(listbox).getByText(and)).toBeInTheDocument();
+    expect(within(listbox).getByText(or)).toBeInTheDocument();
 
-    const andOption = within(listbox).getByText(and);
-    const orOption = within(listbox).getByText(or);
-    expect(andOption).toBeInTheDocument();
-    expect(orOption).toBeInTheDocument();
-
-    await user.click(orOption);
+    await user.click(within(listbox).getByText(or));
     await waitFor(() => {
       expect(logicOperatorCombobox).toHaveTextContent(or);
     });
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    await user.click(logicOperatorCombobox);
-    const listboxAfterOrSelected = await screen.findByRole('listbox');
-    const andOptionAgain = within(listboxAfterOrSelected).getByText(and);
-    await user.click(andOptionAgain);
+    const filtersStateAfterOrApply =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0].filters;
+    expect(filtersStateAfterOrApply.logicOperator).toBe('or');
+
+    await openAdvancedFiltersDrawer();
+
+    const logicOperatorWrapperAfterReopen =
+      await screen.findByTestId('logic-operator');
+    const logicOperatorComboboxAfterReopen = within(
+      logicOperatorWrapperAfterReopen,
+    ).getByRole('combobox');
+
+    await user.click(logicOperatorComboboxAfterReopen);
+    const listboxAfterReopen = await screen.findByRole('listbox');
+    await user.click(within(listboxAfterReopen).getByText(and));
     await waitFor(() => {
-      expect(logicOperatorCombobox).toHaveTextContent(and);
+      expect(logicOperatorComboboxAfterReopen).toHaveTextContent(and);
     });
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    const filtersStateAfterAndApply =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0].filters;
+    expect(filtersStateAfterAndApply.logicOperator).toBe('and');
   });
 });
