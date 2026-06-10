@@ -39,6 +39,8 @@ const {
   saveFilters,
   filterName,
   savedFilters,
+  or,
+  and,
 } = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
@@ -594,24 +596,22 @@ describe('MRT_AdvancedFilters', async () => {
     const listbox = await screen.findByRole('listbox');
     expect(listbox).toBeInTheDocument();
 
-    const andOption = within(listbox).getByText(MRT_Localization_HR.and);
-    const orOption = within(listbox).getByText(MRT_Localization_HR.or);
+    const andOption = within(listbox).getByText(and);
+    const orOption = within(listbox).getByText(or);
     expect(andOption).toBeInTheDocument();
     expect(orOption).toBeInTheDocument();
 
     await user.click(orOption);
     await waitFor(() => {
-      expect(logicOperatorCombobox).toHaveTextContent(MRT_Localization_HR.or);
+      expect(logicOperatorCombobox).toHaveTextContent(or);
     });
 
     await user.click(logicOperatorCombobox);
     const listboxAfterOrSelected = await screen.findByRole('listbox');
-    const andOptionAgain = within(listboxAfterOrSelected).getByText(
-      MRT_Localization_HR.and,
-    );
+    const andOptionAgain = within(listboxAfterOrSelected).getByText(and);
     await user.click(andOptionAgain);
     await waitFor(() => {
-      expect(logicOperatorCombobox).toHaveTextContent(MRT_Localization_HR.and);
+      expect(logicOperatorCombobox).toHaveTextContent(and);
     });
   });
 });
