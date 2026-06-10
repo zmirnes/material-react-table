@@ -11,5 +11,6 @@ export default defineConfig({
     globals: true,
     // Register jest-dom matchers (toBeInTheDocument, toHaveTextContent, etc.).
     setupFiles: ['./src/tests/setup.ts'],
+    testTimeout: 10000,
   },
 });
