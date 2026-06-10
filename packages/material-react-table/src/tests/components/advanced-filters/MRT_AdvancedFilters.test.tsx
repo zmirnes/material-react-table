@@ -39,6 +39,8 @@ const {
   saveFilters,
   filterName,
   savedFilters,
+  or,
+  and,
 } = MRT_Localization_HR;
 
 const FILTER_RULE_ROW_TEST_ID = 'mrt-filter-rule-row';
@@ -581,5 +583,51 @@ describe('MRT_AdvancedFilters', async () => {
     const activeFilterItem = screen.getByTestId('active-filter-item');
     expect(activeFilterItem).toBeInTheDocument();
     expect(activeFilterItem.textContent).toContain(DUMMY_FILTER_VALUE);
+  });
+  it('should open listbox and switch logic operator between "i" (AND) and "ili" (OR)', async () => {
+    await addFilterRuleRowWithValue(user, DUMMY_FILTER_VALUE);
+
+    const logicOperatorWrapper = await screen.findByTestId('logic-operator');
+    const logicOperatorCombobox =
+      within(logicOperatorWrapper).getByRole('combobox');
+    expect(logicOperatorCombobox).toBeInTheDocument();
+
+    await user.click(logicOperatorCombobox);
+    const listbox = await screen.findByRole('listbox');
+    expect(listbox).toBeInTheDocument();
+    expect(within(listbox).getByText(and)).toBeInTheDocument();
+    expect(within(listbox).getByText(or)).toBeInTheDocument();
+
+    await user.click(within(listbox).getByText(or));
+    await waitFor(() => {
+      expect(logicOperatorCombobox).toHaveTextContent(or);
+    });
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    const filtersStateAfterOrApply =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0].filters;
+    expect(filtersStateAfterOrApply.logicOperator).toBe('or');
+
+    await openAdvancedFiltersDrawer();
+
+    const logicOperatorWrapperAfterReopen =
+      await screen.findByTestId('logic-operator');
+    const logicOperatorComboboxAfterReopen = within(
+      logicOperatorWrapperAfterReopen,
+    ).getByRole('combobox');
+
+    await user.click(logicOperatorComboboxAfterReopen);
+    const listboxAfterReopen = await screen.findByRole('listbox');
+    await user.click(within(listboxAfterReopen).getByText(and));
+    await waitFor(() => {
+      expect(logicOperatorComboboxAfterReopen).toHaveTextContent(and);
+    });
+    await applyAdvancedFilter();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    const filtersStateAfterAndApply =
+      mockLoadData.mock.calls[mockLoadData.mock.calls.length - 1][0].filters;
+    expect(filtersStateAfterAndApply.logicOperator).toBe('and');
   });
 });
