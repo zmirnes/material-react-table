@@ -111,12 +111,12 @@ const updateFirstDrawerRuleRowValueAndSubmit = async (
   await user.type(drawerRuleTextInput, newValue);
   const drawerRuleInputValue = drawerRuleTextInput.value;
   expect(screen.getByRole('dialog')).toBeInTheDocument();
-  const dialog = screen.queryByRole('dialog');
   // Pressing Enter commits the new value and closes the drawer
   await user.keyboard('{Enter}');
-  if (dialog) {
-    await waitForElementToBeRemoved(dialog);
-  }
+  await waitFor(() => {
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   return { drawerRuleInputValue, drawerRuleTextInput };
 };
 
@@ -190,7 +190,7 @@ describe('MRT_AdvancedFilters', async () => {
   };
 
   beforeEach(async () => {
-    user = userEvent.setup();
+    user = userEvent.setup({ delay: null });
     mockLoadData = vi.fn<MockLoadDataFn>().mockResolvedValue({
       data: DEFAULT_TEST_DATA,
       rowCount: DEFAULT_TEST_DATA.length,
@@ -246,11 +246,9 @@ describe('MRT_AdvancedFilters', async () => {
     const closeDrawerButton = screen.getByRole('button', {
       name: advancedFilters,
     });
-    const dialog = screen.queryByRole('dialog');
+    const drawer = await screen.findByRole('dialog');
     await user.click(closeDrawerButton);
-    if (dialog) {
-      await waitForElementToBeRemoved(dialog);
-    }
+    await waitForElementToBeRemoved(drawer);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -536,6 +534,10 @@ describe('MRT_AdvancedFilters', async () => {
     const saveFiltersButton = screen.getByRole('button', {
       name: saveFilters,
     });
+    await waitFor(() => {
+      expect(saveFiltersButton).toBeEnabled();
+    });
+
     await user.click(saveFiltersButton);
 
     const filterNameInput = await screen.findByPlaceholderText(filterName);
@@ -550,12 +552,6 @@ describe('MRT_AdvancedFilters', async () => {
     expect(cancelSaveButton).toBeInTheDocument();
 
     await user.click(confirmSaveButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: saveFilters }),
-      ).toBeInTheDocument();
-    });
 
     const closeDrawerButton = screen.getByRole('button', {
       name: advancedFilters,
@@ -582,7 +578,8 @@ describe('MRT_AdvancedFilters', async () => {
     expect(savedFilterItemTextContent).toBe(savedFiltersName);
 
     await user.click(savedFilterItem);
-
-    expect(screen.getByTestId('active-filter-item')).toBeInTheDocument();
+    const activeFilterItem = screen.getByTestId('active-filter-item');
+    expect(activeFilterItem).toBeInTheDocument();
+    expect(activeFilterItem.textContent).toContain(DUMMY_FILTER_VALUE);
   });
 });
