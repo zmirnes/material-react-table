@@ -165,7 +165,7 @@ const columns: MRT_ColumnDef<Person>[] = [
       availableIcons: Object.entries(ICONS_LIST).map(
         ([iconCode, { defaultColor }]) => ({
           iconType: {
-            iconCode,
+            iconCode: +iconCode,
             description: `Icon ${iconCode}`,
             color: defaultColor,
           },
@@ -624,30 +624,30 @@ export const WithNewEntryFormConfig = () => (
           availableIcons: [
             {
               iconType: {
-                iconCode: '1',
+                iconCode: 1,
                 color: '#00b894',
                 description: 'Aktivan',
               },
               tooltip: 'Aktivan',
-              value: '1',
+              value: 1,
             },
             {
               iconType: {
-                iconCode: '3',
+                iconCode: 3,
                 color: '#f39c12',
                 description: 'Na čekanju',
               },
               tooltip: 'Na čekanju',
-              value: '3',
+              value: 3,
             },
             {
               iconType: {
-                iconCode: '6',
+                iconCode: 6,
                 color: '#d63031',
                 description: 'Neaktivan',
               },
               tooltip: 'Neaktivan',
-              value: '6',
+              value: 6,
             },
           ],
         },

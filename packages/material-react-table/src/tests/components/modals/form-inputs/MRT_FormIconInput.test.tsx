@@ -29,17 +29,17 @@ const DEFAULT_ICONS_LIST = {
 // Available icon options — mirrors what the backend sends via column.meta.availableIcons.
 const DEFAULT_AVAILABLE_ICONS = [
   {
-    iconType: { iconCode: '1', description: 'Aktivan', color: '#00b894' },
+    iconType: { iconCode: 1, description: 'Aktivan', color: '#00b894' },
     tooltip: 'Aktivan',
     value: '1',
   },
   {
-    iconType: { iconCode: '2', description: 'Na čekanju', color: '#f39c12' },
+    iconType: { iconCode: 2, description: 'Na čekanju', color: '#f39c12' },
     tooltip: 'Na čekanju',
     value: '2',
   },
   {
-    iconType: { iconCode: '3', description: 'Neaktivan', color: '#d63031' },
+    iconType: { iconCode: 3, description: 'Neaktivan', color: '#d63031' },
     tooltip: 'Neaktivan',
     value: '3',
   },

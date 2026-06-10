@@ -1,5 +1,5 @@
 {
-  "name": "material-react-table-turbo",
+  "name": "@dooherceg/material-react-table-turbo",
   "private": true,
   "workspaces": [
     "apps/*",

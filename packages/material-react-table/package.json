@@ -1,27 +1,17 @@
 {
-  "version": "3.2.1",
+  "version": "3.2.2-alpha.9",
   "license": "MIT",
-  "name": "material-react-table",
+  "name": "@dooherceg/material-react-table",
   "description": "A fully featured Material UI V6 implementation of TanStack React Table V8, written from the ground up in TypeScript.",
-  "author": "KevinVandy",
-  "keywords": [
-    "react-table",
-    "material-ui",
-    "material-table",
-    "tanstack table",
-    "data table"
-  ],
+  "author": "HercegDoo",
+  "keywords": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/KevinVandy/material-react-table"
-  },
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/kevinvandy"
+    "url": "https://github.com/HercegDoo/material-react-table"
   },
   "homepage": "https://www.material-react-table.com/",
   "bugs": {
-    "url": "https://github.com/KevinVandy/material-react-table/issues"
+    "url": "https://github.com/HercegDoo/material-react-table/issues"
   },
   "sideEffects": false,
   "main": "dist/index.js",

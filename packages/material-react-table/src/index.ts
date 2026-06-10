@@ -1,3 +1,5 @@
+import './tanstack-table';
+
 export * from './types';
 
 //helpers

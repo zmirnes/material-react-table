@@ -26,6 +26,9 @@ importers:
       '@docsearch/js':
         specifier: 3.8.2
         version: 3.8.2(@algolia/client-search@5.17.1)(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)
+      '@dooherceg/material-react-table':
+        specifier: workspace:*
+        version: link:../../packages/material-react-table
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.0.2)(react@19.0.0)
@@ -95,9 +98,6 @@ importers:
       match-sorter:
         specifier: ^8.0.0
         version: 8.0.0
-      material-react-table:
-        specifier: workspace:*
-        version: link:../../packages/material-react-table
       next:
         specifier: 14.2.11
         version: 14.2.11(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -153,9 +153,6 @@ importers:
 
   packages/material-react-table:
     dependencies:
-      '@dooherceg/mui-date-range-picker':
-        specifier: ^0.2.8
-        version: 0.2.8(73f52zfkfxklbcqvsyr6bwwkmm)
       '@tanstack/match-sorter-utils':
         specifier: 8.19.4
         version: 8.19.4
@@ -175,6 +172,9 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1(react@19.0.0)
     devDependencies:
+      '@dooherceg/mui-date-range-picker':
+        specifier: ^0.2.8
+        version: 0.2.8(73f52zfkfxklbcqvsyr6bwwkmm)
       '@emotion/cache':
         specifier: ^11.14.0
         version: 11.14.0
