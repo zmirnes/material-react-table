@@ -110,6 +110,7 @@ export const MRT_SavedFiltersButton = <TData extends MRT_RowData>({
               onClick={() => handleSelectFilter(savedFilter)}
               primary={savedFilter.name}
               sx={{ cursor: 'pointer', flexGrow: 1 }}
+              data-testid="saved-filter-item"
             />
 
             {/* Delete icon — only shown when consumer provided an onDeleteSavedFilter handler */}

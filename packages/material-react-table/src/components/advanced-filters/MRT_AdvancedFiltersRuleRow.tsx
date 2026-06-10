@@ -163,6 +163,7 @@ export const MRT_AdvancedFiltersRuleRow = <TData extends MRT_RowData>({
           size="small"
           value={logicOperator}
           variant="outlined"
+          data-testid="logic-operator"
         >
           <MenuItem value="and">{localization.and}</MenuItem>
           <MenuItem value="or">{localization.or}</MenuItem>
