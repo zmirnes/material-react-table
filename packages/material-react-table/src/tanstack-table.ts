@@ -23,8 +23,8 @@ export interface MRT_DimensionsDef {
   fieldsPerRow?: number;
 }
 
-export type ExtraFieldFilterOption<TData extends MRT_RowData> = Pick<
-  MRT_ColumnDef<TData>,
+export type ExtraFieldFilterOption<TData extends RowData> = Pick<
+  MRT_ColumnDef<TData & MRT_RowData>,
   'type' | 'accessorKey' | 'header' | 'meta'
 >;
 
@@ -33,8 +33,6 @@ declare module '@tanstack/react-table' {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;
-    extraFieldFilters?: TData extends MRT_RowData
-      ? ExtraFieldFilterOption<TData>[]
-      : ExtraFieldFilterOption<MRT_RowData>[];
+    extraFieldFilters?: ExtraFieldFilterOption<TData>[];
   }
 }
