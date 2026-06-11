@@ -23,13 +23,18 @@ export interface MRT_DimensionsDef {
   fieldsPerRow?: number;
 }
 
+export type ExtraFieldFilterOption<TData extends MRT_RowData> = Pick<
+  MRT_ColumnDef<TData>,
+  'type' | 'accessorKey' | 'header' | 'meta'
+>;
+
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;
     extraFieldFilters?: TData extends MRT_RowData
-      ? MRT_ColumnDef<TData>[]
-      : MRT_ColumnDef<MRT_RowData>[];
+      ? ExtraFieldFilterOption<TData>[]
+      : ExtraFieldFilterOption<MRT_RowData>[];
   }
 }
