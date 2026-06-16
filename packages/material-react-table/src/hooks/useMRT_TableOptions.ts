@@ -84,7 +84,7 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
   enablePagination = true,
   enableRowPinning = true,
   enableRowSelection = true,
-  enableRowVirtualization = true,
+  enableRowVirtualization = false,
   enableSelectAll = true,
   enableSorting = true,
   enableStickyHeader = true,
