@@ -51,8 +51,11 @@ export const useMRT_RowVirtualizer = <
 
   const rowCount = realRows.length;
 
+  //matches the defaultRowHeight assumption in MRT_TableBodyRow so the
+  //initial estimate (before measureElement corrects it for dynamic content)
+  //doesn't cause scroll-position drift
   const normalRowHeight =
-    density === 'compact' ? 37 : density === 'comfortable' ? 58 : 73;
+    density === 'compact' ? 37 : density === 'comfortable' ? 53 : 69;
 
   const rowVirtualizer = useVirtualizer({
     count: renderDetailPanel ? rowCount * 2 : rowCount,
