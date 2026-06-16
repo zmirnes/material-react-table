@@ -267,38 +267,97 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     ((_originalRow: TData, index: number, _parentRow?: MRT_Row<TData>) =>
       String(index));
 
-  //don't recompute columnDefs while resizing column or dragging column/row
-  const columnDefsRef = useRef<MRT_ColumnDef<TData>[]>([]);
-  statefulTableOptions.columns =
-    statefulTableOptions.state.columnSizingInfo.isResizingColumn ||
-    statefulTableOptions.state.draggingColumn ||
-    statefulTableOptions.state.draggingRow
-      ? columnDefsRef.current
-      : prepareColumns({
-          columnDefs: [
-            ...([
-              showRowPinningColumn(statefulTableOptions) &&
-                getMRT_RowPinningColumnDef(statefulTableOptions),
-              showRowDragColumn(statefulTableOptions) &&
-                getMRT_RowDragColumnDef(statefulTableOptions),
-              showRowActionsColumn(statefulTableOptions) &&
-                getMRT_RowActionsColumnDef(statefulTableOptions),
-              showRowExpandColumn(statefulTableOptions) &&
-                getMRT_RowExpandColumnDef(statefulTableOptions),
-              showRowSelectionColumn(statefulTableOptions) &&
-                getMRT_RowSelectColumnDef(statefulTableOptions),
-              showRowNumbersColumn(statefulTableOptions) &&
-                getMRT_RowNumbersColumnDef(statefulTableOptions),
-            ].filter(Boolean) as MRT_ColumnDef<TData>[]),
-            ...statefulTableOptions.columns,
-            ...([
-              showRowSpacerColumn(statefulTableOptions) &&
-                getMRT_RowSpacerColumnDef(statefulTableOptions),
-            ].filter(Boolean) as MRT_ColumnDef<TData>[]),
-          ],
-          tableOptions: statefulTableOptions,
-        });
-  columnDefsRef.current = statefulTableOptions.columns;
+  //keep the prepared column tree referentially stable so TanStack's
+  //getAllColumns/getAllLeafColumns/row.getAllCells memo chain doesn't
+  //recompute (and recreate every cell of every row) on unrelated renders
+  //like hover, menu open/close, or density toggle
+  const rawColumns = statefulTableOptions.columns;
+  const {
+    aggregationFns,
+    createDisplayMode,
+    defaultDisplayColumn,
+    displayColumnDefOptions,
+    editDisplayMode,
+    enableEditing,
+    enableExpanding,
+    enableGrouping,
+    enableRowActions,
+    enableRowDragging,
+    enableRowNumbers,
+    enableRowOrdering,
+    enableRowPinning,
+    enableRowSelection,
+    filterFns,
+    layoutMode,
+    localization,
+    renderDetailPanel,
+    rowNumberDisplayMode,
+    rowPinningDisplayMode,
+    sortingFns,
+  } = statefulTableOptions;
+  //read from the final merged state (consumers/MaterialReactServerTableInstance
+  //may control these via the `state` option, which overrides the internal
+  //useState values above)
+  const {
+    columnFilterFns: stateColumnFilterFns,
+    creatingRow: stateCreatingRow,
+    grouping: stateGrouping,
+  } = statefulTableOptions.state;
+
+  statefulTableOptions.columns = useMemo(
+    () =>
+      prepareColumns({
+        columnDefs: [
+          ...([
+            showRowPinningColumn(statefulTableOptions) &&
+              getMRT_RowPinningColumnDef(statefulTableOptions),
+            showRowDragColumn(statefulTableOptions) &&
+              getMRT_RowDragColumnDef(statefulTableOptions),
+            showRowActionsColumn(statefulTableOptions) &&
+              getMRT_RowActionsColumnDef(statefulTableOptions),
+            showRowExpandColumn(statefulTableOptions) &&
+              getMRT_RowExpandColumnDef(statefulTableOptions),
+            showRowSelectionColumn(statefulTableOptions) &&
+              getMRT_RowSelectColumnDef(statefulTableOptions),
+            showRowNumbersColumn(statefulTableOptions) &&
+              getMRT_RowNumbersColumnDef(statefulTableOptions),
+          ].filter(Boolean) as MRT_ColumnDef<TData>[]),
+          ...rawColumns,
+          ...([
+            showRowSpacerColumn(statefulTableOptions) &&
+              getMRT_RowSpacerColumnDef(statefulTableOptions),
+          ].filter(Boolean) as MRT_ColumnDef<TData>[]),
+        ],
+        tableOptions: statefulTableOptions,
+      }),
+    [
+      rawColumns,
+      aggregationFns,
+      createDisplayMode,
+      defaultDisplayColumn,
+      displayColumnDefOptions,
+      editDisplayMode,
+      enableEditing,
+      enableExpanding,
+      enableGrouping,
+      enableRowActions,
+      enableRowDragging,
+      enableRowNumbers,
+      enableRowOrdering,
+      enableRowPinning,
+      enableRowSelection,
+      filterFns,
+      layoutMode,
+      localization,
+      renderDetailPanel,
+      rowNumberDisplayMode,
+      rowPinningDisplayMode,
+      sortingFns,
+      stateColumnFilterFns,
+      stateCreatingRow,
+      stateGrouping,
+    ],
+  );
 
   //if loading, generate blank rows to show skeleton loaders
   statefulTableOptions.data = useMemo(
