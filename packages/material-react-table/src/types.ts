@@ -429,6 +429,9 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setShowProgressBars: Dispatch<SetStateAction<boolean>>;
   setShowToolbarDropZone: Dispatch<SetStateAction<boolean>>;
   setShowAdvancedFilters: Dispatch<SetStateAction<boolean>>;
+  _showAdvancedFiltersSetterRef: RefObject<Dispatch<
+    SetStateAction<boolean>
+  > | null>;
   setNewEntryModal: Dispatch<SetStateAction<MRT_NewEntryModalState>>;
   setRowReorderingSelection: Dispatch<
     SetStateAction<MRT_RowReorderingSelectionState>
