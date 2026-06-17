@@ -188,7 +188,8 @@ export const MaterialReactServerTableInstance = <
     editRowFn,
     onSaveFilters,
     onDeleteSavedFilter,
-    initialSavedFilters,
+    initialSavedFilters:
+      initialSavedFilters ?? config.initialState?.savedFilters,
     availableExports: hasAvailableExports ? allowedExports : undefined,
     loadExport: hasAvailableExports ? loadExport : undefined,
     enableNewEntryButton,
