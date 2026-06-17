@@ -1,5 +1,5 @@
 {
-  "version": "3.2.2-alpha.13",
+  "version": "3.2.2-alpha.14",
   "license": "MIT",
   "name": "@dooherceg/material-react-table",
   "description": "A fully featured Material UI V6 implementation of TanStack React Table V8, written from the ground up in TypeScript.",
@@ -7,7 +7,7 @@
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/HercegDoo/material-react-table"
+    "url": "git+https://github.com/HercegDoo/material-react-table.git"
   },
   "homepage": "https://www.material-react-table.com/",
   "bugs": {
