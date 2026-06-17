@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react';
 import { type VirtualItem } from '@tanstack/react-virtual';
+import { useTheme } from '@mui/material/styles';
 import TableBody, { type TableBodyProps } from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import { useMRT_Rows } from '../../hooks/useMRT_Rows';
@@ -45,6 +46,11 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
   } = table;
   const { columnFilters, globalFilter, rowPinning } = getState();
 
+  //read once per body render instead of once per row/cell, since every
+  //subscriber otherwise pays its own useContext lookup on every mount
+  //(noticeable when a burst of new rows mounts on a fast scroll jump)
+  const theme = useTheme();
+
   const tableBodyProps = {
     ...parseFromValuesOrFunc(muiTableBodyProps, { table }),
     ...rest,
@@ -72,6 +78,7 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
     columnVirtualizer,
     numRows: rows.length,
     table,
+    theme,
   };
 
   return (

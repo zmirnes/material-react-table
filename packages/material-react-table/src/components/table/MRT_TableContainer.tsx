@@ -24,6 +24,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
       createDisplayMode,
       editDisplayMode,
       enableCellActions,
+      enableRowVirtualization,
       muiTableContainerProps,
     },
     refs: { tableContainerRef },
@@ -75,6 +76,12 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
         maxWidth: '100%',
         overflow: 'auto',
         position: 'relative',
+        //chromium scrolls a tall virtualized table sluggishly without these
+        //(isolates layout/paint work to this subtree and warms up
+        //compositing) — see tanstack/virtual#860
+        ...(enableRowVirtualization
+          ? { contain: 'paint', willChange: 'transform' }
+          : null),
         ...(parseFromValuesOrFunc(tableContainerProps?.sx, theme) as Record<
           string,
           unknown

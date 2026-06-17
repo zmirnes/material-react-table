@@ -6,16 +6,6 @@ import external from 'rollup-plugin-peer-deps-external';
 
 export default [
   {
-    external: [
-      '@mui/icons-material',
-      '@mui/material',
-      '@mui/x-date-pickers',
-      '@tanstack/match-sorter-utils',
-      '@tanstack/react-table',
-      '@tanstack/react-virtual',
-      'highlight-words',
-      'react',
-    ],
     input: './src/index.ts',
     output: [
       {
@@ -30,7 +20,7 @@ export default [
       },
     ],
     plugins: [
-      external(),
+      external({ includeDependencies: true }),
       typescript({
         rootDir: './src',
       }),

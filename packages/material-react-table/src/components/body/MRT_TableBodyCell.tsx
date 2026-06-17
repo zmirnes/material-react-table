@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { useTheme } from '@mui/material/styles';
+import { type Theme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
 import { MRT_CopyButton } from '../buttons/MRT_CopyButton';
 import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
@@ -35,6 +35,7 @@ export interface MRT_TableBodyCellProps<TData extends MRT_RowData>
   staticColumnIndex?: number;
   staticRowIndex: number;
   table: MRT_TableInstance<TData>;
+  theme: Theme;
 }
 
 export const MRT_TableBodyCell = <TData extends MRT_RowData>({
@@ -44,9 +45,9 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
   staticColumnIndex,
   staticRowIndex,
   table,
+  theme,
   ...rest
 }: MRT_TableBodyCellProps<TData>) => {
-  const theme = useTheme();
   const {
     getState,
     options: {

@@ -1,12 +1,6 @@
 import { type DragEvent, memo, useMemo, useRef } from 'react';
 import { type VirtualItem } from '@tanstack/react-virtual';
-import {
-  type Theme,
-  alpha,
-  darken,
-  lighten,
-  useTheme,
-} from '@mui/material/styles';
+import { type Theme, alpha, darken, lighten } from '@mui/material/styles';
 import TableRow, { type TableRowProps } from '@mui/material/TableRow';
 import { MRT_TableBodyCell, Memo_MRT_TableBodyCell } from './MRT_TableBodyCell';
 import { MRT_TableDetailPanel } from './MRT_TableDetailPanel';
@@ -35,6 +29,7 @@ export interface MRT_TableBodyRowProps<TData extends MRT_RowData>
   rowVirtualizer?: MRT_RowVirtualizer;
   staticRowIndex: number;
   table: MRT_TableInstance<TData>;
+  theme: Theme;
   virtualRow?: VirtualItem;
 }
 
@@ -46,11 +41,10 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
   rowVirtualizer,
   staticRowIndex,
   table,
+  theme,
   virtualRow,
   ...rest
 }: MRT_TableBodyRowProps<TData>) => {
-  const theme = useTheme();
-
   const {
     getState,
     options: {
@@ -199,6 +193,10 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
           boxSizing: 'border-box',
           display: layoutMode?.startsWith('grid') ? 'flex' : undefined,
           opacity: isRowPinned ? 0.97 : isDraggingRow || isHoveredRow ? 0.5 : 1,
+          //prevents the browser from "anchoring" scroll position to this
+          //row as virtualized rows are recycled in and out — see
+          //tanstack/virtual#860
+          overflowAnchor: virtualRow ? 'none' : undefined,
           position: virtualRow
             ? 'absolute'
             : rowPinningDisplayMode?.includes('sticky') && isRowPinned
@@ -245,6 +243,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
               staticColumnIndex,
               staticRowIndex,
               table,
+              theme,
             };
             const key = `${cell.id}-${staticRowIndex}`;
             return cell ? (
