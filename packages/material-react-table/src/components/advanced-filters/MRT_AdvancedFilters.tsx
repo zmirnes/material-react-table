@@ -4,6 +4,7 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useMRT_AdvancedFiltersContext } from './MRT_AdvancedFiltersContext';
 import { MRT_AdvancedFiltersRuleRow } from './MRT_AdvancedFiltersRuleRow';
 import { MRT_SaveFiltersInput } from './MRT_SaveFiltersInput';
 import { useMRT_AdvancedFiltersDraft } from './useMRT_AdvancedFiltersDraft';
@@ -22,15 +23,14 @@ const MRT_AdvancedFiltersContent = <TData extends MRT_RowData>({
   table,
 }: MRT_AdvancedFiltersProps<TData>) => {
   const {
-    getState,
     options: {
       icons: { CloseIcon },
       localization,
     },
     setFilters,
-    setShowAdvancedFilters,
   } = table;
-  const { showAdvancedFilters } = getState();
+  const { showAdvancedFilters, setShowAdvancedFilters } =
+    useMRT_AdvancedFiltersContext();
 
   // All draft editing logic lives in this hook
   const {

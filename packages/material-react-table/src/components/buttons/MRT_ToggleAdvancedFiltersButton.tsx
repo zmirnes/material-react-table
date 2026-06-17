@@ -2,6 +2,10 @@ import Badge from '@mui/material/Badge';
 import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { MRT_AdvancedFilters } from '../advanced-filters/MRT_AdvancedFilters';
+import {
+  MRT_AdvancedFiltersProvider,
+  useMRT_AdvancedFiltersContext,
+} from '../advanced-filters/MRT_AdvancedFiltersContext';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_ToggleAdvancedFiltersButtonProps<TData extends MRT_RowData>
@@ -9,7 +13,7 @@ export interface MRT_ToggleAdvancedFiltersButtonProps<TData extends MRT_RowData>
   table: MRT_TableInstance<TData>;
 }
 
-export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
+const MRT_ToggleAdvancedFiltersButtonInner = <TData extends MRT_RowData>({
   table,
   ...rest
 }: MRT_ToggleAdvancedFiltersButtonProps<TData>) => {
@@ -20,27 +24,22 @@ export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
       localization,
       manualFiltering,
     },
-    setShowAdvancedFilters,
   } = table;
-  const { filters, showAdvancedFilters } = getState();
+  const { filters } = getState();
+  const { showAdvancedFilters, setShowAdvancedFilters } =
+    useMRT_AdvancedFiltersContext();
 
   if (!manualFiltering) {
     return null;
   }
 
-  // Count applied filter rules to display on the badge
   const activeFilterCount = filters.rules.length;
-
-  const handleToggleShowAdvancedFilters = () => {
-    setShowAdvancedFilters((prev) => !prev);
-  };
 
   const FilterIcon = showAdvancedFilters ? FilterListOffIcon : FilterListIcon;
 
   return (
     <>
       <Tooltip title={rest?.title ?? localization.showAdvancedFilters}>
-        {/* Badge wraps the button; invisible when no filters are active */}
         <Badge
           badgeContent={activeFilterCount}
           color="primary"
@@ -48,7 +47,7 @@ export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
         >
           <Button
             aria-label={localization.showAdvancedFilters}
-            onClick={handleToggleShowAdvancedFilters}
+            onClick={() => setShowAdvancedFilters((prev) => !prev)}
             size="small"
             startIcon={<FilterIcon />}
             variant="text"
@@ -61,5 +60,25 @@ export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
       </Tooltip>
       <MRT_AdvancedFilters table={table} />
     </>
+  );
+};
+
+export const MRT_ToggleAdvancedFiltersButton = <TData extends MRT_RowData>({
+  table,
+  ...rest
+}: MRT_ToggleAdvancedFiltersButtonProps<TData>) => {
+  const initialOpen =
+    table.options.initialState?.showAdvancedFilters ??
+    Boolean(
+      table.options.enableAdvancedFilters && table.options.manualFiltering,
+    );
+
+  return (
+    <MRT_AdvancedFiltersProvider
+      initialOpen={initialOpen}
+      setterRef={table._showAdvancedFiltersSetterRef}
+    >
+      <MRT_ToggleAdvancedFiltersButtonInner table={table} {...rest} />
+    </MRT_AdvancedFiltersProvider>
   );
 };

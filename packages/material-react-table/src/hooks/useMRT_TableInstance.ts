@@ -1,4 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
+import {
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { useReactTable } from '@tanstack/react-table';
 import { getMRT_RowActionsColumnDef } from './display-columns/getMRT_RowActionsColumnDef';
 import { getMRT_RowDragColumnDef } from './display-columns/getMRT_RowDragColumnDef';
@@ -184,13 +190,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [showGlobalFilter, setShowGlobalFilter] = useState<boolean>(
     initialState?.showGlobalFilter ?? false,
   );
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(
-    initialState?.showAdvancedFilters ??
-      Boolean(
-        definedTableOptions.enableAdvancedFilters &&
-          definedTableOptions.manualFiltering,
-      ),
-  );
+  const showAdvancedFiltersSetterRef = useRef<Dispatch<
+    SetStateAction<boolean>
+  > | null>(null);
   const [showToolbarDropZone, setShowToolbarDropZone] = useState<boolean>(
     initialState?.showToolbarDropZone ?? false,
   );
@@ -237,7 +239,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     showAlertBanner,
     showColumnFilters,
     showGlobalFilter,
-    showAdvancedFilters,
     showProgressBars,
     showToolbarDropZone,
     newEntryModal,
@@ -445,8 +446,10 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setSavedFilters = setSavedFilters;
   table.setShowAlertBanner =
     statefulTableOptions.onShowAlertBannerChange ?? setShowAlertBanner;
+  table._showAdvancedFiltersSetterRef = showAdvancedFiltersSetterRef;
   table.setShowAdvancedFilters =
-    statefulTableOptions.onShowAdvancedFiltersChange ?? setShowAdvancedFilters;
+    statefulTableOptions.onShowAdvancedFiltersChange ??
+    ((updater) => showAdvancedFiltersSetterRef.current?.(updater));
   table.setShowColumnFilters =
     statefulTableOptions.onShowColumnFiltersChange ?? setShowColumnFilters;
   table.setShowGlobalFilter =
