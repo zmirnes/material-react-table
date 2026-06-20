@@ -18,6 +18,14 @@ export function createColumnDef<TData extends MRT_RowData>(
 
 export function createColumnDefs<TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
+  extendColumns?: Partial<MRT_ColumnDef<TData>>[],
 ): MRT_ColumnDef<TData>[] {
-  return columns.map((column) => createColumnDef(column));
+  return columns.map((column) => {
+    const resolved = createColumnDef(column);
+    const extension = extendColumns?.find(
+      (ext) => ext.accessorKey === column.accessorKey,
+    );
+    if (extension) return { ...resolved, ...extension } as MRT_ColumnDef<TData>;
+    return resolved;
+  });
 }

@@ -5,6 +5,7 @@ import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import { useServerTableState } from '../hooks/useServerTableState';
 import { MRT_Localization_HR } from '../locales/hr';
 import {
+  type MRT_ColumnDef,
   type MRT_TableOptions,
   type MRT_ActiveExportsState,
   type MRT_ExportFileResponse,
@@ -56,6 +57,7 @@ export type MaterialReactServerTableInstanceProps<TData extends MRT_RowData> =
     }: OnEditActionContext<TData>) => Promise<void> | void;
     enableResetState?: boolean;
     resetState?: (table: MRT_TableInstance<TData>) => Promise<void> | void;
+    extendColumns?: Partial<MRT_ColumnDef<TData>>[];
   };
 
 /** Builds the initial MRT_ActiveExportsState from availableExports.
@@ -105,6 +107,7 @@ export const MaterialReactServerTableInstance = <
   editRowFn,
   enableResetState,
   resetState,
+  extendColumns,
   // Extra MRT_TableOptions props (e.g. formConfig) passed directly through to useMaterialReactTable
   ...tableOptionsOverrides
 }: MaterialReactServerTableInstanceProps<TData>) => {
@@ -144,8 +147,8 @@ export const MaterialReactServerTableInstance = <
   });
 
   const columns = useMemo(
-    () => createColumnDefs(config.columns),
-    [config.columns],
+    () => createColumnDefs(config.columns, extendColumns),
+    [config.columns, extendColumns],
   );
 
   const wrappedGetTotalRows = useMemo(
