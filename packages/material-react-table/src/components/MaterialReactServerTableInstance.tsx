@@ -75,7 +75,7 @@ const buildInitialExportState = (
     return {
       selectedFormat: uniqueFormats[0],
       selectedExports: exportEntries.length > 0 ? [exportEntries[0].name] : [],
-      grouped: false,
+      grouped: savedActiveExports ? savedActiveExports.grouped : false,
     };
   }
 
