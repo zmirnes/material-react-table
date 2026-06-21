@@ -146,6 +146,11 @@ export const MRT_Localization_DE: MRT_Localization = {
   exportPrintPdf: 'PDF drucken',
   exportDownload: 'Herunterladen',
   exportGrouped: 'Dateien gruppieren',
+  exportInProgress: 'Export läuft...',
+  exportSuccess: 'Export erfolgreich abgeschlossen.',
+  exportError: 'Export fehlgeschlagen. Bitte erneut versuchen.',
+  exportNoExportsSelected:
+    'Kein Exporttyp ausgewählt. Bitte den Export zuerst konfigurieren.',
   deleteConfirmationTitle: 'Zeile löschen',
   deleteConfirmationMessage:
     'Möchten Sie die ausgewählte(n) Zeile(n) wirklich löschen?',

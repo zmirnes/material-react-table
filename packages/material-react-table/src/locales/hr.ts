@@ -146,6 +146,11 @@ export const MRT_Localization_HR: MRT_Localization = {
   exportPrintPdf: 'Ispis PDF',
   exportDownload: 'Preuzmi',
   exportGrouped: 'Grupirati datoteke',
+  exportInProgress: 'Izvoz u toku...',
+  exportSuccess: 'Izvoz je uspješno završen.',
+  exportError: 'Izvoz nije uspio. Pokušajte ponovo.',
+  exportNoExportsSelected:
+    'Nije odabran tip izvoza. Molimo odaberite izvoz iz gornje trake.',
   deleteConfirmationTitle: 'Brisanje reda',
   deleteConfirmationMessage: 'Da li ste sigurni da želite izbrisati ovaj red?',
   deleteConfirmYes: 'Izbriši',

@@ -146,6 +146,11 @@ export const MRT_Localization_FR: MRT_Localization = {
   exportPrintPdf: 'Imprimer PDF',
   exportDownload: 'Télécharger',
   exportGrouped: 'Grouper les fichiers',
+  exportInProgress: 'Export en cours...',
+  exportSuccess: 'Export terminé avec succès.',
+  exportError: "L'export a échoué. Veuillez réessayer.",
+  exportNoExportsSelected:
+    "Aucun type d'export sélectionné. Veuillez d'abord configurer l'export.",
   deleteConfirmationTitle: 'Supprimer la ligne',
   deleteConfirmationMessage:
     'Êtes-vous sûr de vouloir supprimer la/les ligne(s) sélectionnée(s) ?',

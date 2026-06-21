@@ -410,8 +410,27 @@ export const Basic = () => (
         const buildXlsxContent = (exportName: string) =>
           `XLSX mock content for ${exportName} - ids: ${params.ids}`;
 
-        const buildPdfContent = (exportName: string) =>
-          `%PDF-1.4 mock for ${exportName}`;
+        // Minimal valid single-page PDF with correct xref byte offsets.
+        // Byte layout (all lines end with \n):
+        //   0   : %PDF-1.4\n              (9 bytes)  → obj 1 at offset 9
+        //   9   : 1 0 obj<<...>>endobj\n  (43 bytes) → obj 2 at offset 52
+        //   52  : 2 0 obj<<...>>endobj\n  (49 bytes) → obj 3 at offset 101
+        //   101 : 3 0 obj<<...>>endobj\n  (63 bytes) → xref at offset 164
+        const buildPdfContent = (_exportName: string) =>
+          '%PDF-1.4\n' +
+          '1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n' +
+          '2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n' +
+          '3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R>>endobj\n' +
+          'xref\n' +
+          '0 4\n' +
+          '0000000000 65535 f \n' +
+          '0000000009 00000 n \n' +
+          '0000000052 00000 n \n' +
+          '0000000101 00000 n \n' +
+          'trailer<</Root 1 0 R/Size 4>>\n' +
+          'startxref\n' +
+          '164\n' +
+          '%%EOF';
 
         const getContent = (exportName: string): string => {
           switch (params.format) {
@@ -435,6 +454,18 @@ export const Basic = () => (
             extension: params.format ?? 'bin',
             content: getContent(exportName),
           }));
+        }
+
+        // PDF cannot be concatenated as text — return a single valid minimal PDF for combined mode.
+        if (params.format === 'pdf') {
+          return [
+            {
+              filename: `export_combined.pdf`,
+              name: 'combined',
+              extension: 'pdf',
+              content: btoa(buildPdfContent('combined')),
+            },
+          ];
         }
 
         const combinedContent = params.exports

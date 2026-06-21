@@ -6,7 +6,6 @@ import { MRT_ToggleAdvancedFiltersButton } from '../buttons/MRT_ToggleAdvancedFi
 import { MRT_ToggleDensePaddingButton } from '../buttons/MRT_ToggleDensePaddingButton';
 import { MRT_ToggleFiltersButton } from '../buttons/MRT_ToggleFiltersButton';
 import { MRT_ToggleGlobalFilterButton } from '../buttons/MRT_ToggleGlobalFilterButton';
-import { MRT_ExportsToolbar } from './MRT_ExportsToolbar';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
@@ -21,7 +20,6 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
 }: MRT_ToolbarInternalButtonsProps<TData>) => {
   const {
     options: {
-      availableExports,
       columnFilterDisplayMode,
       enableColumnFilters,
       enableColumnOrdering,
@@ -32,14 +30,10 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
       enableHiding,
       initialState,
       enableAdvancedFilters,
-      loadExport,
-      onActiveExportsChange,
       renderToolbarInternalActions,
       enableNewEntryButton,
     },
   } = table;
-
-  const { activeExports } = table.getState();
 
   return (
     <Box
@@ -77,18 +71,7 @@ export const MRT_ToolbarInternalButtons = <TData extends MRT_RowData>({
           )}
           {/* Saved filters dropdown — shown directly in toolbar for quick access */}
           {enableAdvancedFilters && <MRT_SavedFiltersButton table={table} />}
-          {availableExports &&
-            loadExport &&
-            onActiveExportsChange &&
-            activeExports && (
-              <MRT_ExportsToolbar
-                table={table}
-                availableExports={availableExports}
-                exportState={activeExports}
-                onExportStateChange={onActiveExportsChange}
-                loadExport={loadExport}
-              />
-            )}
+
           {enableNewEntryButton && <MRT_NewEntryButton table={table} />}
         </>
       )}

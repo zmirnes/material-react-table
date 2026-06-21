@@ -146,6 +146,11 @@ export const MRT_Localization_EN: MRT_Localization = {
   exportPrintPdf: 'Print PDF',
   exportDownload: 'Download',
   exportGrouped: 'Group files',
+  exportInProgress: 'Export in progress...',
+  exportSuccess: 'Export completed successfully.',
+  exportError: 'Export failed. Please try again.',
+  exportNoExportsSelected:
+    'No export type selected. Please configure the export first.',
   deleteConfirmationTitle: 'Delete Row',
   deleteConfirmationMessage:
     'Are you sure you want to delete the selected row(s)?',
