@@ -5,6 +5,7 @@ import {
   type ReactElement,
   type Ref,
 } from 'react';
+import { MaybeSnackbarProvider } from './MaybeSnackbarProvider';
 import { MRT_TablePaper } from './table/MRT_TablePaper';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
 import {
@@ -38,7 +39,11 @@ const MaterialReactTableComponent = <TData extends MRT_RowData>(
 
   useImperativeHandle(ref, () => table, [table]);
 
-  return <MRT_TablePaper table={table} />;
+  return (
+    <MaybeSnackbarProvider>
+      <MRT_TablePaper table={table} />
+    </MaybeSnackbarProvider>
+  );
 };
 
 export const MaterialReactTable = forwardRef(MaterialReactTableComponent) as <

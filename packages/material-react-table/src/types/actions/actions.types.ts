@@ -70,6 +70,35 @@ export interface CreateDeleteActionOptions<TData extends MRT_RowData>
   deleteConfirmation?: DeleteConfirmationConfig;
 }
 
+type ExportActionExecutor = () => void | Promise<void>;
+
+export interface OnExportActionContext<TData extends MRT_RowData> {
+  table: MRT_TableInstance<TData>;
+  rowsToExport: MRT_Row<TData>[];
+}
+
+export interface CustomOnExportActionContext<TData extends MRT_RowData>
+  extends OnExportActionContext<TData> {
+  defaultOnExport: ExportActionExecutor;
+}
+
+export interface ExportActionRowRenderContext<TData extends MRT_RowData>
+  extends ActionRowRenderContext<TData> {
+  onExport: ExportActionExecutor;
+}
+
+export interface ExportActionToolbarRenderContext<TData extends MRT_RowData>
+  extends ActionToolbarRenderContext<TData> {
+  onExport: ExportActionExecutor;
+}
+
+export interface CreateExportActionOptions<TData extends MRT_RowData>
+  extends Partial<Omit<Action<TData>, 'renderRow' | 'renderToolbar'>> {
+  onExport?: (context: CustomOnExportActionContext<TData>) => void | Promise<void>;
+  renderRow?: (context: ExportActionRowRenderContext<TData>) => ReactNode;
+  renderToolbar?: (context: ExportActionToolbarRenderContext<TData>) => ReactNode;
+}
+
 export interface OnEditActionContext<TData extends MRT_RowData> {
   rowToEdit: MRT_Row<TData>;
   table: MRT_TableInstance<TData>;

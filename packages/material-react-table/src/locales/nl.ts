@@ -146,6 +146,11 @@ export const MRT_Localization_NL: MRT_Localization = {
   exportPrintPdf: 'PDF afdrukken',
   exportDownload: 'Downloaden',
   exportGrouped: 'Bestanden groeperen',
+  exportInProgress: 'Export bezig...',
+  exportSuccess: 'Export succesvol voltooid.',
+  exportError: 'Export mislukt. Probeer opnieuw.',
+  exportNoExportsSelected:
+    'Geen exporttype geselecteerd. Configureer de export eerst.',
   deleteConfirmationTitle: 'Rij verwijderen',
   deleteConfirmationMessage:
     'Weet u zeker dat u de geselecteerde rij(en) wilt verwijderen?',

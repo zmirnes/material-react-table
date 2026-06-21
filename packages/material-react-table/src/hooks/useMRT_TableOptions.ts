@@ -21,6 +21,7 @@ import {
   type MRT_RowData,
   type MRT_TableOptions,
 } from '../types';
+import { createExportAction } from '../utils/actions/createExportAction';
 import { getMRTTheme } from '../utils/style.utils';
 
 export const MRT_DefaultColumn = {
@@ -114,9 +115,20 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
   rowPinningDisplayMode = 'sticky',
   selectAllMode = 'page',
   sortingFns,
+  actions,
+  availableExports,
   ...rest
 }: MRT_TableOptions<TData>) => {
   const theme = useTheme();
+
+  // When availableExports is configured and the user has not supplied their own
+  // 'export' action, inject the default export action automatically.
+  const effectiveActions = useMemo(() => {
+    if (!availableExports) return actions;
+    const hasUserExportAction = actions?.some((a) => a.name === 'export');
+    if (hasUserExportAction) return actions;
+    return [createExportAction<TData>(), ...(actions ?? [])];
+  }, [actions, availableExports]);
 
   icons = useMemo(() => ({ ...MRT_Default_Icons, ...icons }), [icons]);
   localization = useMemo(
@@ -268,6 +280,8 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     selectAllMode,
     sortingFns,
     enableAdvancedFilters,
+    actions: effectiveActions,
+    availableExports,
     ...rest,
   } as MRT_DefinedTableOptions<TData>;
 };
