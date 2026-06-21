@@ -109,7 +109,7 @@ describe('MRT_ExportsToolbarFlow — integration', () => {
   });
 
   describe('export button disabled state', () => {
-    it('should disable the export button when no rows are selected', async () => {
+    it('should not show the export button when no rows are selected', async () => {
       const loadExport = vi.fn().mockResolvedValue([]);
 
       render(
@@ -130,9 +130,12 @@ describe('MRT_ExportsToolbarFlow — integration', () => {
 
       await waitForTableToLoad();
 
-      // MUI wraps a disabled button inside a <span> for Tooltip — pointer-events: none
-      // is set on the button itself, so just asserting disabled state is sufficient.
-      expect(screen.getByRole('button', { name: exportButton })).toBeDisabled();
+      // Export action is rendered inside the selection overlay (ToolbarActions),
+      // which is hidden via display:none when no rows are selected.
+      // The button is therefore not accessible in the DOM.
+      expect(
+        screen.queryByRole('button', { name: exportButton }),
+      ).not.toBeInTheDocument();
     });
 
     it('should enable the export button when rows are pre-selected via initialState', async () => {
