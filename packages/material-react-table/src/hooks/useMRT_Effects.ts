@@ -31,6 +31,7 @@ export const useMRT_Effects = <TData extends MRT_RowData>(
 
   const rerender = useReducer(() => ({}), {})[1];
   const initialBodyHeight = useRef<string>(null);
+  const hasMountedColumnOrderEffect = useRef(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -40,6 +41,11 @@ export const useMRT_Effects = <TData extends MRT_RowData>(
 
   //recalculate column order when columns change or features are toggled on/off
   useEffect(() => {
+    if (!hasMountedColumnOrderEffect.current) {
+      hasMountedColumnOrderEffect.current = true;
+      return;
+    }
+
     if (totalColumnCount !== columnOrder.length) {
       table.setColumnOrder(getDefaultColumnOrderIds(table.options));
     }
