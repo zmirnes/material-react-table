@@ -294,6 +294,9 @@ export interface MRT_Localization {
   sortedByColumnDesc: string;
   thenBy: string;
   toggleDensity: string;
+  densityCompact: string;
+  densityStandard: string;
+  densityComfortable: string;
   toggleSelectAll: string;
   toggleSelectRow: string;
   toggleVisibility: string;
