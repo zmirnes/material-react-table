@@ -10,7 +10,7 @@ export const defaultDensityIconSx = {
   comfortable: {
     '& path': {
       stroke: 'currentColor',
-      strokeWidth: 5.1,
+      strokeWidth: 2.4,
     },
     fontSize: '1.2rem',
     transform: 'scale(0.9, 0.65)',
@@ -18,7 +18,7 @@ export const defaultDensityIconSx = {
   spacious: {
     '& path': {
       stroke: 'currentColor',
-      strokeWidth: 2.4,
+      strokeWidth: 5.1,
     },
     fontSize: '1.2rem',
     transform: 'scale(0.9, 0.65)',

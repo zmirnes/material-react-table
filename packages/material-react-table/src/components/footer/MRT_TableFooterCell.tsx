@@ -79,7 +79,7 @@ export const MRT_TableFooterCell = <TData extends MRT_RowData>({
         p:
           density === 'compact'
             ? '0.5rem'
-            : density === 'spacious'
+            : density === 'comfortable'
               ? '1rem'
               : '1.5rem',
         verticalAlign: 'top',

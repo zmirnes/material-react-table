@@ -225,7 +225,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
         p:
           density === 'compact'
             ? '0.5rem'
-            : density === 'spacious'
+            : density === 'comfortable'
               ? columnDefType === 'display'
                 ? '0.75rem'
                 : '1rem'
@@ -241,7 +241,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
         pt:
           columnDefType === 'group' || density === 'compact'
             ? '0.25rem'
-            : density === 'spacious'
+            : density === 'comfortable'
               ? '.75rem'
               : '1.25rem',
         userSelect: enableMultiSort && column.getCanSort() ? 'none' : undefined,

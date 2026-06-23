@@ -117,7 +117,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
   const sx = parseFromValuesOrFunc(tableRowProps?.sx, theme as Theme);
 
   const defaultRowHeight =
-    density === 'compact' ? 37 : density === 'spacious' ? 53 : 69;
+    density === 'compact' ? 37 : density === 'comfortable' ? 53 : 69;
 
   const customRowHeight =
     // @ts-expect-error
