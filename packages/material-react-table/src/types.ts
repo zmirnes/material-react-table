@@ -294,6 +294,9 @@ export interface MRT_Localization {
   sortedByColumnDesc: string;
   thenBy: string;
   toggleDensity: string;
+  densityCompact: string;
+  densityStandard: string;
+  densityComfortable: string;
   toggleSelectAll: string;
   toggleSelectRow: string;
   toggleVisibility: string;
@@ -335,6 +338,7 @@ export interface MRT_Localization {
 export interface MRT_Theme {
   baseBackgroundColor: string;
   cellNavigationOutlineColor: string;
+  densityIconSx: Record<MRT_DensityState, SxProps<Theme>>;
   draggingBorderColor: string;
   matchHighlightColor: string;
   menuBackgroundColor: string;
