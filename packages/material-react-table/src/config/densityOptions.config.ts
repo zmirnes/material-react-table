@@ -36,11 +36,11 @@ export const getDensityOptions = ({
   {
     Icon: DensityMediumIcon,
     label: localization.densityStandard,
-    value: 'comfortable',
+    value: 'spacious',
   },
   {
     Icon: DensityLargeIcon,
     label: localization.densityComfortable,
-    value: 'spacious',
+    value: 'comfortable',
   },
 ];

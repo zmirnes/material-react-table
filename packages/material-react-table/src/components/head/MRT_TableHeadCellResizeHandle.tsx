@@ -29,11 +29,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
   const handler = header.getResizeHandler();
 
   const mx =
-    density === 'compact'
-      ? '-8px'
-      : density === 'comfortable'
-        ? '-16px'
-        : '-24px';
+    density === 'compact' ? '-8px' : density === 'spacious' ? '-16px' : '-24px';
 
   const lr = column.columnDef.columnDefType === 'display' ? '4px' : '0';
 

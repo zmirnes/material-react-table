@@ -283,7 +283,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
             ? columnDefType === 'display'
               ? '0 0.5rem'
               : '0.5rem'
-            : density === 'comfortable'
+            : density === 'spacious'
               ? columnDefType === 'display'
                 ? '0.5rem 0.75rem'
                 : '1rem'

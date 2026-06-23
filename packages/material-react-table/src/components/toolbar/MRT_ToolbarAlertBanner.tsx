@@ -151,9 +151,9 @@ export const MRT_ToolbarAlertBanner = <TData extends MRT_RowData>({
                 p:
                   positionToolbarAlertBanner !== 'head-overlay'
                     ? '0.5rem 1rem'
-                    : density === 'spacious'
+                    : density === 'comfortable'
                       ? '0.75rem 1.25rem'
-                      : density === 'comfortable'
+                      : density === 'spacious'
                         ? '0.5rem 0.75rem'
                         : '0.25rem 0.5rem',
               }}

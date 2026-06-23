@@ -55,7 +55,7 @@ export const useMRT_RowVirtualizer = <
   //initial estimate (before measureElement corrects it for dynamic content)
   //doesn't cause scroll-position drift
   const normalRowHeight =
-    density === 'compact' ? 37 : density === 'comfortable' ? 53 : 69;
+    density === 'compact' ? 37 : density === 'spacious' ? 53 : 69;
 
   const rowVirtualizer = useVirtualizer({
     count: renderDetailPanel ? rowCount * 2 : rowCount,

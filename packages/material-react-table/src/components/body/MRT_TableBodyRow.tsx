@@ -1,8 +1,8 @@
 import { type DragEvent, memo, useMemo, useRef } from 'react';
 import { type VirtualItem } from '@tanstack/react-virtual';
-import { type Theme, alpha, darken, lighten } from '@mui/material/styles';
+import { alpha, darken, lighten, type Theme } from '@mui/material/styles';
 import TableRow, { type TableRowProps } from '@mui/material/TableRow';
-import { MRT_TableBodyCell, Memo_MRT_TableBodyCell } from './MRT_TableBodyCell';
+import { Memo_MRT_TableBodyCell, MRT_TableBodyCell } from './MRT_TableBodyCell';
 import { MRT_TableDetailPanel } from './MRT_TableDetailPanel';
 import {
   type MRT_Cell,
@@ -117,7 +117,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
   const sx = parseFromValuesOrFunc(tableRowProps?.sx, theme as Theme);
 
   const defaultRowHeight =
-    density === 'compact' ? 37 : density === 'comfortable' ? 53 : 69;
+    density === 'compact' ? 37 : density === 'spacious' ? 53 : 69;
 
   const customRowHeight =
     // @ts-expect-error
