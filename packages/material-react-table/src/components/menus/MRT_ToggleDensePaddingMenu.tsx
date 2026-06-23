@@ -24,11 +24,7 @@ export const MRT_ToggleDensePaddingMenu = <TData extends MRT_RowData>({
 }: MRT_ToggleDensePaddingMenuProps<TData>) => {
   const {
     getState,
-    options: {
-      icons,
-      localization,
-      mrtTheme: { densityIconSx },
-    },
+    options: { icons, localization },
     setDensity,
   } = table;
   const { density } = getState();
@@ -61,7 +57,6 @@ export const MRT_ToggleDensePaddingMenu = <TData extends MRT_RowData>({
           selected={density === value}
           sx={{
             borderRadius: '4px',
-            gap: 1,
             '&.Mui-selected': {
               backgroundColor: 'action.selected',
             },
@@ -70,15 +65,15 @@ export const MRT_ToggleDensePaddingMenu = <TData extends MRT_RowData>({
             },
           }}
         >
-          <ListItemIcon sx={{ color: 'text.primary', minWidth: '24px' }}>
-            <Icon sx={densityIconSx[value]} />
+          <ListItemIcon sx={{ color: 'text.primary', marginRight: '0px' }}>
+            <Icon />
           </ListItemIcon>
           <ListItemText
             primary={label}
             slotProps={{
               primary: {
                 fontSize: '0.875rem',
-                fontWeight: 500,
+                fontWeight: 600,
               },
             }}
           />

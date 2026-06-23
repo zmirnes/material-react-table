@@ -338,7 +338,6 @@ export interface MRT_Localization {
 export interface MRT_Theme {
   baseBackgroundColor: string;
   cellNavigationOutlineColor: string;
-  densityIconSx: Record<MRT_DensityState, SxProps<Theme>>;
   draggingBorderColor: string;
   matchHighlightColor: string;
   menuBackgroundColor: string;

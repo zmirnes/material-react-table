@@ -18,7 +18,6 @@ export const MRT_ToggleDensePaddingButton = <TData extends MRT_RowData>({
     options: {
       icons: { DensityLargeIcon, DensityMediumIcon, DensitySmallIcon },
       localization,
-      mrtTheme: { densityIconSx },
     },
   } = table;
   const { density } = getState();
@@ -43,7 +42,7 @@ export const MRT_ToggleDensePaddingButton = <TData extends MRT_RowData>({
           aria-label={localization.toggleDensity}
           onClick={handleOpenMenu}
           size="small"
-          startIcon={<DensityIcon sx={densityIconSx[density]} />}
+          startIcon={<DensityIcon fontSize="small" />}
           variant="text"
           {...rest}
           title={undefined}

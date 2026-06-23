@@ -4,7 +4,6 @@ import { type TableCellProps } from '@mui/material/TableCell';
 import { type TooltipProps } from '@mui/material/Tooltip';
 import { CHECKBOX_DISPLAY_COLUMN_ID } from './displayColumn.utils';
 import { parseFromValuesOrFunc } from './utils';
-import { defaultDensityIconSx } from '../styles/densityIcon.styles';
 import {
   type MRT_Column,
   type MRT_Header,
@@ -25,7 +24,6 @@ export const getMRTTheme = <TData extends MRT_RowData>(
   return {
     baseBackgroundColor,
     cellNavigationOutlineColor: muiTheme.palette.primary.main,
-    densityIconSx: defaultDensityIconSx,
     draggingBorderColor: muiTheme.palette.primary.main,
     matchHighlightColor:
       muiTheme.palette.mode === 'dark'
