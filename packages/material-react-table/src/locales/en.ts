@@ -160,6 +160,10 @@ export const MRT_Localization_EN: MRT_Localization = {
   deleteConfirmYes: 'Delete',
   deleteConfirmNo: 'Cancel',
   deleteConfirmDeleting: 'Deleting...',
+  serverTableErrorTitle: 'Unable to load table',
+  serverTableErrorMessage:
+    'Something went wrong while loading the table configuration. Please try again.',
+  serverTableErrorRetry: 'Try again',
   resetState: 'Reset State',
   tableOptions: 'Options',
 };

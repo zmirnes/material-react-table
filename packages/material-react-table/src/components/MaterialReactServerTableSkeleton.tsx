@@ -36,7 +36,13 @@ export const MaterialReactServerTableSkeleton = () => (
     </Box>
 
     {/* Table body placeholder — fills the whole space between the toolbars */}
-    <Skeleton animation="wave" variant="rectangular" sx={{ flex: 1 }} />
+    <Box sx={{ display: 'flex', flex: 1, padding: '1.3rem' }}>
+      <Skeleton
+        animation="wave"
+        variant="rounded"
+        sx={{ flex: 1, height: '100%' }}
+      />
+    </Box>
 
     {/* Bottom toolbar placeholder (pagination) — pinned to the bottom */}
     <Box

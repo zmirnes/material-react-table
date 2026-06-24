@@ -159,6 +159,10 @@ export const MRT_Localization_HR: MRT_Localization = {
   deleteConfirmYes: 'Izbriši',
   deleteConfirmNo: 'Odustani',
   deleteConfirmDeleting: 'Brisanje...',
+  serverTableErrorTitle: 'Učitavanje tablice nije uspjelo',
+  serverTableErrorMessage:
+    'Došlo je do pogreške prilikom učitavanja konfiguracije tablice. Pokušajte ponovno.',
+  serverTableErrorRetry: 'Pokušaj ponovno',
   resetState: 'Resetuj stanje',
   tableOptions: 'Opcije',
 };

@@ -160,6 +160,10 @@ export const MRT_Localization_FR: MRT_Localization = {
   deleteConfirmYes: 'Supprimer',
   deleteConfirmNo: 'Annuler',
   deleteConfirmDeleting: 'Suppression...',
+  serverTableErrorTitle: 'Impossible de charger le tableau',
+  serverTableErrorMessage:
+    "Une erreur s'est produite lors du chargement de la configuration du tableau. Veuillez réessayer.",
+  serverTableErrorRetry: 'Réessayer',
   resetState: "Réinitialiser l'état",
   tableOptions: 'Options',
 };

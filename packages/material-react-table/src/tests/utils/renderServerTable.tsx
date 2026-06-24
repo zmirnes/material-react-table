@@ -9,17 +9,26 @@ const { columnActions, groupByColumn } = MRT_Localization_HR;
 /**
  * Renders a MaterialReactServerTable with the given table options.
  * Extracts columns, data, and initialState to pass them through loadConfig/loadData.
+ *
+ * Pass `{ failConfig: true }` to simulate a failed config load, in which case
+ * `loadConfig` rejects and the table renders the error component.
  */
 export const renderServerTable = <TData extends MRT_RowData & { id: string }>(
   tableOptions: MRT_TableOptions<TData>,
+  { failConfig = false }: { failConfig?: boolean } = {},
 ) => {
   const { columns, data = [], initialState, ...restOptions } = tableOptions;
   render(
     <MaterialReactServerTable<TData>
-      loadConfig={async () => ({
-        columns,
-        initialState,
-      })}
+      loadConfig={async () => {
+        if (failConfig) {
+          throw new Error('failed to load config');
+        }
+        return {
+          columns,
+          initialState,
+        };
+      }}
       loadData={async () => ({
         data,
         rowCount: data.length,

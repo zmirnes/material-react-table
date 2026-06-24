@@ -160,6 +160,10 @@ export const MRT_Localization_NL: MRT_Localization = {
   deleteConfirmYes: 'Verwijderen',
   deleteConfirmNo: 'Annuleren',
   deleteConfirmDeleting: 'Verwijderen...',
+  serverTableErrorTitle: 'Tabel kan niet worden geladen',
+  serverTableErrorMessage:
+    'Er is iets misgegaan bij het laden van de tabelconfiguratie. Probeer het opnieuw.',
+  serverTableErrorRetry: 'Opnieuw proberen',
   resetState: 'Status resetten',
   tableOptions: 'Opties',
 };

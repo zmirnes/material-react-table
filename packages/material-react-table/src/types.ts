@@ -330,6 +330,10 @@ export interface MRT_Localization {
   deleteConfirmYes: string;
   deleteConfirmNo: string;
   deleteConfirmDeleting: string;
+  // Server table error state (shown when the table configuration fails to load)
+  serverTableErrorTitle: string;
+  serverTableErrorMessage: string;
+  serverTableErrorRetry: string;
 
   // Allow for any additional string keys for custom localization
   [key: string]: string;

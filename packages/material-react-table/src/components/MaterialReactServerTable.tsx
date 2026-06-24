@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MaterialReactServerTableError } from './MaterialReactServerTableError';
 import {
   MaterialReactServerTableInstance,
   type MaterialReactServerTableInstanceProps,
@@ -56,7 +57,7 @@ export const MaterialReactServerTable = <
   }
 
   if (!config) {
-    return <div>Error loading table configuration.</div>;
+    return <MaterialReactServerTableError />;
   }
 
   return (

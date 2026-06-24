@@ -31,4 +31,25 @@ describe('MaterialReactServerTable', () => {
       );
     });
   });
+
+  describe('error screen', () => {
+    beforeEach(() => {
+      renderServerTable<MockRowData>(
+        {
+          columns: DEFAULT_TEST_COLUMNS,
+          data: DEFAULT_TEST_DATA,
+        },
+        { failConfig: true },
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+    });
+
+    it('should render the error component when no config is loaded', async () => {
+      const error = await screen.findByTestId('server-table-error');
+      expect(error).toBeInTheDocument();
+    });
+  });
 });
