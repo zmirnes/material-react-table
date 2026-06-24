@@ -91,7 +91,7 @@ describe('MRT_ToggleDensePaddingButton', () => {
       const lastSavedState =
         mockSaveState.mock.calls[mockSaveState.mock.calls.length - 1][0];
 
-      expect(lastSavedState.density).toBe('spacious');
+      expect(lastSavedState.density).toBe('comfortable');
     });
 
     await user.click(densityButton);
@@ -103,7 +103,7 @@ describe('MRT_ToggleDensePaddingButton', () => {
       const lastSavedState =
         mockSaveState.mock.calls[mockSaveState.mock.calls.length - 1][0];
 
-      expect(lastSavedState.density).toBe('comfortable');
+      expect(lastSavedState.density).toBe('spacious');
     });
   });
 });
