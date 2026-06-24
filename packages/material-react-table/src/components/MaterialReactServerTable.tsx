@@ -3,6 +3,7 @@ import {
   MaterialReactServerTableInstance,
   type MaterialReactServerTableInstanceProps,
 } from './MaterialReactServerTableInstance';
+import { MaterialReactServerTableSkeleton } from './MaterialReactServerTableSkeleton';
 import { type MRT_RowData, type MRT_TableConfig } from '../types';
 
 // Extends all Instance props — adds async loadConfig (replaces sync config)
@@ -51,7 +52,7 @@ export const MaterialReactServerTable = <
   }, [loadConfig]);
 
   if (configLoading) {
-    return <div>Loading...</div>;
+    return <MaterialReactServerTableSkeleton />;
   }
 
   if (!config) {

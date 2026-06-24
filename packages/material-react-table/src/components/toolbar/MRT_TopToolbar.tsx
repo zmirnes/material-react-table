@@ -47,6 +47,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
 
   return (
     <Box
+      data-testid="mrt-top-toolbar"
       {...toolbarProps}
       ref={(ref: HTMLDivElement) => {
         topToolbarRef.current = ref;
