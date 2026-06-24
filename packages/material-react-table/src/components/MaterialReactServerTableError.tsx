@@ -48,14 +48,14 @@ export const MaterialReactServerTableError = ({
 
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
       <Typography fontWeight={600} variant="h6">
-        {title ?? localization.serverTableErrorTitle}
+        {title ?? localization.errorTitle}
       </Typography>
       <Typography
         color="text.secondary"
         sx={{ maxWidth: '28rem' }}
         variant="body2"
       >
-        {description ?? localization.serverTableErrorMessage}
+        {description ?? localization.errorMessage}
       </Typography>
     </Box>
   </Paper>

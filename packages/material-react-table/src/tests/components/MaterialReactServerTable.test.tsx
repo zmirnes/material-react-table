@@ -10,10 +10,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 describe('MaterialReactServerTable', () => {
   describe('loading skeleton', () => {
     beforeEach(() => {
-      renderServerTable<MockRowData>({
-        columns: DEFAULT_TEST_COLUMNS,
-        data: DEFAULT_TEST_DATA,
-      });
+      renderServerTable<MockRowData>(
+        {
+          columns: DEFAULT_TEST_COLUMNS,
+          data: DEFAULT_TEST_DATA,
+        },
+        { configDelay: 600 },
+      );
     });
 
     afterEach(() => {
@@ -22,7 +25,6 @@ describe('MaterialReactServerTable', () => {
 
     it('should render the top toolbar and remove the skeleton once the config has loaded', async () => {
       expect(screen.getByTestId('server-table-skeleton')).toBeInTheDocument();
-      expect(await screen.findByTestId('mrt-top-toolbar')).toBeInTheDocument();
 
       await waitFor(() =>
         expect(

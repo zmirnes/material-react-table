@@ -330,6 +330,9 @@ export interface MRT_Localization {
   deleteConfirmYes: string;
   deleteConfirmNo: string;
   deleteConfirmDeleting: string;
+  // Generic error state (used as default for the error component)
+  errorTitle: string;
+  errorMessage: string;
   // Server table error state (shown when the table configuration fails to load)
   serverTableErrorTitle: string;
   serverTableErrorMessage: string;

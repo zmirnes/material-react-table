@@ -160,6 +160,8 @@ export const MRT_Localization_EN: MRT_Localization = {
   deleteConfirmYes: 'Delete',
   deleteConfirmNo: 'Cancel',
   deleteConfirmDeleting: 'Deleting...',
+  errorTitle: 'Unexpected error',
+  errorMessage: 'An unexpected error occurred. Please try again.',
   serverTableErrorTitle: 'Unable to load table',
   serverTableErrorMessage:
     'Something went wrong while loading the table configuration. Please try again.',
