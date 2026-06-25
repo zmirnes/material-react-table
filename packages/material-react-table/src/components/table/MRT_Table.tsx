@@ -21,6 +21,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
     getState,
     options: {
       columns,
+      enableRowVirtualization,
       enableStickyHeader,
       enableTableFooter,
       enableTableHead,
@@ -66,6 +67,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
       sx={(theme) => ({
         borderCollapse: 'separate',
         display: layoutMode?.startsWith('grid') ? 'grid' : undefined,
+        overflow: enableRowVirtualization ? undefined : 'auto',
         position: 'relative',
         ...(parseFromValuesOrFunc(tableProps?.sx, theme) as Record<
           string,
