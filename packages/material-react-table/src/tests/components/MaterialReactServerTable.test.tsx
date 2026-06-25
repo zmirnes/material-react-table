@@ -1,0 +1,57 @@
+import {
+  DEFAULT_TEST_COLUMNS,
+  DEFAULT_TEST_DATA,
+  type MockRowData,
+} from '../data/mock-data';
+import { renderServerTable } from '../utils/renderServerTable';
+import { cleanup, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+describe('MaterialReactServerTable', () => {
+  describe('loading skeleton', () => {
+    beforeEach(() => {
+      renderServerTable<MockRowData>(
+        {
+          columns: DEFAULT_TEST_COLUMNS,
+          data: DEFAULT_TEST_DATA,
+        },
+        { configDelay: 600 },
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+    });
+
+    it('should render the top toolbar and remove the skeleton once the config has loaded', async () => {
+      expect(screen.getByTestId('server-table-skeleton')).toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('server-table-skeleton'),
+        ).not.toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe('error screen', () => {
+    beforeEach(() => {
+      renderServerTable<MockRowData>(
+        {
+          columns: DEFAULT_TEST_COLUMNS,
+          data: DEFAULT_TEST_DATA,
+        },
+        { failConfig: true },
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+    });
+
+    it('should render the error component when no config is loaded', async () => {
+      const error = await screen.findByTestId('server-table-error');
+      expect(error).toBeInTheDocument();
+    });
+  });
+});

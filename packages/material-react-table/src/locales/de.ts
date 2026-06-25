@@ -160,6 +160,13 @@ export const MRT_Localization_DE: MRT_Localization = {
   deleteConfirmYes: 'Löschen',
   deleteConfirmNo: 'Abbrechen',
   deleteConfirmDeleting: 'Wird gelöscht...',
+  errorTitle: 'Unerwarteter Fehler',
+  errorMessage:
+    'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
+  serverTableErrorTitle: 'Tabelle konnte nicht geladen werden',
+  serverTableErrorMessage:
+    'Beim Laden der Tabellenkonfiguration ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+  serverTableErrorRetry: 'Erneut versuchen',
   resetState: 'Zustand zurücksetzen',
   tableOptions: 'Optionen',
 };

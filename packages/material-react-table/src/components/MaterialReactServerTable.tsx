@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { MaterialReactServerTableError } from './MaterialReactServerTableError';
 import {
   MaterialReactServerTableInstance,
   type MaterialReactServerTableInstanceProps,
 } from './MaterialReactServerTableInstance';
+import { MaterialReactServerTableSkeleton } from './MaterialReactServerTableSkeleton';
+import { MRT_Localization_HR } from '../locales/hr';
 import { type MRT_RowData, type MRT_TableConfig } from '../types';
 
 // Extends all Instance props — adds async loadConfig (replaces sync config)
@@ -20,8 +23,10 @@ export const MaterialReactServerTable = <
 >({
   loadConfig,
   saveState,
+  localization,
   ...instanceProps
 }: MaterialReactServerTableProps<TData>) => {
+  const mergedLocalization = { ...MRT_Localization_HR, ...localization };
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
 
@@ -51,11 +56,15 @@ export const MaterialReactServerTable = <
   }, [loadConfig]);
 
   if (configLoading) {
-    return <div>Loading...</div>;
+    return <MaterialReactServerTableSkeleton />;
   }
 
   if (!config) {
-    return <div>Error loading table configuration.</div>;
+    return (
+      <MaterialReactServerTableError
+        description={mergedLocalization.serverTableErrorMessage}
+      />
+    );
   }
 
   return (
