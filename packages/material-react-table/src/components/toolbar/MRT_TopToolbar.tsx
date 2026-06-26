@@ -47,6 +47,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
 
   return (
     <Box
+      data-testid="top-toolbar"
       {...toolbarProps}
       ref={(ref: HTMLDivElement) => {
         topToolbarRef.current = ref;
@@ -94,14 +95,11 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
                 display: 'flex',
                 flexWrap: 'wrap-reverse',
                 gap: '0.5rem',
-                justifyContent: 'flex-start',
-                width: '100%',
               }}
             >
               {enableGlobalFilter && positionGlobalFilter === 'right' && (
                 <MRT_GlobalFilterTextField {...globalFilterProps} />
               )}
-              {renderTopToolbarCustomActions?.({ table }) ?? <span />}
               <MRT_ToolbarInternalButtons table={table} />
             </Box>
           ) : (
@@ -112,7 +110,20 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
           )}
         </>
         <ToolbarActions table={table} />
-        <MRT_TableOptions table={table} />
+        <Box
+          sx={{
+            alignItems: 'center',
+            display: 'flex',
+            gap: '0.5rem',
+            marginLeft: 'auto',
+          }}
+        >
+          {(enableToolbarInternalActions &&
+            renderTopToolbarCustomActions?.({
+              table,
+            })) ?? <span />}
+          <MRT_TableOptions table={table} />
+        </Box>
       </Box>
       {['both', 'top'].includes(positionToolbarDropZone ?? '') && (
         <MRT_ToolbarDropZone table={table} />
