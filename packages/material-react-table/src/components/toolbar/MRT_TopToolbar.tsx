@@ -47,6 +47,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
 
   return (
     <Box
+      data-testid="top-toolbar"
       {...toolbarProps}
       ref={(ref: HTMLDivElement) => {
         topToolbarRef.current = ref;
@@ -94,8 +95,6 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
                 display: 'flex',
                 flexWrap: 'wrap-reverse',
                 gap: '0.5rem',
-                justifyContent: 'space-between',
-                width: '100%',
               }}
             >
               {enableGlobalFilter && positionGlobalFilter === 'right' && (
@@ -116,8 +115,7 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
             alignItems: 'center',
             display: 'flex',
             gap: '0.5rem',
-            justifyContent: 'flex-end',
-            width: '100%',
+            marginLeft: 'auto',
           }}
         >
           {(enableToolbarInternalActions &&
