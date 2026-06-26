@@ -66,7 +66,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
       sx={(theme) => ({
         borderCollapse: 'separate',
         display: layoutMode?.startsWith('grid') ? 'grid' : undefined,
-        overflow: 'auto',
+        overflow: 'visible',
         position: 'relative',
         ...(parseFromValuesOrFunc(tableProps?.sx, theme) as Record<
           string,
