@@ -1,0 +1,494 @@
+---
+title: Plan optimizacije React performansi — material-react-table
+description: Rangirani plan izmjena (korak po korak) za uklanjanje nepotrebnih re-rendera u packages/material-react-table/src
+date: 2026-07-05
+status: draft / za implementaciju
+---
+
+# Plan optimizacije performansi — korak po korak
+
+Redoslijed je **(ubrzanje × učestalost interakcije) ÷ trud**. Koraci 1 i 4 su brzi dobici
+koji se mogu uraditi odmah; koraci 2, 3 i 5 rješavaju najgore prijavljene simptome
+(resize, density, tipkanje, reordering); koraci 7–9 su arhitekturalni i rade se postepeno.
+Svaki korak je samostalan i može se mergati kao zaseban PR.
+
+## Sažetak problema (dijagnoza)
+
+Glavni uzrok tromosti je **monolitna state arhitektura**: svih ~27 `useState`-ova plus
+TanStack-ov interni state žive u korijenu (`useMRT_TableInstance`), pa svaka interakcija
+(pomak miša tokom resize-a, hover pri drag-u, density, tipkanje filtera, paginacija)
+re-renderuje kompletno stablo tabele. Memoizacija nizvodno je gotovo nemoguća jer je
+`table` instanca referencijalno stabilna ali **mutabilna** — propovi se "nikad ne mijenjaju",
+pa bi obični `React.memo` zamrznuo UI (zato postoje custom komparatori u `memoMode`,
+koji je po defaultu isključen). Trajno rješenje je selector/atomic sloj stanja (korak 7),
+a do tada lokalni fixevi ispod.
+
+---
+
+## KORAK 1 — Stabilni key-evi (sort/paginacija prestaje remountati DOM)
+
+**Trud: 15 min. Dobitak: ogroman za sort, paginaciju i filter — trenutno se svaki red
+unmount+mount umjesto da se premjesti.**
+
+### 1a. `src/components/body/MRT_TableBody.tsx` (linija ~191)
+
+```ts
+// PRIJE
+const key = `${row.id}-${row.index}`;
+// POSLIJE
+const key = row.id;
+```
+
+### 1b. `src/components/body/MRT_TableBodyRow.tsx` (linija ~248)
+
+```ts
+// PRIJE
+const key = `${cell.id}-${staticRowIndex}`;
+// POSLIJE
+const key = cell.id;
+```
+
+`cell.id` je već `rowId_columnId`, jedinstven je unutar body-ja.
+
+### 1c. `src/components/toolbar/MRT_TopToolbar.tsx` (linije 83–89)
+
+Isti uslov `positionGlobalFilter === 'left'` renderuje `MRT_GlobalFilterTextField`
+**dvaput** (copy/paste bug) — obriši prvi blok (linije 83–85). Dva mounted TextFielda,
+dupli debounce listeneri.
+
+**Provjera:** klik na sort uz React DevTools Profiler — redovi se *update-uju*, ne mountaju.
+**Rizik:** nizak. Jedino ako je neko računao na reset internog stanja ćelije pri sortu (rijetko).
+
+---
+
+## KORAK 2 — Resize kolone: 0 rendera tokom drag-a, 1 render na commit, bez remounta
+
+**Trud: srednji (≈1 dan). Dobitak: najveći pojedinačni — trenutno svaki piksel pomaka
+renderuje toolbar + sve head ćelije + footer, a start i kraj resize-a rade PUNI REMOUNT
+body-ja (restart animacija u ćelijama).**
+
+### Zašto se animacije u ćelijama restartuju (skriveni bug)
+
+U `src/components/table/MRT_Table.tsx` (linije 79–83) tokom resize-a se **mijenja tip
+komponente**:
+
+```tsx
+{memoMode === 'table-body' || columnSizingInfo.isResizingColumn ? (
+  <Memo_MRT_TableBody {...commonTableGroupProps} />
+) : (
+  <MRT_TableBody {...commonTableGroupProps} />
+)}
+```
+
+`Memo_MRT_TableBody` je za React **drugi element type** od `MRT_TableBody`. Na startu
+resize-a React unmounta postojeći body i mounta novi; na kraju resize-a swap ide nazad —
+**dva puna remounta po gesti**. CSS/GIF/Lottie animacije kreću ispočetka jer DOM čvorovi
+nastaju iznova. Cilj ovog koraka: React tokom drag-a **uopšte ne učestvuje**.
+
+### 2.1 Ukloni swap tipa komponente
+
+`src/components/table/MRT_Table.tsx` (linija 79): izbaci `|| columnSizingInfo.isResizingColumn`
+iz uslova — ostavi samo `memoMode === 'table-body'`. Body je uvijek isti tip komponente,
+remount nestaje zauvijek. Zamrzavanje više nije ni potrebno jer poslije 2.2 tokom drag-a
+nema nijednog rendera koji bi trebalo blokirati.
+
+### 2.2 Resize handler bez ijednog upisa u React state tokom geste
+
+Priprema — ref na `table` element:
+
+- `src/hooks/useMRT_TableInstance.ts` (linije 74–86): dodaj
+  `const tableRef = useRef<HTMLTableElement>(null);` i
+  `const isResizingRef = useRef<false | string>(false);` pa ih ubaci u `table.refs` (linija ~401).
+- `src/components/table/MRT_Table.tsx`: proslijedi `ref={tableRef}` na MUI `Table` komponentu.
+
+Zatim u `src/components/head/MRT_TableHeadCellResizeHandle.tsx` (linija ~29) zamijeni
+`header.getResizeHandler()` vlastitim handlerom:
+
+- **mousedown/touchstart:** NIŠTA ne piše u state. Zapamti `startX` i `startSize`,
+  postavi `isResizingRef.current = column.id`, direktno kroz ref postavi
+  `data-mrt-resizing` atribut na container i `cursor: col-resize` + `user-select: none`
+  na `document.body`. Upali indikator iz 2.3.
+- **mousemove/touchmove:** piše samo CSS varijable direktno na `table` element:
+
+```ts
+const size = Math.min(
+  Math.max(startSize + dir * (x - startX), column.columnDef.minSize ?? 40),
+  column.columnDef.maxSize ?? 1000,
+);
+tableEl.style.setProperty(`--header-${parseCSSVarId(header.id)}-size`, `${size}`);
+tableEl.style.setProperty(`--col-${parseCSSVarId(column.id)}-size`, `${size}`);
+// + pomjeri indikator: indicatorEl.style.transform = `translateX(${px}px)`
+```
+
+  Ćelije već čitaju širinu iz tih varijabli (`src/utils/style.utils.ts`, linije 99–106),
+  pa kolona prati kursor bez React-a. `dir` je `-1` za RTL (`columnResizeDirection`).
+- **mouseup/touchend:** skini listenere, resetuj ref/atribute/kursor, sakrij indikator,
+  pa JEDAN poziv:
+
+```ts
+table.setColumnSizing((old) => ({ ...old, [column.id]: size }));
+```
+
+  Commit, persist i kontrolisani `onColumnSizingChange` konzumenti dobiju vrijednost.
+  Taj render izračuna `columnSizeVars` na iste vrijednosti koje su već u DOM-u —
+  **nema vizuelnog skoka**.
+
+`columnSizingInfo` se tokom drag-a **uopšte ne postavlja** (ni na startu). Double-click
+reset (linije 43–49 u ResizeHandle) ostaje kakav jeste — jedan render je tamo u redu.
+
+### 2.3 Vizuelni indikator kao jedan DOM element, ne kao stilovi ćelija
+
+`draggingBorders` u head/body ćelijama (`MRT_TableBodyCell.tsx` 114–168,
+`MRT_TableHeadCell.tsx` 107–133) danas crta resize liniju kroz React stilove — to bi
+zahtijevalo render. Zamijeni resize-granu tih stilova jednim apsolutno pozicioniranim
+elementom u `src/components/table/MRT_TableContainer.tsx` (container već ima
+`position: relative`):
+
+```tsx
+<Box
+  ref={resizeIndicatorRef}
+  sx={{
+    position: 'absolute', top: 0, bottom: 0, width: '2px',
+    bgcolor: 'primary.main', display: 'none', zIndex: 3,
+    pointerEvents: 'none',
+  }}
+/>
+```
+
+Handler mu na mousedown upali `display: block` i na svaki mousemove postavlja
+`transform: translateX(...)`, na mouseup ga sakrije — čista DOM manipulacija kroz ref
+(isti pristup kao AG Grid). Vizuelno bolje: linija ide punom visinom tabele bez obzira
+na virtualizaciju. Ref proslijedi kroz `table.refs` (npr. `resizeIndicatorRef`).
+
+### 2.4 Ugasi hover/tooltip efekte tokom drag-a kroz CSS, ne kroz state
+
+`handleColumnCellHoverToggle` u `MRT_TableHeadCell.tsx` (linije 163–167) čita
+`columnSizingInfo.isResizingColumn` da suzbije hover tokom resize-a — pošto ga više ne
+postavljamo, zamijeni čitanjem `table.refs.isResizingRef.current`. Globalno, na container
+(postavljen u 2.2):
+
+```css
+[data-mrt-resizing] { user-select: none; }
+[data-mrt-resizing] .Mui-TableHeadCell-Content-Actions { visibility: hidden; }
+```
+
+Hover ikonice, tooltipi i selekcija teksta miruju tokom drag-a bez ijednog rendera.
+
+### 2.5 Počisti preostala čitanja `columnSizingInfo`
+
+- z-index grana `column.getIsResizing()` u `style.utils.ts` (linija ~187) — više se ne
+  aktivira tokom drag-a; ostavi je (bezopasna) ili prebaci z-index na indikator iz 2.3.
+- `transform` za `columnResizeMode: 'onEnd'` u `MRT_TableHeadCellResizeHandle.tsx`
+  (linije 52–59) — s novim handlerom razlika 'onChange'/'onEnd' praktično nestaje
+  (oba su "live prati kursor, commit na kraju"); granu ukloni ili zadrži samo kao
+  API kompatibilnost.
+
+### Rezultat koraka 2
+
+| Događaj | Sada | Poslije |
+|---|---|---|
+| Start resize-a | Full render + **remount cijelog body-ja** | 0 rendera |
+| Svaki mousemove | Full-tree render (toolbar, head, footer) | 0 rendera (2 CSS varijable + translateX) |
+| Kraj resize-a | Full render + **drugi remount body-ja** | 1 render (commit `columnSizing`) |
+| Animacije u ćelijama | Restartuju se 2× po gesti | Netaknute |
+
+Commit-render na mouseup je **re-render, ne remount** — React pomiri iste DOM čvorove,
+CSS animacije se ne resetuju. Iznimka: JS-vođene animacije koje se same restartuju pri
+ponovnom izvršavanju komponente (npr. Lottie bez guard-a) — njih umotaj u `React.memo`
+sa stabilnim propovima ili uključi `memoMode: 'cells'`.
+
+**Edge slučajevi za pokriti:** RTL smjer (predznak delte), touch eventi, clamp na
+`minSize`/`maxSize`, scroll tokom drag-a uz virtualizaciju kolona (novi cell-ovi čitaju
+iste CSS varijable — konzistentno), `Escape` za otkazivanje (bonus), kontrolisani
+`state.columnSizing` konzument.
+
+**Provjera:** Profiler tokom povlačenja ručke 2–3 sekunde — smije postojati **samo 1
+commit** (na mouseup), kolona vizuelno prati kursor, animirane ikonice u ćelijama se ne
+restartuju ni na startu ni na kraju.
+**Rizik:** srednji — provjeri RTL, min/max, double-click reset i touch.
+
+---
+
+## KORAK 3 — Density kroz CSS varijable (i jeftiniji `sx` za sve ćelije)
+
+**Trud: srednji. Dobitak: density toggle prestaje serijalizovati nove emotion stilove za
+svaku ćeliju; usput svaki render svake ćelije postaje jeftiniji jer `sx` postaje stabilan.**
+
+### 3a. `src/components/table/MRT_Table.tsx`
+
+U `style` na `Table` dodaj varijable izračunate iz `density` (pročitaj `density` iz `getState()`):
+
+```ts
+const densityVars = {
+  '--mrt-cell-p':
+    density === 'compact' ? '0.5rem'
+    : density === 'comfortable' ? '1rem'
+    : '1.5rem',
+  '--mrt-display-cell-p':
+    density === 'compact' ? '0 0.5rem'
+    : density === 'comfortable' ? '0.5rem 0.75rem'
+    : '1rem 1.25rem',
+};
+// style={{ ...columnSizeVars, ...densityVars, ...tableProps?.style }}
+```
+
+### 3b. `src/components/body/MRT_TableBodyCell.tsx` (linije 281–292)
+
+Zamijeni cijeli `p:` ternary sa:
+
+```ts
+p: columnDefType === 'display' ? 'var(--mrt-display-cell-p)' : 'var(--mrt-cell-p)',
+```
+
+Isto uradi za head ćelije (`MRT_TableHeadCell.tsx` linije 225–246 — `p`, `pb`, `pt` preko
+dodatne 2–3 varijable, npr. `--mrt-head-cell-pt`) i footer ćelije ako imaju isti obrazac.
+
+### 3c. Ostala čitanja `density`
+
+`whiteSpace` u body cell (linija 296), `rowHeight` u `MRT_TableBodyRow.tsx` (119–126),
+`estimateSize` u row virtualizeru — **ostavi**; to su jeftina čitanja. Cilj koraka je samo
+izbaciti density iz emotion ključeva ćelija.
+
+**Provjera:** toggle density u Profileru — commit i dalje re-renderuje stablo (to rješava
+korak 7), ali trajanje commita treba pasti višestruko (nema novih emotion klasa po ćeliji).
+Paddinzi vizuelno identični za sve tri gustoće.
+**Rizik:** nizak; varijable se nasljeđuju sa `table` elementa pa važe i za pinned/sticky redove.
+
+---
+
+## KORAK 4 — `startTransition` za filtriranje/sortiranje (tipkanje ostaje responzivno)
+
+**Trud: mali. Dobitak: uklanja "zamrzavanje" inputa pri tipkanju na velikim tabelama.**
+
+### 4a. `src/components/inputs/MRT_GlobalFilterTextField.tsx` (linije 53–61)
+
+```ts
+import { startTransition } from 'react';
+// unutar debounce callbacka:
+startTransition(() => setGlobalFilter(event.target.value ?? undefined));
+```
+
+Isto u `handleClear` (linije 72–75).
+
+### 4b. `src/hooks/useMRT_TableInstance.ts` (linija ~439)
+
+Omotaj interni fallback `setFilters`:
+
+```ts
+table.setFilters =
+  statefulTableOptions.onFiltersChange ??
+  ((updater) => startTransition(() => setFilters(updater)));
+```
+
+Po istom obrascu se mogu omotati i `onSortingChange`/`onPaginationChange` wrapperi
+proslijeđeni u `useReactTable` (linije 392–396) — ali kreni samo s filterima i izmjeri.
+
+**Zašto ovo, a ne `useDeferredValue` u `useMRT_Rows`:** filtriranje se dešava unutar
+TanStack row modela tokom rendera izazvanog promjenom state-a — deferisanje vrijednosti
+nizvodno ga ne bi preskočilo. `startTransition` na mjestu upisa čini cijeli taj render
+prekidivim, što je ispravna poluga.
+
+**Provjera:** tabela sa 10k+ redova, brzo tipkanje u global filter — input ne štuca,
+rezultati smiju kasniti.
+**Rizik:** nizak; ako želiš spinner tokom transitiona, koristi `useTransition` s `isPending`.
+
+---
+
+## KORAK 5 — Hover/drag stanje van korijena (popravlja reordering kolona/redova)
+
+**Trud: srednji-velik (≈1 dan). Dobitak: drag preko N ćelija prestaje raditi N full-tree rendera.**
+
+### 5a. Novi fajl `src/utils/mrtStore.ts`
+
+```ts
+export const createSliceStore = <T>(initial: T) => {
+  let value = initial;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => value,
+    set: (next: T | ((v: T) => T)) => {
+      value = next instanceof Function ? next(value) : next;
+      listeners.forEach((l) => l());
+    },
+    subscribe: (l: () => void) => {
+      listeners.add(l);
+      return () => listeners.delete(l);
+    },
+  };
+};
+```
+
+### 5b. `src/hooks/useMRT_TableInstance.ts` (linije 175–180)
+
+Zamijeni 4 `useState`-a (`hoveredColumn`, `hoveredRow`, `draggingColumn`, `draggingRow`)
+store-ovima kreiranim u `useRef`-u (jednom po instanci). **Izbaci ih** iz
+`definedTableOptions.state` objekta (linije 227–228, 234–235) i okači na instancu
+(`table._hoverStore`, `table._dragStore`). Setteri `table.setHoveredColumn` i ostali
+(linije 431–445) sada zovu `store.set` — javni API ostaje isti.
+
+### 5c. Novi hook `src/hooks/useMRT_SliceValue.ts`
+
+```ts
+import { useSyncExternalStore } from 'react';
+
+export const useSliceValue = <T, R>(
+  store: { subscribe: (l: () => void) => () => void; get: () => T },
+  selector: (v: T) => R,
+): R => useSyncExternalStore(store.subscribe, () => selector(store.get()));
+```
+
+### 5d. Ažuriraj potrošače na boolean selektore
+
+- `MRT_TableBodyCell.tsx` (71–84): `const isHoveredColumn = useSliceValue(table._hoverStore, (s) => s.hoveredColumn?.id === column.id);`
+  itd. — `draggingBorders` memo (114–168) sada zavisi od 4 boolean-a, ne od objekata.
+- `MRT_TableHeadCell.tsx` (60–67) isto.
+- `MRT_TableBodyRow.tsx` (86–87): `isDraggingRow` / `isHoveredRow`.
+- `style.utils.ts` (177–181): `opacity` u `getCommonMRTCellStyles` — primi booleane kao
+  parametre umjesto poziva `getState()`.
+- Grab handle-ovi i `MRT_ToolbarDropZone` (čita `hoveredColumn?.id === 'drop-zone'`).
+
+**Provjera:** povuci kolonu preko 5 kolona uz Profiler — re-renderuju se samo ćelije te
+dvije kolone, ne toolbar i ne svi redovi.
+**Rizik:** srednji — `grep -rn "hoveredColumn\|draggingRow\|hoveredRow\|draggingColumn" src/`
+i pokrij SVAKO čitanje; `getState()` neka vraća snapshot iz store-a radi kompatibilnosti.
+
+---
+
+## KORAK 6 — Jeftinije ćelije: pinned count jednom, skeleton uslovno
+
+**Trud: mali. Dobitak: linearno smanjenje troška svakog rendera body-ja (scroll,
+virtualizacija, sve interakcije).**
+
+### 6a. `src/utils/style.utils.ts` (linije 127–130)
+
+`totalPinnedColumnCount` se računa spread-om po **svakoj ćeliji**. Izračunaj ga jednom u
+`MRT_TableBodyRow` / `MRT_TableHeadRow` (ili u `MRT_Table` pa proslijedi kroz props) i
+dodaj kao parametar u `getCommonMRTCellStyles`. Usput: funkcija zove `table.getState()`
+tri puta (linije 92, 128–129, 178–179) — destrukturiraj jednom na vrhu.
+
+### 6b. `src/components/body/MRT_TableBodyCell.tsx` (linije 96–101)
+
+```ts
+const skeletonProps = (isLoading || showSkeletons)
+  ? parseFromValuesOrFunc(muiSkeletonProps, { cell, column, row, table })
+  : undefined;
+```
+
+### 6c. `src/components/inputs/MRT_SelectCheckbox.tsx` (linije 67–75)
+
+Handleri se fabrikuju po redu po renderu — omotaj `onSelectionChange` /
+`onSelectAllChange` u `useCallback` sa `[row?.id, table]`.
+
+**Provjera:** Profiler "ranked" pogled prije/poslije na scroll od 2 sekunde — vrijeme po
+`MRT_TableBodyCell` treba pasti.
+**Rizik:** minimalan.
+
+---
+
+## KORAK 7 — Arhitektura: UI-only state u store (nastavak koraka 5)
+
+**Trud: velik, radi se inkrementalno. Dobitak: gasi klasu "sve se re-renderuje" za
+interakcije koje ne mijenjaju row model.**
+
+Podjela 27 state-ova iz `useMRT_TableInstance`:
+
+**Mora ostati React state u korijenu** (utječe na TanStack row/column model):
+`filters`, `globalFilterFn`, `pagination`, `grouping`, `columnOrder`, `columnFilterFns`,
+`creatingRow`, `rows`.
+
+**UI-only — premjesti u slice store-ove** (obrazac iz koraka 5, jedan slice po PR-u):
+`density` (nakon koraka 3 skoro nijedan potrošač ne treba render cijelog stabla),
+`actionCell`, `editingCell`, `editingRow`, `showAlertBanner`, `showColumnFilters`,
+`showGlobalFilter`, `showToolbarDropZone`, `showProgressBars`, `newEntryModal`,
+`savedFilters`, `rowReorderingSelection`, `columnSizingInfo` (nakon koraka 2 mijenja se
+samo na double-click reset).
+
+Za svaki premješteni slice: izbaci iz `definedTableOptions.state` (linije 220–246),
+preusmjeri setter, nađi sve potrošače grep-om i prebaci na `useSliceValue`.
+Redoslijed po isplativosti: `editingCell`/`editingRow` → `showColumnFilters` →
+`actionCell` → ostalo.
+
+**Rizik:** breaking za konzumere koji čitaju te vrijednosti iz `table.getState()` —
+zadrži `getState()` shim koji spaja TanStack state + snapshotove store-ova.
+
+---
+
+## KORAK 8 — Popravi memo komparatore i stabilnost opcija
+
+**Trud: mali. Dobitak: `memoMode` postaje ispravan i koristan; štiti od degradacije
+kad konzument proslijedi inline propove.**
+
+### 8a. `src/components/body/MRT_TableBodyRow.tsx` (linije 281–285)
+
+Komparator ignoriše `virtualRow` — ustajali `translateY` uz `memoMode: 'rows'` +
+virtualizaciju:
+
+```ts
+(prev, next) =>
+  prev.row === next.row &&
+  prev.staticRowIndex === next.staticRowIndex &&
+  prev.virtualRow?.start === next.virtualRow?.start
+```
+
+### 8b. `src/components/body/MRT_TableBodyCell.tsx` (linije 354–357)
+
+Dodaj `prev.staticRowIndex === next.staticRowIndex && prev.numRows === next.numRows`.
+
+### 8c. `src/hooks/useMRT_TableOptions.ts` (linije 133–158)
+
+Uvedi helper `useShallowStable` (vraća prethodnu referencu ako je novi objekt
+shallow-equal) i primijeni na `localization`, `icons`, `defaultColumn`,
+`defaultDisplayColumn`. Time inline `localization` prop kod konzumenta više ne rekreira
+sve kolone i ćelije svaki render (deps `prepareColumns` memo-a u
+`useMRT_TableInstance.ts`, linije 334–360).
+
+### 8d. `src/hooks/useMRT_ColumnVirtualizer.ts` (linije 61–67)
+
+Dodaj `visibleColumns` u deps `draggingColumnIndex` memo-a (moguć ustajali indeks).
+
+---
+
+## KORAK 9 — Sitna čišćenja (LOW)
+
+- `src/components/advanced-filters/MRT_AdvancedFiltersContext.tsx` (43–48): context
+  `value` u `useMemo` sa `[showAdvancedFilters]`; `setterRef.current = ...` premjesti
+  u `useEffect` (side-effect u renderu).
+- `src/hooks/useMRT_TableInstance.ts` (464–483): CRUD handlere (`addRow`, `updateRow`…)
+  kreiraj jednom (`useMemo` na `[resolveRowId]`) da ih konzumenti mogu sigurno stavljati
+  u dependency nizove.
+- `src/hooks/useMRT_TableInstance.ts` (364–389): dodaj `statefulTableOptions.columns` i
+  `pagination.pageSize` u deps skeleton-data memo-a (ustajali skeletoni).
+- `key={index}`: `src/components/menus/MRT_FilterOptionMenu.tsx` (280),
+  `src/column-types/icon.tsx` (65) — statične liste, zanemarivo, ali ispraviti.
+- `src/hooks/useMRT_Effects.ts` (69–75): `setTimeout(rerender, 150)` hack obriši tek kad
+  pinned-row offseti pređu na CSS (poslije koraka 3).
+- Uslovni hookovi: `useMRT_RowVirtualizer.ts` (34), `useMRT_ColumnVirtualizer.ts` (31),
+  `MaterialReactTable.tsx` (36–38) — stabilno u praksi (opcije su zamrznute), ali krši
+  rules-of-hooks i **blokira React Compiler**.
+
+---
+
+## Kako mjeriti (prije/poslije svakog koraka)
+
+1. Demo tabela: 10k redova × 20 kolona; uključen resize, ordering, global filter,
+   virtualizacija.
+2. React DevTools Profiler, scenariji:
+   (a) resize drag 2s, (b) density toggle, (c) klik na sort, (d) tipkanje 10 znakova u
+   filter, (e) drag kolone preko 5 kolona, (f) scroll 2s.
+3. Zabilježi broj commita i trajanje najdužeg commita po scenariju:
+   - poslije koraka 1: sort/paginacija bez mount oznaka na redovima;
+   - poslije koraka 2: resize = tačno 1 commit, bez restarta animacija;
+   - poslije koraka 3: density commit višestruko kraći;
+   - poslije koraka 4: tipkanje bez štucanja inputa;
+   - poslije koraka 5: drag re-renderuje samo pogođene kolone.
+4. Poslije svakog koraka pokreni testove u `packages/material-react-table` (vitest,
+   `src/tests`).
+
+## Napomena o React Compileru (2026)
+
+Ne uvoditi prije koraka 5/7 — uslovni hookovi (vidi korak 9) ga blokiraju, a mutabilna
+`table` instanca (interior mutability preko `getState()` na stabilnoj referenci) mu je
+nesiguran teren. Compiler NE rješava: context value identitet (korak 9), identitete
+propova preko granice paketa (korak 8c), ni root-level state kaskadu (korak 7). Kad store
+sloj bude gotov, compiler može zamijeniti većinu ručnih `useMemo`/`useCallback` iz
+koraka 6 i 8.
