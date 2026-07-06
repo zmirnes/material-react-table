@@ -245,7 +245,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
               table,
               theme,
             };
-            const key = `${cell.id}-${staticRowIndex}`;
+            const key = cell.id;
             return cell ? (
               memoMode === 'cells' &&
               cell.column.columnDef.columnDefType === 'data' &&

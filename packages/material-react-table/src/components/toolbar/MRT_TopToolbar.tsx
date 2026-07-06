@@ -81,9 +81,6 @@ export const MRT_TopToolbar = <TData extends MRT_RowData>({
           position: 'relative',
         }}
       >
-        {enableGlobalFilter && positionGlobalFilter === 'left' && (
-          <MRT_GlobalFilterTextField {...globalFilterProps} />
-        )}
         <>
           {enableGlobalFilter && positionGlobalFilter === 'left' && (
             <MRT_GlobalFilterTextField {...globalFilterProps} />

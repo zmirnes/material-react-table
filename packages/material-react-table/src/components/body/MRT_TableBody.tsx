@@ -188,7 +188,7 @@ export const MRT_TableBody = <TData extends MRT_RowData>({
                     ? (rowOrVirtualRow as VirtualItem)
                     : undefined,
                 };
-                const key = `${row.id}-${row.index}`;
+                const key = row.id;
                 return memoMode === 'rows' ? (
                   <Memo_MRT_TableBodyRow key={key} {...props} />
                 ) : (
