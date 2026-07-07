@@ -31,7 +31,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
     },
     refs: { tableRef },
   } = table;
-  const { columnSizing, columnVisibility } = getState();
+  const { columnSizing, columnVisibility, density } = getState();
 
   const tableProps = {
     ...parseFromValuesOrFunc(muiTableProps, { table }),
@@ -51,6 +51,39 @@ export const MRT_Table = <TData extends MRT_RowData>({
     }
     return colSizes;
   }, [columns, columnSizing, columnVisibility]);
+
+  // Padding values keyed off density, read by cell/header/footer sx so density toggles
+  // reuse existing emotion classes instead of generating new ones per cell.
+  const densityVars = useMemo(
+    () => ({
+      '--mrt-cell-p':
+        density === 'compact'
+          ? '0.5rem'
+          : density === 'comfortable'
+            ? '1rem'
+            : '1.5rem',
+      '--mrt-display-cell-p':
+        density === 'compact'
+          ? '0 0.5rem'
+          : density === 'comfortable'
+            ? '0.5rem 0.75rem'
+            : '1rem 1.25rem',
+      '--mrt-head-display-cell-p':
+        density === 'compact'
+          ? '0.5rem'
+          : density === 'comfortable'
+            ? '0.75rem'
+            : '1rem 1.25rem',
+      '--mrt-head-cell-pb': density === 'compact' ? '0.4rem' : '0.6rem',
+      '--mrt-head-cell-pt':
+        density === 'compact'
+          ? '0.25rem'
+          : density === 'comfortable'
+            ? '.75rem'
+            : '1.25rem',
+    }),
+    [density],
+  );
 
   const columnVirtualizer = useMRT_ColumnVirtualizer(table);
 
@@ -74,7 +107,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
           }
         }
       }}
-      style={{ ...columnSizeVars, ...tableProps?.style }}
+      style={{ ...columnSizeVars, ...densityVars, ...tableProps?.style }}
       sx={(theme) => ({
         borderCollapse: 'separate',
         display: layoutMode?.startsWith('grid') ? 'grid' : undefined,

@@ -59,7 +59,6 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
   const [isColumnCellHovered, setIsColumnCellHovered] = useState(false);
   const {
     columnSizingInfo,
-    density,
     draggingColumn,
     grouping,
     hoveredColumn,
@@ -223,27 +222,16 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
         overflow: 'hidden',
         color: theme.palette.text.primary,
         p:
-          density === 'compact'
-            ? '0.5rem'
-            : density === 'comfortable'
-              ? columnDefType === 'display'
-                ? '0.75rem'
-                : '1rem'
-              : columnDefType === 'display'
-                ? '1rem 1.25rem'
-                : '1.5rem',
+          columnDefType === 'display'
+            ? 'var(--mrt-head-display-cell-p)'
+            : 'var(--mrt-cell-p)',
         pb:
           columnDefType === 'display'
             ? 0
-            : showColumnFilters || density === 'compact'
+            : showColumnFilters
               ? '0.4rem'
-              : '0.6rem',
-        pt:
-          columnDefType === 'group' || density === 'compact'
-            ? '0.25rem'
-            : density === 'comfortable'
-              ? '.75rem'
-              : '1.25rem',
+              : 'var(--mrt-head-cell-pb)',
+        pt: columnDefType === 'group' ? '0.25rem' : 'var(--mrt-head-cell-pt)',
         userSelect: enableMultiSort && column.getCanSort() ? 'none' : undefined,
         verticalAlign: 'top',
         borderBottom: 'none',
