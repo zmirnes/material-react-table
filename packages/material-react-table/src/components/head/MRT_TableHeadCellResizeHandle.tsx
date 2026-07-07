@@ -27,7 +27,13 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
   const {
     getState,
     options: { columnResizeDirection },
-    refs: { isResizingRef, resizeIndicatorRef, tableContainerRef, tableRef },
+    refs: {
+      isResizingRef,
+      resizeIndicatorRef,
+      tableContainerRef,
+      tableHeadCellRefs,
+      tableRef,
+    },
     setColumnSizing,
     setColumnSizingInfo,
   } = table;
@@ -56,10 +62,17 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
       const maxSize = column.columnDef.maxSize ?? 1000;
       let size = startSize;
 
-      const updateIndicator = (clientX: number) => {
-        if (!indicatorEl || !containerEl) return;
+      // Read the header cell's own rendered edge (rather than deriving a position from
+      // clientX/scrollLeft) so the indicator always matches the real column border, even
+      // if the browser clamps scrollLeft mid-drag because the table's scrollWidth shrank.
+      const updateIndicator = () => {
+        const cellEl = tableHeadCellRefs.current?.[column.id];
+        if (!indicatorEl || !containerEl || !cellEl) return;
         const containerRect = containerEl.getBoundingClientRect();
-        const x = clientX - containerRect.left + containerEl.scrollLeft;
+        const cellRect = cellEl.getBoundingClientRect();
+        const edge =
+          columnResizeDirection === 'rtl' ? cellRect.left : cellRect.right;
+        const x = edge - containerRect.left + containerEl.scrollLeft;
         indicatorEl.style.display = 'block';
         indicatorEl.style.transform = `translateX(${x}px)`;
       };
@@ -68,7 +81,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
       containerEl?.setAttribute('data-mrt-resizing', 'true');
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
-      updateIndicator(startX);
+      updateIndicator();
 
       const handleMove = (clientX: number) => {
         size = Math.min(
@@ -85,7 +98,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
             `${size}`,
           );
         }
-        updateIndicator(clientX);
+        updateIndicator();
       };
 
       const handleMouseMove = (e: MouseEvent) => handleMove(e.clientX);
@@ -124,6 +137,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
       resizeIndicatorRef,
       setColumnSizing,
       tableContainerRef,
+      tableHeadCellRefs,
       tableRef,
     ],
   );

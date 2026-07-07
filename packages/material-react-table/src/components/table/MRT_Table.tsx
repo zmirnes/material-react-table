@@ -66,9 +66,11 @@ export const MRT_Table = <TData extends MRT_RowData>({
       ref={(node: HTMLTableElement) => {
         if (node) {
           tableRef.current = node;
-          if (tableProps?.ref) {
-            //@ts-expect-error
-            tableProps.ref.current = node;
+          const userRef = tableProps?.ref;
+          if (typeof userRef === 'function') {
+            userRef(node);
+          } else if (userRef) {
+            userRef.current = node;
           }
         }
       }}
