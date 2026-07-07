@@ -25,14 +25,12 @@ export const MRT_TableFooterCell = <TData extends MRT_RowData>({
 }: MRT_TableFooterCellProps<TData>) => {
   const theme = useTheme();
   const {
-    getState,
     options: {
       enableColumnPinning,
       muiTableFooterCellProps,
       enableKeyboardShortcuts,
     },
   } = table;
-  const { density } = getState();
   const { column } = footer;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
@@ -76,12 +74,7 @@ export const MRT_TableFooterCell = <TData extends MRT_RowData>({
       onKeyDown={handleKeyDown}
       sx={(theme) => ({
         fontWeight: 'bold',
-        p:
-          density === 'compact'
-            ? '0.5rem'
-            : density === 'comfortable'
-              ? '1rem'
-              : '1.5rem',
+        p: 'var(--mrt-cell-p)',
         verticalAlign: 'top',
         ...getCommonMRTCellStyles({
           column,

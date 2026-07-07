@@ -279,17 +279,9 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
         outlineOffset: '-1px',
         overflow: 'hidden',
         p:
-          density === 'compact'
-            ? columnDefType === 'display'
-              ? '0 0.5rem'
-              : '0.5rem'
-            : density === 'comfortable'
-              ? columnDefType === 'display'
-                ? '0.5rem 0.75rem'
-                : '1rem'
-              : columnDefType === 'display'
-                ? '1rem 1.25rem'
-                : '1.5rem',
+          columnDefType === 'display'
+            ? 'var(--mrt-display-cell-p)'
+            : 'var(--mrt-cell-p)',
 
         textOverflow: columnDefType !== 'display' ? 'ellipsis' : undefined,
         whiteSpace:
