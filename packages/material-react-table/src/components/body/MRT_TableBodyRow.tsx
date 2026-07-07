@@ -2,6 +2,7 @@ import { type DragEvent, memo, useMemo, useRef } from 'react';
 import { type VirtualItem } from '@tanstack/react-virtual';
 import { alpha, darken, lighten, type Theme } from '@mui/material/styles';
 import TableRow, { type TableRowProps } from '@mui/material/TableRow';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { Memo_MRT_TableBodyCell, MRT_TableBodyCell } from './MRT_TableBodyCell';
 import { MRT_TableDetailPanel } from './MRT_TableDetailPanel';
 import {
@@ -66,15 +67,20 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
     refs: { tableFooterRef, tableHeadRef },
     setHoveredRow,
   } = table;
-  const {
-    density,
-    draggingColumn,
-    draggingRow,
-    editingCell,
-    editingRow,
-    hoveredRow,
-    rowPinning,
-  } = getState();
+  const { density, editingCell, editingRow, rowPinning } = getState();
+
+  const isDraggingRow = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingRow?.id === row.id,
+  );
+  const isHoveredRow = useMRT_SliceValue(
+    table._hoverStore,
+    (s) => s.hoveredRow?.id === row.id,
+  );
+  const isAnyDragging = useMRT_SliceValue(
+    table._dragStore,
+    (s) => !!s.draggingColumn || !!s.draggingRow,
+  );
 
   const visibleCells = row.getVisibleCells();
 
@@ -83,8 +89,6 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
 
   const isRowSelected = getIsRowSelected({ row, table });
   const isRowPinned = enableRowPinning && row.getIsPinned();
-  const isDraggingRow = draggingRow?.id === row.id;
-  const isHoveredRow = hoveredRow?.id === row.id;
 
   const tableRowProps = {
     ...parseFromValuesOrFunc(muiTableBodyRowProps, {
@@ -126,7 +130,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
   const rowHeight = customRowHeight || defaultRowHeight;
 
   const handleDragEnter = (_e: DragEvent) => {
-    if (enableRowOrdering && draggingRow) {
+    if (enableRowOrdering && table._dragStore.get().draggingRow) {
       setHoveredRow(row);
     }
   };
@@ -249,8 +253,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
             return cell ? (
               memoMode === 'cells' &&
               cell.column.columnDef.columnDefType === 'data' &&
-              !draggingColumn &&
-              !draggingRow &&
+              !isAnyDragging &&
               editingCell?.id !== cell.id &&
               editingRow?.id !== row.id ? (
                 <Memo_MRT_TableBodyCell key={key} {...props} />

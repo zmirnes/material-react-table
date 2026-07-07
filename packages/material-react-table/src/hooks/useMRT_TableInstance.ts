@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -61,6 +62,7 @@ import {
   showRowSelectionColumn,
   showRowSpacerColumn,
 } from '../utils/displayColumn.utils';
+import { createSliceStore } from '../utils/mrtStore';
 import { createRow } from '../utils/tanstack.helpers';
 
 /**
@@ -151,10 +153,15 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [density, setDensity] = useState<MRT_DensityState>(
     initialState?.density ?? 'compact',
   );
-  const [draggingColumn, setDraggingColumn] =
-    useState<MRT_Column<TData> | null>(initialState.draggingColumn ?? null);
-  const [draggingRow, setDraggingRow] = useState<MRT_Row<TData> | null>(
-    initialState.draggingRow ?? null,
+  // Hover/drag are UI-feedback-only and change at very high frequency during a drag
+  // gesture (every cell crossed) — kept in slice stores instead of useState so
+  // subscribers can select just the boolean they need instead of re-rendering the tree.
+  const [dragStore] = useState(() =>
+    createSliceStore({
+      draggingColumn: (initialState.draggingColumn ??
+        null) as MRT_Column<TData> | null,
+      draggingRow: (initialState.draggingRow ?? null) as MRT_Row<TData> | null,
+    }),
   );
   const [editingCell, setEditingCell] = useState<MRT_Cell<TData> | null>(
     initialState.editingCell ?? null,
@@ -175,11 +182,15 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [grouping, onGroupingChange] = useState<MRT_GroupingState>(
     initialState.grouping ?? [],
   );
-  const [hoveredColumn, setHoveredColumn] = useState<Partial<
-    MRT_Column<TData>
-  > | null>(initialState.hoveredColumn ?? null);
-  const [hoveredRow, setHoveredRow] = useState<Partial<MRT_Row<TData>> | null>(
-    initialState.hoveredRow ?? null,
+  const [hoverStore] = useState(() =>
+    createSliceStore({
+      hoveredColumn: (initialState.hoveredColumn ?? null) as Partial<
+        MRT_Column<TData>
+      > | null,
+      hoveredRow: (initialState.hoveredRow ?? null) as Partial<
+        MRT_Row<TData>
+      > | null,
+    }),
   );
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>(
     initialState?.pagination ?? { pageIndex: 0, pageSize: 10 },
@@ -227,15 +238,11 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     columnSizingInfo,
     creatingRow,
     density,
-    draggingColumn,
-    draggingRow,
     editingCell,
     editingRow,
     filters,
     globalFilterFn,
     grouping,
-    hoveredColumn,
-    hoveredRow,
     pagination,
     rowReorderingSelection,
     savedFilters,
@@ -247,6 +254,43 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     newEntryModal,
     ...definedTableOptions.state,
   };
+
+  // Sync a controlled consumer's state.draggingColumn/draggingRow/hoveredColumn/
+  // hoveredRow into the slice stores — rare (these are usually left uncontrolled), but
+  // since they no longer flow through definedTableOptions.state -> useReactTable, an
+  // externally-controlled value needs an explicit bridge into the store.
+  useEffect(() => {
+    if (definedTableOptions.state?.draggingColumn !== undefined) {
+      dragStore.set((prev) => ({
+        ...prev,
+        draggingColumn: definedTableOptions.state!.draggingColumn!,
+      }));
+    }
+  }, [definedTableOptions.state?.draggingColumn]);
+  useEffect(() => {
+    if (definedTableOptions.state?.draggingRow !== undefined) {
+      dragStore.set((prev) => ({
+        ...prev,
+        draggingRow: definedTableOptions.state!.draggingRow!,
+      }));
+    }
+  }, [definedTableOptions.state?.draggingRow]);
+  useEffect(() => {
+    if (definedTableOptions.state?.hoveredColumn !== undefined) {
+      hoverStore.set((prev) => ({
+        ...prev,
+        hoveredColumn: definedTableOptions.state!.hoveredColumn!,
+      }));
+    }
+  }, [definedTableOptions.state?.hoveredColumn]);
+  useEffect(() => {
+    if (definedTableOptions.state?.hoveredRow !== undefined) {
+      hoverStore.set((prev) => ({
+        ...prev,
+        hoveredRow: definedTableOptions.state!.hoveredRow!,
+      }));
+    }
+  }, [definedTableOptions.state?.hoveredRow]);
 
   // Normalize controlled columnPinning state: if the user passes state.columnPinning
   // directly (controlled mode), we still need to ensure that the checkbox column
@@ -420,6 +464,18 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     topToolbarRef,
   };
 
+  table._dragStore = dragStore;
+  table._hoverStore = hoverStore;
+
+  // Merge the slice stores back into getState() so every existing/external
+  // `table.getState().hoveredColumn`-style read keeps working unchanged.
+  const originalGetState = table.getState;
+  table.getState = () => ({
+    ...originalGetState(),
+    ...dragStore.get(),
+    ...hoverStore.get(),
+  });
+
   table.setActionCell =
     statefulTableOptions.onActionCellChange ?? setActionCell;
   table.setCreatingRow = (row: MRT_Updater<MRT_Row<TData> | null | true>) => {
@@ -435,9 +491,21 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     statefulTableOptions.onColumnFilterFnsChange ?? setColumnFilterFns;
   table.setDensity = statefulTableOptions.onDensityChange ?? setDensity;
   table.setDraggingColumn =
-    statefulTableOptions.onDraggingColumnChange ?? setDraggingColumn;
+    statefulTableOptions.onDraggingColumnChange ??
+    ((updater) =>
+      dragStore.set((prev) => ({
+        ...prev,
+        draggingColumn:
+          updater instanceof Function ? updater(prev.draggingColumn) : updater,
+      })));
   table.setDraggingRow =
-    statefulTableOptions.onDraggingRowChange ?? setDraggingRow;
+    statefulTableOptions.onDraggingRowChange ??
+    ((updater) =>
+      dragStore.set((prev) => ({
+        ...prev,
+        draggingRow:
+          updater instanceof Function ? updater(prev.draggingRow) : updater,
+      })));
   table.setEditingCell =
     statefulTableOptions.onEditingCellChange ?? setEditingCell;
   table.setEditingRow =
@@ -446,9 +514,21 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.setGlobalFilterFn =
     statefulTableOptions.onGlobalFilterFnChange ?? setGlobalFilterFn;
   table.setHoveredColumn =
-    statefulTableOptions.onHoveredColumnChange ?? setHoveredColumn;
+    statefulTableOptions.onHoveredColumnChange ??
+    ((updater) =>
+      hoverStore.set((prev) => ({
+        ...prev,
+        hoveredColumn:
+          updater instanceof Function ? updater(prev.hoveredColumn) : updater,
+      })));
   table.setHoveredRow =
-    statefulTableOptions.onHoveredRowChange ?? setHoveredRow;
+    statefulTableOptions.onHoveredRowChange ??
+    ((updater) =>
+      hoverStore.set((prev) => ({
+        ...prev,
+        hoveredRow:
+          updater instanceof Function ? updater(prev.hoveredRow) : updater,
+      })));
   table.setSavedFilters = setSavedFilters;
   table.setShowAlertBanner =
     statefulTableOptions.onShowAlertBannerChange ?? setShowAlertBanner;

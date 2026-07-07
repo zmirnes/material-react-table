@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { type Range, useVirtualizer } from '@tanstack/react-virtual';
+import { useMRT_SliceValue } from './useMRT_SliceValue';
 import {
   type MRT_ColumnVirtualizer,
   type MRT_RowData,
@@ -26,7 +27,11 @@ export const useMRT_ColumnVirtualizer = <
     },
     refs: { tableContainerRef },
   } = table;
-  const { columnPinning, columnVisibility, draggingColumn } = getState();
+  const { columnPinning, columnVisibility } = getState();
+  const draggingColumnId = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingColumn?.id,
+  );
 
   if (!enableColumnVirtualization) return undefined;
 
@@ -60,10 +65,10 @@ export const useMRT_ColumnVirtualizer = <
 
   const draggingColumnIndex = useMemo(
     () =>
-      draggingColumn?.id
-        ? visibleColumns.findIndex((c) => c.id === draggingColumn?.id)
+      draggingColumnId
+        ? visibleColumns.findIndex((c) => c.id === draggingColumnId)
         : undefined,
-    [draggingColumn?.id],
+    [draggingColumnId],
   );
 
   const columnVirtualizer = useVirtualizer({

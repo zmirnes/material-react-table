@@ -31,7 +31,7 @@ export const MRT_TableHeadCellGrabHandle = <TData extends MRT_RowData>({
     setHoveredColumn,
   } = table;
   const { columnDef } = column;
-  const { columnOrder, draggingColumn, hoveredColumn } = getState();
+  const { columnOrder } = getState();
 
   const iconButtonProps = {
     ...parseFromValuesOrFunc(muiColumnDragHandleProps, { column, table }),
@@ -58,6 +58,8 @@ export const MRT_TableHeadCellGrabHandle = <TData extends MRT_RowData>({
 
   const handleDragEnd = (event: DragEvent<HTMLButtonElement>) => {
     iconButtonProps?.onDragEnd?.(event);
+    const { hoveredColumn } = table._hoverStore.get();
+    const { draggingColumn } = table._dragStore.get();
     if (hoveredColumn?.id === 'drop-zone') {
       column.toggleGrouping();
     } else if (

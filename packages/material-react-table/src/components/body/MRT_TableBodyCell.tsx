@@ -10,6 +10,7 @@ import React, {
 import Skeleton from '@mui/material/Skeleton';
 import { type Theme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_CopyButton } from '../buttons/MRT_CopyButton';
 import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
 import { MRT_DisplayColumnCellRenderer } from './MRT_DisplayColumnCellRenderer';
@@ -73,18 +74,31 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
     columnSizingInfo,
     creatingRow,
     density,
-    draggingColumn,
-    draggingRow,
     editingCell,
     editingRow,
-    hoveredColumn,
-    hoveredRow,
     isLoading,
     showSkeletons,
   } = getState();
   const { column, row } = cell;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
+
+  const isDraggingColumn = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingColumn?.id === column.id,
+  );
+  const isDraggingRow = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingRow?.id === row.id,
+  );
+  const isHoveredColumn = useMRT_SliceValue(
+    table._hoverStore,
+    (s) => s.hoveredColumn?.id === column.id,
+  );
+  const isHoveredRow = useMRT_SliceValue(
+    table._hoverStore,
+    (s) => s.hoveredRow?.id === row.id,
+  );
 
   const args = { cell, column, row, table };
   const tableCellProps = {
@@ -112,10 +126,6 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
   }, [isLoading, showSkeletons]);
 
   const draggingBorders = useMemo(() => {
-    const isDraggingColumn = draggingColumn?.id === column.id;
-    const isHoveredColumn = hoveredColumn?.id === column.id;
-    const isDraggingRow = draggingRow?.id === row.id;
-    const isHoveredRow = hoveredRow?.id === row.id;
     const isFirstColumn = column.getIsFirstColumn();
     const isLastColumn = column.getIsLastColumn();
     const isLastRow = numRows && staticRowIndex === numRows - 1;
@@ -160,10 +170,10 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
       : undefined;
   }, [
     columnSizingInfo.isResizingColumn,
-    draggingColumn,
-    draggingRow,
-    hoveredColumn,
-    hoveredRow,
+    isDraggingColumn,
+    isDraggingRow,
+    isHoveredColumn,
+    isHoveredRow,
     staticRowIndex,
   ]);
 
@@ -209,10 +219,13 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
 
   const handleDragEnter = (e: DragEvent<HTMLTableCellElement>) => {
     tableCellProps?.onDragEnter?.(e);
-    if (enableGrouping && hoveredColumn?.id === 'drop-zone') {
+    if (
+      enableGrouping &&
+      table._hoverStore.get().hoveredColumn?.id === 'drop-zone'
+    ) {
       setHoveredColumn(null);
     }
-    if (enableColumnOrdering && draggingColumn) {
+    if (enableColumnOrdering && table._dragStore.get().draggingColumn) {
       setHoveredColumn(
         columnDef.enableColumnOrdering !== false ? column : null,
       );
@@ -288,6 +301,8 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
           row.getIsPinned() || density === 'compact' ? 'nowrap' : 'normal',
         ...getCommonMRTCellStyles({
           column,
+          isDraggingColumn,
+          isHoveredColumn,
           table,
           tableCellProps,
           theme,

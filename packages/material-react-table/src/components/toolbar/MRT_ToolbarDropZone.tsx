@@ -3,6 +3,7 @@ import Box, { type BoxProps } from '@mui/material/Box';
 import Fade from '@mui/material/Fade';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
@@ -22,8 +23,16 @@ export const MRT_ToolbarDropZone = <TData extends MRT_RowData>({
     setShowToolbarDropZone,
   } = table;
 
-  const { draggingColumn, grouping, hoveredColumn, showToolbarDropZone } =
-    getState();
+  const { grouping, showToolbarDropZone } = getState();
+
+  const draggingColumn = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingColumn,
+  );
+  const hoveredColumn = useMRT_SliceValue(
+    table._hoverStore,
+    (s) => s.hoveredColumn,
+  );
 
   const handleDragEnter = (_event: DragEvent<HTMLDivElement>) => {
     setHoveredColumn({ id: 'drop-zone' });
