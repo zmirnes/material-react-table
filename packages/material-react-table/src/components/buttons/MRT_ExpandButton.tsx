@@ -2,6 +2,7 @@ import { type MouseEvent } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_Row,
   type MRT_RowData,
@@ -24,7 +25,6 @@ export const MRT_ExpandButton = <TData extends MRT_RowData>({
 }: MRT_ExpandButtonProps<TData>) => {
   const theme = useTheme();
   const {
-    getState,
     options: {
       icons: { ExpandMoreIcon },
       localization,
@@ -34,7 +34,7 @@ export const MRT_ExpandButton = <TData extends MRT_RowData>({
       renderDetailPanel,
     },
   } = table;
-  const { density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const iconButtonProps = parseFromValuesOrFunc(muiExpandButtonProps, {
     row,

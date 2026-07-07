@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useRef } from 'react';
+import { useMRT_SliceValue } from './useMRT_SliceValue';
 import {
   type MRT_RowData,
   type MRT_SortingState,
@@ -15,14 +16,9 @@ export const useMRT_Effects = <TData extends MRT_RowData>(
     getState,
     options: { enablePagination, enableRowPinning, rowCount },
   } = table;
-  const {
-    density,
-    globalFilter,
-    isLoading,
-    pagination,
-    showSkeletons,
-    sorting,
-  } = getState();
+  const { globalFilter, isLoading, pagination, showSkeletons, sorting } =
+    getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const totalRowCount = rowCount ?? getPrePaginationRowModel().rows.length;
 

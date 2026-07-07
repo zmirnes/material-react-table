@@ -3,6 +3,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Stack from '@mui/material/Stack';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_EditActionButtons } from '../buttons/MRT_EditActionButtons';
 import { MRT_EditCellTextField } from '../inputs/MRT_EditCellTextField';
 import {
@@ -38,7 +39,8 @@ export const MRT_EditRowModal = <TData extends MRT_RowData>({
     setCreatingRow,
     setEditingRow,
   } = table;
-  const { creatingRow, editingRow } = getState();
+  const { creatingRow } = getState();
+  const editingRow = useMRT_SliceValue(table._uiStore, (s) => s.editingRow);
   const row = (creatingRow ?? editingRow) as MRT_Row<TData>;
 
   const dialogProps = {

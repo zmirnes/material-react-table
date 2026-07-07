@@ -30,7 +30,8 @@ export const useMRT_RowVirtualizer = <
     },
     refs: { tableContainerRef },
   } = table;
-  const { density, expanded } = getState();
+  const { expanded } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const draggingRowId = useMRT_SliceValue(
     table._dragStore,
     (s) => s.draggingRow?.id,

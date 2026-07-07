@@ -1,5 +1,6 @@
 import { type SyntheticEvent } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_ActionMenuItem } from './MRT_ActionMenuItem';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { openEditingCell } from '../../utils/cell.utils';
@@ -15,7 +16,6 @@ export const MRT_CellActionMenu = <TData extends MRT_RowData>({
   ...rest
 }: MRT_CellActionMenuProps<TData>) => {
   const {
-    getState,
     options: {
       editDisplayMode,
       enableClickToCopy,
@@ -27,7 +27,8 @@ export const MRT_CellActionMenu = <TData extends MRT_RowData>({
     },
     refs: { actionCellRef },
   } = table;
-  const { actionCell, density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const actionCell = useMRT_SliceValue(table._uiStore, (s) => s.actionCell);
   const cell = actionCell!;
   const { row } = cell;
   const { column } = cell;

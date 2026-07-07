@@ -3,6 +3,7 @@ import Checkbox, { type CheckboxProps } from '@mui/material/Checkbox';
 import Radio, { type RadioProps } from '@mui/material/Radio';
 import { type Theme } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_Row,
   type MRT_RowData,
@@ -39,7 +40,8 @@ export const MRT_SelectCheckbox = <TData extends MRT_RowData>({
       selectAllMode,
     },
   } = table;
-  const { density, isLoading } = getState();
+  const { isLoading } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const selectAll = !row;
 

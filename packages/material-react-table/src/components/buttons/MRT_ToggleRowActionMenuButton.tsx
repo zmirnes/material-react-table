@@ -1,6 +1,7 @@
 import { type MouseEvent, useState } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_RowActionMenu } from '../menus/MRT_RowActionMenu';
 import { MRT_EditActionButtons } from './MRT_EditActionButtons';
 import {
@@ -52,10 +53,13 @@ export const MRT_ToggleRowActionMenuButton = <TData extends MRT_RowData>({
     setEditingRow,
   } = table;
 
-  const { creatingRow, editingRow } = getState();
+  const { creatingRow } = getState();
 
   const isCreating = creatingRow?.id === row.id;
-  const isEditing = editingRow?.id === row.id;
+  const isEditing = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.editingRow?.id === row.id,
+  );
 
   const showEditActionButtons =
     (isCreating && createDisplayMode === 'row') ||

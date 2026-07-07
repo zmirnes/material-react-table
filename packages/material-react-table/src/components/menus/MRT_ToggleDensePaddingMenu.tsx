@@ -2,6 +2,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { getDensityOptions } from '../../config/densityOptions.config';
 import {
   type MRT_DensityState,
@@ -23,11 +24,10 @@ export const MRT_ToggleDensePaddingMenu = <TData extends MRT_RowData>({
   ...rest
 }: MRT_ToggleDensePaddingMenuProps<TData>) => {
   const {
-    getState,
     options: { icons, localization },
     setDensity,
   } = table;
-  const { density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const handleCloseMenu = () => {
     setAnchorEl(null);

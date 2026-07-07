@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useMRT_SliceValue } from './useMRT_SliceValue';
 import {
   buildSelectedRowsArray,
   getSelectedReorderRowIds,
@@ -25,8 +26,12 @@ export const useTreeRowReorderingHeader = <TData extends MRT_RowData>({
   enableRowReordering,
   onTreeRowReorder,
 }: UseTreeRowReorderingHeaderProps<TData>): TreeRowReorderingHeaderLogic => {
+  const rowReorderingSelection = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.rowReorderingSelection,
+  );
   const selectedReorderRowIds = getSelectedReorderRowIds(
-    table.getState().rowReorderingSelection,
+    rowReorderingSelection,
   );
 
   const selectedRowsForReorder = buildSelectedRowsArray(

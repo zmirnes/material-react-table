@@ -2,6 +2,7 @@ import Collapse from '@mui/material/Collapse';
 import LinearProgress, {
   type LinearProgressProps,
 } from '@mui/material/LinearProgress';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
@@ -20,7 +21,11 @@ export const MRT_LinearProgressBar = <TData extends MRT_RowData>({
     getState,
     options: { muiLinearProgressProps },
   } = table;
-  const { isSaving, showProgressBars } = getState();
+  const { isSaving } = getState();
+  const showProgressBars = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showProgressBars,
+  );
 
   const linearProgressProps = {
     ...parseFromValuesOrFunc(muiLinearProgressProps, {

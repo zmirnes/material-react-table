@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_NewEntryFormActionsContext } from './MRT_NewEntryFormActionsContext';
 import { buildDefaultValues } from './MRT_NewEntryFormBuilder';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
@@ -20,11 +21,13 @@ export const MRT_NewEntryFormProvider = <TData extends MRT_RowData>({
   children,
 }: MRT_NewEntryFormProviderProps<TData>) => {
   const {
-    getState,
     options: { formConfig },
     setNewEntryModal,
   } = table;
-  const { newEntryModal } = getState();
+  const newEntryModal = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.newEntryModal,
+  );
 
   // Default to 'create' when mode is not explicitly provided.
   const mode = newEntryModal.mode ?? 'create';

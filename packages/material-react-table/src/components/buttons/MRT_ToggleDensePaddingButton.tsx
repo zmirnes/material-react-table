@@ -1,6 +1,7 @@
 import { type MouseEvent, useState } from 'react';
 import Button, { type ButtonProps } from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_ToggleDensePaddingMenu } from '../menus/MRT_ToggleDensePaddingMenu';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
@@ -14,13 +15,12 @@ export const MRT_ToggleDensePaddingButton = <TData extends MRT_RowData>({
   ...rest
 }: MRT_ToggleDensePaddingButtonProps<TData>) => {
   const {
-    getState,
     options: {
       icons: { DensityLargeIcon, DensityMediumIcon, DensitySmallIcon },
       localization,
     },
   } = table;
-  const { density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 

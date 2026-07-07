@@ -69,20 +69,28 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
     },
     setHoveredColumn,
   } = table;
-  const {
-    actionCell,
-    columnSizingInfo,
-    creatingRow,
-    density,
-    editingCell,
-    editingRow,
-    isLoading,
-    showSkeletons,
-  } = getState();
+  const { creatingRow, isLoading, showSkeletons } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const { column, row } = cell;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
 
+  const isResizingThisColumn = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.columnSizingInfo.isResizingColumn === column.id,
+  );
+  const isEditingRow = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.editingRow?.id === row.id,
+  );
+  const isActionCell = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.actionCell?.id === cell.id,
+  );
+  const isEditingCell = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.editingCell?.id === cell.id,
+  );
   const isDraggingColumn = useMRT_SliceValue(
     table._dragStore,
     (s) => s.draggingColumn?.id === column.id,
@@ -129,7 +137,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
     const isFirstColumn = column.getIsFirstColumn();
     const isLastColumn = column.getIsLastColumn();
     const isLastRow = numRows && staticRowIndex === numRows - 1;
-    const isResizingColumn = columnSizingInfo.isResizingColumn === column.id;
+    const isResizingColumn = isResizingThisColumn;
     const showResizeBorder =
       isResizingColumn && columnResizeMode === 'onChange';
 
@@ -169,7 +177,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
         }
       : undefined;
   }, [
-    columnSizingInfo.isResizingColumn,
+    isResizingThisColumn,
     isDraggingColumn,
     isDraggingRow,
     isHoveredColumn,
@@ -187,9 +195,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
   const isEditing =
     isEditable &&
     !['custom', 'modal'].includes(editDisplayMode as string) &&
-    (editDisplayMode === 'table' ||
-      editingRow?.id === row.id ||
-      editingCell?.id === cell.id) &&
+    (editDisplayMode === 'table' || isEditingRow || isEditingCell) &&
     !row.getIsGrouped();
 
   const isCreating =
@@ -272,7 +278,7 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
       sx={(theme) => ({
         '&:hover': {
           outline:
-            actionCell?.id === cell.id ||
+            isActionCell ||
             (editDisplayMode === 'cell' && isEditable) ||
             (editDisplayMode === 'table' && (isCreating || isEditing))
               ? `1px solid ${theme.palette.grey[500]}`
@@ -285,10 +291,9 @@ export const MRT_TableBodyCell = <TData extends MRT_RowData>({
           : isEditable && editDisplayMode === 'cell'
             ? 'pointer'
             : 'inherit',
-        outline:
-          actionCell?.id === cell.id
-            ? `1px solid ${theme.palette.grey[500]}`
-            : undefined,
+        outline: isActionCell
+          ? `1px solid ${theme.palette.grey[500]}`
+          : undefined,
         outlineOffset: '-1px',
         overflow: 'hidden',
         p:

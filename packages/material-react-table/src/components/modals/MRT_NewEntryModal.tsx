@@ -4,6 +4,7 @@ import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_NewEntryForm } from './MRT_NewEntryForm';
 import { MRT_NewEntryFormActions } from './MRT_NewEntryFormActions';
 import { MRT_NewEntryFormProvider } from './MRT_NewEntryFormProvider';
@@ -56,7 +57,6 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
   const theme = useTheme();
 
   const {
-    getState,
     options: {
       formConfig,
       icons: { CancelIcon },
@@ -84,7 +84,10 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
     headerComponents,
   } = resolvedModalProps;
 
-  const { newEntryModal } = getState();
+  const newEntryModal = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.newEntryModal,
+  );
 
   // Whether the modal was opened in edit mode — determines the title.
   const isEditMode = newEntryModal.mode === 'edit';

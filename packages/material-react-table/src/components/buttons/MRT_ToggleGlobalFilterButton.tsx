@@ -1,5 +1,6 @@
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
 export interface MRT_ToggleGlobalFilterButtonProps<TData extends MRT_RowData>
@@ -21,7 +22,11 @@ export const MRT_ToggleGlobalFilterButton = <TData extends MRT_RowData>({
     refs: { searchInputRef },
     setShowGlobalFilter,
   } = table;
-  const { globalFilter, showGlobalFilter } = getState();
+  const { globalFilter } = getState();
+  const showGlobalFilter = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showGlobalFilter,
+  );
 
   const handleToggleSearch = () => {
     setShowGlobalFilter(!showGlobalFilter);

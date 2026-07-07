@@ -67,7 +67,13 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
     refs: { tableFooterRef, tableHeadRef },
     setHoveredRow,
   } = table;
-  const { density, editingCell, editingRow, rowPinning } = getState();
+  const { rowPinning } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const editingCell = useMRT_SliceValue(table._uiStore, (s) => s.editingCell);
+  const isEditingRow = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.editingRow?.id === row.id,
+  );
 
   const isDraggingRow = useMRT_SliceValue(
     table._dragStore,
@@ -255,7 +261,7 @@ export const MRT_TableBodyRow = <TData extends MRT_RowData>({
               cell.column.columnDef.columnDefType === 'data' &&
               !isAnyDragging &&
               editingCell?.id !== cell.id &&
-              editingRow?.id !== row.id ? (
+              !isEditingRow ? (
                 <Memo_MRT_TableBodyCell key={key} {...props} />
               ) : (
                 <MRT_TableBodyCell key={key} {...props} />

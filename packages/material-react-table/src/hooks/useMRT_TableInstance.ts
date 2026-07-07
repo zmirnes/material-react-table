@@ -121,9 +121,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   definedTableOptions.initialState = initialState;
 
-  const [actionCell, setActionCell] = useState<MRT_Cell<TData> | null>(
-    initialState.actionCell ?? null,
-  );
   const [creatingRow, _setCreatingRow] = useState<MRT_Row<TData> | null>(
     initialState.creatingRow ?? null,
   );
@@ -146,13 +143,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const [columnOrder, onColumnOrderChange] = useState<MRT_ColumnOrderState>(
     initialState.columnOrder ?? [],
   );
-  const [columnSizingInfo, onColumnSizingInfoChange] =
-    useState<MRT_ColumnSizingInfoState>(
-      initialState.columnSizingInfo ?? ({} as MRT_ColumnSizingInfoState),
-    );
-  const [density, setDensity] = useState<MRT_DensityState>(
-    initialState?.density ?? 'compact',
-  );
   // Hover/drag are UI-feedback-only and change at very high frequency during a drag
   // gesture (every cell crossed) — kept in slice stores instead of useState so
   // subscribers can select just the boolean they need instead of re-rendering the tree.
@@ -162,12 +152,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
         null) as MRT_Column<TData> | null,
       draggingRow: (initialState.draggingRow ?? null) as MRT_Row<TData> | null,
     }),
-  );
-  const [editingCell, setEditingCell] = useState<MRT_Cell<TData> | null>(
-    initialState.editingCell ?? null,
-  );
-  const [editingRow, setEditingRow] = useState<MRT_Row<TData> | null>(
-    initialState.editingRow ?? null,
   );
   const [filters, setFilters] = useState<MRT_FiltersState>(
     initialState.filters ?? {
@@ -192,66 +176,66 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
       > | null,
     }),
   );
+  // Everything below is UI-only feedback state that never influences the TanStack row/
+  // column model (unlike filters/pagination/grouping/columnOrder/creatingRow/rows) —
+  // kept in one combined store instead of 13 separate useState hooks so none of it
+  // triggers a root re-render; consumers select just the field(s) they need via
+  // useMRT_SliceValue.
+  const [uiStore] = useState(() =>
+    createSliceStore({
+      actionCell: (initialState.actionCell ?? null) as MRT_Cell<TData> | null,
+      columnSizingInfo: (initialState.columnSizingInfo ??
+        {}) as MRT_ColumnSizingInfoState,
+      density: (initialState?.density ?? 'compact') as MRT_DensityState,
+      editingCell: (initialState.editingCell ?? null) as MRT_Cell<TData> | null,
+      editingRow: (initialState.editingRow ?? null) as MRT_Row<TData> | null,
+      newEntryModal: (initialState?.newEntryModal ?? {
+        open: false,
+      }) as MRT_NewEntryModalState,
+      rowReorderingSelection: (initialState?.rowReorderingSelection ??
+        {}) as MRT_RowReorderingSelectionState,
+      // Saved filter presets — initialised from the dedicated option so the consumer
+      // can hydrate them from the server response before rendering.
+      savedFilters: (definedTableOptions.initialSavedFilters ??
+        {}) as MRT_SavedFilters,
+      showAlertBanner: (initialState?.showAlertBanner ?? false) as boolean,
+      showColumnFilters: (initialState?.showColumnFilters ?? false) as boolean,
+      showGlobalFilter: (initialState?.showGlobalFilter ?? false) as boolean,
+      showProgressBars: (initialState?.showProgressBars ?? false) as boolean,
+      showToolbarDropZone: (initialState?.showToolbarDropZone ??
+        false) as boolean,
+    }),
+  );
+  // columnSizingInfo isn't an MRT-level `table.setX` wrapper — TanStack auto-generates
+  // `table.setColumnSizingInfo` bound to whatever `onColumnSizingInfoChange` we pass into
+  // useReactTable below, so redirecting it here is enough for every internal call
+  // (column.resetSize(), the resize-handle double-click reset, etc.) to land in the store.
+  const onColumnSizingInfoChange = (
+    updater: MRT_Updater<MRT_ColumnSizingInfoState>,
+  ) =>
+    uiStore.set((prev) => ({
+      ...prev,
+      columnSizingInfo:
+        updater instanceof Function ? updater(prev.columnSizingInfo) : updater,
+    }));
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>(
     initialState?.pagination ?? { pageIndex: 0, pageSize: 10 },
-  );
-  const [showAlertBanner, setShowAlertBanner] = useState<boolean>(
-    initialState?.showAlertBanner ?? false,
-  );
-  const [showColumnFilters, setShowColumnFilters] = useState<boolean>(
-    initialState?.showColumnFilters ?? false,
-  );
-  const [showGlobalFilter, setShowGlobalFilter] = useState<boolean>(
-    initialState?.showGlobalFilter ?? false,
   );
   const showAdvancedFiltersSetterRef = useRef<Dispatch<
     SetStateAction<boolean>
   > | null>(null);
-  const [showToolbarDropZone, setShowToolbarDropZone] = useState<boolean>(
-    initialState?.showToolbarDropZone ?? false,
-  );
-  const [newEntryModal, setNewEntryModal] = useState<MRT_NewEntryModalState>(
-    initialState?.newEntryModal ?? { open: false },
-  );
-  const [showProgressBars, setShowProgressBars] = useState<boolean>(
-    initialState?.showProgressBars ?? false,
-  );
-  // Saved filter presets — initialised from the dedicated option so the consumer
-  // can hydrate them from the server response before rendering.
-  const [savedFilters, setSavedFilters] = useState<MRT_SavedFilters>(
-    definedTableOptions.initialSavedFilters ?? {},
-  );
-
-  // Row reordering selection state
-  const [rowReorderingSelection, setRowReorderingSelection] =
-    useState<MRT_RowReorderingSelectionState>(
-      initialState?.rowReorderingSelection ?? {},
-    );
   const [rows, setRowsState] = useState<TData[]>(
     definedTableOptions.data ?? [],
   );
 
   definedTableOptions.state = {
-    actionCell,
     columnFilterFns,
     columnOrder,
-    columnSizingInfo,
     creatingRow,
-    density,
-    editingCell,
-    editingRow,
     filters,
     globalFilterFn,
     grouping,
     pagination,
-    rowReorderingSelection,
-    savedFilters,
-    showAlertBanner,
-    showColumnFilters,
-    showGlobalFilter,
-    showProgressBars,
-    showToolbarDropZone,
-    newEntryModal,
     ...definedTableOptions.state,
   };
 
@@ -291,6 +275,107 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
       }));
     }
   }, [definedTableOptions.state?.hoveredRow]);
+
+  // Same bridge as above, for the 12 UI-only fields in uiStore (columnSizingInfo is
+  // deliberately excluded — it isn't part of the table.setX = onXChange ?? ... pattern,
+  // see onColumnSizingInfoChange above).
+  useEffect(() => {
+    if (definedTableOptions.state?.actionCell !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        actionCell: definedTableOptions.state!.actionCell!,
+      }));
+    }
+  }, [definedTableOptions.state?.actionCell]);
+  useEffect(() => {
+    if (definedTableOptions.state?.density !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        density: definedTableOptions.state!.density!,
+      }));
+    }
+  }, [definedTableOptions.state?.density]);
+  useEffect(() => {
+    if (definedTableOptions.state?.editingCell !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        editingCell: definedTableOptions.state!.editingCell!,
+      }));
+    }
+  }, [definedTableOptions.state?.editingCell]);
+  useEffect(() => {
+    if (definedTableOptions.state?.editingRow !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        editingRow: definedTableOptions.state!.editingRow!,
+      }));
+    }
+  }, [definedTableOptions.state?.editingRow]);
+  useEffect(() => {
+    if (definedTableOptions.state?.newEntryModal !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        newEntryModal: definedTableOptions.state!.newEntryModal!,
+      }));
+    }
+  }, [definedTableOptions.state?.newEntryModal]);
+  useEffect(() => {
+    if (definedTableOptions.state?.rowReorderingSelection !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        rowReorderingSelection:
+          definedTableOptions.state!.rowReorderingSelection!,
+      }));
+    }
+  }, [definedTableOptions.state?.rowReorderingSelection]);
+  useEffect(() => {
+    if (definedTableOptions.state?.savedFilters !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        savedFilters: definedTableOptions.state!.savedFilters!,
+      }));
+    }
+  }, [definedTableOptions.state?.savedFilters]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showAlertBanner !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showAlertBanner: definedTableOptions.state!.showAlertBanner!,
+      }));
+    }
+  }, [definedTableOptions.state?.showAlertBanner]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showColumnFilters !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showColumnFilters: definedTableOptions.state!.showColumnFilters!,
+      }));
+    }
+  }, [definedTableOptions.state?.showColumnFilters]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showGlobalFilter !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showGlobalFilter: definedTableOptions.state!.showGlobalFilter!,
+      }));
+    }
+  }, [definedTableOptions.state?.showGlobalFilter]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showProgressBars !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showProgressBars: definedTableOptions.state!.showProgressBars!,
+      }));
+    }
+  }, [definedTableOptions.state?.showProgressBars]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showToolbarDropZone !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showToolbarDropZone: definedTableOptions.state!.showToolbarDropZone!,
+      }));
+    }
+  }, [definedTableOptions.state?.showToolbarDropZone]);
 
   // Normalize controlled columnPinning state: if the user passes state.columnPinning
   // directly (controlled mode), we still need to ensure that the checkbox column
@@ -466,6 +551,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   table._dragStore = dragStore;
   table._hoverStore = hoverStore;
+  table._uiStore = uiStore;
 
   // Merge the slice stores back into getState() so every existing/external
   // `table.getState().hoveredColumn`-style read keeps working unchanged.
@@ -474,10 +560,17 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     ...originalGetState(),
     ...dragStore.get(),
     ...hoverStore.get(),
+    ...uiStore.get(),
   });
 
   table.setActionCell =
-    statefulTableOptions.onActionCellChange ?? setActionCell;
+    statefulTableOptions.onActionCellChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        actionCell:
+          updater instanceof Function ? updater(prev.actionCell) : updater,
+      })));
   table.setCreatingRow = (row: MRT_Updater<MRT_Row<TData> | null | true>) => {
     let _row = row;
     if (row === true) {
@@ -489,7 +582,13 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   };
   table.setColumnFilterFns =
     statefulTableOptions.onColumnFilterFnsChange ?? setColumnFilterFns;
-  table.setDensity = statefulTableOptions.onDensityChange ?? setDensity;
+  table.setDensity =
+    statefulTableOptions.onDensityChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        density: updater instanceof Function ? updater(prev.density) : updater,
+      })));
   table.setDraggingColumn =
     statefulTableOptions.onDraggingColumnChange ??
     ((updater) =>
@@ -507,9 +606,21 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
           updater instanceof Function ? updater(prev.draggingRow) : updater,
       })));
   table.setEditingCell =
-    statefulTableOptions.onEditingCellChange ?? setEditingCell;
+    statefulTableOptions.onEditingCellChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        editingCell:
+          updater instanceof Function ? updater(prev.editingCell) : updater,
+      })));
   table.setEditingRow =
-    statefulTableOptions.onEditingRowChange ?? setEditingRow;
+    statefulTableOptions.onEditingRowChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        editingRow:
+          updater instanceof Function ? updater(prev.editingRow) : updater,
+      })));
   table.setFilters = statefulTableOptions.onFiltersChange ?? setFilters;
   table.setGlobalFilterFn =
     statefulTableOptions.onGlobalFilterFnChange ?? setGlobalFilterFn;
@@ -529,24 +640,76 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
         hoveredRow:
           updater instanceof Function ? updater(prev.hoveredRow) : updater,
       })));
-  table.setSavedFilters = setSavedFilters;
+  table.setSavedFilters = (updater) =>
+    uiStore.set((prev) => ({
+      ...prev,
+      savedFilters:
+        updater instanceof Function ? updater(prev.savedFilters) : updater,
+    }));
   table.setShowAlertBanner =
-    statefulTableOptions.onShowAlertBannerChange ?? setShowAlertBanner;
+    statefulTableOptions.onShowAlertBannerChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        showAlertBanner:
+          updater instanceof Function ? updater(prev.showAlertBanner) : updater,
+      })));
   table._showAdvancedFiltersSetterRef = showAdvancedFiltersSetterRef;
   table.setShowAdvancedFilters =
     statefulTableOptions.onShowAdvancedFiltersChange ??
     ((updater) => showAdvancedFiltersSetterRef.current?.(updater));
   table.setShowColumnFilters =
-    statefulTableOptions.onShowColumnFiltersChange ?? setShowColumnFilters;
+    statefulTableOptions.onShowColumnFiltersChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        showColumnFilters:
+          updater instanceof Function
+            ? updater(prev.showColumnFilters)
+            : updater,
+      })));
   table.setShowGlobalFilter =
-    statefulTableOptions.onShowGlobalFilterChange ?? setShowGlobalFilter;
-  table.setShowProgressBars = setShowProgressBars;
+    statefulTableOptions.onShowGlobalFilterChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        showGlobalFilter:
+          updater instanceof Function
+            ? updater(prev.showGlobalFilter)
+            : updater,
+      })));
+  table.setShowProgressBars = (updater) =>
+    uiStore.set((prev) => ({
+      ...prev,
+      showProgressBars:
+        updater instanceof Function ? updater(prev.showProgressBars) : updater,
+    }));
   table.setShowToolbarDropZone =
-    statefulTableOptions.onShowToolbarDropZoneChange ?? setShowToolbarDropZone;
-  table.setNewEntryModal = setNewEntryModal;
+    statefulTableOptions.onShowToolbarDropZoneChange ??
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        showToolbarDropZone:
+          updater instanceof Function
+            ? updater(prev.showToolbarDropZone)
+            : updater,
+      })));
+  table.setNewEntryModal = (updater) =>
+    uiStore.set((prev) => ({
+      ...prev,
+      newEntryModal:
+        updater instanceof Function ? updater(prev.newEntryModal) : updater,
+    }));
   table.setRowReorderingSelection =
     statefulTableOptions.onRowReorderingSelectionChange ??
-    setRowReorderingSelection;
+    ((updater) =>
+      uiStore.set((prev) => ({
+        ...prev,
+        rowReorderingSelection:
+          updater instanceof Function
+            ? updater(prev.rowReorderingSelection)
+            : updater,
+      })));
   table.addRow = handleAddRow({
     setRowsState,
     getRowId: resolveRowId,

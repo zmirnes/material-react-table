@@ -58,17 +58,20 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
     setHoveredColumn,
   } = table;
   const [isColumnCellHovered, setIsColumnCellHovered] = useState(false);
-  const {
-    columnSizingInfo,
-    draggingColumn,
-    grouping,
-    hoveredColumn,
-    showColumnFilters,
-  } = getState();
+  const { grouping } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const showColumnFilters = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showColumnFilters,
+  );
   const { column } = header;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
 
+  const isResizingThisColumn = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.columnSizingInfo.isResizingColumn === column.id,
+  );
   const isDraggingColumn = useMRT_SliceValue(
     table._dragStore,
     (s) => s.draggingColumn?.id === column.id,
@@ -115,7 +118,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
 
   const draggingBorders = useMemo(() => {
     const showResizeBorder =
-      columnSizingInfo.isResizingColumn === column.id &&
+      isResizingThisColumn &&
       columnResizeMode === 'onChange' &&
       !header.subHeaders.length;
 
@@ -139,7 +142,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
           borderTop: borderStyle,
         }
       : undefined;
-  }, [isDraggingColumn, isHoveredColumn, columnSizingInfo.isResizingColumn]);
+  }, [isDraggingColumn, isHoveredColumn, isResizingThisColumn]);
 
   const handleDragEnter = (_e: DragEvent) => {
     if (

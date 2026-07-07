@@ -1,5 +1,6 @@
 import { type ReactNode, useMemo, type MouseEvent } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_ActionMenuItem } from './MRT_ActionMenuItem';
 import {
   type MRT_Row,
@@ -28,7 +29,6 @@ export const MRT_RowActionMenu = <TData extends MRT_RowData>({
   ...rest
 }: MRT_RowActionMenuProps<TData>) => {
   const {
-    getState,
     options: {
       editDisplayMode,
       enableEditing,
@@ -38,7 +38,7 @@ export const MRT_RowActionMenu = <TData extends MRT_RowData>({
       renderRowActionMenuItems,
     },
   } = table;
-  const { density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const menuItems = useMemo(() => {
     const items: ReactNode[] = [];

@@ -23,8 +23,12 @@ export const MRT_ToolbarDropZone = <TData extends MRT_RowData>({
     setShowToolbarDropZone,
   } = table;
 
-  const { grouping, showToolbarDropZone } = getState();
+  const { grouping } = getState();
 
+  const showToolbarDropZone = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showToolbarDropZone,
+  );
   const draggingColumn = useMRT_SliceValue(
     table._dragStore,
     (s) => s.draggingColumn,

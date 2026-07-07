@@ -1,6 +1,7 @@
 import { type Row } from '@tanstack/react-table';
 import Box from '@mui/material/Box';
 import { type IconButtonProps } from '@mui/material/IconButton';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_RowPinButton } from '../buttons/MRT_RowPinButton';
 import {
   type MRT_Row,
@@ -21,10 +22,9 @@ export const MRT_TableBodyRowPinButton = <TData extends MRT_RowData>({
   ...rest
 }: MRT_TableBodyRowPinButtonProps<TData>) => {
   const {
-    getState,
     options: { enableRowPinning, rowPinningDisplayMode },
   } = table;
-  const { density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const canPin = parseFromValuesOrFunc(
     enableRowPinning,
