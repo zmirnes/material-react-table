@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { useMRT_NewEntryFormActions } from './MRT_NewEntryFormActionsContext';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 
@@ -18,11 +19,13 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
   const { handleCancel, handleSave } = useMRT_NewEntryFormActions();
 
   const {
-    getState,
     options: { formConfig, localization, muiNewEntryModalProps },
   } = table;
 
-  const { newEntryModal } = getState();
+  const newEntryModal = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.newEntryModal,
+  );
   const mode = newEntryModal.mode ?? 'create';
 
   const resolvedModalProps = muiNewEntryModalProps ?? {};

@@ -1,5 +1,6 @@
 import { type MouseEvent, useState } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_ActionMenuItem } from './MRT_ActionMenuItem';
 import { MRT_FilterOptionMenu } from './MRT_FilterOptionMenu';
 import {
@@ -60,8 +61,12 @@ export const MRT_ColumnActionMenu = <TData extends MRT_RowData>({
   } = table;
   const { column } = header;
   const { columnDef } = column;
-  const { columnSizing, columnVisibility, density, showColumnFilters } =
-    getState();
+  const { columnSizing, columnVisibility } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const showColumnFilters = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showColumnFilters,
+  );
   const columnFilterValue = column.getFilterValue();
 
   const [filterMenuAnchorEl, setFilterMenuAnchorEl] =

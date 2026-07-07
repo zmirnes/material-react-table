@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_Row,
   type MRT_RowData,
@@ -37,10 +38,13 @@ export const MRT_EditActionButtons = <TData extends MRT_RowData>({
     setCreatingRow,
     setEditingRow,
   } = table;
-  const { creatingRow, editingRow, isSaving } = getState();
+  const { creatingRow, isSaving } = getState();
 
   const isCreating = creatingRow?.id === row.id;
-  const isEditing = editingRow?.id === row.id;
+  const isEditing = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.editingRow?.id === row.id,
+  );
 
   const handleCancel = () => {
     if (isCreating) {

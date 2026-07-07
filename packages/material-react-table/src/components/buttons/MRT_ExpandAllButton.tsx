@@ -1,5 +1,6 @@
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
@@ -26,7 +27,8 @@ export const MRT_ExpandAllButton = <TData extends MRT_RowData>({
     },
     toggleAllRowsExpanded,
   } = table;
-  const { density, isLoading } = getState();
+  const { isLoading } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const iconButtonProps = {
     ...parseFromValuesOrFunc(muiExpandAllButtonProps, {

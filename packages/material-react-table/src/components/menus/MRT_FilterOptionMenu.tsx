@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import Menu, { type MenuProps } from '@mui/material/Menu';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_ActionMenuItem } from './MRT_ActionMenuItem';
 import {
   type MRT_Column,
@@ -137,7 +138,8 @@ export const MRT_FilterOptionMenu = <TData extends MRT_RowData>({
     setColumnFilterFns,
     setGlobalFilterFn,
   } = table;
-  const { density, globalFilterFn } = getState();
+  const { globalFilterFn } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const { column } = header ?? {};
   const { columnDef } = column ?? {};
   const currentFilterValue = column?.getFilterValue();

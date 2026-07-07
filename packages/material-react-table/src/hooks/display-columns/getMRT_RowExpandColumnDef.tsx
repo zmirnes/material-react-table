@@ -6,6 +6,7 @@ import { MRT_ExpandButton } from '../../components/buttons/MRT_ExpandButton';
 import { MRT_InsertHereAction } from '../../components/buttons/MRT_InsertHereAction';
 import { MRT_MoveToTopAction } from '../../components/buttons/MRT_MoveToTopAction';
 import { MRT_ReorderRowCheckbox } from '../../components/buttons/MRT_ReorderRowCheckbox';
+import { useMRT_SliceValue } from '../useMRT_SliceValue';
 import {
   type MRT_ColumnDef,
   type MRT_RowData,
@@ -30,7 +31,7 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
     onTreeRowReorder,
     positionExpandColumn,
     renderDetailPanel,
-    state: { grouping, rowReorderingSelection },
+    state: { grouping },
   } = tableOptions;
 
   const alignProps =
@@ -42,6 +43,10 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
 
   return {
     Cell: ({ cell, column, row, staticRowIndex, table }) => {
+      const rowReorderingSelection = useMRT_SliceValue(
+        table._uiStore,
+        (s) => s.rowReorderingSelection,
+      );
       const cellLogic = useTreeRowReorderingCell({
         row,
         table,

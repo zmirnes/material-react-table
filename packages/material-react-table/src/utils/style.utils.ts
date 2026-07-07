@@ -75,21 +75,23 @@ export const getCommonPinnedCellStyles = <TData extends MRT_RowData>({
 export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
   column,
   header,
+  isDraggingColumn,
+  isHoveredColumn,
   table,
   tableCellProps,
   theme,
 }: {
   column: MRT_Column<TData>;
   header?: MRT_Header<TData>;
+  isDraggingColumn: boolean;
+  isHoveredColumn: boolean;
   table: MRT_TableInstance<TData>;
   tableCellProps: TableCellProps;
   theme: Theme;
 }): Record<string, unknown> => {
   const {
-    getState,
     options: { enableColumnVirtualization, layoutMode },
   } = table;
-  const { draggingColumn } = getState();
   const { columnDef } = column;
   const { columnDefType } = columnDef;
 
@@ -174,17 +176,13 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
         : layoutMode?.startsWith('grid')
           ? tableCellProps.align
           : undefined,
-    opacity:
-      table.getState().draggingColumn?.id === column.id ||
-      table.getState().hoveredColumn?.id === column.id
-        ? 0.5
-        : 1,
+    opacity: isDraggingColumn || isHoveredColumn ? 0.5 : 1,
     position: 'relative',
     transition: enableColumnVirtualization
       ? 'none'
       : `padding 150ms ease-in-out`,
     zIndex:
-      column.getIsResizing() || draggingColumn?.id === column.id
+      column.getIsResizing() || isDraggingColumn
         ? 2
         : columnDefType !== 'group' && isColumnPinned
           ? 1

@@ -1,25 +1,15 @@
-import {
-  type Dispatch,
-  type DragEvent,
-  type RefObject,
-  type SetStateAction,
-  useRef,
-  useState,
-} from 'react';
+import { type Dispatch, type SetStateAction } from 'react';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
 import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { MRT_ColumnPinningButtons } from '../buttons/MRT_ColumnPinningButtons';
-import { MRT_GrabHandleButton } from '../buttons/MRT_GrabHandleButton';
 import {
   type MRT_Column,
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
-import { reorderColumn } from '../../utils/column.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
 
@@ -43,18 +33,12 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
   ...rest
 }: MRT_ShowHideColumnsMenuItemsProps<TData>) => {
   const {
-    getState,
     options: {
-      enableColumnOrdering,
-      enableColumnPinning,
       enableHiding,
       localization,
       mrtTheme: { draggingBorderColor },
     },
-    setColumnOrder,
-    setColumnPinning,
   } = table;
-  const { columnOrder } = getState();
   const { columnDef } = column;
   const { columnDefType } = columnDef;
 
@@ -70,42 +54,6 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
     }
   };
 
-  const menuItemRef = useRef<HTMLElement>(null);
-
-  const [isDragging, setIsDragging] = useState(false);
-
-  const handleDragStart = (e: DragEvent<HTMLButtonElement>) => {
-    setIsDragging(true);
-    try {
-      e.dataTransfer.setDragImage(menuItemRef.current as HTMLElement, 0, 0);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleDragEnd = (_e: DragEvent<HTMLButtonElement>) => {
-    setIsDragging(false);
-    setHoveredColumn(null);
-    if (hoveredColumn) {
-      const reorderedColumns = reorderColumn(
-        column,
-        hoveredColumn,
-        columnOrder,
-      );
-      setColumnOrder(reorderedColumns);
-      setColumnPinning(({ left = [], right = [] }) => ({
-        left: reorderedColumns.filter((header) => left.includes(header)),
-        right: reorderedColumns.filter((header) => right.includes(header)),
-      }));
-    }
-  };
-
-  const handleDragEnter = (_e: DragEvent) => {
-    if (!isDragging && columnDef.enableColumnOrdering !== false) {
-      setHoveredColumn(column);
-    }
-  };
-
   if (!columnDef.header || columnDef.visibleInShowHideMenu === false) {
     return null;
   }
@@ -114,17 +62,13 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
     <>
       <MenuItem
         disableRipple
-        onDragEnter={handleDragEnter}
-        ref={menuItemRef as RefObject<HTMLLIElement>}
         {...rest}
         sx={(theme) => ({
           alignItems: 'center',
           justifyContent: 'flex-start',
           my: 0,
-          opacity: isDragging ? 0.5 : 1,
-          outline: isDragging
-            ? `2px dashed ${theme.palette.grey[500]}`
-            : hoveredColumn?.id === column.id
+          outline:
+            hoveredColumn?.id === column.id
               ? `2px dashed ${draggingBorderColor}`
               : 'none',
           outlineOffset: '-2px',
@@ -144,24 +88,6 @@ export const MRT_ShowHideColumnsMenuItems = <TData extends MRT_RowData>({
             gap: '8px',
           }}
         >
-          {columnDefType !== 'group' &&
-            enableColumnOrdering &&
-            !isNestedColumns &&
-            (columnDef.enableColumnOrdering !== false ? (
-              <MRT_GrabHandleButton
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
-                table={table}
-              />
-            ) : (
-              <Box sx={{ width: '28px' }} />
-            ))}
-          {enableColumnPinning &&
-            (column.getCanPin() ? (
-              <MRT_ColumnPinningButtons column={column} table={table} />
-            ) : (
-              <Box sx={{ width: '70px' }} />
-            ))}
           {enableHiding ? (
             <FormControlLabel
               checked={switchChecked}

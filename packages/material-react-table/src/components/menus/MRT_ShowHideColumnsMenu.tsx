@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Menu, { type MenuProps } from '@mui/material/Menu';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_ShowHideColumnsMenuItems } from './MRT_ShowHideColumnsMenuItems';
 import {
   type MRT_Column,
@@ -10,7 +11,6 @@ import {
   type MRT_TableInstance,
   type MRT_VisibilityState,
 } from '../../types';
-import { getDefaultColumnOrderIds } from '../../utils/displayColumn.utils';
 
 export interface MRT_ShowHideColumnsMenuProps<TData extends MRT_RowData>
   extends Partial<MenuProps> {
@@ -31,21 +31,18 @@ export const MRT_ShowHideColumnsMenu = <TData extends MRT_RowData>({
     getAllLeafColumns,
     getCenterLeafColumns,
     getIsAllColumnsVisible,
-    getIsSomeColumnsPinned,
     getIsSomeColumnsVisible,
     getLeftLeafColumns,
     getRightLeafColumns,
     getState,
-    initialState,
     options: {
-      enableColumnOrdering,
-      enableColumnPinning,
       enableHiding,
       localization,
       mrtTheme: { menuBackgroundColor },
     },
   } = table;
-  const { columnOrder, columnPinning, density } = getState();
+  const { columnOrder, columnPinning } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
 
   const handleToggleAllColumns = (value?: boolean) => {
     const updates = getAllLeafColumns()
@@ -86,16 +83,6 @@ export const MRT_ShowHideColumnsMenu = <TData extends MRT_RowData>({
     (col) => col.columnDef.columnDefType === 'group',
   );
 
-  const hasColumnOrderChanged = useMemo(
-    () =>
-      columnOrder.length !== initialState.columnOrder.length ||
-      !columnOrder.every(
-        (column, index) => column === initialState.columnOrder[index],
-      ),
-
-    [columnOrder, initialState.columnOrder],
-  );
-
   const [hoveredColumn, setHoveredColumn] = useState<MRT_Column<TData> | null>(
     null,
   );
@@ -130,26 +117,7 @@ export const MRT_ShowHideColumnsMenu = <TData extends MRT_RowData>({
             {localization.hideAll}
           </Button>
         )}
-        {enableColumnOrdering && (
-          <Button
-            onClick={() =>
-              table.setColumnOrder(
-                getDefaultColumnOrderIds(table.options, true),
-              )
-            }
-            disabled={!hasColumnOrderChanged}
-          >
-            {localization.resetOrder}
-          </Button>
-        )}
-        {enableColumnPinning && (
-          <Button
-            disabled={!getIsSomeColumnsPinned()}
-            onClick={() => table.resetColumnPinning(true)}
-          >
-            {localization.unpinAll}
-          </Button>
-        )}
+
         {enableHiding && (
           <Button
             disabled={getIsAllColumnsVisible()}

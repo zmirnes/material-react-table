@@ -81,6 +81,7 @@ import {
   type OnDeleteActionContext,
   type OnEditActionContext,
 } from './types/actions/actions.types';
+import { type MRT_SliceStore } from './utils/mrtStore';
 
 export type { MRT_Icons };
 export type LiteralUnion<T extends U, U = string> =
@@ -387,6 +388,29 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   | 'getTopRows'
   | 'options'
 > & {
+  _dragStore: MRT_SliceStore<{
+    draggingColumn: MRT_Column<TData> | null;
+    draggingRow: MRT_Row<TData> | null;
+  }>;
+  _hoverStore: MRT_SliceStore<{
+    hoveredColumn: Partial<MRT_Column<TData>> | null;
+    hoveredRow: Partial<MRT_Row<TData>> | null;
+  }>;
+  _uiStore: MRT_SliceStore<{
+    actionCell: MRT_Cell<TData> | null;
+    columnSizingInfo: MRT_ColumnSizingInfoState;
+    density: MRT_DensityState;
+    editingCell: MRT_Cell<TData> | null;
+    editingRow: MRT_Row<TData> | null;
+    newEntryModal: MRT_NewEntryModalState;
+    rowReorderingSelection: MRT_RowReorderingSelectionState;
+    savedFilters: MRT_SavedFilters;
+    showAlertBanner: boolean;
+    showColumnFilters: boolean;
+    showGlobalFilter: boolean;
+    showProgressBars: boolean;
+    showToolbarDropZone: boolean;
+  }>;
   getAllColumns: () => MRT_Column<TData>[];
   getAllFlatColumns: () => MRT_Column<TData>[];
   getAllLeafColumns: () => MRT_Column<TData>[];

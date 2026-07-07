@@ -1,6 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_NewEntryFormAdditionalFieldControl } from './MRT_NewEntryFormAdditionalFieldControl';
 import {
   groupFieldsBySection,
@@ -98,14 +99,16 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
   const methods = useFormContext();
 
   const {
-    getState,
     options: {
       formConfig,
       icons: { ExpandMoreIcon },
     },
   } = table;
 
-  const { newEntryModal } = getState();
+  const newEntryModal = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.newEntryModal,
+  );
   const mode = newEntryModal.mode ?? 'create';
 
   // Consumer controls the entire form body — skip all field calculations.

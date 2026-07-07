@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { type Range, useVirtualizer } from '@tanstack/react-virtual';
+import { useMRT_SliceValue } from './useMRT_SliceValue';
 import {
   type MRT_Row,
   type MRT_RowData,
@@ -29,7 +30,12 @@ export const useMRT_RowVirtualizer = <
     },
     refs: { tableContainerRef },
   } = table;
-  const { density, draggingRow, expanded } = getState();
+  const { expanded } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const draggingRowId = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingRow?.id,
+  );
 
   if (!enableRowVirtualization) return undefined;
 
@@ -43,10 +49,10 @@ export const useMRT_RowVirtualizer = <
    */
   const draggingRowIndex = useMemo(
     () =>
-      draggingRow?.id
-        ? realRows.findIndex((r) => r.id === draggingRow?.id)
+      draggingRowId
+        ? realRows.findIndex((r) => r.id === draggingRowId)
         : undefined,
-    [realRows, draggingRow?.id],
+    [realRows, draggingRowId],
   );
 
   const rowCount = realRows.length;

@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Collapse from '@mui/material/Collapse';
 import Stack from '@mui/material/Stack';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_SelectCheckbox } from '../inputs/MRT_SelectCheckbox';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { getMRT_SelectAllHandler } from '../../utils/row.utils';
@@ -39,7 +40,12 @@ export const MRT_ToolbarAlertBanner = <TData extends MRT_RowData>({
     },
     refs: { tablePaperRef },
   } = table;
-  const { density, grouping, rowSelection, showAlertBanner } = getState();
+  const { grouping, rowSelection } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const showAlertBanner = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showAlertBanner,
+  );
 
   const alertProps = {
     ...parseFromValuesOrFunc(muiToolbarAlertBannerProps, {

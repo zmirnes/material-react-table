@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import TableContainer, {
   type TableContainerProps,
 } from '@mui/material/TableContainer';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_CellActionMenu } from '../menus/MRT_CellActionMenu';
 import { MRT_EditRowModal } from '../modals/MRT_EditRowModal';
 import { MRT_NewEntryModal } from '../modals/MRT_NewEntryModal';
@@ -30,14 +31,13 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
     },
     refs: { resizeIndicatorRef, tableContainerRef },
   } = table;
-  const {
-    actionCell,
-    creatingRow,
-    editingRow,
-    isLoading,
-    showLoadingOverlay,
-    newEntryModal,
-  } = getState();
+  const { creatingRow, isLoading, showLoadingOverlay } = getState();
+  const actionCell = useMRT_SliceValue(table._uiStore, (s) => s.actionCell);
+  const editingRow = useMRT_SliceValue(table._uiStore, (s) => s.editingRow);
+  const newEntryModal = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.newEntryModal,
+  );
 
   const loading =
     showLoadingOverlay !== false && (isLoading || showLoadingOverlay);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_Header,
   type MRT_RowData,
@@ -31,9 +32,19 @@ export const MRT_TableFooterCell = <TData extends MRT_RowData>({
       enableKeyboardShortcuts,
     },
   } = table;
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const { column } = footer;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
+
+  const isDraggingColumn = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingColumn?.id === column.id,
+  );
+  const isHoveredColumn = useMRT_SliceValue(
+    table._hoverStore,
+    (s) => s.hoveredColumn?.id === column.id,
+  );
 
   const isColumnPinned =
     enableColumnPinning &&
@@ -79,6 +90,8 @@ export const MRT_TableFooterCell = <TData extends MRT_RowData>({
         ...getCommonMRTCellStyles({
           column,
           header: footer,
+          isDraggingColumn,
+          isHoveredColumn,
           table,
           tableCellProps,
           theme,

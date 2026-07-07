@@ -7,6 +7,7 @@ import {
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import { type TextFieldProps } from '@mui/material/TextField';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_Cell,
   type MRT_RowData,
@@ -35,11 +36,14 @@ export const MRT_EditCellTextField = <TData extends MRT_RowData>({
   } = table;
   const { column, row } = cell;
   const { columnDef } = column;
-  const { creatingRow, editingRow } = getState();
+  const { creatingRow } = getState();
   const { editSelectOptions, editVariant } = columnDef;
 
   const isCreating = creatingRow?.id === row.id;
-  const isEditing = editingRow?.id === row.id;
+  const isEditing = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.editingRow?.id === row.id,
+  );
 
   const [value, setValue] = useState(() => cell.getValue<string>());
   const [completesComposition, setCompletesComposition] = useState(true);

@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_RowData,
   type MRT_SavedFilter,
@@ -25,13 +26,12 @@ export const MRT_SavedFiltersButton = <TData extends MRT_RowData>({
   table,
 }: MRT_SavedFiltersButtonProps<TData>) => {
   const {
-    getState,
     options: { localization, onDeleteSavedFilter, onSaveFilters },
     setFilters,
     setSavedFilters,
   } = table;
 
-  const { savedFilters } = getState();
+  const savedFilters = useMRT_SliceValue(table._uiStore, (s) => s.savedFilters);
   const savedFiltersList = Object.values(savedFilters);
 
   const buttonRef = useRef<HTMLButtonElement>(null);

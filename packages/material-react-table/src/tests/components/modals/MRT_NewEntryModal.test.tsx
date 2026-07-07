@@ -52,6 +52,12 @@ const buildMockTable = ({
   const table = {
     getAllLeafColumns: () => [],
     getState: () => ({ newEntryModal: newEntryModalState }),
+    // newEntryModal is read via the UI-only slice store (useMRT_SliceValue), not
+    // getState() directly — provide a minimal store shape satisfying that hook.
+    _uiStore: {
+      get: () => ({ newEntryModal: newEntryModalState }),
+      subscribe: () => () => {},
+    },
     options: {
       formConfig: renderModalFn ? { renderModal: renderModalFn } : undefined,
       icons: { CancelIcon },

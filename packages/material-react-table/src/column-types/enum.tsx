@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
-import EnumActiveFilterItem from './activeFiltersRenderers/EnumActiveFilterItem';
 import { MRT_FormEnumInput } from '../components/modals/form-inputs/MRT_FormEnumInput';
+import EnumActiveFilterItem from './activeFiltersRenderers/EnumActiveFilterItem';
 import { MRT_MultiValueEditor } from './filterEditors/MRT_MultiValueEditor';
 import { MRT_SingleValueEditor } from './filterEditors/MRT_SingleValueEditor';
 import {

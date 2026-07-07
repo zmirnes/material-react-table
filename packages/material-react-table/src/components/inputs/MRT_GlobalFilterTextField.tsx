@@ -12,6 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField, { type TextFieldProps } from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import { debounce } from '@mui/material/utils';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_FilterOptionMenu } from '../menus/MRT_FilterOptionMenu';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
 import { parseFromValuesOrFunc } from '../../utils/utils';
@@ -37,7 +38,11 @@ export const MRT_GlobalFilterTextField = <TData extends MRT_RowData>({
     refs: { searchInputRef },
     setGlobalFilter,
   } = table;
-  const { globalFilter, showGlobalFilter } = getState();
+  const { globalFilter } = getState();
+  const showGlobalFilter = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showGlobalFilter,
+  );
 
   const textFieldProps = {
     ...parseFromValuesOrFunc(muiSearchTextFieldProps, {

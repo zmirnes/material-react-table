@@ -5,6 +5,7 @@ import {
 } from 'react';
 import Box from '@mui/material/Box';
 import Divider, { type DividerProps } from '@mui/material/Divider';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import {
   type MRT_Header,
   type MRT_RowData,
@@ -25,7 +26,6 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
   ...rest
 }: MRT_TableHeadCellResizeHandleProps<TData>) => {
   const {
-    getState,
     options: { columnResizeDirection },
     refs: {
       isResizingRef,
@@ -37,7 +37,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
     setColumnSizing,
     setColumnSizingInfo,
   } = table;
-  const { density } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const { column } = header;
 
   const mx =

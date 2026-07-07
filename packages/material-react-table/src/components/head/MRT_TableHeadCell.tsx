@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { type Theme, useTheme } from '@mui/material/styles';
 import TableCell, { type TableCellProps } from '@mui/material/TableCell';
 import Tooltip from '@mui/material/Tooltip';
+import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_TableHeadCellColumnActionsButton } from './MRT_TableHeadCellColumnActionsButton';
 import { MRT_TableHeadCellFilterLabel } from './MRT_TableHeadCellFilterLabel';
 import { MRT_TableHeadCellGrabHandle } from './MRT_TableHeadCellGrabHandle';
@@ -57,16 +58,28 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
     setHoveredColumn,
   } = table;
   const [isColumnCellHovered, setIsColumnCellHovered] = useState(false);
-  const {
-    columnSizingInfo,
-    draggingColumn,
-    grouping,
-    hoveredColumn,
-    showColumnFilters,
-  } = getState();
+  const { grouping } = getState();
+  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
+  const showColumnFilters = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.showColumnFilters,
+  );
   const { column } = header;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
+
+  const isResizingThisColumn = useMRT_SliceValue(
+    table._uiStore,
+    (s) => s.columnSizingInfo.isResizingColumn === column.id,
+  );
+  const isDraggingColumn = useMRT_SliceValue(
+    table._dragStore,
+    (s) => s.draggingColumn?.id === column.id,
+  );
+  const isHoveredColumn = useMRT_SliceValue(
+    table._hoverStore,
+    (s) => s.hoveredColumn?.id === column.id,
+  );
 
   const tableCellProps = {
     ...parseFromValuesOrFunc(muiTableHeadCellProps, { column, table }),
@@ -105,15 +118,15 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
 
   const draggingBorders = useMemo(() => {
     const showResizeBorder =
-      columnSizingInfo.isResizingColumn === column.id &&
+      isResizingThisColumn &&
       columnResizeMode === 'onChange' &&
       !header.subHeaders.length;
 
     const borderStyle = showResizeBorder
       ? `2px solid ${draggingBorderColor} !important`
-      : draggingColumn?.id === column.id
+      : isDraggingColumn
         ? `1px dashed ${theme.palette.grey[500]}`
-        : hoveredColumn?.id === column.id
+        : isHoveredColumn
           ? `2px dashed ${draggingBorderColor}`
           : undefined;
 
@@ -129,13 +142,20 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
           borderTop: borderStyle,
         }
       : undefined;
-  }, [draggingColumn, hoveredColumn, columnSizingInfo.isResizingColumn]);
+  }, [isDraggingColumn, isHoveredColumn, isResizingThisColumn]);
 
   const handleDragEnter = (_e: DragEvent) => {
-    if (enableGrouping && hoveredColumn?.id === 'drop-zone') {
+    if (
+      enableGrouping &&
+      table._hoverStore.get().hoveredColumn?.id === 'drop-zone'
+    ) {
       setHoveredColumn(null);
     }
-    if (enableColumnOrdering && draggingColumn && columnDefType !== 'group') {
+    if (
+      enableColumnOrdering &&
+      table._dragStore.get().draggingColumn &&
+      columnDefType !== 'group'
+    ) {
       setHoveredColumn(
         columnDef.enableColumnOrdering !== false ? column : null,
       );
@@ -239,6 +259,8 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
         ...getCommonMRTCellStyles({
           column,
           header,
+          isDraggingColumn,
+          isHoveredColumn,
           table,
           tableCellProps,
           theme,
