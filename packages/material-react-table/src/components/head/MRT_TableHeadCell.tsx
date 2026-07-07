@@ -59,7 +59,6 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
   } = table;
   const [isColumnCellHovered, setIsColumnCellHovered] = useState(false);
   const { grouping } = getState();
-  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const showColumnFilters = useMRT_SliceValue(
     table._uiStore,
     (s) => s.showColumnFilters,

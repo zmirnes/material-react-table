@@ -32,7 +32,6 @@ export const MRT_TableFooterCell = <TData extends MRT_RowData>({
       enableKeyboardShortcuts,
     },
   } = table;
-  const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const { column } = footer;
   const { columnDef } = column;
   const { columnDefType } = columnDef;
