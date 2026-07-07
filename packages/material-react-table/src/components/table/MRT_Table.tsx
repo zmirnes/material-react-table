@@ -29,8 +29,9 @@ export const MRT_Table = <TData extends MRT_RowData>({
       muiTableProps,
       renderCaption,
     },
+    refs: { tableRef },
   } = table;
-  const { columnSizing, columnSizingInfo, columnVisibility } = getState();
+  const { columnSizing, columnVisibility } = getState();
 
   const tableProps = {
     ...parseFromValuesOrFunc(muiTableProps, { table }),
@@ -49,7 +50,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
       colSizes[`--col-${parseCSSVarId(header.column.id)}-size`] = colSize;
     }
     return colSizes;
-  }, [columns, columnSizing, columnSizingInfo, columnVisibility]);
+  }, [columns, columnSizing, columnVisibility]);
 
   const columnVirtualizer = useMRT_ColumnVirtualizer(table);
 
@@ -62,6 +63,17 @@ export const MRT_Table = <TData extends MRT_RowData>({
     <Table
       stickyHeader={enableStickyHeader}
       {...tableProps}
+      ref={(node: HTMLTableElement) => {
+        if (node) {
+          tableRef.current = node;
+          const userRef = tableProps?.ref;
+          if (typeof userRef === 'function') {
+            userRef(node);
+          } else if (userRef) {
+            userRef.current = node;
+          }
+        }
+      }}
       style={{ ...columnSizeVars, ...tableProps?.style }}
       sx={(theme) => ({
         borderCollapse: 'separate',
@@ -76,7 +88,7 @@ export const MRT_Table = <TData extends MRT_RowData>({
     >
       {!!Caption && <caption>{Caption}</caption>}
       {enableTableHead && <MRT_TableHead {...commonTableGroupProps} />}
-      {memoMode === 'table-body' || columnSizingInfo.isResizingColumn ? (
+      {memoMode === 'table-body' ? (
         <Memo_MRT_TableBody {...commonTableGroupProps} />
       ) : (
         <MRT_TableBody {...commonTableGroupProps} />
