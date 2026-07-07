@@ -84,6 +84,9 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   const topToolbarRef = useRef<HTMLDivElement>(null);
   const tableHeadRef = useRef<HTMLTableSectionElement>(null);
   const tableFooterRef = useRef<HTMLTableSectionElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
+  const isResizingRef = useRef<false | string>(false);
+  const resizeIndicatorRef = useRef<HTMLDivElement>(null);
 
   //transform initial state with proper column order
   const initialState: Partial<MRT_TableState<TData>> = useMemo(() => {
@@ -404,13 +407,16 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     bottomToolbarRef,
     editInputRefs,
     filterInputRefs,
+    isResizingRef,
     lastSelectedRowId,
+    resizeIndicatorRef,
     searchInputRef,
     tableContainerRef,
     tableFooterRef,
     tableHeadCellRefs,
     tableHeadRef,
     tablePaperRef,
+    tableRef,
     topToolbarRef,
   };
 

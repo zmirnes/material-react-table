@@ -415,13 +415,16 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
     editInputRefs: RefObject<Record<string, HTMLInputElement> | null>;
     filterInputRefs: RefObject<Record<string, HTMLInputElement> | null>;
     allSelectableRowIdsRef: RefObject<string[]>;
+    isResizingRef: RefObject<false | string>;
     lastSelectedRowId: RefObject<null | string>;
+    resizeIndicatorRef: RefObject<HTMLDivElement | null>;
     searchInputRef: RefObject<HTMLInputElement | null>;
     tableContainerRef: RefObject<HTMLDivElement | null>;
     tableFooterRef: RefObject<HTMLTableSectionElement | null>;
     tableHeadCellRefs: RefObject<Record<string, HTMLTableCellElement> | null>;
     tableHeadRef: RefObject<HTMLTableSectionElement | null>;
     tablePaperRef: RefObject<HTMLDivElement | null>;
+    tableRef: RefObject<HTMLTableElement | null>;
     topToolbarRef: RefObject<HTMLDivElement | null>;
   };
   setActionCell: Dispatch<SetStateAction<MRT_Cell<TData> | null>>;

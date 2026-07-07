@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import TableContainer, {
   type TableContainerProps,
 } from '@mui/material/TableContainer';
@@ -27,7 +28,7 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
       enableRowVirtualization,
       muiTableContainerProps,
     },
-    refs: { tableContainerRef },
+    refs: { resizeIndicatorRef, tableContainerRef },
   } = table;
   const {
     actionCell,
@@ -82,6 +83,12 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
         ...(enableRowVirtualization
           ? { contain: 'paint', willChange: 'transform' }
           : null),
+        '&[data-mrt-resizing]': {
+          userSelect: 'none',
+        },
+        '&[data-mrt-resizing] .Mui-TableHeadCell-Content-Actions': {
+          visibility: 'hidden',
+        },
         ...(parseFromValuesOrFunc(tableContainerProps?.sx, theme) as Record<
           string,
           unknown
@@ -89,6 +96,20 @@ export const MRT_TableContainer = <TData extends MRT_RowData>({
       })}
     >
       {loading ? <MRT_TableLoadingOverlay table={table} /> : null}
+      <Box
+        ref={resizeIndicatorRef}
+        sx={{
+          bgcolor: 'primary.main',
+          bottom: 0,
+          display: 'none',
+          left: 0,
+          pointerEvents: 'none',
+          position: 'absolute',
+          top: 0,
+          width: '2px',
+          zIndex: 3,
+        }}
+      />
       <MRT_Table table={table} />
       {(createModalOpen || editModalOpen) && (
         <MRT_EditRowModal open table={table} />

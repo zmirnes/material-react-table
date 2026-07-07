@@ -53,7 +53,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
       mrtTheme: { draggingBorderColor },
       muiTableHeadCellProps,
     },
-    refs: { tableHeadCellRefs },
+    refs: { isResizingRef, tableHeadCellRefs },
     setHoveredColumn,
   } = table;
   const [isColumnCellHovered, setIsColumnCellHovered] = useState(false);
@@ -161,7 +161,7 @@ export const MRT_TableHeadCell = <TData extends MRT_RowData>({
 
   // Toggle the column cell hover state, but only when not actively resizing a column
   const handleColumnCellHoverToggle = (isHovered: boolean) => {
-    if (!columnSizingInfo.isResizingColumn) {
+    if (!isResizingRef.current) {
       setIsColumnCellHovered(isHovered);
     }
   };
