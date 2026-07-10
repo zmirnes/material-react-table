@@ -8,8 +8,19 @@ import {
 
 type MRT_TableCrudHandlerContext<TData extends MRT_RowData> = {
   getRowId?: MRT_GetRowId<TData>;
+  pageSize?: number;
   setRowsState: Dispatch<SetStateAction<TData[]>>;
 };
+
+// Keeps the local rows array from growing past the current page size. New rows are
+// inserted at the front, so overflow is trimmed off the tail (the oldest existing
+// rows), since the local state is expected to be reconciled with the source of
+// truth on the next fetch.
+const capRowsToPageSize = <TData extends MRT_RowData>(
+  rows: TData[],
+  pageSize?: number,
+): TData[] =>
+  pageSize && rows.length > pageSize ? rows.slice(0, pageSize) : rows;
 
 const normalizeRowInput = <TData extends MRT_RowData>(
   rowInput: MRT_RowManipulationInput<TData>,
@@ -34,6 +45,7 @@ const getResolvedRowId = <TData extends MRT_RowData>(
 };
 
 export const handleAddRow = <TData extends MRT_RowData>({
+  pageSize,
   setRowsState,
 }: MRT_TableCrudHandlerContext<TData>) => {
   return (rowInput: MRT_RowManipulationInput<TData>): void => {
@@ -50,7 +62,9 @@ export const handleAddRow = <TData extends MRT_RowData>({
       );
     }
 
-    setRowsState((previousRows) => [...previousRows, ...rowsToAdd]);
+    setRowsState((previousRows) =>
+      capRowsToPageSize([...rowsToAdd, ...previousRows], pageSize),
+    );
   };
 };
 
@@ -92,6 +106,7 @@ export const handleSetRows = <TData extends MRT_RowData>({
 
 export const handleUpsertRow = <TData extends MRT_RowData>({
   getRowId,
+  pageSize,
   setRowsState,
 }: MRT_TableCrudHandlerContext<TData>) => {
   return (rowInput: MRT_RowManipulationInput<TData>): void => {
@@ -110,23 +125,22 @@ export const handleUpsertRow = <TData extends MRT_RowData>({
         }
       });
 
+      const rowsToInsert: TData[] = [];
+
       rowsToUpsert.forEach((row, index) => {
         const rowId = getResolvedRowId(row, index, undefined, getRowId);
         const existingIndex =
           rowId !== undefined ? indexByRowId.get(rowId) : undefined;
 
         if (existingIndex === undefined) {
-          if (rowId !== undefined) {
-            indexByRowId.set(rowId, nextRows.length);
-          }
-          nextRows.push(row);
+          rowsToInsert.push(row);
           return;
         }
 
         nextRows[existingIndex] = row;
       });
 
-      return nextRows;
+      return capRowsToPageSize([...rowsToInsert, ...nextRows], pageSize);
     });
   };
 };

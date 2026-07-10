@@ -713,6 +713,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.addRow = handleAddRow({
     setRowsState,
     getRowId: resolveRowId,
+    pageSize: statefulTableOptions.state.pagination.pageSize,
   });
   table.updateRow = handleUpdateRow({
     setRowsState,
@@ -725,6 +726,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   table.upsertRow = handleUpsertRow({
     setRowsState,
     getRowId: resolveRowId,
+    pageSize: statefulTableOptions.state.pagination.pageSize,
   });
   table.removeRow = handleRemoveRow({
     setRowsState,

@@ -60,19 +60,18 @@ export const createDeleteAction = <TData extends MRT_RowData>({
   };
 
   // Wraps row context into a zero-argument callback expected by row action UI.
+  // Must return the promise (not fire-and-forget it) so callers like DeleteRowAction
+  // can `await` it and keep the confirmation modal open until delete actually finishes.
   const createRowDeleteExecutor = (context: ActionRowRenderContext<TData>) => {
-    return () => {
-      void handleSingleRowDelete(context);
-    };
+    return () => handleSingleRowDelete(context);
   };
 
   // Wraps toolbar context into a zero-argument callback expected by toolbar action UI.
+  // Same reasoning as createRowDeleteExecutor — the returned promise must propagate.
   const createToolbarDeleteExecutor = (
     context: ActionToolbarRenderContext<TData>,
   ) => {
-    return () => {
-      void handleMultipleRowDelete(context);
-    };
+    return () => handleMultipleRowDelete(context);
   };
 
   // Uses custom row renderer when provided; otherwise renders default delete action UI.

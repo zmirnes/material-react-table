@@ -63,9 +63,14 @@ const DeleteRowAction = <TData extends MRT_RowData>({
 
   const handleConfirmDelete = async () => {
     setDeleting(true);
-    await onDeleteConfirm();
-    setDeleting(false);
-    setOpen(false);
+    try {
+      await onDeleteConfirm();
+      setOpen(false);
+    } catch (error) {
+      console.error('[MRT] Error while deleting row(s):', error);
+    } finally {
+      setDeleting(false);
+    }
   };
   const handleClose = async () => {
     setOpen(false);

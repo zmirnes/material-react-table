@@ -133,9 +133,76 @@ describe('tableCrudFns', () => {
 
     const rowsAfterUpsert = result.current.getRowModel().rows;
     expect(rowsAfterUpsert).toHaveLength(2);
-    expect(rowsAfterUpsert[1].original).toEqual({
+    expect(rowsAfterUpsert[0].original).toEqual({
       id: '2',
       name: 'New Row',
     });
+  });
+
+  it('should add new rows to the front of the list', () => {
+    const initialData: TestData[] = [{ id: '1', name: 'Row 1' }];
+    const { result } = renderHook(() =>
+      useMaterialReactTable<TestData>({
+        columns: [],
+        data: initialData,
+        getRowId: (originalRow) => originalRow.id,
+      }),
+    );
+    const { addRow } = result.current;
+
+    act(() => {
+      addRow({ id: '2', name: 'Row 2' });
+    });
+
+    const rowsAfterAdd = result.current.getRowModel().rows;
+    expect(rowsAfterAdd.map((row) => row.original.id)).toEqual(['2', '1']);
+  });
+
+  it('should drop the oldest row when addRow exceeds the current page size', () => {
+    const initialData: TestData[] = [
+      { id: '1', name: 'Row 1' },
+      { id: '2', name: 'Row 2' },
+    ];
+    const { result } = renderHook(() =>
+      useMaterialReactTable<TestData>({
+        columns: [],
+        data: initialData,
+        getRowId: (originalRow) => originalRow.id,
+        initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
+      }),
+    );
+    const { addRow } = result.current;
+
+    act(() => {
+      addRow({ id: '3', name: 'Row 3' });
+    });
+
+    const rowsAfterAdd = result.current.getRowModel().rows;
+    expect(rowsAfterAdd).toHaveLength(2);
+    expect(rowsAfterAdd.map((row) => row.original.id)).toEqual(['3', '1']);
+  });
+
+  it('should drop the oldest row when upsertRow inserts past the current page size', () => {
+    const initialData: TestData[] = [
+      { id: '1', name: 'Row 1' },
+      { id: '2', name: 'Row 2' },
+    ];
+    const { result } = renderHook(() =>
+      useMaterialReactTable<TestData>({
+        columns: [],
+        data: initialData,
+        getRowId: (originalRow) => originalRow.id,
+        initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
+      }),
+    );
+    const { upsertRow } = result.current;
+
+    act(() => {
+      upsertRow({ id: '3', name: 'Row 3' });
+    });
+
+    const rowsAfterUpsert = result.current.getRowModel().rows;
+    expect(rowsAfterUpsert).toHaveLength(2);
+    expect(rowsAfterUpsert.map((row) => row.original.id)).toEqual(['3', '1']);
   });
 });
