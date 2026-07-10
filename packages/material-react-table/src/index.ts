@@ -1,6 +1,8 @@
 import './tanstack-table';
 
+// types
 export * from './types';
+export * from './types/actions/actions.types';
 
 //helpers
 export * from './utils/cell.utils';
@@ -8,6 +10,9 @@ export * from './utils/column.utils';
 export * from './utils/displayColumn.utils';
 export * from './utils/row.utils';
 export * from './utils/tanstack.helpers';
+export * from './utils/actions/createDeleteAction';
+export * from './utils/actions/createEditAction';
+export * from './utils/actions/createExportAction';
 
 //fns
 export * from './fns/aggregationFns';
