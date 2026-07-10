@@ -17,6 +17,9 @@ export * from './fns/aggregationFns';
 export * from './fns/filterFns';
 export * from './fns/sortingFns';
 
+//action types
+export * from './types/actions/actions.types';
+
 //hooks
 export * from './hooks/useMaterialReactTable';
 export * from './hooks/useMRT_ColumnVirtualizer';
