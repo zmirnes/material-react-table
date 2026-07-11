@@ -1,3 +1,4 @@
+import { type MouseEvent } from 'react';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import IconButton from '@mui/material/IconButton';
 import { type SxProps } from '@mui/material/styles';
@@ -11,12 +12,19 @@ export default function MRT_DeleteRowButton({
   const iconButtonStyle: SxProps = {
     p: 0,
   };
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    // Prevent bubbling to muiTableBodyRowProps onClick (row click handlers)
+    event.stopPropagation();
+    onClick();
+  };
+
   return (
     <IconButton
       disableRipple
       color="error"
       sx={iconButtonStyle}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <DeleteOutlineIcon />
     </IconButton>

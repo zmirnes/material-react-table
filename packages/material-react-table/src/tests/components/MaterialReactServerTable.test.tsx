@@ -1,11 +1,14 @@
+import { createRef } from 'react';
+import { MaterialReactServerTable } from '../../components/MaterialReactServerTable';
+import { type MaterialReactServerTableHandle } from '../../components/MaterialReactServerTableInstance';
 import {
   DEFAULT_TEST_COLUMNS,
   DEFAULT_TEST_DATA,
   type MockRowData,
 } from '../data/mock-data';
 import { renderServerTable } from '../utils/renderServerTable';
-import { cleanup, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('MaterialReactServerTable', () => {
   describe('loading skeleton', () => {
@@ -52,6 +55,58 @@ describe('MaterialReactServerTable', () => {
     it('should render the error component when no config is loaded', async () => {
       const error = await screen.findByTestId('server-table-error');
       expect(error).toBeInTheDocument();
+    });
+  });
+
+  describe('manual refetch', () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it('should re-run loadData when refetch() is called via the imperative handle, without changing pagination/sorting/filters', async () => {
+      const ref = createRef<MaterialReactServerTableHandle<MockRowData>>();
+      const loadData = vi.fn().mockResolvedValue({
+        data: DEFAULT_TEST_DATA,
+        rowCount: DEFAULT_TEST_DATA.length,
+      });
+
+      render(
+        <MaterialReactServerTable<MockRowData>
+          ref={ref}
+          loadConfig={async () => ({ columns: DEFAULT_TEST_COLUMNS })}
+          loadData={loadData}
+          saveState={async () => {}}
+        />,
+      );
+
+      await waitFor(() => expect(loadData).toHaveBeenCalledTimes(1));
+
+      ref.current!.refetch();
+
+      await waitFor(() => expect(loadData).toHaveBeenCalledTimes(2));
+    });
+
+    it('should also expose refetch() directly on the table instance', async () => {
+      const ref = createRef<MaterialReactServerTableHandle<MockRowData>>();
+      const loadData = vi.fn().mockResolvedValue({
+        data: DEFAULT_TEST_DATA,
+        rowCount: DEFAULT_TEST_DATA.length,
+      });
+
+      render(
+        <MaterialReactServerTable<MockRowData>
+          ref={ref}
+          loadConfig={async () => ({ columns: DEFAULT_TEST_COLUMNS })}
+          loadData={loadData}
+          saveState={async () => {}}
+        />,
+      );
+
+      await waitFor(() => expect(loadData).toHaveBeenCalledTimes(1));
+
+      ref.current!.table.refetch!();
+
+      await waitFor(() => expect(loadData).toHaveBeenCalledTimes(2));
     });
   });
 });

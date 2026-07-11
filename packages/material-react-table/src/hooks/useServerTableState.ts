@@ -72,6 +72,10 @@ export const useServerTableState = <TData extends MRT_RowData>({
     MRT_ActiveExportsState | undefined
   >(initialState?.activeExports);
 
+  // Counter that increments on every manual refetch() call, without changing any other state
+  const [refetchIndex, setRefetchIndex] = useState(0);
+  const refetch = () => setRefetchIndex((prev) => prev + 1);
+
   // --- Debounced save ---
   // saveState is optional — if not provided, do nothing
   const debouncedSave = useDebouncedCallback(
@@ -206,6 +210,9 @@ export const useServerTableState = <TData extends MRT_RowData>({
       pagination,
       sorting,
       columnVisibilityShowTrigger,
+      refetchIndex,
     },
+
+    refetch,
   };
 };

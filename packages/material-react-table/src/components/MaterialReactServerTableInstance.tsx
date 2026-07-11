@@ -1,4 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  type ForwardedRef,
+  type ReactElement,
+  type Ref,
+} from 'react';
 import { RowActionsCell } from './actions/RowActionsCell';
 import { MaterialReactTable } from './MaterialReactTable';
 import { useMaterialReactTable } from '../hooks/useMaterialReactTable';
@@ -88,29 +98,39 @@ const buildInitialExportState = (
   );
 };
 
-export const MaterialReactServerTableInstance = <
+// Imperative handle exposed via ref — lets consumers manually refetch data
+// (e.g. after an external mutation) without going through table state.
+export type MaterialReactServerTableHandle<TData extends MRT_RowData> = {
+  refetch: () => void;
+  table: MRT_TableInstance<TData>;
+};
+
+const MaterialReactServerTableInstanceComponent = <
   TData extends MRT_RowData & { id: string },
->({
-  config,
-  loadData,
-  saveState,
-  getAllSelectableRowIds,
-  getTotalRows,
-  onSaveFilters,
-  onDeleteSavedFilter,
-  initialSavedFilters,
-  loadExport,
-  exportPermissions,
-  enableNewEntryButton,
-  actions,
-  deleteRowsFn,
-  editRowFn,
-  enableResetState,
-  resetState,
-  extendColumns,
-  // Extra MRT_TableOptions props (e.g. formConfig) passed directly through to useMaterialReactTable
-  ...tableOptionsOverrides
-}: MaterialReactServerTableInstanceProps<TData>) => {
+>(
+  {
+    config,
+    loadData,
+    saveState,
+    getAllSelectableRowIds,
+    getTotalRows,
+    onSaveFilters,
+    onDeleteSavedFilter,
+    initialSavedFilters,
+    loadExport,
+    exportPermissions,
+    enableNewEntryButton,
+    actions,
+    deleteRowsFn,
+    editRowFn,
+    enableResetState,
+    resetState,
+    extendColumns,
+    // Extra MRT_TableOptions props (e.g. formConfig) passed directly through to useMaterialReactTable
+    ...tableOptionsOverrides
+  }: MaterialReactServerTableInstanceProps<TData>,
+  ref: ForwardedRef<MaterialReactServerTableHandle<TData>>,
+) => {
   const [pageCount, setPageCount] = useState<number | undefined>(undefined);
   const [rowCount, setRowCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -135,16 +155,17 @@ export const MaterialReactServerTableInstance = <
     return Object.fromEntries(allowedEntries);
   }, [config.availableExports, exportPermissions]);
 
-  const { tableState, handlers, fetchTrigger } = useServerTableState<TData>({
-    initialState: {
-      ...config.initialState,
-      activeExports: buildInitialExportState(
-        allowedExports,
-        config.initialState?.activeExports,
-      ),
-    },
-    saveState,
-  });
+  const { tableState, handlers, fetchTrigger, refetch } =
+    useServerTableState<TData>({
+      initialState: {
+        ...config.initialState,
+        activeExports: buildInitialExportState(
+          allowedExports,
+          config.initialState?.activeExports,
+        ),
+      },
+      saveState,
+    });
 
   const columns = useMemo(
     () => createColumnDefs(config.columns, extendColumns),
@@ -200,6 +221,10 @@ export const MaterialReactServerTableInstance = <
     ...handlers,
   });
 
+  // Lets any code that already has `table` (row actions, deleteRowsFn/editRowFn,
+  // custom cell renderers, etc.) trigger a manual reload without needing a ref.
+  table.refetch = refetch;
+
   const fetchData = useCallback(
     async (tableInstance: MRT_TableInstance<TData>) => {
       setIsLoading(true);
@@ -234,7 +259,18 @@ export const MaterialReactServerTableInstance = <
     fetchTrigger.pagination,
     fetchTrigger.sorting,
     fetchTrigger.columnVisibilityShowTrigger,
+    fetchTrigger.refetchIndex,
   ]);
+
+  useImperativeHandle(ref, () => ({ refetch, table }), [refetch, table]);
 
   return <MaterialReactTable table={table} />;
 };
+
+export const MaterialReactServerTableInstance = forwardRef(
+  MaterialReactServerTableInstanceComponent,
+) as <TData extends MRT_RowData & { id: string }>(
+  props: MaterialReactServerTableInstanceProps<TData> & {
+    ref?: Ref<MaterialReactServerTableHandle<TData>>;
+  },
+) => ReactElement;

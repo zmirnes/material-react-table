@@ -16,4 +16,21 @@ describe('EditRowAction', () => {
     await user.click(editButton);
     expect(mockOnEditButtonClick).toHaveBeenCalled();
   });
+
+  it('should not bubble the click to an ancestor onClick (e.g. row onClick)', async () => {
+    const user = userEvent.setup();
+    const mockOnEditButtonClick = vi.fn();
+    const mockRowClick = vi.fn();
+
+    render(
+      <div onClick={mockRowClick}>
+        <EditRowAction onEditButtonClick={mockOnEditButtonClick} />
+      </div>,
+    );
+
+    await user.click(screen.getByRole('button'));
+
+    expect(mockOnEditButtonClick).toHaveBeenCalled();
+    expect(mockRowClick).not.toHaveBeenCalled();
+  });
 });

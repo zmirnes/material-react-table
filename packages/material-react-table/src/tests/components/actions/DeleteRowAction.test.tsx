@@ -35,4 +35,24 @@ describe('DeleteRowAction', () => {
 
     expect(screen.getByRole('alertdialog')).toBeInTheDocument();
   });
+
+  it('should not bubble clicks to an ancestor onClick (e.g. row onClick) — neither the delete icon nor the dialog buttons', async () => {
+    const user = userEvent.setup();
+    const mockOnDeleteConfirm = vi.fn();
+    const mockRowClick = vi.fn();
+
+    render(
+      <div onClick={mockRowClick}>
+        <DeleteRowAction onDeleteConfirm={mockOnDeleteConfirm} table={table} />
+      </div>,
+    );
+
+    await user.click(screen.getByRole('button'));
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    expect(mockRowClick).not.toHaveBeenCalled();
+
+    await user.click(screen.getByText('Delete'));
+    expect(mockOnDeleteConfirm).toHaveBeenCalled();
+    expect(mockRowClick).not.toHaveBeenCalled();
+  });
 });

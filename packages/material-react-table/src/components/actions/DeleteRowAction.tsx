@@ -89,6 +89,10 @@ const DeleteRowAction = <TData extends MRT_RowData>({
           flexDirection="column"
           height="min-content"
           sx={contentContainerSx}
+          // Dialog renders via a portal, but React still bubbles synthetic events up
+          // through the component tree — stop here so clicks inside the confirmation
+          // dialog don't reach muiTableBodyRowProps onClick (row click handlers).
+          onClick={(event) => event.stopPropagation()}
         >
           <Stack
             flexDirection="row"

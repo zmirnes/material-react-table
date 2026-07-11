@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useState,
+  type ForwardedRef,
+  type ReactElement,
+  type Ref,
+} from 'react';
 import { MaterialReactServerTableError } from './MaterialReactServerTableError';
 import {
   MaterialReactServerTableInstance,
+  type MaterialReactServerTableHandle,
   type MaterialReactServerTableInstanceProps,
 } from './MaterialReactServerTableInstance';
 import { MaterialReactServerTableSkeleton } from './MaterialReactServerTableSkeleton';
@@ -18,14 +26,17 @@ export type MaterialReactServerTableProps<TData extends MRT_RowData> = Omit<
   loadConfig: () => Promise<MRT_TableConfig<TData>>;
 };
 
-export const MaterialReactServerTable = <
+const MaterialReactServerTableComponent = <
   TData extends MRT_RowData & { id: string },
->({
-  loadConfig,
-  saveState,
-  localization,
-  ...instanceProps
-}: MaterialReactServerTableProps<TData>) => {
+>(
+  {
+    loadConfig,
+    saveState,
+    localization,
+    ...instanceProps
+  }: MaterialReactServerTableProps<TData>,
+  ref: ForwardedRef<MaterialReactServerTableHandle<TData>>,
+) => {
   const mergedLocalization = { ...MRT_Localization_HR, ...localization };
   const [configLoading, setConfigLoading] = useState(true);
   const [config, setConfig] = useState<MRT_TableConfig<TData> | null>(null);
@@ -69,9 +80,18 @@ export const MaterialReactServerTable = <
 
   return (
     <MaterialReactServerTableInstance<TData>
+      ref={ref}
       config={config}
       saveState={saveState}
       {...instanceProps}
     />
   );
 };
+
+export const MaterialReactServerTable = forwardRef(
+  MaterialReactServerTableComponent,
+) as <TData extends MRT_RowData & { id: string }>(
+  props: MaterialReactServerTableProps<TData> & {
+    ref?: Ref<MaterialReactServerTableHandle<TData>>;
+  },
+) => ReactElement;

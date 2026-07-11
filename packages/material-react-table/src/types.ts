@@ -482,6 +482,10 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   setRows: (rows: MRT_RowManipulationInput<TData>) => void;
   upsertRow: (rows: MRT_RowManipulationInput<TData>) => void;
   removeRow: (rows: string | string[]) => void;
+  // Manually re-runs loadData with the current table state. Only populated when the
+  // table is rendered via MaterialReactServerTableInstance / MaterialReactServerTable —
+  // undefined on plain useMaterialReactTable tables that don't fetch their own data.
+  refetch?: () => void;
 };
 
 export type MRT_DefinedTableOptions<TData extends MRT_RowData> = Omit<
@@ -1669,7 +1673,11 @@ export type UseServerTableStateReturn = {
     sorting: MRT_SortingState;
     // Increments only when a column transitions from hidden to visible (false → true)
     columnVisibilityShowTrigger: number;
+    // Increments on every manual refetch() call
+    refetchIndex: number;
   };
+  // Manually re-runs loadData with the current table state, without changing any state
+  refetch: () => void;
 };
 
 export type ColumnType =
