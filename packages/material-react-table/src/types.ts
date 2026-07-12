@@ -1413,6 +1413,12 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     | BoxProps;
   // Styling overrides for MRT_NewEntryModal.
   muiNewEntryModalProps?: MRT_NewEntryModalOverrides;
+  // Props forwarded to the "New Entry" toolbar Button — color, sx, disabled, children, onClick, etc.
+  // When onClick is provided, it fully replaces the default handler that opens MRT_NewEntryModal.
+  // Call table.setNewEntryModal({ open: true }) from within it to still open the modal.
+  newEntryButtonProps?:
+    | ((props: { table: MRT_TableInstance<TData> }) => ButtonProps)
+    | ButtonProps;
   // Table-level form configuration — sections, field overrides, callbacks, and additional fields.
   formConfig?: MRT_FormConfig<TData>;
   onActionCellChange?: OnChangeFn<MRT_Cell<TData> | null>;

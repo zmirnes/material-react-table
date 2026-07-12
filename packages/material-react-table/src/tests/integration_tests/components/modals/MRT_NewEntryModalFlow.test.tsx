@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { MaterialReactTable } from '../../../../components/MaterialReactTable';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // A minimal MUI theme required because MRT components call useTheme() internally.
 const DEFAULT_THEME = createTheme();
@@ -156,6 +156,59 @@ describe('MRT_NewEntryModal — integration flow', () => {
           screen.getAllByText(NEW_ENTRY_LABEL).length,
         ).toBeGreaterThanOrEqual(2),
       );
+    });
+  });
+
+  describe('overriding the click behavior via newEntryButtonProps', () => {
+    it('replaces the default handler — modal does not open when onClick is provided', async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+
+      renderWithTheme(
+        <MaterialReactTable
+          columns={TEST_COLUMNS}
+          data={TEST_DATA}
+          enableNewEntryButton
+          localization={{ close: CLOSE_LABEL }}
+          // Consumer-supplied onClick fully replaces the button's default
+          // handler that calls table.setNewEntryModal({ open: true }).
+          newEntryButtonProps={{ onClick }}
+        />,
+      );
+
+      await user.click(screen.getByRole('button', { name: NEW_ENTRY_LABEL }));
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+      // Modal never opened — its Typography h6 heading never mounts.
+      // (Using queryByRole instead of a getAllByText count, which is fragile
+      // against unrelated async state updates elsewhere in the tree.)
+      expect(
+        screen.queryByRole('heading', { name: NEW_ENTRY_LABEL }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('still opens the modal when the custom onClick calls setNewEntryModal itself', async () => {
+      const user = userEvent.setup();
+
+      renderWithTheme(
+        <MaterialReactTable
+          columns={TEST_COLUMNS}
+          data={TEST_DATA}
+          enableNewEntryButton
+          localization={{ close: CLOSE_LABEL }}
+          newEntryButtonProps={({ table }) => ({
+            onClick: () => table.setNewEntryModal({ open: true }),
+          })}
+        />,
+      );
+
+      await user.click(screen.getByRole('button', { name: NEW_ENTRY_LABEL }));
+
+      await waitFor(() => {
+        expect(
+          screen.getAllByText(NEW_ENTRY_LABEL).length,
+        ).toBeGreaterThanOrEqual(2);
+      });
     });
   });
 });
