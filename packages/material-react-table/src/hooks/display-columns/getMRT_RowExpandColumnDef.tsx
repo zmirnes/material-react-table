@@ -82,7 +82,6 @@ export const getMRT_RowExpandColumnDef = <TData extends MRT_RowData>(
             gap={TREE_REORDER_ICON_SPACING}
             onMouseEnter={cellLogic.handleRowHoverEnter}
             onMouseLeave={cellLogic.handleRowHoverLeave}
-            width="100%"
           >
             <MRT_ExpandButton {...expandButtonProps} />
             {column.columnDef.GroupedCell

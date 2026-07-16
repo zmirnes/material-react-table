@@ -1,3 +1,4 @@
+import { type MouseEvent } from 'react';
 import VerticalAlignTopIcon from '@mui/icons-material/VerticalAlignTop';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -11,10 +12,15 @@ interface MRT_MoveToTopActionProps {
 }
 
 export const MRT_MoveToTopAction = ({ onClick }: MRT_MoveToTopActionProps) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onClick();
+  };
+
   return (
     <Tooltip title={MOVE_TO_TOP_TOOLTIP} disableInteractive>
       <IconButton
-        onClick={onClick}
+        onClick={handleClick}
         size={ACTION_ICON_SIZE}
         sx={{ height: ACTION_BUTTON_HEIGHT }}
       >

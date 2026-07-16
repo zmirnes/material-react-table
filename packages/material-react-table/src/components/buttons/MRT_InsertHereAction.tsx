@@ -1,3 +1,4 @@
+import { type MouseEvent } from 'react';
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -12,9 +13,14 @@ interface MRT_InsertHereActionProps {
 export const MRT_InsertHereAction = ({
   onClick,
 }: MRT_InsertHereActionProps) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onClick();
+  };
+
   return (
     <Tooltip title={INSERT_HERE_TOOLTIP} disableInteractive>
-      <IconButton onClick={onClick} size={ACTION_ICON_SIZE}>
+      <IconButton onClick={handleClick} size={ACTION_ICON_SIZE}>
         <SubdirectoryArrowLeftIcon color="warning" />
       </IconButton>
     </Tooltip>

@@ -1,3 +1,4 @@
+import { type MouseEvent } from 'react';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
@@ -39,6 +40,12 @@ export const MRT_ExpandAllButton = <TData extends MRT_RowData>({
 
   const isAllRowsExpanded = getIsAllRowsExpanded();
 
+  const handleToggleExpandAll = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    toggleAllRowsExpanded(!isAllRowsExpanded);
+    iconButtonProps?.onClick?.(event);
+  };
+
   return (
     <Tooltip
       {...getCommonTooltipProps()}
@@ -53,8 +60,8 @@ export const MRT_ExpandAllButton = <TData extends MRT_RowData>({
           disabled={
             isLoading || (!renderDetailPanel && !getCanSomeRowsExpand())
           }
-          onClick={() => toggleAllRowsExpanded(!isAllRowsExpanded)}
           {...iconButtonProps}
+          onClick={handleToggleExpandAll}
           sx={(theme) => ({
             height: density === 'compact' ? '1.75rem' : '2.25rem',
             mt: density !== 'compact' ? '-0.25rem' : undefined,
