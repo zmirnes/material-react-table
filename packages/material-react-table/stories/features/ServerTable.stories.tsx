@@ -771,8 +771,9 @@ export const WithNewEntryFormConfig = () => (
           rules: { required: 'Polje je obavezno' },
         },
       },
-      onSave: ({ form, mode }) => {
-        alert(`[${mode}] ${JSON.stringify(form.getValues(), null, 2)}`);
+      onSave: async ({ form }) => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        alert(form);
       },
     }}
   />

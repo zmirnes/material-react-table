@@ -17,6 +17,7 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
 }: MRT_NewEntryFormActionsProps<TData>) => {
   const methods = useFormContext();
   const { handleCancel, handleSave } = useMRT_NewEntryFormActions();
+  const { isSubmitting } = methods.formState;
 
   const {
     options: { formConfig, localization, muiNewEntryModalProps },
@@ -46,7 +47,7 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
           handleAction: handleSave,
         })
       ) : formConfig?.onSave ? (
-        <Button type="submit" variant="contained">
+        <Button loading={isSubmitting} type="submit" variant="contained">
           {localization.save}
         </Button>
       ) : null}
