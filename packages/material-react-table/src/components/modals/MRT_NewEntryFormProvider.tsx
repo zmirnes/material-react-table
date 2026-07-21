@@ -56,7 +56,17 @@ export const MRT_NewEntryFormProvider = <TData extends MRT_RowData>({
     <MRT_NewEntryFormActionsContext.Provider
       value={{ handleCancel, handleSave }}
     >
-      <RHF_FormProvider methods={methods} onSubmit={handleSave}>
+      <RHF_FormProvider
+        methods={methods}
+        onSubmit={handleSave}
+        style={{
+          display: 'flex',
+          flex: '1 1 auto',
+          flexDirection: 'column',
+          minHeight: 0,
+          overflow: 'hidden',
+        }}
+      >
         {children}
       </RHF_FormProvider>
     </MRT_NewEntryFormActionsContext.Provider>

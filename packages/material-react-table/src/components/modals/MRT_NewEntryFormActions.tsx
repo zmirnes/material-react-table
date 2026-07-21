@@ -38,7 +38,7 @@ export const MRT_NewEntryFormActions = <TData extends MRT_RowData>({
       direction="row"
       justifyContent="flex-end"
       {...footerProps}
-      sx={{ gap: 1, pt: 1, px: 2, ...footerSx }}
+      sx={{ flexShrink: 0, gap: 1, pt: 1, px: 2, ...footerSx }}
     >
       {formConfig?.renderSaveButton ? (
         formConfig.renderSaveButton({
