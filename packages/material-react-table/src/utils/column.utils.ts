@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { type Row } from '@tanstack/react-table';
+import { type MRT_Features } from '../mrtTableFeatures';
 import {
   type DropdownOption,
   type MRT_Column,
@@ -62,17 +63,48 @@ export const prepareColumns = <TData extends MRT_RowData>({
         tableOptions,
       });
     } else if (columnDef.columnDefType === 'data') {
-      //assign aggregationFns if multiple aggregationFns are provided
-      if (Array.isArray(columnDef.aggregationFn)) {
-        const aggFns = columnDef.aggregationFn as string[];
-        columnDef.aggregationFn = (
-          columnId: string,
-          leafRows: Row<TData>[],
-          childRows: Row<TData>[],
-        ) =>
-          aggFns.map((fn) =>
-            aggregationFns[fn]?.(columnId, leafRows, childRows),
-          );
+      //resolve aggregationFn(s) into TanStack v9's context-based AggregationFnDef
+      //shape ({ aggregate, merge? }) — MRT's own column defs still accept a plain
+      //(columnId, leafRows, childRows) => any callable, or the name of one
+      //registered in the aggregationFns table option, or an array of either for
+      //multiple aggregations on one column (MRT's own convention, returned as an
+      //array of results — not TanStack's native keyed-multiple-aggregation shape).
+      if (columnDef.aggregationFn != null) {
+        type AggContext = {
+          columnId: string;
+          rows: Row<MRT_Features, TData>[];
+          subRows?: Row<MRT_Features, TData>[];
+        };
+        type ResolvedAggregationFn = { aggregate: (context: AggContext) => unknown };
+        const resolveAggregationFn = (
+          ref: unknown,
+        ): ResolvedAggregationFn | undefined => {
+          const fn =
+            typeof ref === 'string' ? aggregationFns[ref] : (ref as unknown);
+          if (!fn) return undefined;
+          return typeof fn === 'function'
+            ? {
+                aggregate: (context: AggContext) =>
+                  (
+                    fn as (
+                      columnId: string,
+                      leafRows: Row<MRT_Features, TData>[],
+                      childRows: Row<MRT_Features, TData>[],
+                    ) => unknown
+                  )(context.columnId, context.rows, context.subRows ?? context.rows),
+              }
+            : (fn as ResolvedAggregationFn);
+        };
+        const aggregationFnRefs = columnDef.aggregationFn;
+        // @ts-expect-error
+        columnDef.aggregationFn = Array.isArray(aggregationFnRefs)
+          ? {
+              aggregate: (context: AggContext) =>
+                aggregationFnRefs.map((ref) =>
+                  resolveAggregationFn(ref)?.aggregate(context),
+                ),
+            }
+          : resolveAggregationFn(aggregationFnRefs);
       }
 
       //assign filterFns
@@ -84,9 +116,9 @@ export const prepareColumns = <TData extends MRT_RowData>({
       }
 
       //assign sortingFns
-      if (Object.keys(sortingFns).includes(columnDef.sortingFn as string)) {
+      if (Object.keys(sortingFns).includes(columnDef.sortFn as string)) {
         // @ts-expect-error
-        columnDef.sortingFn = sortingFns[columnDef.sortingFn];
+        columnDef.sortFn = sortingFns[columnDef.sortFn];
       }
     } else if (columnDef.columnDefType === 'display') {
       columnDef = {

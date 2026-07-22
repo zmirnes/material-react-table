@@ -57,7 +57,7 @@ export const useServerTableState = <TData extends MRT_RowData>({
     initialState?.columnOrder ?? null,
   );
   const [columnPinning, setColumnPinning] = useState<MRT_ColumnPinningState>(
-    initialState?.columnPinning ?? { left: [], right: [] },
+    initialState?.columnPinning ?? { start: [], end: [] },
   );
   const [density, setDensity] = useState<MRT_DensityState>(
     initialState?.density ?? 'compact',

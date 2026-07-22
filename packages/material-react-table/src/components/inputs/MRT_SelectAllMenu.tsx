@@ -83,7 +83,7 @@ export const MRT_SelectAllMenu = <TData extends MRT_RowData>({
         const ids = await getAllSelectableRowIds({ table });
         allSelectableRowIdsRef.current = ids;
 
-        const newSelection: Record<string, boolean> = {};
+        const newSelection: Record<string, true> = {};
         ids.forEach((id) => {
           newSelection[id] = true;
         });

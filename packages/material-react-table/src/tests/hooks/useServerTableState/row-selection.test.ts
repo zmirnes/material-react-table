@@ -53,7 +53,7 @@ describe('useServerTableState — onRowSelectionChange', () => {
     expect(result.current.tableState.rowSelection).toEqual(multiRowSelection);
   });
 
-  it('should deselect a row by setting its value to false', () => {
+  it('should deselect a row by removing it from the selection', () => {
     const { result } = renderHook(() =>
       useServerTableState<TestRowData>({
         initialState: { rowSelection: { '1': true, '2': true } },
@@ -61,12 +61,11 @@ describe('useServerTableState — onRowSelectionChange', () => {
     );
 
     act(() => {
-      result.current.handlers.onRowSelectionChange({ '1': true, '2': false });
+      result.current.handlers.onRowSelectionChange({ '1': true });
     });
 
     expect(result.current.tableState.rowSelection).toEqual({
       '1': true,
-      '2': false,
     });
   });
 

@@ -7,14 +7,13 @@ import {
 import type { RegisterOptions, UseFormReturn } from 'react-hook-form';
 import {
   type AccessorFn,
-  type AggregationFn,
+  type AggregationFnDef,
   type Cell,
   type Column,
   type ColumnDef,
   type ColumnFiltersState,
   type ColumnOrderState,
   type ColumnPinningState,
-  type ColumnSizingInfoState,
   type ColumnSizingState,
   type DeepKeys,
   type DeepValue,
@@ -27,14 +26,16 @@ import {
   type PaginationState,
   type Row,
   type RowSelectionState,
-  type SortingFn,
+  type SortFn,
   type SortingState,
   type Table,
   type TableOptions,
   type TableState,
+  type ColumnVisibilityState as VisibilityState,
   type Updater,
-  type VisibilityState,
+  type columnResizingState as MRT_TanStackColumnResizingState,
 } from '@tanstack/react-table';
+import { type MRT_Features } from './mrtTableFeatures';
 import {
   type VirtualItem,
   type Virtualizer,
@@ -120,7 +121,7 @@ export type MRT_RowData = Record<string, unknown>;
 export type MRT_ColumnFiltersState = ColumnFiltersState;
 export type MRT_ColumnOrderState = ColumnOrderState;
 export type MRT_ColumnPinningState = ColumnPinningState;
-export type MRT_ColumnSizingInfoState = ColumnSizingInfoState;
+export type MRT_ColumnSizingInfoState = MRT_TanStackColumnResizingState;
 export type MRT_ColumnSizingState = ColumnSizingState;
 export type MRT_ExpandedState = ExpandedState;
 export type MRT_GroupingState = GroupingState;
@@ -364,7 +365,7 @@ export type MRT_RowManipulationInput<TData extends MRT_RowData> =
   | TData[];
 
 export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
-  Table<TData>,
+  Table<MRT_Features, TData>,
   | 'getAllColumns'
   | 'getAllFlatColumns'
   | 'getAllLeafColumns'
@@ -373,17 +374,17 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   | 'getCenterRows'
   | 'getColumn'
   | 'getExpandedRowModel'
+  | 'getEndLeafColumns'
   | 'getFlatHeaders'
   | 'getFooterGroups'
   | 'getHeaderGroups'
   | 'getLeafHeaders'
-  | 'getLeftLeafColumns'
-  | 'getPaginationRowModel'
+  | 'getPaginatedRowModel'
   | 'getPreFilteredRowModel'
-  | 'getPrePaginationRowModel'
-  | 'getRightLeafColumns'
+  | 'getPrePaginatedRowModel'
   | 'getRowModel'
   | 'getSelectedRowModel'
+  | 'getStartLeafColumns'
   | 'getState'
   | 'getTopRows'
   | 'options'
@@ -402,13 +403,18 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
     density: MRT_DensityState;
     editingCell: MRT_Cell<TData> | null;
     editingRow: MRT_Row<TData> | null;
+    filters: MRT_FiltersState;
+    isLoading: boolean;
+    isSaving: boolean;
     newEntryModal: MRT_NewEntryModalState;
     rowReorderingSelection: MRT_RowReorderingSelectionState;
     savedFilters: MRT_SavedFilters;
     showAlertBanner: boolean;
     showColumnFilters: boolean;
     showGlobalFilter: boolean;
+    showLoadingOverlay: boolean;
     showProgressBars: boolean;
+    showSkeletons: boolean;
     showToolbarDropZone: boolean;
   }>;
   getAllColumns: () => MRT_Column<TData>[];
@@ -418,18 +424,18 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
   getCenterLeafColumns: () => MRT_Column<TData>[];
   getCenterRows: () => MRT_Row<TData>[];
   getColumn: (columnId: string) => MRT_Column<TData>;
+  getEndLeafColumns: () => MRT_Column<TData>[];
   getExpandedRowModel: () => MRT_RowModel<TData>;
   getFlatHeaders: () => MRT_Header<TData>[];
   getFooterGroups: () => MRT_HeaderGroup<TData>[];
   getHeaderGroups: () => MRT_HeaderGroup<TData>[];
   getLeafHeaders: () => MRT_Header<TData>[];
-  getLeftLeafColumns: () => MRT_Column<TData>[];
-  getPaginationRowModel: () => MRT_RowModel<TData>;
+  getPaginatedRowModel: () => MRT_RowModel<TData>;
   getPreFilteredRowModel: () => MRT_RowModel<TData>;
-  getPrePaginationRowModel: () => MRT_RowModel<TData>;
-  getRightLeafColumns: () => MRT_Column<TData>[];
+  getPrePaginatedRowModel: () => MRT_RowModel<TData>;
   getRowModel: () => MRT_RowModel<TData>;
   getSelectedRowModel: () => MRT_RowModel<TData>;
+  getStartLeafColumns: () => MRT_Column<TData>[];
   getState: () => MRT_TableState<TData>;
   getTopRows: () => MRT_Row<TData>[];
   options: MRT_StatefulTableOptions<TData>;
@@ -526,9 +532,16 @@ export type MRT_StatefulTableOptions<TData extends MRT_RowData> =
     >;
   };
 
-export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
+export interface MRT_TableState<TData extends MRT_RowData>
+  extends TableState<MRT_Features> {
   actionCell?: MRT_Cell<TData> | null;
   columnFilterFns: MRT_ColumnFilterFnsState;
+  /**
+   * MRT's own name for TanStack v9's `columnResizing` state slice — kept as
+   * `columnSizingInfo` (the v8 name) so existing `state`/`initialState`
+   * consumers don't need to change anything.
+   */
+  columnSizingInfo: MRT_ColumnSizingInfoState;
   creatingRow: MRT_Row<TData> | null;
   density: MRT_DensityState;
   draggingColumn: MRT_Column<TData> | null;
@@ -539,16 +552,16 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
   globalFilterFn: MRT_FilterOption;
   hoveredColumn: Partial<MRT_Column<TData>> | null;
   hoveredRow: Partial<MRT_Row<TData>> | null;
-  isLoading: boolean;
-  isSaving: boolean;
+  isLoading?: boolean;
+  isSaving?: boolean;
   savedFilters: MRT_SavedFilters;
   showAlertBanner: boolean;
   showColumnFilters: boolean;
   showGlobalFilter: boolean;
   showAdvancedFilters: boolean;
-  showLoadingOverlay: boolean;
+  showLoadingOverlay?: boolean;
   showProgressBars: boolean;
-  showSkeletons: boolean;
+  showSkeletons?: boolean;
   showToolbarDropZone: boolean;
   activeExports?: MRT_ActiveExportsState;
   newEntryModal: MRT_NewEntryModalState;
@@ -557,7 +570,7 @@ export interface MRT_TableState<TData extends MRT_RowData> extends TableState {
 
 interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
   extends Omit<
-    ColumnDef<TData, TValue>,
+    ColumnDef<MRT_Features, TData, TValue>,
     | 'accessorKey'
     | 'aggregatedCell'
     | 'aggregationFn'
@@ -567,7 +580,7 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
     | 'footer'
     | 'header'
     | 'id'
-    | 'sortingFn'
+    | 'sortFn'
   > {
   /**
    * Either an `accessorKey` or a combination of an `accessorFn` and `id` are required for a data column definition.
@@ -839,7 +852,7 @@ interface MRT_ColumnDefBase<TData extends MRT_RowData, TValue = unknown>
     onSelectFilterMode: (filterMode: MRT_FilterOption) => void;
     table: MRT_TableInstance<TData>;
   }) => ReactNode[];
-  sortingFn?: MRT_SortingFn<TData>;
+  sortFn?: MRT_SortingFn<TData>;
   visibleInShowHideMenu?: boolean;
 }
 
@@ -905,7 +918,7 @@ export type MRT_DefinedColumnDef<
 };
 
 export type MRT_Column<TData extends MRT_RowData, TValue = unknown> = Omit<
-  Column<TData, TValue>,
+  Column<MRT_Features, TData, TValue>,
   'columnDef' | 'columns' | 'filterFn' | 'footer' | 'header'
 > & {
   columnDef: MRT_DefinedColumnDef<TData, TValue>;
@@ -916,21 +929,21 @@ export type MRT_Column<TData extends MRT_RowData, TValue = unknown> = Omit<
 };
 
 export type MRT_Header<TData extends MRT_RowData> = Omit<
-  Header<TData, unknown>,
+  Header<MRT_Features, TData, unknown>,
   'column'
 > & {
   column: MRT_Column<TData>;
 };
 
 export type MRT_HeaderGroup<TData extends MRT_RowData> = Omit<
-  HeaderGroup<TData>,
+  HeaderGroup<MRT_Features, TData>,
   'headers'
 > & {
   headers: MRT_Header<TData>[];
 };
 
 export type MRT_Row<TData extends MRT_RowData> = Omit<
-  Row<TData>,
+  Row<MRT_Features, TData>,
   | '_valuesCache'
   | 'getAllCells'
   | 'getParentRow'
@@ -949,7 +962,7 @@ export type MRT_Row<TData extends MRT_RowData> = Omit<
 };
 
 export type MRT_Cell<TData extends MRT_RowData, TValue = unknown> = Omit<
-  Cell<TData, TValue>,
+  Cell<MRT_Features, TData, TValue>,
   'column' | 'row'
 > & {
   column: MRT_Column<TData, TValue>;
@@ -958,8 +971,21 @@ export type MRT_Cell<TData extends MRT_RowData, TValue = unknown> = Omit<
 
 export type MRT_AggregationOption = string & keyof typeof MRT_AggregationFns;
 
+/**
+ * TanStack v9 removed the plain-callable `AggregationFn<TData>` type in favor
+ * of the object-shaped `AggregationFnDef` (`constructAggregationFn`). MRT's own
+ * runtime aggregation functions (fns/aggregationFns.ts, column.utils.ts) are
+ * still plain callables pending that rework (tracked separately), so this
+ * mirrors the removed v8 signature rather than adopting AggregationFnDef here.
+ */
+type MRT_TanStackAggregationFn<TData extends MRT_RowData> = (
+  columnId: string,
+  leafRows: Row<MRT_Features, TData>[],
+  childRows: Row<MRT_Features, TData>[],
+) => any;
+
 export type MRT_AggregationFn<TData extends MRT_RowData> =
-  | AggregationFn<TData>
+  | MRT_TanStackAggregationFn<TData>
   | MRT_AggregationOption;
 
 export type MRT_SortingOption = LiteralUnion<
@@ -968,14 +994,14 @@ export type MRT_SortingOption = LiteralUnion<
 
 export type MRT_SortingFn<TData extends MRT_RowData> =
   | MRT_SortingOption
-  | SortingFn<TData>;
+  | SortFn<MRT_Features, TData>;
 
 export type MRT_FilterOption = LiteralUnion<
   string & keyof typeof MRT_FilterFns
 >;
 
 export type MRT_FilterFn<TData extends MRT_RowData> =
-  | FilterFn<TData>
+  | FilterFn<MRT_Features, TData>
   | MRT_FilterOption;
 
 export type MRT_InternalFilterOption = {
@@ -1020,7 +1046,7 @@ export type MRT_GetRowId<TData extends MRT_RowData> = (
  */
 export interface MRT_TableOptions<TData extends MRT_RowData>
   extends Omit<
-    Partial<TableOptions<TData>>,
+    Partial<TableOptions<MRT_Features, TData>>,
     | 'columns'
     | 'data'
     | 'defaultColumn'
@@ -1032,6 +1058,17 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     | 'onStateChange'
     | 'state'
   > {
+  /**
+   * MRT-only registry of custom aggregation functions, keyed by name, that a
+   * column def's `aggregationFn` can reference by string. Unlike TanStack v9's
+   * `tableFeatures().aggregationFns` slot (build-time, shared across all
+   * tables), this is resolved per-instance by MRT before columns ever reach
+   * TanStack, so it isn't passed through to `useTable()` itself.
+   */
+  aggregationFns?: Record<
+    string,
+    AggregationFnDef<any, any, any, any> | MRT_TanStackAggregationFn<TData>
+  >;
   columnFilterDisplayMode?: 'custom' | 'popover' | 'subheader';
   columnFilterModeOptions?: Array<
     LiteralUnion<string & MRT_FilterOption>
@@ -1146,6 +1183,12 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableToolbarInternalActions?: boolean;
   enableTopToolbar?: boolean;
   expandRowsFn?: (dataRow: TData) => TData[];
+  /**
+   * MRT-only registry of custom filter functions, keyed by name, that a column
+   * def's `filterFn` can reference by string. Resolved per-instance by MRT
+   * before columns reach TanStack (see `aggregationFns` above).
+   */
+  filterFns?: Record<string, FilterFn<MRT_Features, TData>>;
   getRowId?: MRT_GetRowId<TData>;
   globalFilterFn?: MRT_FilterOption;
   globalFilterModeOptions?: MRT_FilterOption[] | null;
@@ -1570,6 +1613,12 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
       }) => Partial<VirtualizerOptions<HTMLDivElement, HTMLTableRowElement>>)
     | Partial<VirtualizerOptions<HTMLDivElement, HTMLTableRowElement>>;
   selectAllMode?: 'all' | 'page';
+  /**
+   * MRT-only registry of custom sorting functions, keyed by name, that a
+   * column def's `sortFn` can reference by string. Resolved per-instance by
+   * MRT before columns reach TanStack (see `aggregationFns` above).
+   */
+  sortingFns?: Record<string, SortFn<MRT_Features, TData>>;
   /**
    * Manage state externally any way you want, then pass it back into MRT.
    */

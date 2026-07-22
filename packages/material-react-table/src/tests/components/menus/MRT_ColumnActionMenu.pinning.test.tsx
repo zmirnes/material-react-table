@@ -71,7 +71,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
-      initialState: { columnPinning: { left: ['firstName'], right: [] } },
+      initialState: { columnPinning: { start: ['firstName'], end: [] } },
     });
     await openColumnMenu(user, 'First Name');
 
@@ -90,7 +90,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
-      initialState: { columnPinning: { left: [], right: ['firstName'] } },
+      initialState: { columnPinning: { start: [], end: ['firstName'] } },
     });
     await openColumnMenu(user, 'First Name');
 
@@ -164,7 +164,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
-      initialState: { columnPinning: { left: ['firstName'], right: [] } },
+      initialState: { columnPinning: { start: ['firstName'], end: [] } },
     });
     await openColumnMenu(user, 'First Name');
 
@@ -220,7 +220,7 @@ describe('MRT_ColumnActionMenu - Column Pinning', () => {
       columns: DEFAULT_TEST_COLUMNS,
       data: DEFAULT_TEST_DATA,
       enableColumnPinning: true,
-      initialState: { columnPinning: { left: ['firstName'], right: [] } },
+      initialState: { columnPinning: { start: ['firstName'], end: [] } },
     });
     await openColumnMenu(user, 'First Name');
 

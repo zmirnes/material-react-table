@@ -30,10 +30,10 @@ export const MRT_ShowHideColumnsMenu = <TData extends MRT_RowData>({
     getAllColumns,
     getAllLeafColumns,
     getCenterLeafColumns,
+    getEndLeafColumns,
     getIsAllColumnsVisible,
     getIsSomeColumnsVisible,
-    getLeftLeafColumns,
-    getRightLeafColumns,
+    getStartLeafColumns,
     getState,
     options: {
       enableHiding,
@@ -62,11 +62,11 @@ export const MRT_ShowHideColumnsMenu = <TData extends MRT_RowData>({
       !columns.some((col) => col.columnDef.columnDefType === 'group')
     ) {
       return [
-        ...getLeftLeafColumns(),
+        ...getStartLeafColumns(),
         ...Array.from(new Set(columnOrder)).map((colId) =>
           getCenterLeafColumns().find((col) => col?.id === colId),
         ),
-        ...getRightLeafColumns(),
+        ...getEndLeafColumns(),
       ].filter(Boolean);
     }
     return columns;
@@ -75,8 +75,8 @@ export const MRT_ShowHideColumnsMenu = <TData extends MRT_RowData>({
     columnPinning,
     getAllColumns(),
     getCenterLeafColumns(),
-    getLeftLeafColumns(),
-    getRightLeafColumns(),
+    getStartLeafColumns(),
+    getEndLeafColumns(),
   ]) as MRT_Column<TData>[];
 
   const isNestedColumns = allColumns.some(

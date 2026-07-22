@@ -1,4 +1,4 @@
-import { type RowData } from '@tanstack/react-table';
+import { type RowData, type TableFeatures } from '@tanstack/react-table';
 import { type MRT_ColumnDef, type MRT_RowData } from './types';
 
 export interface IIconColTypeValue {
@@ -29,7 +29,11 @@ export type ExtraFieldFilterOption<TData extends RowData> = Pick<
 >;
 
 declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<
+    TFeatures extends TableFeatures,
+    TData extends RowData,
+    TValue,
+  > {
     enumValues?: Array<{ value: string; label: string }>;
     availableIcons?: MRT_AvailableIconOption[];
     dimensions?: MRT_DimensionsDef;

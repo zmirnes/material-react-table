@@ -2,6 +2,7 @@ import { type Row } from '@tanstack/react-table';
 import Box from '@mui/material/Box';
 import { type IconButtonProps } from '@mui/material/IconButton';
 import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
+import { type MRT_Features } from '../../mrtTableFeatures';
 import { MRT_RowPinButton } from '../buttons/MRT_RowPinButton';
 import {
   type MRT_Row,
@@ -28,7 +29,7 @@ export const MRT_TableBodyRowPinButton = <TData extends MRT_RowData>({
 
   const canPin = parseFromValuesOrFunc(
     enableRowPinning,
-    row as unknown as Row<TData>,
+    row as unknown as Row<MRT_Features, TData>,
   );
 
   if (!canPin) return null;

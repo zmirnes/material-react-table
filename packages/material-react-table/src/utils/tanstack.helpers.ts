@@ -1,11 +1,14 @@
 import { type ReactNode, type JSX } from 'react';
 import {
-  createRow as _createRow,
+  constructRow as _createRow,
   flexRender as _flexRender,
   type DeepKeys,
   type Renderable,
+  type Row,
+  type Table,
 } from '@tanstack/react-table';
 import { getAllLeafColumnDefs, getColumnId } from './column.utils';
+import { type MRT_Features } from '../mrtTableFeatures';
 import {
   type MRT_ColumnHelper,
   type MRT_DisplayColumnDef,
@@ -43,8 +46,8 @@ export const createRow = <TData extends MRT_RowData>(
   subRows?: MRT_Row<TData>[],
   parentId?: string,
 ): MRT_Row<TData> =>
-  _createRow(
-    table as unknown as Parameters<typeof _createRow>[0],
+  _createRow<MRT_Features, TData>(
+    table as unknown as Table<MRT_Features, TData>,
     'mrt-row-create',
     originalRow ??
       Object.assign(
@@ -55,6 +58,6 @@ export const createRow = <TData extends MRT_RowData>(
       ),
     rowIndex,
     depth,
-    subRows as unknown as Parameters<typeof _createRow>[5],
+    subRows as unknown as Row<MRT_Features, TData>[] | undefined,
     parentId,
   ) as MRT_Row<TData>;

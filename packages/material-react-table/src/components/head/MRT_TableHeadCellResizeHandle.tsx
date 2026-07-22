@@ -35,7 +35,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
       tableRef,
     },
     setColumnSizing,
-    setColumnSizingInfo,
+    setColumnResizing,
   } = table;
   const density = useMRT_SliceValue(table._uiStore, (s) => s.density);
   const { column } = header;
@@ -146,7 +146,7 @@ export const MRT_TableHeadCellResizeHandle = <TData extends MRT_RowData>({
     <Box
       className="Mui-TableHeadCell-ResizeHandle-Wrapper"
       onDoubleClick={() => {
-        setColumnSizingInfo((old) => ({
+        setColumnResizing((old) => ({
           ...old,
           isResizingColumn: false,
         }));

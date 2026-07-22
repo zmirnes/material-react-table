@@ -1,15 +1,4 @@
 import { useId, useMemo } from 'react';
-import {
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFacetedMinMaxValues,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getGroupedRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
 import { useTheme } from '@mui/material/styles';
 import { MRT_AggregationFns } from '../fns/aggregationFns';
 import { MRT_FilterFns } from '../fns/filterFns';
@@ -234,29 +223,6 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     enableToolbarInternalActions,
     enableTopToolbar,
     filterFns,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel:
-      enableExpanding || enableGrouping ? getExpandedRowModel() : undefined,
-    getFacetedMinMaxValues: enableFacetedValues
-      ? getFacetedMinMaxValues()
-      : undefined,
-    getFacetedRowModel: enableFacetedValues ? getFacetedRowModel() : undefined,
-    getFacetedUniqueValues: enableFacetedValues
-      ? getFacetedUniqueValues()
-      : undefined,
-    getFilteredRowModel:
-      (enableColumnFilters || enableGlobalFilter || enableFilters) &&
-      !manualFiltering
-        ? getFilteredRowModel()
-        : undefined,
-    getGroupedRowModel:
-      enableGrouping && !manualGrouping ? getGroupedRowModel() : undefined,
-    getPaginationRowModel:
-      enablePagination && !manualPagination
-        ? getPaginationRowModel()
-        : undefined,
-    getSortedRowModel:
-      enableSorting && !manualSorting ? getSortedRowModel() : undefined,
     getSubRows: (row) => row?.subRows,
     icons,
     id,

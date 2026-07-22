@@ -6,7 +6,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from 'react';
-import { useReactTable } from '@tanstack/react-table';
+import { useTable } from '@tanstack/react-table';
 import { getMRT_RowActionsColumnDef } from './display-columns/getMRT_RowActionsColumnDef';
 import { getMRT_RowDragColumnDef } from './display-columns/getMRT_RowDragColumnDef';
 import { getMRT_RowExpandColumnDef } from './display-columns/getMRT_RowExpandColumnDef';
@@ -22,6 +22,7 @@ import {
   handleUpdateRow,
   handleUpsertRow,
 } from '../fns/tableCrudFns';
+import { MRT_TableFeatures } from '../mrtTableFeatures';
 import {
   type MRT_Cell,
   type MRT_Column,
@@ -66,7 +67,7 @@ import { createSliceStore } from '../utils/mrtStore';
 import { createRow } from '../utils/tanstack.helpers';
 
 /**
- * The MRT hook that wraps the TanStack useReactTable hook and adds additional functionality
+ * The MRT hook that wraps the TanStack useTable hook and adds additional functionality
  * @param definedTableOptions - table options with proper defaults set
  * @returns the MRT table instance
  */
@@ -153,13 +154,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
       draggingRow: (initialState.draggingRow ?? null) as MRT_Row<TData> | null,
     }),
   );
-  const [filters, setFilters] = useState<MRT_FiltersState>(
-    initialState.filters ?? {
-      logicOperator: 'and',
-      rules: [],
-      pinnedFilters: [],
-    },
-  );
   const [globalFilterFn, setGlobalFilterFn] = useState<MRT_FilterOption>(
     initialState.globalFilterFn ?? 'fuzzy',
   );
@@ -177,10 +171,18 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     }),
   );
   // Everything below is UI-only feedback state that never influences the TanStack row/
-  // column model (unlike filters/pagination/grouping/columnOrder/creatingRow/rows) —
-  // kept in one combined store instead of 13 separate useState hooks so none of it
-  // triggers a root re-render; consumers select just the field(s) they need via
-  // useMRT_SliceValue.
+  // column model (unlike pagination/grouping/columnOrder/creatingRow) — kept in one
+  // combined store instead of many separate useState hooks so none of it triggers a
+  // root re-render; consumers select just the field(s) they need via useMRT_SliceValue.
+  // `filters` (advanced-filter draft rules) lives here too: it's UI bookkeeping for the
+  // filter-builder panel only — "Apply" just commits the draft back into this same
+  // state, it never calls setColumnFilters/setFilterValue, so nothing about client-side
+  // row computation depends on it. `isLoading`/`isSaving`/`showLoadingOverlay`/
+  // `showSkeletons` are pure external pass-through (no internal setter) — mirrored here
+  // purely so downstream consumers can subscribe narrowly; the `data` useMemo below
+  // still reads them directly off `statefulTableOptions.state` so skeleton-row
+  // computation stays synchronous with the incoming `state` prop (uiStore updates land
+  // one effect-tick later, which would otherwise show stale skeleton rows for a frame).
   const [uiStore] = useState(() =>
     createSliceStore({
       actionCell: (initialState.actionCell ?? null) as MRT_Cell<TData> | null,
@@ -189,6 +191,13 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
       density: (initialState?.density ?? 'compact') as MRT_DensityState,
       editingCell: (initialState.editingCell ?? null) as MRT_Cell<TData> | null,
       editingRow: (initialState.editingRow ?? null) as MRT_Row<TData> | null,
+      filters: (initialState.filters ?? {
+        logicOperator: 'and',
+        rules: [],
+        pinnedFilters: [],
+      }) as MRT_FiltersState,
+      isLoading: (initialState?.isLoading ?? false) as boolean,
+      isSaving: (initialState?.isSaving ?? false) as boolean,
       newEntryModal: (initialState?.newEntryModal ?? {
         open: false,
       }) as MRT_NewEntryModalState,
@@ -201,16 +210,24 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
       showAlertBanner: (initialState?.showAlertBanner ?? false) as boolean,
       showColumnFilters: (initialState?.showColumnFilters ?? false) as boolean,
       showGlobalFilter: (initialState?.showGlobalFilter ?? false) as boolean,
+      showLoadingOverlay: (initialState?.showLoadingOverlay ?? false) as boolean,
       showProgressBars: (initialState?.showProgressBars ?? false) as boolean,
+      showSkeletons: (initialState?.showSkeletons ?? false) as boolean,
       showToolbarDropZone: (initialState?.showToolbarDropZone ??
         false) as boolean,
     }),
   );
-  // columnSizingInfo isn't an MRT-level `table.setX` wrapper — TanStack auto-generates
-  // `table.setColumnSizingInfo` bound to whatever `onColumnSizingInfoChange` we pass into
-  // useReactTable below, so redirecting it here is enough for every internal call
+  const setFilters = (updater: MRT_Updater<MRT_FiltersState>) =>
+    uiStore.set((prev) => ({
+      ...prev,
+      filters: updater instanceof Function ? updater(prev.filters) : updater,
+    }));
+  // columnSizingInfo isn't an MRT-level `table.setX` wrapper — TanStack v9 auto-generates
+  // `table.setColumnResizing` bound to whatever `onColumnResizingChange` we pass into
+  // useTable below, so redirecting it here is enough for every internal call
   // (column.resetSize(), the resize-handle double-click reset, etc.) to land in the store.
-  const onColumnSizingInfoChange = (
+  // MRT keeps exposing this to consumers as `columnSizingInfo` (the v8 name).
+  const onColumnResizingChange = (
     updater: MRT_Updater<MRT_ColumnSizingInfoState>,
   ) =>
     uiStore.set((prev) => ({
@@ -232,7 +249,6 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
     columnFilterFns,
     columnOrder,
     creatingRow,
-    filters,
     globalFilterFn,
     grouping,
     pagination,
@@ -241,7 +257,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   // Sync a controlled consumer's state.draggingColumn/draggingRow/hoveredColumn/
   // hoveredRow into the slice stores — rare (these are usually left uncontrolled), but
-  // since they no longer flow through definedTableOptions.state -> useReactTable, an
+  // since they no longer flow through definedTableOptions.state -> useTable, an
   // externally-controlled value needs an explicit bridge into the store.
   useEffect(() => {
     if (definedTableOptions.state?.draggingColumn !== undefined) {
@@ -278,7 +294,7 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   // Same bridge as above, for the 12 UI-only fields in uiStore (columnSizingInfo is
   // deliberately excluded — it isn't part of the table.setX = onXChange ?? ... pattern,
-  // see onColumnSizingInfoChange above).
+  // see onColumnResizingChange above).
   useEffect(() => {
     if (definedTableOptions.state?.actionCell !== undefined) {
       uiStore.set((prev) => ({
@@ -311,6 +327,46 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
       }));
     }
   }, [definedTableOptions.state?.editingRow]);
+  useEffect(() => {
+    if (definedTableOptions.state?.filters !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        filters: definedTableOptions.state!.filters!,
+      }));
+    }
+  }, [definedTableOptions.state?.filters]);
+  useEffect(() => {
+    if (definedTableOptions.state?.isLoading !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        isLoading: definedTableOptions.state!.isLoading!,
+      }));
+    }
+  }, [definedTableOptions.state?.isLoading]);
+  useEffect(() => {
+    if (definedTableOptions.state?.isSaving !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        isSaving: definedTableOptions.state!.isSaving!,
+      }));
+    }
+  }, [definedTableOptions.state?.isSaving]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showLoadingOverlay !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showLoadingOverlay: definedTableOptions.state!.showLoadingOverlay!,
+      }));
+    }
+  }, [definedTableOptions.state?.showLoadingOverlay]);
+  useEffect(() => {
+    if (definedTableOptions.state?.showSkeletons !== undefined) {
+      uiStore.set((prev) => ({
+        ...prev,
+        showSkeletons: definedTableOptions.state!.showSkeletons!,
+      }));
+    }
+  }, [definedTableOptions.state?.showSkeletons]);
   useEffect(() => {
     if (definedTableOptions.state?.newEntryModal !== undefined) {
       uiStore.set((prev) => ({
@@ -521,9 +577,10 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
   );
 
   //@ts-expect-error
-  const table = useReactTable({
+  const table = useTable({
+    features: MRT_TableFeatures,
     onColumnOrderChange,
-    onColumnSizingInfoChange,
+    onColumnResizingChange,
     onGroupingChange,
     onPaginationChange,
     ...statefulTableOptions,
@@ -555,9 +612,11 @@ export const useMRT_TableInstance = <TData extends MRT_RowData>(
 
   // Merge the slice stores back into getState() so every existing/external
   // `table.getState().hoveredColumn`-style read keeps working unchanged.
-  const originalGetState = table.getState;
+  // v9 dropped the `table.getState()` method in favor of `table.store.state`
+  // (a live getter), which is what we read fresh on every call here.
   table.getState = () => ({
-    ...originalGetState(),
+    ...table.store.state,
+    ...statefulTableOptions.state,
     ...dragStore.get(),
     ...hoverStore.get(),
     ...uiStore.get(),

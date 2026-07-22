@@ -1,11 +1,6 @@
-import { type Row } from '@tanstack/react-table';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import {
-  MRT_AggregationFns,
-  type MRT_ColumnDef,
-  MaterialReactTable,
-} from '../../src';
+import { type MRT_ColumnDef, MaterialReactTable } from '../../src';
 import { faker } from '@faker-js/faker';
 import { type Meta } from '@storybook/react-vite';
 
@@ -233,15 +228,8 @@ export const MultiAggregationPerColumn = () => (
         ),
         accessorKey: 'age',
         type: 'number',
-        //manually set multiple aggregation functions
-        aggregationFn: (
-          columnId,
-          leafRows: Row<(typeof data)[0]>[],
-          childRows: Row<(typeof data)[0]>[],
-        ) => [
-          MRT_AggregationFns.min(columnId, leafRows, childRows),
-          MRT_AggregationFns.max(columnId, leafRows, childRows),
-        ],
+        //multiple named aggregation functions — resolved to an array of results
+        aggregationFn: ['min', 'max'],
         header: 'Age',
       },
       {

@@ -127,8 +127,8 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
   // Checkbox is always pinned (counts as 1), so > 1 means the user has
   // explicitly pinned at least one additional column.
   const totalPinnedColumnCount = [
-    ...(table.getState().columnPinning.left ?? []),
-    ...(table.getState().columnPinning.right ?? []),
+    ...(table.getState().columnPinning.start ?? []),
+    ...(table.getState().columnPinning.end ?? []),
   ].length;
   const hasNoPinnedColumns = totalPinnedColumnCount === 0;
   const pinnedStyles = isColumnPinned
@@ -153,15 +153,15 @@ export const getCommonMRTCellStyles = <TData extends MRT_RowData>({
               getCommonPinnedCellStyles({ column, table, theme })
           : getCommonPinnedCellStyles({ column, table, theme })),
         left:
-          isColumnPinned === 'left'
-            ? `${column.getStart('left')}px`
+          isColumnPinned === 'start'
+            ? `${column.getStart('start')}px`
             : undefined,
         // Skip opacity reduction for checkbox — keep it fully opaque like center columns
         opacity: isCheckboxColumn ? undefined : 0.97,
         position: 'sticky',
         right:
-          isColumnPinned === 'right'
-            ? `${column.getAfter('right')}px`
+          isColumnPinned === 'end'
+            ? `${column.getAfter('end')}px`
             : undefined,
       }
     : {};

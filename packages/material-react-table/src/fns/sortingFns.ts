@@ -1,10 +1,19 @@
 import { type RankingInfo, compareItems } from '@tanstack/match-sorter-utils';
-import { type Row, sortingFns } from '@tanstack/react-table';
+import {
+  type Row,
+  sortFn_alphanumeric,
+  sortFn_alphanumericCaseSensitive,
+  sortFn_basic,
+  sortFn_datetime,
+  sortFn_text,
+  sortFn_textCaseSensitive,
+} from '@tanstack/react-table';
+import { type MRT_Features } from '../mrtTableFeatures';
 import { type MRT_Row, type MRT_RowData } from '../types';
 
 const fuzzy = <TData extends MRT_RowData>(
-  rowA: Row<TData>,
-  rowB: Row<TData>,
+  rowA: Row<MRT_Features, TData>,
+  rowB: Row<MRT_Features, TData>,
   columnId: string,
 ) => {
   let dir = 0;
@@ -16,12 +25,21 @@ const fuzzy = <TData extends MRT_RowData>(
   }
   // Provide a fallback for when the item ranks are equal
   return dir === 0
-    ? sortingFns.alphanumeric(rowA as Row<TData>, rowB as Row<TData>, columnId)
+    ? sortFn_alphanumeric(
+        rowA as Row<MRT_Features, TData>,
+        rowB as Row<MRT_Features, TData>,
+        columnId,
+      )
     : dir;
 };
 
 export const MRT_SortingFns = {
-  ...sortingFns,
+  alphanumeric: sortFn_alphanumeric,
+  alphanumericCaseSensitive: sortFn_alphanumericCaseSensitive,
+  basic: sortFn_basic,
+  datetime: sortFn_datetime,
+  text: sortFn_text,
+  textCaseSensitive: sortFn_textCaseSensitive,
   fuzzy,
 };
 

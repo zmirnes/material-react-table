@@ -40,7 +40,10 @@ const AVAILABLE_EXPORTS: Record<string, MRT_ExportDefinition> = {
 
 // Pre-select two rows via initialState so the export button is enabled from the start.
 // The export button is disabled when no rows are selected (isNoRowsSelected === true).
-const PRE_SELECTED_ROW_SELECTION = { '1': true, '2': true };
+const PRE_SELECTED_ROW_SELECTION: Record<string, true> = {
+  '1': true,
+  '2': true,
+};
 
 // Expected selected row IDs in the same order as Object.keys(rowSelection).filter(Boolean)
 const PRE_SELECTED_ROW_IDS = ['1', '2'];

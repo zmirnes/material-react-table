@@ -131,29 +131,29 @@ export const CHECKBOX_DISPLAY_COLUMN_ID = '__check__';
  */
 export const getDefaultColumnPinningState = <TData extends MRT_RowData>(
   tableOptions: MRT_DefinedTableOptions<TData>,
-  existingColumnPinning: { left?: string[]; right?: string[] } = {},
-): { left: string[]; right: string[] } => {
-  const existingLeft = existingColumnPinning.left ?? [];
-  const existingRight = existingColumnPinning.right ?? [];
+  existingColumnPinning: { start?: string[]; end?: string[] } = {},
+): { start: string[]; end: string[] } => {
+  const existingStart = existingColumnPinning.start ?? [];
+  const existingEnd = existingColumnPinning.end ?? [];
 
   // Only pin the checkbox automatically when the column is actually rendered
   if (!tableOptions.enableRowSelection) {
-    return { left: existingLeft, right: existingRight };
+    return { start: existingStart, end: existingEnd };
   }
 
   // Remove checkbox from wherever it is to check remaining pinned columns
-  const leftWithoutCheckbox = existingLeft.filter(
+  const startWithoutCheckbox = existingStart.filter(
     (colId) => colId !== CHECKBOX_DISPLAY_COLUMN_ID,
   );
 
-  // Only force checkbox to the front when left or right pinned columns exist
-  const updatedLeft =
-    existingLeft.length > 0
-      ? [CHECKBOX_DISPLAY_COLUMN_ID, ...leftWithoutCheckbox]
-      : existingLeft;
+  // Only force checkbox to the front when start or end pinned columns exist
+  const updatedStart =
+    existingStart.length > 0
+      ? [CHECKBOX_DISPLAY_COLUMN_ID, ...startWithoutCheckbox]
+      : existingStart;
   return {
-    left: updatedLeft,
-    right: existingRight,
+    start: updatedStart,
+    end: existingEnd,
   };
 };
 

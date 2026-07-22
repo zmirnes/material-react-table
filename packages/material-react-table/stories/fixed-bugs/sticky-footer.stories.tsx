@@ -144,7 +144,7 @@ export const PinnedColumnsWithStickyFooter = () => {
       enableColumnPinning
       enableStickyFooter
       enableStickyHeader
-      initialState={{ columnPinning: { left: ['no', 'name', 'firstName'] } }}
+      initialState={{ columnPinning: { start: ['no', 'name', 'firstName'], end: [] } }}
       muiTableBodyCellProps={{
         align: 'center',
         sx: { borderLeft: '1px solid black' },
