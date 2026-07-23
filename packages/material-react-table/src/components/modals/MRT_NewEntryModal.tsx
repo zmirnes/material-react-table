@@ -130,7 +130,7 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
           background: theme.palette.background.paper,
           borderRadius: 1,
           height: 'min-content',
-          maxHeight: '90vh',
+          maxHeight: '90%',
           maxWidth: '90%',
           minWidth: 400,
           overflow: 'hidden',
