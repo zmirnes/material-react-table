@@ -94,7 +94,7 @@ export const IconColumnResolver: ColumnTypeResolver = {
       return [];
     }
 
-    // Single-select editor factory — used by 'equals' and 'notEquals'
+    // Single-select editor factory — used by 'is' and 'not'
     const createSingleSelectEditor = (
       props: MRT_FilterOperatorEditComponentProps<TData>,
     ) =>
@@ -119,18 +119,18 @@ export const IconColumnResolver: ColumnTypeResolver = {
         // 'Je' — selected iconCode must match the cell value exactly
         editComponent: createSingleSelectEditor,
         getInitialValue: () => '' as TValue,
-        id: 'equals',
+        id: 'is',
         isValueEmpty: (value: unknown) => value === '' || value == null,
-        label: 'Equals',
+        label: 'Is',
         valueShape: 'single',
       },
       {
         // 'Nije' — selected iconCode must not match the cell value
         editComponent: createSingleSelectEditor,
         getInitialValue: () => '' as TValue,
-        id: 'notEquals',
+        id: 'not',
         isValueEmpty: (value: unknown) => value === '' || value == null,
-        label: 'Not Equals',
+        label: 'Not',
         valueShape: 'single',
       },
       {

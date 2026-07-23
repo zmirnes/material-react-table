@@ -207,9 +207,16 @@ export interface MRT_Localization {
   filterEndsWith: string;
   filterEquals: string;
   filterEqualsString: string;
+  filterEqualsNumber: string;
+  filterIs: string;
+  filterNot: string;
   filterFuzzy: string;
+  filterBefore: string;
+  filterAfter: string;
+  filterRange: string;
   filterGreaterThan: string;
   filterGreaterThanOrEqualTo: string;
+  filterGreaterThanOrEqual: string;
   filterInArray: string;
   filterIsAnyOf: string;
   filterIncludesString: string;
@@ -218,11 +225,11 @@ export interface MRT_Localization {
   filterInNumberRange: string;
   filterLessThan: string;
   filterLessThanOrEqualTo: string;
+  filterLessThanOrEqual: string;
   filterMode: string;
   filterNoOptions: string;
   filterNotEmpty: string;
   filterNotEquals: string;
-  filterNotContains: string;
   filterOperator: string;
   filterLogic: string;
   filterStartsWith: string;
@@ -1699,28 +1706,40 @@ export type ColumnType =
   | 'object';
 
 export type MRT_FilterOperator =
+  | 'after'
+  | 'before'
   | 'between'
   | 'contains'
   | 'current-month'
   | 'current-week'
+  | 'currentMonth'
+  | 'currentWeek'
   | 'endsWith'
   | 'equals'
+  | 'equalsNumber'
   | 'from-today'
+  | 'fromToday'
   | 'fuzzy'
   | 'greaterThan'
-  | 'greaterThanOrEqualTo'
+  | 'greaterThanOrEqual'
+  | 'is'
   | 'isAnyOf'
   | 'isEmpty'
   | 'isNotEmpty'
   | 'last-7-days'
   | 'last-month'
   | 'last-week'
+  | 'last7Days'
+  | 'lastMonth'
+  | 'lastWeek'
   | 'lessThan'
-  | 'lessThanOrEqualTo'
-  | 'notContains'
+  | 'lessThanOrEqual'
+  | 'not'
   | 'notEquals'
+  | 'range'
   | 'startsWith'
-  | 'to-today';
+  | 'to-today'
+  | 'toToday';
 
 // A single named snapshot of the current filter state, saved by the user.
 export interface MRT_SavedFilter {

@@ -40,16 +40,6 @@ export const StringColumnResolver: ColumnTypeResolver = {
         valueShape: 'single',
       },
       {
-        // Mirrors MUI doesNotEqual — text must not match the cell value exactly
-        editComponent: MRT_FilterRuleTextEditor,
-        getInitialValue: () => '',
-        id: 'notEquals',
-        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
-        label: 'Does Not Equal',
-        triggerMode: 'commit',
-        valueShape: 'single',
-      },
-      {
         editComponent: MRT_FilterRuleTextEditor,
         getInitialValue: () => '',
         id: 'startsWith',
@@ -64,16 +54,6 @@ export const StringColumnResolver: ColumnTypeResolver = {
         id: 'endsWith',
         isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
         label: 'Ends With',
-        triggerMode: 'commit',
-        valueShape: 'single',
-      },
-      {
-        // Mirrors MUI doesNotContain — cell value must not include the typed substring
-        editComponent: MRT_FilterRuleTextEditor,
-        getInitialValue: () => '',
-        id: 'notContains',
-        isValueEmpty: (value: unknown) => !`${value ?? ''}`.trim(),
-        label: 'Does Not Contain',
         triggerMode: 'commit',
         valueShape: 'single',
       },

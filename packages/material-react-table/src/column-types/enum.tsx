@@ -43,7 +43,7 @@ export const EnumColumnResolver: ColumnTypeResolver = {
       return [];
     }
 
-    // Shared single-select editor factory — used by 'equals' and 'notEquals'
+    // Shared single-select editor factory — used by 'is' and 'not'
     const createSingleSelectEditor = (
       props: MRT_FilterOperatorEditComponentProps<TData>,
     ) =>
@@ -66,18 +66,18 @@ export const EnumColumnResolver: ColumnTypeResolver = {
         // 'Je' — single value must match exactly
         editComponent: createSingleSelectEditor,
         getInitialValue: () => '' as TValue,
-        id: 'equals',
+        id: 'is',
         isValueEmpty: (value: unknown) => value === '' || value === null,
-        label: 'Equals',
+        label: 'Is',
         valueShape: 'single',
       },
       {
         // 'Nije' — single value must not match
         editComponent: createSingleSelectEditor,
         getInitialValue: () => '' as TValue,
-        id: 'notEquals',
+        id: 'not',
         isValueEmpty: (value: unknown) => value === '' || value === null,
-        label: 'Not Equals',
+        label: 'Not',
         valueShape: 'single',
       },
       {

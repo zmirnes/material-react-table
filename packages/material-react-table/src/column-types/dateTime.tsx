@@ -43,7 +43,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleDateTimeEditor,
         getInitialValue: () => null,
-        id: 'lessThan',
+        id: 'before',
         // null means no datetime selected
         isValueEmpty: (value: unknown) => !value,
         label: 'Before',
@@ -52,7 +52,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleDateTimeEditor,
         getInitialValue: () => null,
-        id: 'greaterThan',
+        id: 'after',
         isValueEmpty: (value: unknown) => !value,
         label: 'After',
         valueShape: 'single',

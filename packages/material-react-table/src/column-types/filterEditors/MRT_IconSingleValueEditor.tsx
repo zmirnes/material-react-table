@@ -21,7 +21,7 @@ export type MRT_IconSingleValueEditorProps<TData extends MRT_RowData> =
   };
 
 // Single-select filter editor for icon column type.
-// Used by the 'equals' (Je) and 'notEquals' (Nije) operators.
+// Used by the 'is' (Je) and 'not' (Nije) operators.
 // Stores the selected iconCode as a string in the filter rule value.
 export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
   availableIcons,

@@ -49,7 +49,7 @@ export const DateColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleDateEditor,
         getInitialValue: () => null,
-        id: 'lessThan',
+        id: 'before',
         // null means no date selected
         isValueEmpty: (value: unknown) => !value,
         label: 'Before',
@@ -58,7 +58,7 @@ export const DateColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleDateEditor,
         getInitialValue: () => null,
-        id: 'greaterThan',
+        id: 'after',
         isValueEmpty: (value: unknown) => !value,
         label: 'After',
         valueShape: 'single',
@@ -67,7 +67,7 @@ export const DateColumnResolver: ColumnTypeResolver = {
         // Range value is stored as {from, to} Unix ms timestamps
         editComponent: MRT_FilterRuleRangeDateEditor,
         getInitialValue: () => ({ from: null, to: null }),
-        id: 'between',
+        id: 'range',
         isValueEmpty: (value: unknown) => {
           const v = value as {
             from?: number | null;
@@ -82,56 +82,56 @@ export const DateColumnResolver: ColumnTypeResolver = {
         // Relative operators: value is computed at rule-creation time and stored as an ISO string.
         // The editor is rendered disabled so the user knows the value is implicit.
         editComponent: MRT_FilterRuleDisabledDateEditor,
-        getInitialValue: () => computeRelativeDateSingle('from-today'),
-        id: 'from-today',
+        getInitialValue: () => computeRelativeDateSingle('fromToday'),
+        id: 'fromToday',
         isValueEmpty: () => false,
         label: 'From Today',
         valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledDateEditor,
-        getInitialValue: () => computeRelativeDateSingle('to-today'),
-        id: 'to-today',
+        getInitialValue: () => computeRelativeDateSingle('toToday'),
+        id: 'toToday',
         isValueEmpty: () => false,
         label: 'To Today',
         valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateEditor,
-        getInitialValue: () => computeRelativeDateRange('current-week'),
-        id: 'current-week',
+        getInitialValue: () => computeRelativeDateRange('currentWeek'),
+        id: 'currentWeek',
         isValueEmpty: () => false,
         label: 'Current Week',
         valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateEditor,
-        getInitialValue: () => computeRelativeDateRange('current-month'),
-        id: 'current-month',
+        getInitialValue: () => computeRelativeDateRange('currentMonth'),
+        id: 'currentMonth',
         isValueEmpty: () => false,
         label: 'Current Month',
         valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateEditor,
-        getInitialValue: () => computeRelativeDateRange('last-7-days'),
-        id: 'last-7-days',
+        getInitialValue: () => computeRelativeDateRange('last7Days'),
+        id: 'last7Days',
         isValueEmpty: () => false,
         label: 'Last 7 Days',
         valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateEditor,
-        getInitialValue: () => computeRelativeDateRange('last-week'),
-        id: 'last-week',
+        getInitialValue: () => computeRelativeDateRange('lastWeek'),
+        id: 'lastWeek',
         isValueEmpty: () => false,
         label: 'Last Week',
         valueShape: 'computed',
       },
       {
         editComponent: MRT_FilterRuleDisabledRangeDateEditor,
-        getInitialValue: () => computeRelativeDateRange('last-month'),
-        id: 'last-month',
+        getInitialValue: () => computeRelativeDateRange('lastMonth'),
+        id: 'lastMonth',
         isValueEmpty: () => false,
         label: 'Last Month',
         valueShape: 'computed',

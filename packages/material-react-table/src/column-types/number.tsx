@@ -24,7 +24,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'equals',
+        id: 'equalsNumber',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
         triggerMode: 'commit',
@@ -52,7 +52,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'greaterThanOrEqualTo',
+        id: 'greaterThanOrEqual',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Greater Than Or Equal To',
         triggerMode: 'commit',
@@ -70,7 +70,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'lessThanOrEqualTo',
+        id: 'lessThanOrEqual',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Less Than Or Equal To',
         triggerMode: 'commit',

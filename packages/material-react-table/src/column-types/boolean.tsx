@@ -24,10 +24,10 @@ export const BooleanColumnResolver: ColumnTypeResolver = {
         // A boolean filter only makes sense as equality — true or false
         editComponent: MRT_FilterRuleBooleanEditor,
         getInitialValue: () => '',
-        id: 'equals',
+        id: 'is',
         // Empty unless the user has explicitly picked true or false
         isValueEmpty: (value: unknown) => value !== true && value !== false,
-        label: 'Equals',
+        label: 'Is',
         valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],
