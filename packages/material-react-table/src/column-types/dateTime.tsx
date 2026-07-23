@@ -61,7 +61,7 @@ export const DateTimeColumnResolver: ColumnTypeResolver = {
         // Range value is stored as {from, to} Unix ms timestamps
         editComponent: MRT_FilterRuleRangeDateTimeEditor,
         getInitialValue: () => ({ from: null, to: null }),
-        id: 'between',
+        id: 'range',
         isValueEmpty: (value: unknown) => {
           const v = value as {
             from?: number | null;

@@ -24,7 +24,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'equalsNumber',
+        id: '=',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Equals',
         triggerMode: 'commit',
@@ -34,7 +34,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
         // Mirrors MUI != operator — cell value must not equal the entered number
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'notEquals',
+        id: '!=',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Not Equals',
         triggerMode: 'commit',
@@ -43,7 +43,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'greaterThan',
+        id: '>',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Greater Than',
         triggerMode: 'commit',
@@ -52,7 +52,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'greaterThanOrEqual',
+        id: '>=',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Greater Than Or Equal To',
         triggerMode: 'commit',
@@ -61,7 +61,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'lessThan',
+        id: '<',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Less Than',
         triggerMode: 'commit',
@@ -70,7 +70,7 @@ export const NumberColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_FilterRuleNumberEditor,
         getInitialValue: () => '',
-        id: 'lessThanOrEqual',
+        id: '<=',
         isValueEmpty: (value: unknown) => value === '' || value === null,
         label: 'Less Than Or Equal To',
         triggerMode: 'commit',

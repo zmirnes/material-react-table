@@ -34,7 +34,7 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
       {
         editComponent: MRT_DimensionFilterEditor,
         getInitialValue: () => ({}),
-        id: 'equals',
+        id: 'is',
         // Value is empty when no dimension field has been filled in (ignoring rotation)
         isValueEmpty: (value: unknown) => {
           const dimensionValue = value as
@@ -49,7 +49,7 @@ export const DimensionColumnResolver: ColumnTypeResolver = {
 
           return fieldKeys.every((key) => dimensionValue[key] == null);
         },
-        label: 'Equals',
+        label: 'Is',
         valueShape: 'single',
       },
     ] as MRT_FilterOperatorDefinition<TData, TValue>[],

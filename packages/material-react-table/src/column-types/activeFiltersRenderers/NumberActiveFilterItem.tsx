@@ -12,14 +12,6 @@ const NumberActiveFilterItem = <TData extends MRT_RowData>(
 ) => {
   if (typeof rule.value !== 'number' && !Array.isArray(rule.value)) return null;
 
-  if (rule.operator === 'between' && Array.isArray(rule.value)) {
-    return (
-      <MRT_ActiveFilterItemContainer table={table} rule={rule}>
-        <Typography variant="body2">{`${rule.value[0]} - ${rule.value[1]}`}</Typography>
-      </MRT_ActiveFilterItemContainer>
-    );
-  }
-
   if (rule.operator === 'isAnyOf' && Array.isArray(rule.value)) {
     return (
       <MRT_ActiveFilterItemContainer table={table} rule={rule}>
