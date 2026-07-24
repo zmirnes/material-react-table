@@ -92,15 +92,10 @@ export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
     <FormControl fullWidth size="small">
       {/* `label` must always be passed to Select (not conditionally) so MUI can correctly
           size the notch cut into the outlined border. */}
-      <InputLabel
-        htmlFor={inputId}
-        id={labelId}
-        sx={{ '&.Mui-focused': { color: 'text.primary' } }}
-      >
+      <InputLabel htmlFor={inputId} id={labelId}>
         {columnLabel}
       </InputLabel>
       <Select
-        displayEmpty
         id={inputId}
         label={columnLabel}
         labelId={labelId}
