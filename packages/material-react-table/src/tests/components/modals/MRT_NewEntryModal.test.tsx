@@ -238,4 +238,47 @@ describe('MRT_NewEntryModal', () => {
       expect(screen.getByText(MOCK_LOCALIZATION.newEntry)).toBeInTheDocument();
     });
   });
+
+  describe('content overflow', () => {
+    it('constrains the modal and makes the form body scrollable', () => {
+      const { table } = buildMockTable();
+
+      renderWithTheme(<MRT_NewEntryModal table={table} />);
+
+      const contentContainer = screen.getByText(MOCK_LOCALIZATION.newEntry)
+        .parentElement?.parentElement;
+      const form = document.querySelector('form');
+      const body = form?.firstElementChild;
+
+      expect(contentContainer).toHaveStyle({
+        maxHeight: '90vh',
+        overflow: 'hidden',
+      });
+      expect(form).toHaveStyle({
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+        overflow: 'hidden',
+      });
+      expect(body).toHaveStyle({
+        minHeight: 0,
+        overflow: 'auto',
+        scrollbarWidth: 'thin',
+      });
+    });
+
+    it('allows bodySx to override the default body overflow', () => {
+      const { table } = buildMockTable({
+        muiNewEntryModalProps: {
+          bodySx: { overflow: 'visible' },
+        },
+      });
+
+      renderWithTheme(<MRT_NewEntryModal table={table} />);
+
+      const body = document.querySelector('form')?.firstElementChild;
+
+      expect(body).toHaveStyle({ overflow: 'visible' });
+    });
+  });
 });

@@ -150,7 +150,7 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
             direction="row"
             justifyContent="space-between"
             {...headerProps}
-            sx={{ px: 1, width: '100%', ...headerSx }}
+            sx={{ flexShrink: 0, px: 1, width: '100%', ...headerSx }}
           >
             <Typography variant="h6">{resolvedTitle}</Typography>
             {/* Custom header components rendered between title and close button */}
@@ -178,11 +178,31 @@ export const MRT_NewEntryModal = <TData extends MRT_RowData>({
         <MRT_NewEntryFormProvider table={table}>
           {/* Scrollable body — MRT_NewEntryForm auto-generates fields from column definitions */}
           <Stack
-            height="100%"
+            flex={1}
+            minHeight={0}
             overflow="auto"
             px={2}
             {...bodyProps}
-            sx={{ pb: 1, pt: 2, ...bodySx }}
+            sx={{
+              pb: 1,
+              pt: 2,
+              scrollbarColor: `${theme.palette.action.disabled} transparent`,
+              scrollbarWidth: 'thin',
+              '&::-webkit-scrollbar': {
+                width: 6,
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: theme.palette.action.disabled,
+                borderRadius: 999,
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: theme.palette.action.active,
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: 'transparent',
+              },
+              ...bodySx,
+            }}
           >
             <MRT_NewEntryForm table={table} />
           </Stack>
