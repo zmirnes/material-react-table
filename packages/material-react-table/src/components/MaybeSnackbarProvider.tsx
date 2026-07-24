@@ -21,7 +21,13 @@ const Inner = ({ children }: MaybeSnackbarProviderProps) => {
       maxSnack={5}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
-      {children}
+      {
+        // Cast needed because notistack's bundled types predate a @types/react
+        // 19.2 change to ReactPortal's shape, which they haven't caught up to
+        // yet — this is a types-only mismatch, not an actual runtime issue.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        children as any
+      }
     </SnackbarProvider>
   );
 };

@@ -858,8 +858,8 @@ type MRT_IconTypeColumnClickArgs<TData extends MRT_RowData> = {
 
 // Shape of one entry in the iconsList map — Iconify icon name + default colour
 export type MRT_IconsListEntry = {
-  icon: string;
-  defaultColor: string;
+  component: string;
+  defaultColor?: string;
 };
 
 export type MRT_IconColumnDef<
@@ -867,7 +867,6 @@ export type MRT_IconColumnDef<
   TValue = unknown,
 > = MRT_ColumnDefBase<TData, TValue> & {
   onClickIconTypeColumn?: (args: MRT_IconTypeColumnClickArgs<TData>) => void;
-  iconsList?: Record<string, MRT_IconsListEntry>;
   type: 'icon';
 };
 
@@ -876,7 +875,6 @@ export type MRT_NonIconColumnDef<
   TValue = unknown,
 > = MRT_ColumnDefBase<TData, TValue> & {
   onClickIconTypeColumn?: never;
-  iconsList?: never;
   type: Exclude<ColumnType, 'icon'>;
 };
 
@@ -1037,6 +1035,15 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
     | 'onStateChange'
     | 'state'
   > {
+  /**
+   * Table-wide map of iconCode -> Iconify glyph + colour, used by every 'icon'
+   * type column. The backend only ever sends colour/description metadata
+   * (via each column's meta.availableIcons) — never a renderable glyph name —
+   * so the frontend supplies this map once, table-wide, for IconColumnResolver
+   * to render real icons with (falling back to a colored dot per iconCode
+   * when a code isn't in the map, or when this option isn't supplied at all).
+   */
+  iconsList?: Record<string, MRT_IconsListEntry>;
   columnFilterDisplayMode?: 'custom' | 'popover' | 'subheader';
   columnFilterModeOptions?: Array<
     LiteralUnion<string & MRT_FilterOption>

@@ -27,76 +27,45 @@ type Person = {
   dimension: string;
   active: boolean;
   icon: {
-    iconCode: string;
+    iconCode: number;
     description: string;
+    color: string;
     additional?: Person['icon'][];
   };
 };
 
+// Iconify glyph + default colour per iconCode — supplied to the icon column
+// via `iconsList`. IconColumnResolver's own Cell renders real glyphs from this
+// map (falling back to a colored dot for any code missing from it). Mirrors
+// icons-list.tsx from the consuming app.
 interface IIconsList {
   [key: string]: {
-    icon: string;
+    component: string;
     defaultColor: string;
   };
 }
 
 const ICONS_LIST: IIconsList = {
-  '1': {
-    icon: 'mage:check-circle-fill',
-    defaultColor: '#00b894',
-  },
-  '2': {
-    icon: 'mage:check-circle',
-    defaultColor: '#00b894',
-  },
-  '3': {
-    icon: 'mdi:flash-circle',
-    defaultColor: '#f39c12',
-  },
+  '1': { component: 'mage:check-circle-fill', defaultColor: '#00b894' },
+  '2': { component: 'mage:check-circle', defaultColor: '#00b894' },
+  '3': { component: 'mdi:flash-circle', defaultColor: '#f39c12' },
   '4': {
-    icon: 'material-symbols-light:bolt-outline',
+    component: 'material-symbols-light:bolt-outline',
     defaultColor: '#f39c12',
   },
-  '5': {
-    icon: 'tabler:cancel',
-    defaultColor: '#95a5a6',
-  },
-  '6': {
-    icon: 'line-md:close-circle',
-    defaultColor: '#d63031',
-  },
-  '7': {
-    icon: 'line-md:close-small',
-    defaultColor: '#d63031',
-  },
-  '8': {
-    icon: 'ph:warning',
-    defaultColor: '#f39c12',
-  },
-  '9': {
-    icon: 'material-symbols:error',
-    defaultColor: '#d63031',
-  },
-  '10': {
-    icon: 'codicon:info',
-    defaultColor: '#bdc3c7',
-  },
-  '11': {
-    icon: 'ep:success-filled',
-    defaultColor: '#00b894',
-  },
-  '12': {
-    icon: 'jam:triangle-danger-f',
-    defaultColor: '#d63031',
-  },
+  '5': { component: 'tabler:cancel', defaultColor: '#95a5a6' },
+  '6': { component: 'line-md:close-circle', defaultColor: '#d63031' },
+  '7': { component: 'line-md:close-small', defaultColor: '#d63031' },
+  '8': { component: 'ph:warning', defaultColor: '#f39c12' },
+  '9': { component: 'material-symbols:error', defaultColor: '#d63031' },
+  '10': { component: 'codicon:info', defaultColor: '#bdc3c7' },
+  '11': { component: 'ep:success-filled', defaultColor: '#00b894' },
+  '12': { component: 'jam:triangle-danger-f', defaultColor: '#d63031' },
   '15': {
-    icon: 'material-symbols:local-shipping-outline',
+    component: 'material-symbols:local-shipping-outline',
     defaultColor: '#00b894',
   },
-  '16': {
-    icon: 'wi:time-10',
-    defaultColor: '#d63031',
-  },
+  '16': { component: 'wi:time-10', defaultColor: '#d63031' },
 };
 
 const fakeDatabase: Person[] = [...Array(100)].map(() => ({
@@ -118,12 +87,14 @@ const fakeDatabase: Person[] = [...Array(100)].map(() => ({
     label: faker.helpers.arrayElement(['Option 1', 'Option 2', 'Option 3']),
   },
   icon: {
-    iconCode: '6',
+    iconCode: 6,
     description: 'Missing',
+    color: ICONS_LIST['6'].defaultColor,
     additional: [
       {
-        iconCode: '10',
+        iconCode: 10,
         description: 'Info',
+        color: ICONS_LIST['10'].defaultColor,
       },
     ],
   },
@@ -160,7 +131,6 @@ const columns: MRT_ColumnDef<Person>[] = [
     onClickIconTypeColumn: ({ row }) => {
       alert(`Icon clicked row: ${row.id}`);
     },
-    iconsList: ICONS_LIST,
     meta: {
       availableIcons: Object.entries(ICONS_LIST).map(
         ([iconCode, { defaultColor }]) => ({
@@ -497,6 +467,9 @@ export const Basic = () => (
       onSaveFilters={async () => {
         await simulateDelay(1000);
       }}
+      // Table-wide iconCode -> Iconify glyph map, used by every 'icon' type
+      // column (falls back to a colored dot for any code missing from it).
+      iconsList={ICONS_LIST}
     />
   </Box>
 );
@@ -648,8 +621,6 @@ export const WithNewEntryFormConfig = () => (
         accessorKey: 'icon',
         header: 'Status',
         type: 'icon',
-        // Maps iconCode → Iconify icon name + colour used for cell rendering
-        iconsList: ICONS_LIST,
         meta: {
           // Available options shown in the Select dropdown inside the form
           availableIcons: [

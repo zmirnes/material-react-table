@@ -19,13 +19,6 @@ import { describe, expect, it, vi } from 'vitest';
 // A default MUI theme used to satisfy useTheme() calls inside MUI components.
 const DEFAULT_THEME = createTheme();
 
-// Iconify icon name + colour entries used across tests.
-const DEFAULT_ICONS_LIST = {
-  '1': { icon: 'mage:check-circle-fill', defaultColor: '#00b894' },
-  '2': { icon: 'mage:clock-fill', defaultColor: '#f39c12' },
-  '3': { icon: 'mage:close-circle-fill', defaultColor: '#d63031' },
-};
-
 // Available icon options — mirrors what the backend sends via column.meta.availableIcons.
 const DEFAULT_AVAILABLE_ICONS = [
   {
@@ -50,7 +43,6 @@ const DEFAULT_COLUMN_DEF: MRT_IconColumnDef<Record<string, unknown>> = {
   accessorKey: 'status',
   header: 'Status',
   type: 'icon',
-  iconsList: DEFAULT_ICONS_LIST,
   meta: {
     availableIcons: DEFAULT_AVAILABLE_ICONS,
   },
@@ -93,6 +85,7 @@ interface RenderOptions {
 }
 
 // Renders MRT_FormIconInput wrapped in FormWrapper so useFormContext() resolves correctly.
+// iconsList is left empty — these tests cover the colored-dot fallback path.
 const renderIconInput = ({
   name = 'status',
   columnDef = DEFAULT_COLUMN_DEF,
@@ -106,6 +99,7 @@ const renderIconInput = ({
         name={name}
         columnDef={columnDef}
         fieldConfig={fieldConfig}
+        iconsList={{}}
       />
     </FormWrapper>,
   );

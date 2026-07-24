@@ -1,4 +1,8 @@
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
 import Paper, { type PaperProps } from '@mui/material/Paper';
+import Select from '@mui/material/Select';
 import { MRT_ActiveFilters } from '../toolbar/MRT_ActiveFilters';
 import { MRT_BottomToolbar } from '../toolbar/MRT_BottomToolbar';
 import { MRT_QuickFiltersBar } from '../toolbar/MRT_QuickFiltersBar';
@@ -60,6 +64,14 @@ export const MRT_TablePaper = <TData extends MRT_RowData>({
         >),
       })}
     >
+      <FormControl>
+        <InputLabel>Test</InputLabel>
+        <Select>
+          <MenuItem>Test 1</MenuItem>
+          <MenuItem>Test 2</MenuItem>
+          <MenuItem>Test 3</MenuItem>
+        </Select>
+      </FormControl>
       <MRT_QuickFiltersBar table={table} />
       <MRT_ActiveFilters table={table} />
       {enableTopToolbar &&

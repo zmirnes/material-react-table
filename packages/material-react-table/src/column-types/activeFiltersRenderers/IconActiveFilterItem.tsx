@@ -12,6 +12,7 @@ import {
   type MRT_RowData,
   type MRT_TableInstance,
 } from '../../types';
+import { MRT_IconStatusDot } from '../iconStatusDisplay';
 
 const getIconOptionByCode = (
   iconCode: string,
@@ -33,15 +34,13 @@ const IconActiveFilterItem = <TData extends MRT_RowData>(
     | MRT_IconColumnDef<TData>
     | undefined;
   const availableIcons = iconColumnDef?.meta?.availableIcons ?? [];
-  const iconsList = iconColumnDef?.iconsList ?? {};
+  // Table-wide iconCode -> Iconify glyph map (table.options.iconsList)
+  const iconsList = table.options.iconsList ?? {};
 
   const renderIconByCode = (iconCode: string, index?: number) => {
     const iconOption = getIconOptionByCode(iconCode, availableIcons);
-    const iconDefinition = iconsList[String(iconCode)] as
-      | MRT_IconsListEntry
-      | undefined;
 
-    if (!iconOption || !iconDefinition) {
+    if (!iconOption) {
       return (
         <Typography key={index ?? iconCode} variant="body2">
           {String(iconCode)}
@@ -49,18 +48,22 @@ const IconActiveFilterItem = <TData extends MRT_RowData>(
       );
     }
 
+    const iconDef: MRT_IconsListEntry | undefined = iconsList[String(iconCode)];
+
     return (
       <Tooltip
         key={index ?? iconCode}
         title={iconOption.tooltip || iconOption.iconType.description}
       >
-        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+        {iconDef ? (
           <Iconify
-            icon={iconDefinition.icon}
-            sx={{ color: iconDefinition.defaultColor }}
+            icon={iconDef.component}
+            sx={{ color: iconDef.defaultColor ?? iconOption.iconType.color }}
             width={20}
           />
-        </span>
+        ) : (
+          <MRT_IconStatusDot color={iconOption.iconType.color} />
+        )}
       </Tooltip>
     );
   };

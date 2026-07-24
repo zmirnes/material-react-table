@@ -11,14 +11,33 @@ import {
   type MRT_IconsListEntry,
   type MRT_RowData,
 } from '../../types';
+import { MRT_IconStatusDot } from '../iconStatusDisplay';
 
 export type MRT_IconSingleValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
     // Selectable icon options fetched from backend via column.columnDef.meta.availableIcons
     availableIcons: MRT_AvailableIconOption[];
-    // Iconify name + colour map supplied via column.iconsList
+    // Consumer-supplied iconCode -> Iconify glyph map, from column.iconsList
     iconsList: Record<string, MRT_IconsListEntry>;
   };
+
+// Renders the real Iconify glyph when the consumer supplied one for this
+// iconCode, otherwise falls back to a colored dot using the option's color.
+const renderIconOption = (
+  option: MRT_AvailableIconOption,
+  iconsList: Record<string, MRT_IconsListEntry>,
+) => {
+  const iconDef = iconsList[String(option.iconType.iconCode)];
+  return iconDef ? (
+    <Iconify
+      icon={iconDef.component}
+      sx={{ color: iconDef.defaultColor ?? option.iconType.color }}
+      width={20}
+    />
+  ) : (
+    <MRT_IconStatusDot color={option.iconType.color} />
+  );
+};
 
 // Single-select filter editor for icon column type.
 // Used by the 'is' (Je) and 'not' (Nije) operators.
@@ -49,6 +68,11 @@ export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
       ? column.columnDef.header
       : column.id;
 
+  // Unique per rule so multiple filter rows never collide, and the label is
+  // properly associated with its field (fixes "no label associated"/"missing id" a11y errors).
+  const inputId = `mrt-icon-filter-${rule.id}`;
+  const labelId = `${inputId}-label`;
+
   // Renders the selected icon + tooltip inside the collapsed Select trigger
   const renderSelectedValue = (value: string) => {
     const option = availableIcons.find(
@@ -56,17 +80,9 @@ export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
     );
     if (!option) return null;
 
-    const iconDef = iconsList[String(option.iconType.iconCode)];
-
     return (
       <Stack direction="row" gap={1} alignItems="center">
-        {iconDef && (
-          <Iconify
-            icon={iconDef.icon}
-            sx={{ color: iconDef.defaultColor }}
-            width={20}
-          />
-        )}
+        {renderIconOption(option, iconsList)}
         <Typography variant="body2">{option.tooltip}</Typography>
       </Stack>
     );
@@ -74,17 +90,22 @@ export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
 
   return (
     <FormControl fullWidth size="small">
-      {/* Prevent MUI from colouring the label with primary when the Select is focused/open */}
+      {/* `label` must always be passed to Select (not conditionally) so MUI can correctly
+          size the notch cut into the outlined border. */}
       <InputLabel
-        shrink={!!currentValue}
+        htmlFor={inputId}
+        id={labelId}
         sx={{ '&.Mui-focused': { color: 'text.primary' } }}
       >
         {columnLabel}
       </InputLabel>
       <Select
         displayEmpty
-        label={currentValue ? columnLabel : undefined}
+        id={inputId}
+        label={columnLabel}
+        labelId={labelId}
         MenuProps={{ sx: { zIndex: 9999 } }}
+        name={inputId}
         onChange={(event) =>
           onChange(event.target.value as Parameters<typeof onChange>[0])
         }
@@ -96,30 +117,21 @@ export const MRT_IconSingleValueEditor = <TData extends MRT_RowData>({
         }}
         value={currentValue}
       >
-        {availableIcons.map((icon) => {
-          const iconDef = iconsList[String(icon.iconType.iconCode)];
-          return (
-            <MenuItem
-              key={String(icon.iconType.iconCode)}
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                flexDirection: 'row',
-                gap: 1,
-              }}
-              value={String(icon.iconType.iconCode)}
-            >
-              {iconDef && (
-                <Iconify
-                  icon={iconDef.icon}
-                  sx={{ color: iconDef.defaultColor }}
-                  width={20}
-                />
-              )}
-              <Typography variant="body2">{icon.tooltip}</Typography>
-            </MenuItem>
-          );
-        })}
+        {availableIcons.map((icon) => (
+          <MenuItem
+            key={String(icon.iconType.iconCode)}
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+            }}
+            value={String(icon.iconType.iconCode)}
+          >
+            {renderIconOption(icon, iconsList)}
+            <Typography variant="body2">{icon.tooltip}</Typography>
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );

@@ -12,14 +12,33 @@ import {
   type MRT_IconsListEntry,
   type MRT_RowData,
 } from '../../types';
+import { MRT_IconStatusDot } from '../iconStatusDisplay';
 
 export type MRT_IconMultiValueEditorProps<TData extends MRT_RowData> =
   MRT_FilterOperatorEditComponentProps<TData> & {
     // Selectable icon options fetched from backend via column.columnDef.meta.availableIcons
     availableIcons: MRT_AvailableIconOption[];
-    // Iconify name + colour map supplied via column.iconsList
+    // Consumer-supplied iconCode -> Iconify glyph map, from column.iconsList
     iconsList: Record<string, MRT_IconsListEntry>;
   };
+
+// Renders the real Iconify glyph when the consumer supplied one for this
+// iconCode, otherwise falls back to a colored dot using the option's color.
+const renderIconOption = (
+  option: MRT_AvailableIconOption,
+  iconsList: Record<string, MRT_IconsListEntry>,
+) => {
+  const iconDef = iconsList[String(option.iconType.iconCode)];
+  return iconDef ? (
+    <Iconify
+      icon={iconDef.component}
+      sx={{ color: iconDef.defaultColor ?? option.iconType.color }}
+      width={20}
+    />
+  ) : (
+    <MRT_IconStatusDot color={option.iconType.color} />
+  );
+};
 
 // Multi-select filter editor for icon column type.
 // Used by the 'inArray' (Je bilo koje od) operator.
@@ -52,6 +71,11 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
       ? column.columnDef.header
       : column.id;
 
+  // Unique per rule so multiple filter rows never collide, and the label is
+  // properly associated with its field (fixes "no label associated"/"missing id" a11y errors).
+  const inputId = `mrt-icon-filter-${rule.id}`;
+  const labelId = `${inputId}-label`;
+
   // Renders the row of selected icons inside the collapsed multi-select trigger
   const renderSelectedValues = (values: string[]) => (
     <Stack direction="row" gap={0.5} flexWrap="wrap" alignItems="center">
@@ -61,17 +85,9 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
         );
         if (!option) return null;
 
-        const iconDef = iconsList[iconCode];
-        if (!iconDef) return null;
-
         return (
           <Tooltip key={iconCode} title={option.tooltip}>
-            <Iconify
-              key={iconCode}
-              icon={iconDef.icon}
-              sx={{ color: iconDef.defaultColor }}
-              width={20}
-            />
+            {renderIconOption(option, iconsList)}
           </Tooltip>
         );
       })}
@@ -86,57 +102,40 @@ export const MRT_IconMultiValueEditor = <TData extends MRT_RowData>({
     onChange(normalizedValues as Parameters<typeof onChange>[0]);
   };
 
-  // Controls both the floating label and the notch in the outlined border.
-  // MUI treats value=[] as "filled" ([] !== ''), which would cut the notch
-  // even when nothing is selected — so we override both states explicitly.
-  const hasValue = selectedValues.length > 0;
-
   return (
     <FormControl fullWidth size="small">
-      {/* Prevent MUI from colouring the label with primary when the Select is focused/open */}
-      <InputLabel
-        shrink={hasValue}
-        sx={{ '&.Mui-focused': { color: 'text.primary' } }}
-      >
+      {/* `label` must always be passed to Select (not conditionally) so MUI can correctly
+          size the notch cut into the outlined border. */}
+      <InputLabel htmlFor={inputId} id={labelId}>
         {columnLabel}
       </InputLabel>
       <Select
-        label={hasValue ? columnLabel : undefined}
+        id={inputId}
+        label={columnLabel}
+        labelId={labelId}
         MenuProps={{ sx: { zIndex: 9999 } }}
         multiple
+        name={inputId}
         onChange={handleChange}
         renderValue={renderSelectedValues}
         size="small"
-        sx={{ '& .MuiSelect-Select': { height: 'initial' } }}
-        SelectDisplayProps={{
-          style: { display: 'flex', alignItems: 'center' },
-        }}
         value={selectedValues}
       >
-        {availableIcons.map((icon) => {
-          const iconDef = iconsList[String(icon.iconType.iconCode)];
-          return (
-            <MenuItem
-              key={String(icon.iconType.iconCode)}
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                flexDirection: 'row',
-                gap: 1,
-              }}
-              value={String(icon.iconType.iconCode)}
-            >
-              {iconDef && (
-                <Iconify
-                  icon={iconDef.icon}
-                  sx={{ color: iconDef.defaultColor }}
-                  width={20}
-                />
-              )}
-              <Typography variant="body2">{icon.tooltip}</Typography>
-            </MenuItem>
-          );
-        })}
+        {availableIcons.map((icon) => (
+          <MenuItem
+            key={String(icon.iconType.iconCode)}
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+            }}
+            value={String(icon.iconType.iconCode)}
+          >
+            {renderIconOption(icon, iconsList)}
+            <Typography variant="body2">{icon.tooltip}</Typography>
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );

@@ -6,11 +6,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { MRT_IconStatusDot } from '../../../column-types/iconStatusDisplay';
 import { type MRT_AvailableIconOption } from '../../../tanstack-table';
 import {
   type MRT_ColumnDef,
   type MRT_FormFieldConfig,
-  type MRT_IconColumnDef,
   type MRT_IconsListEntry,
   type MRT_RowData,
 } from '../../../types';
@@ -22,22 +22,21 @@ export interface MRT_FormIconInputProps<TData extends MRT_RowData> {
   name: string;
   columnDef: MRT_ColumnDef<TData>;
   fieldConfig: MRT_FormFieldConfig<TData, string | null> | null;
+  // Table-wide iconCode -> Iconify glyph map (table.options.iconsList)
+  iconsList: Record<string, MRT_IconsListEntry>;
 }
 
 export const MRT_FormIconInput = <TData extends MRT_RowData>({
   name,
   columnDef,
   fieldConfig,
+  iconsList,
 }: MRT_FormIconInputProps<TData>) => {
   const { control } = useFormContext();
 
   // Available options provided via column metadata — list of selectable icons
   const availableIcons: MRT_AvailableIconOption[] =
     columnDef.meta?.availableIcons ?? [];
-
-  // iconsList maps iconCode → Iconify icon name + default colour for rendering
-  const iconsList: Record<string, MRT_IconsListEntry> =
-    (columnDef as MRT_IconColumnDef<TData>).iconsList ?? {};
 
   // Prefer string headers for the Select label; fall back to accessorKey if header is a render function
   const label =
@@ -70,12 +69,14 @@ export const MRT_FormIconInput = <TData extends MRT_RowData>({
 
           return (
             <Stack alignItems="center" direction="row" gap={1}>
-              {iconDef && (
+              {iconDef ? (
                 <Iconify
-                  icon={iconDef.icon}
-                  sx={{ color: iconDef.defaultColor }}
+                  icon={iconDef.component}
+                  sx={{ color: iconDef.defaultColor ?? option.iconType.color }}
                   width={20}
                 />
+              ) : (
+                <MRT_IconStatusDot color={option.iconType.color} />
               )}
               <Typography variant="body2">{option.tooltip}</Typography>
             </Stack>
@@ -110,12 +111,16 @@ export const MRT_FormIconInput = <TData extends MRT_RowData>({
                     sx={{ alignItems: 'center', display: 'flex', gap: 1 }}
                     value={iconCode}
                   >
-                    {iconDef && (
+                    {iconDef ? (
                       <Iconify
-                        icon={iconDef.icon}
-                        sx={{ color: iconDef.defaultColor }}
+                        icon={iconDef.component}
+                        sx={{
+                          color: iconDef.defaultColor ?? icon.iconType.color,
+                        }}
                         width={20}
                       />
+                    ) : (
+                      <MRT_IconStatusDot color={icon.iconType.color} />
                     )}
                     <Typography variant="body2">{icon.tooltip}</Typography>
                   </MenuItem>

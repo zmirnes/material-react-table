@@ -4,7 +4,6 @@ import { type MRT_ColumnDef, type MRT_RowData } from './types';
 export interface IIconColTypeValue {
   color: string;
   description: string;
-  // String key - matches iconsList Record<string, ...> and cell value shape
   iconCode: number;
   additional?: Record<string, Omit<IIconColTypeValue, 'additional'>>;
 }

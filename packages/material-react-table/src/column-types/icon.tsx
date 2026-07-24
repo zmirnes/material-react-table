@@ -6,6 +6,7 @@ import { MRT_FormIconInput } from '../components/modals/form-inputs/MRT_FormIcon
 import IconActiveFilterItem from './activeFiltersRenderers/IconActiveFilterItem';
 import { MRT_IconMultiValueEditor } from './filterEditors/MRT_IconMultiValueEditor';
 import { MRT_IconSingleValueEditor } from './filterEditors/MRT_IconSingleValueEditor';
+import { MRT_IconStatusDot, resolveStatusColor } from './iconStatusDisplay';
 import Iconify from '../components/iconify';
 import { type IIconColTypeValue } from '../tanstack-table';
 import {
@@ -15,8 +16,8 @@ import {
   type MRT_ColumnDef,
   type MRT_FilterOperatorDefinition,
   type MRT_FilterOperatorEditComponentProps,
-  type MRT_IconColumnDef,
   type MRT_RowData,
+  type MRT_TableInstance,
 } from '../types';
 
 export const IconColumnResolver: ColumnTypeResolver = {
@@ -25,10 +26,42 @@ export const IconColumnResolver: ColumnTypeResolver = {
     type: 'icon',
     Cell: ({ row, table, cell }) => {
       const value = cell.getValue<IIconColTypeValue>();
-      const iconsList = column.iconsList || {};
-      if (!iconsList[value.iconCode]) return null;
-      const icon = iconsList[value.iconCode];
-      const { additional } = value;
+      if (!value) return null;
+
+      // Without any configured icon options this column isn't set up for icons at
+      // all — render nothing rather than a dot backed by no real definition.
+      const availableIcons = column.meta?.availableIcons ?? [];
+      if (!availableIcons.length) return null;
+
+      // meta.availableIcons carries the tooltip text per iconCode; the cell
+      // value's own `description` is used as a fallback when no match is found.
+      const resolveTooltip = (iconCode: number, fallbackDescription: string) =>
+        availableIcons.find((option) => option.iconType.iconCode === iconCode)
+          ?.tooltip || fallbackDescription;
+
+      // Table-wide iconCode -> Iconify glyph map (table.options.iconsList).
+      // When a code isn't in it (or no map was supplied at all), fall back to
+      // a colored dot instead of failing to render — meta.availableIcons
+      // always has a color at least.
+      const iconsList = table.options.iconsList ?? {};
+
+      const renderStatus = (
+        iconCode: number,
+        color: string,
+        forceWhite?: boolean,
+      ) => {
+        const iconDef = iconsList[String(iconCode)];
+        if (iconDef) {
+          return (
+            <Iconify
+              icon={iconDef.component}
+              width={20}
+              color={forceWhite ? 'white' : (iconDef.defaultColor ?? color)}
+            />
+          );
+        }
+        return <MRT_IconStatusDot color={forceWhite ? 'white' : color} />;
+      };
 
       const handleClick = (event: MouseEvent<HTMLElement>) => {
         if (column.onClickIconTypeColumn) {
@@ -41,6 +74,11 @@ export const IconColumnResolver: ColumnTypeResolver = {
         }
       };
 
+      const cursor = column.onClickIconTypeColumn ? 'pointer' : 'default';
+      const { additional } = value;
+
+      // Compound status — pill container (background/rounded/padded) colored by
+      // the primary status, holding one glyph (or dot fallback) per status.
       if (additional) {
         return (
           <Box
@@ -48,33 +86,40 @@ export const IconColumnResolver: ColumnTypeResolver = {
               display: 'flex',
               gap: 0.5,
               alignItems: 'center',
-              backgroundColor: icon.defaultColor,
+              backgroundColor: (theme) =>
+                resolveStatusColor(theme, value.color),
               borderRadius: 16,
               p: 0.5,
-              cursor: 'pointer',
+              cursor,
             }}
             onClick={handleClick}
           >
-            <Tooltip title={value.description} disableInteractive>
-              <Iconify icon={icon.icon} color="white" width={20} height={20} />
+            <Tooltip
+              title={resolveTooltip(value.iconCode, value.description)}
+              disableInteractive
+            >
+              {renderStatus(value.iconCode, value.color, true)}
             </Tooltip>
-            {Object.values(additional).map((add, index) => {
-              const additionalIcon = iconsList[add.iconCode];
-              if (!additionalIcon) return null;
-              return (
-                <Tooltip key={index} title={add.description} disableInteractive>
-                  <Iconify icon={additionalIcon.icon} color="white" />
-                </Tooltip>
-              );
-            })}
+            {Object.values(additional).map((add, index) => (
+              <Tooltip
+                key={index}
+                title={resolveTooltip(add.iconCode, add.description)}
+                disableInteractive
+              >
+                {renderStatus(add.iconCode, add.color, true)}
+              </Tooltip>
+            ))}
           </Box>
         );
       }
 
       return (
-        <Tooltip title={value.description} disableInteractive>
-          <IconButton size="small" disableRipple sx={{ p: 0 }}>
-            <Iconify icon={icon.icon} color={icon.defaultColor} />
+        <Tooltip
+          title={resolveTooltip(value.iconCode, value.description)}
+          disableInteractive
+        >
+          <IconButton disableRipple onClick={handleClick} sx={{ p: 0, cursor }}>
+            {renderStatus(value.iconCode, value.color)}
           </IconButton>
         </Tooltip>
       );
@@ -85,9 +130,6 @@ export const IconColumnResolver: ColumnTypeResolver = {
   ): MRT_FilterOperatorDefinition<TData, TValue>[] => {
     // Available selectable icon options come from backend-provided column metadata
     const availableIcons = column.meta?.availableIcons ?? [];
-    // Safe cast for iconsList — this resolver is only registered for icon columns in registy.ts
-    const iconsList =
-      (column as MRT_IconColumnDef<TData, TValue>).iconsList ?? {};
 
     // Without available options no meaningful filter can be built
     if (!availableIcons.length) {
@@ -101,7 +143,8 @@ export const IconColumnResolver: ColumnTypeResolver = {
       MRT_IconSingleValueEditor({
         ...props,
         availableIcons,
-        iconsList,
+        // Table-wide iconCode -> Iconify glyph map (table.options.iconsList)
+        iconsList: props.table.options.iconsList ?? {},
       });
 
     // Multi-select editor factory — used by 'inArray'
@@ -111,7 +154,7 @@ export const IconColumnResolver: ColumnTypeResolver = {
       MRT_IconMultiValueEditor({
         ...props,
         availableIcons,
-        iconsList,
+        iconsList: props.table.options.iconsList ?? {},
       });
 
     return [
@@ -149,16 +192,20 @@ export const IconColumnResolver: ColumnTypeResolver = {
   activeFilterRenderer: IconActiveFilterItem,
   getFormFieldRenderer: <TData extends MRT_RowData>(
     column: MRT_ColumnDef<TData>,
+    table: MRT_TableInstance<TData>,
   ) => {
     // Cast TValue to string | null — icon fields store the selected iconCode string
     const fieldConfig =
       (column.formField as
         | MRT_FormFieldConfig<TData, string | null>
         | undefined) ?? null;
+    // Table-wide iconCode -> Iconify glyph map (table.options.iconsList)
+    const iconsList = table.options.iconsList ?? {};
     return ({ name, columnDef }: MRT_FormFieldRenderProps<TData>) => (
       <MRT_FormIconInput
         columnDef={columnDef}
         fieldConfig={fieldConfig}
+        iconsList={iconsList}
         name={name}
       />
     );
