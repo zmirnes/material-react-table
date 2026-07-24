@@ -1,7 +1,8 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { MaterialReactTable } from '../../../../components/MaterialReactTable';
-import { render, screen, waitFor } from '@testing-library/react';
+import { type MRT_TableInstance } from '../../../../types';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -156,6 +157,72 @@ describe('MRT_NewEntryModal — integration flow', () => {
           screen.getAllByText(NEW_ENTRY_LABEL).length,
         ).toBeGreaterThanOrEqual(2),
       );
+    });
+  });
+
+  describe('initialValues arriving after the modal already opened in a loading state', () => {
+    it('applies initialValues once loading finishes, even though the form mounted before they existed', async () => {
+      const user = userEvent.setup();
+      let capturedTable: MRT_TableInstance<Person> | undefined;
+
+      renderWithTheme(
+        <MaterialReactTable
+          columns={TEST_COLUMNS}
+          data={TEST_DATA}
+          enableNewEntryButton
+          localization={{ close: CLOSE_LABEL }}
+          // Captures the table instance so the test can drive setNewEntryModal
+          // the same way a consumer would: open in a loading state first, then
+          // update once the backend response with initialValues arrives.
+          newEntryButtonProps={({ table }) => {
+            capturedTable = table;
+            return {
+              // buildDefaultValues only reads initialValues in 'edit' mode —
+              // for 'create' mode it builds from each column's own
+              // formField.defaultValue instead, ignoring initialValues entirely.
+              onClick: () =>
+                table.setNewEntryModal({
+                  open: true,
+                  isLoading: true,
+                  mode: 'edit',
+                }),
+            };
+          }}
+        />,
+      );
+
+      await user.click(screen.getByRole('button', { name: NEW_ENTRY_LABEL }));
+
+      // Modal is open but still loading — MRT_NewEntryForm renders the skeleton,
+      // so the real "Name" field isn't mounted yet.
+      // (mode: 'edit' renders the "Edit" heading, not "New Entry" — assert on
+      // the close button instead, which is present regardless of title text.)
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: CLOSE_LABEL }),
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.queryByRole('textbox', { name: 'Name' }),
+      ).not.toBeInTheDocument();
+
+      // Backend data arrives — same table instance, no remount/reopen involved.
+      act(() => {
+        capturedTable!.setNewEntryModal({
+          open: true,
+          isLoading: false,
+          mode: 'edit',
+          initialValues: { name: 'Alice', age: 30 },
+        });
+      });
+
+      // The field must show the value that arrived after first mount — this is
+      // exactly what useForm's one-time defaultValues capture would otherwise miss.
+      await waitFor(() => {
+        expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue(
+          'Alice',
+        );
+      });
     });
   });
 

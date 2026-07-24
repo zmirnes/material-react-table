@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMRT_SliceValue } from '../../hooks/useMRT_SliceValue';
 import { MRT_NewEntryFormActionsContext } from './MRT_NewEntryFormActionsContext';
@@ -39,6 +39,21 @@ export const MRT_NewEntryFormProvider = <TData extends MRT_RowData>({
   );
 
   const methods = useForm<Record<string, unknown>>({ defaultValues });
+
+  // useForm's `defaultValues` is only read once, at first mount. The modal is
+  // opened before the backend data arrives (newEntryModal.isLoading: true,
+  // initialValues: undefined) and stays mounted through the whole loading ->
+  // loaded transition, so once initialValues actually arrives it would
+  // otherwise never reach the already-initialized form. Reset once loading
+  // finishes to pick up the real values.
+  useEffect(() => {
+    if (!newEntryModal.isLoading) {
+      methods.reset(defaultValues);
+    }
+    // Only re-run when the loading flag flips — defaultValues is recomputed
+    // every render and must not itself retrigger this (that would wipe out
+    // in-progress user edits on every keystroke-driven re-render).
+  }, [newEntryModal.isLoading]);
 
   // Validates the form and calls the consumer's onSave on success.
   const handleSave = methods.handleSubmit(async () => {
