@@ -7,6 +7,8 @@ import {
   groupFieldsBySection,
   resolveFormFields,
   sortByOrder,
+  toAdditionalRenderEntries,
+  toColumnRenderEntries,
 } from './MRT_NewEntryFormBuilder';
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
 import { MRT_NewEntryFormSkeleton } from './MRT_NewEntryFormSkeleton';
@@ -121,30 +123,35 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
     return <MRT_NewEntryFormSkeleton table={table} />;
   }
 
-  // Collect all eligible form fields from the table's leaf columns sorted by order.
+  // Collect all eligible form fields from the table's leaf columns.
   const allFormFields = resolveFormFields(table);
   const additionalFields = formConfig?.additionalFields ?? [];
+
+  // Merge column fields and additional fields into one list so they can be sorted and
+  // grouped together by their shared order/section — an additionalField's order is
+  // otherwise only ever compared against other additional fields, never column fields.
+  const allEntries = [
+    ...toColumnRenderEntries(allFormFields),
+    ...toAdditionalRenderEntries(additionalFields),
+  ];
 
   // Sections sorted by their order value — lower numbers appear first.
   const sortedSections = sortByOrder(formConfig?.sections ?? []);
 
-  // Fields without a section assignment — rendered after all sections.
-  const unsectionedFields = sortByOrder(
-    allFormFields.filter(({ sectionId }) => sectionId === undefined),
+  // Entries without a section assignment — rendered after all sections.
+  const unsectionedEntries = sortByOrder(
+    allEntries.filter(({ sectionId }) => sectionId === undefined),
   );
 
-  // Map of sectionId → its fields, used when rendering each section block.
-  const fieldsBySection = groupFieldsBySection(allFormFields);
-
-  // Additional fields sorted by order — rendered after all column fields.
-  const sortedAdditionalFields = sortByOrder(additionalFields);
+  // Map of sectionId → its entries, used when rendering each section block.
+  const entriesBySection = groupFieldsBySection(allEntries);
 
   return (
     <Stack gap={2}>
       {/* Defined sections — each section groups its assigned fields under a collapsible heading */}
       {sortedSections.map((sectionConfig) => {
-        const sectionFields = sortByOrder(
-          fieldsBySection[sectionConfig.id] ?? [],
+        const sectionEntries = sortByOrder(
+          entriesBySection[sectionConfig.id] ?? [],
         );
         return (
           <MRT_NewEntryFormSectionBlock
@@ -152,21 +159,29 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
             key={sectionConfig.id}
             sectionConfig={sectionConfig}
           >
-            {sectionFields.map(({ columnId, columnDef, fieldConfig }) => (
-              <FormFieldControl
-                columnDef={columnDef}
-                columnId={columnId}
-                fieldConfig={fieldConfig}
-                key={columnId}
-                table={table}
-              />
-            ))}
+            {sectionEntries.map((entry) =>
+              entry.kind === 'column' ? (
+                <FormFieldControl
+                  columnDef={entry.columnDef}
+                  columnId={entry.columnId}
+                  fieldConfig={entry.fieldConfig}
+                  key={entry.columnId}
+                  table={table}
+                />
+              ) : (
+                <MRT_NewEntryFormAdditionalFieldControl
+                  additionalField={entry.additionalField}
+                  key={entry.additionalField.name}
+                  table={table}
+                />
+              ),
+            )}
           </MRT_NewEntryFormSectionBlock>
         );
       })}
 
-      {/* Fields with no section assignment — grid when formConfig.columns is set, Stack otherwise */}
-      {unsectionedFields.length > 0 && (
+      {/* Entries with no section assignment — grid when formConfig.columns is set, Stack otherwise */}
+      {unsectionedEntries.length > 0 && (
         <Stack
           gap={2}
           sx={
@@ -178,26 +193,25 @@ export const MRT_NewEntryForm = <TData extends MRT_RowData>({
               : undefined
           }
         >
-          {unsectionedFields.map(({ columnId, columnDef, fieldConfig }) => (
-            <FormFieldControl
-              columnDef={columnDef}
-              columnId={columnId}
-              fieldConfig={fieldConfig}
-              key={columnId}
-              table={table}
-            />
-          ))}
+          {unsectionedEntries.map((entry) =>
+            entry.kind === 'column' ? (
+              <FormFieldControl
+                columnDef={entry.columnDef}
+                columnId={entry.columnId}
+                fieldConfig={entry.fieldConfig}
+                key={entry.columnId}
+                table={table}
+              />
+            ) : (
+              <MRT_NewEntryFormAdditionalFieldControl
+                additionalField={entry.additionalField}
+                key={entry.additionalField.name}
+                table={table}
+              />
+            ),
+          )}
         </Stack>
       )}
-
-      {/* Additional non-column fields rendered after all column fields */}
-      {sortedAdditionalFields.map((additionalField) => (
-        <MRT_NewEntryFormAdditionalFieldControl
-          additionalField={additionalField}
-          key={additionalField.name}
-          table={table}
-        />
-      ))}
     </Stack>
   );
 };

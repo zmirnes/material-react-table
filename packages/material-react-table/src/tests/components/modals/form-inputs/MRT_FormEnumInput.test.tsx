@@ -244,8 +244,12 @@ describe('MRT_FormEnumInput', () => {
         fireEvent.click(screen.getByText('Na čekanju'));
       });
 
-      // Collapsed trigger now shows the selected option's label.
-      expect(screen.getByText('Na čekanju')).toBeInTheDocument();
+      // The Menu's exit transition can leave its MenuItem mounted alongside the
+      // trigger's own copy of the text for a moment — wait for the popup to
+      // finish closing so exactly one match remains.
+      await waitFor(() => {
+        expect(screen.getByText('Na čekanju')).toBeInTheDocument();
+      });
     });
 
     it('applies the transform returned by fieldConfig.onChange', async () => {

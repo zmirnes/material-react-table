@@ -3,6 +3,8 @@ import Stack from '@mui/material/Stack';
 import {
   groupFieldsBySection,
   resolveFormFields,
+  toAdditionalRenderEntries,
+  toColumnRenderEntries,
 } from './MRT_NewEntryFormBuilder';
 import { MRT_NewEntryFormSectionBlock } from './MRT_NewEntryFormSectionBlock';
 import { type MRT_RowData, type MRT_TableInstance } from '../../types';
@@ -20,22 +22,29 @@ export const MRT_NewEntryFormSkeleton = <TData extends MRT_RowData>({
   const { formConfig, icons } = table.options;
 
   const sections = formConfig?.sections ?? [];
-  const allFields = resolveFormFields(table);
-  // Group field entries by section for accurate per-section skeleton cell counts.
-  const fieldsBySectionId = groupFieldsBySection(allFields);
+  // Merge column fields and additional fields — additionalFields are placed into
+  // sections/unsectioned alongside column fields in the real form (MRT_NewEntryForm),
+  // so the skeleton must count them the same way to avoid a cell-count mismatch
+  // once loading finishes.
+  const allEntries = [
+    ...toColumnRenderEntries(resolveFormFields(table)),
+    ...toAdditionalRenderEntries(formConfig?.additionalFields ?? []),
+  ];
+  // Group entries by section for accurate per-section skeleton cell counts.
+  const entriesBySectionId = groupFieldsBySection(allEntries);
 
-  // Fields with no section assignment — rendered after all sections, same as the real form.
-  const unsectionedFields = allFields.filter(
+  // Entries with no section assignment — rendered after all sections, same as the real form.
+  const unsectionedEntries = allEntries.filter(
     ({ sectionId }) => sectionId === undefined,
   );
-  const unsectionedCells = Array.from({ length: unsectionedFields.length });
+  const unsectionedCells = Array.from({ length: unsectionedEntries.length });
 
   return (
     <Stack gap={2}>
       {/* Sections — each mirrors the real MRT_NewEntryFormSectionBlock */}
       {sections.map((section) => {
         const fieldCells = Array.from({
-          length: fieldsBySectionId[section.id]?.length ?? 0,
+          length: entriesBySectionId[section.id]?.length ?? 0,
         });
 
         return (

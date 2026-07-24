@@ -1,5 +1,6 @@
 import {
   type MRT_ColumnDef,
+  type MRT_FormAdditionalField,
   type MRT_FormFieldConfig,
   type MRT_RowData,
   type MRT_TableInstance,
@@ -16,6 +17,19 @@ export interface MRT_FormFieldEntry<TData extends MRT_RowData> {
   sectionId: string | undefined;
   order: number | undefined;
 }
+
+// A renderable form entry — either a column-backed field or a standalone additional
+// field. Column fields and additional fields both carry order/section metadata, so
+// they must be merged into one list before sorting/grouping — otherwise additional
+// fields can only ever be ordered relative to each other, never against column fields.
+export type MRT_FormRenderEntry<TData extends MRT_RowData> =
+  | (MRT_FormFieldEntry<TData> & { kind: 'column' })
+  | {
+      additionalField: MRT_FormAdditionalField<TData>;
+      kind: 'additional';
+      order: number | undefined;
+      sectionId: string | undefined;
+    };
 
 // ─── Sorting ──────────────────────────────────────────────────────────────────
 
@@ -70,17 +84,38 @@ export const resolveFormFields = <TData extends MRT_RowData>(
 };
 
 // Groups form fields by their sectionId, returning an id → entries map.
-export const groupFieldsBySection = <TData extends MRT_RowData>(
+// Generic over any entry shape carrying a sectionId — used for column-only entries
+// (MRT_FormFieldEntry) and for merged column + additional field entries (MRT_FormRenderEntry) alike.
+export const groupFieldsBySection = <
+  T extends { sectionId: string | undefined },
+>(
+  formFields: T[],
+): Record<string, T[]> =>
+  formFields.reduce<Record<string, T[]>>((acc, field) => {
+    if (field.sectionId === undefined) return acc;
+    const existingFields = acc[field.sectionId] ?? [];
+    return { ...acc, [field.sectionId]: [...existingFields, field] };
+  }, {});
+
+// ─── Merging column fields with additional fields ────────────────────────────
+
+// Wraps resolved column fields as MRT_FormRenderEntry — tags each with kind: 'column'.
+export const toColumnRenderEntries = <TData extends MRT_RowData>(
   formFields: MRT_FormFieldEntry<TData>[],
-): Record<string, MRT_FormFieldEntry<TData>[]> =>
-  formFields.reduce<Record<string, MRT_FormFieldEntry<TData>[]>>(
-    (acc, field) => {
-      if (field.sectionId === undefined) return acc;
-      const existingFields = acc[field.sectionId] ?? [];
-      return { ...acc, [field.sectionId]: [...existingFields, field] };
-    },
-    {},
-  );
+): MRT_FormRenderEntry<TData>[] =>
+  formFields.map((formField) => ({ ...formField, kind: 'column' }));
+
+// Wraps additionalFields as MRT_FormRenderEntry, carrying over their own order/section
+// so they sort and group alongside column fields instead of always rendering last.
+export const toAdditionalRenderEntries = <TData extends MRT_RowData>(
+  additionalFields: MRT_FormAdditionalField<TData>[],
+): MRT_FormRenderEntry<TData>[] =>
+  additionalFields.map((additionalField) => ({
+    additionalField,
+    kind: 'additional',
+    order: additionalField.order,
+    sectionId: additionalField.section,
+  }));
 
 // ─── Default Values ───────────────────────────────────────────────────────────
 

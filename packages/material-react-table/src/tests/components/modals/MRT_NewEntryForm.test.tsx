@@ -418,6 +418,85 @@ describe('MRT_NewEntryForm', () => {
 
       expect(screen.getByTestId(ADDITIONAL_FIELD_TEST_ID)).toBeInTheDocument();
     });
+
+    it('renders an unsectioned additional field before a column field when its order is lower', () => {
+      // additionalField.order (0) is lower than the column field's order (1) — the
+      // additional field must render first, not always after all column fields.
+      const additionalFields: MRT_FormAdditionalField<
+        Record<string, unknown>
+      >[] = [
+        {
+          name: 'notes',
+          order: 0,
+          render: ({ name }) => <div data-testid="field-notes">{name}</div>,
+        },
+      ];
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'name',
+            header: 'Name',
+            type: 'string',
+            formField: { order: 1 },
+          },
+        ],
+        formConfig: { additionalFields },
+      });
+
+      renderFormWithProvider(table);
+
+      const notesEl = screen.getByTestId('field-notes');
+      const nameInput = screen.getByLabelText('Name');
+
+      expect(
+        notesEl.compareDocumentPosition(nameInput) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    });
+
+    it('renders an additional field assigned to a section inside that section, ordered with its column fields', () => {
+      const additionalFields: MRT_FormAdditionalField<
+        Record<string, unknown>
+      >[] = [
+        {
+          name: 'notes',
+          order: 0,
+          section: 'address',
+          render: ({ name }) => <div data-testid="field-notes">{name}</div>,
+        },
+      ];
+      const table = buildTable({
+        columns: [
+          {
+            accessorKey: 'city',
+            header: 'City',
+            type: 'string',
+            formField: { order: 1, section: 'address' },
+          },
+        ],
+        formConfig: {
+          additionalFields,
+          sections: [{ id: 'address', title: 'Address Information' }],
+        },
+      });
+
+      renderFormWithProvider(table);
+
+      // The additional field renders inside the section (not in a trailing block outside it)...
+      const sectionHeading = screen.getByText('Address Information');
+      const notesEl = screen.getByTestId('field-notes');
+      expect(sectionHeading.compareDocumentPosition(notesEl)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+
+      // ...and, within the section, respects order relative to the column field.
+      const cityInput = screen.getByLabelText('City');
+
+      expect(
+        notesEl.compareDocumentPosition(cityInput) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    });
   });
 
   describe('section rendering', () => {
