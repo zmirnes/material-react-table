@@ -88,9 +88,8 @@ export const handleUpdateRow = <TData extends MRT_RowData>({
 
       return previousRows.map((row, index) => {
         const rowId = getResolvedRowId(row, index, undefined, getRowId);
-        return rowId !== undefined && rowById.has(rowId)
-          ? rowById.get(rowId)!
-          : row;
+        const updatedRow = rowId !== undefined ? rowById.get(rowId) : undefined;
+        return updatedRow !== undefined ? { ...row, ...updatedRow } : row;
       });
     });
   };
