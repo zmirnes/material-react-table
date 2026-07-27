@@ -72,18 +72,17 @@ export const handleUpdateRow = <TData extends MRT_RowData>({
   getRowId,
   setRowsState,
 }: MRT_TableCrudHandlerContext<TData>) => {
-  return (rowInput: MRT_RowManipulationInput<TData>): void => {
+  return (
+    rowInput: MRT_RowManipulationInput<Partial<TData> & { id: string }>,
+  ): void => {
     const rowsToUpdate = normalizeRowInput(rowInput);
 
     setRowsState((previousRows) => {
       if (!rowsToUpdate.length) return previousRows;
 
-      const rowById = new Map<string, TData>();
-      rowsToUpdate.forEach((row, index) => {
-        const rowId = getResolvedRowId(row, index, undefined, getRowId);
-        if (rowId !== undefined) {
-          rowById.set(rowId, row);
-        }
+      const rowById = new Map<string, Partial<TData> & { id: string }>();
+      rowsToUpdate.forEach((row) => {
+        rowById.set(row.id, row);
       });
 
       return previousRows.map((row, index) => {
@@ -108,7 +107,9 @@ export const handleUpsertRow = <TData extends MRT_RowData>({
   pageSize,
   setRowsState,
 }: MRT_TableCrudHandlerContext<TData>) => {
-  return (rowInput: MRT_RowManipulationInput<TData>): void => {
+  return (
+    rowInput: MRT_RowManipulationInput<Partial<TData> & { id: string }>,
+  ): void => {
     const rowsToUpsert = normalizeRowInput(rowInput);
 
     setRowsState((previousRows) => {
@@ -126,17 +127,15 @@ export const handleUpsertRow = <TData extends MRT_RowData>({
 
       const rowsToInsert: TData[] = [];
 
-      rowsToUpsert.forEach((row, index) => {
-        const rowId = getResolvedRowId(row, index, undefined, getRowId);
-        const existingIndex =
-          rowId !== undefined ? indexByRowId.get(rowId) : undefined;
+      rowsToUpsert.forEach((row) => {
+        const existingIndex = indexByRowId.get(row.id);
 
         if (existingIndex === undefined) {
-          rowsToInsert.push(row);
+          rowsToInsert.push(row as unknown as TData);
           return;
         }
 
-        nextRows[existingIndex] = row;
+        nextRows[existingIndex] = { ...nextRows[existingIndex], ...row };
       });
 
       return capRowsToPageSize([...rowsToInsert, ...nextRows], pageSize);

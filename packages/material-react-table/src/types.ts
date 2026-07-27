@@ -483,9 +483,13 @@ export type MRT_TableInstance<TData extends MRT_RowData> = Omit<
     SetStateAction<MRT_RowReorderingSelectionState>
   >;
   addRow: (rows: MRT_RowManipulationInput<TData>) => void;
-  updateRow: (rows: MRT_RowManipulationInput<TData>) => void;
+  updateRow: (
+    rows: MRT_RowManipulationInput<Partial<TData> & { id: string }>,
+  ) => void;
   setRows: (rows: MRT_RowManipulationInput<TData>) => void;
-  upsertRow: (rows: MRT_RowManipulationInput<TData>) => void;
+  upsertRow: (
+    rows: MRT_RowManipulationInput<Partial<TData> & { id: string }>,
+  ) => void;
   removeRow: (rows: string | string[]) => void;
   // Manually re-runs loadData with the current table state. Only populated when the
   // table is rendered via MaterialReactServerTableInstance / MaterialReactServerTable —
